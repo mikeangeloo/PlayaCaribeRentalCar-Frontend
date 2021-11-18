@@ -1,0 +1,171 @@
+/*
+ * App Global CSS
+ * ----------------------------------------------------------------------------
+ * Put style rules here that you want to apply globally. These styles are for
+ * the entire app and not just one component. Additionally, this file can be
+ * used as an entry point to import other CSS/Sass files to be included in the
+ * output CSS.
+ * For more information on global stylesheets, visit the documentation:
+ * https://ionicframework.com/docs/layout/global-stylesheets
+ */
+
+/* Core CSS required for Ionic components to work properly */
+@import "~@ionic/angular/css/core.css";
+
+/* Basic CSS for apps built with Ionic */
+@import "~@ionic/angular/css/normalize.css";
+@import "~@ionic/angular/css/structure.css";
+@import "~@ionic/angular/css/typography.css";
+@import '~@ionic/angular/css/display.css';
+
+/* Optional CSS utils that can be commented out */
+@import "~@ionic/angular/css/padding.css";
+@import "~@ionic/angular/css/float-elements.css";
+@import "~@ionic/angular/css/text-alignment.css";
+@import "~@ionic/angular/css/text-transformation.css";
+@import "~@ionic/angular/css/flex-utils.css";
+
+//#region Form styles
+.mat-form-field-underline {
+  background-color: var(--ion-color-primary) !important;
+}
+.mat-form-field-label {
+  color: var(--ion-color-primary) !important;
+}
+.mat-form-field.mat-form-field-invalid .mat-form-field-label {
+  color: #f44336 !important;
+}
+.form-container {
+  display: flex;
+  flex-flow: column;
+  background-color: white;
+  padding: 0.5rem;
+  flex-direction: column;
+}
+mat-form-field {
+  margin-bottom: 1em;
+  width: 100%;
+}
+.mat-form-field-label-wrapper {
+  font-size: 1rem;
+}
+
+.radio-buttons-container {
+  display: flex;
+  flex-direction: column;
+  mat-label {
+    font-size: 0.9em;
+    color: var(--ion-color-primary);
+  }
+  mat-radio-group {
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+    mat-radio-button {
+      &:first-of-type {
+        margin-right: 1rem;
+      }
+    }
+  }
+
+  .mat-radio-outer-circle {
+    border-color: var(--ion-color-secondary);
+  }
+}
+.datetime-picker-continer {
+  display: flex;
+  flex-direction: column;
+  mat-label {
+    font-size: 0.9em;
+    color: var(--ion-color-primary);
+  }
+  ion-datetime {
+    border-bottom: 1px var(--ion-color-primary) solid;
+    margin-bottom: 1rem;
+  }
+}
+.custom-mat-error {
+  font-size: 12px;
+}
+
+.mat-expansion-panel-header {
+  padding: 0 14px !important;
+}
+
+.mat-expansion-panel-body {
+  padding: 0 12px 16px !important;
+}
+//#endregion
+
+
+//#region GENERAL
+.title-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: 1rem;
+  align-items: center;
+  padding: 0 0.5em;
+  color: var(--ion-color-primary);
+
+  img {
+    width: 100px;
+  }
+}
+.title {
+  font-size: 2rem;
+  font-weight: 400;
+  text-align: center;
+  padding: 0;
+  margin: 0;
+  margin-bottom: 2.5em;
+  margin-top: 2.5em;
+  line-height: 1.2;
+}
+.form-content {
+  display: flex;
+  flex-flow: column;
+  background-color: white;
+  padding: 0.5rem;
+}
+
+.custom-errors {
+  color: red;
+  font-weight: 400;
+  text-align: left;
+  padding: 0;
+  margin: 0;
+  font-size: 12px;
+}
+
+.submit-btn {
+  --ion-color-contrast: white !important;
+  width: 125px;
+  margin: 0 auto;
+}
+
+.btn-shadow {
+  --box-shadow: 0 4px 8px #00000094;
+}
+//#endregion
+
+//#region OTP styles
+
+.otp-title {
+  padding: 0;
+  text-align: center;
+  font-size: 1.4em;
+  color: darkslategray;
+  font-weight: 400;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+.opt-instructions {
+  font-weight: 500;
+  text-align: center;
+}
+.opt-email {
+  text-align: center;
+  font-size: 1.5em;
+  padding-top: 2rem;
+}
+//#endregion
