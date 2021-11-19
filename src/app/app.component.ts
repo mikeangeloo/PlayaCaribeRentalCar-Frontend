@@ -13,7 +13,7 @@ export class AppComponent implements OnDestroy {
   public destroyed = new Subject<any>();
   public showMenu = true;
 
-  showSubmenu = false;
+  showSubmenu: string;
   public subMenuOpen = false;
   public _navRoute: string;
 
@@ -45,7 +45,8 @@ export class AppComponent implements OnDestroy {
   }
 
   closeMenu() {
-    this.menu.toggle();
+    this.menu.close();
+    //this.menu.toggle();
   }
 
   menuItemHandler(type): void {

@@ -140,7 +140,7 @@
       <ion-footer class="ion-no-padding ion-no-margin">
         <ion-row class="ion-no-padding ion-no-margin">
           <ion-col class="ion-no-padding ion-no-margin">
-            <ion-button expand="full" class="logout-btn ion-no-padding ion-no-margin" (click)="sessionService.logout()">
+            <ion-button expand="full" class="logout-btn ion-no-padding ion-no-margin" (click)="sessionService.logout(); closeMenu();">
               <b>SALIR</b>
             </ion-button>
           </ion-col>
