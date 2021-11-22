@@ -1,57 +1,63 @@
 <ion-content>
 
-  <ion-row class="ion-no-margin ion-no-padding">
-    <ion-col size="12" size-md="7" class="ion-no-padding ion-no-margin" style="position: relative">
-      <div class="login-background" id="login-background">
-      </div>
-    </ion-col>
-    <ion-col size="12" size-md="5" class="ion-align-self-center fixed-login-container">
+  <div class="login-card-container">
+    <div class="login-card-content">
+      <ion-row class="ion-no-margin ion-no-padding" style="height: 100%">
+        <ion-col size="12" size-lg="6" class="ion-no-padding ion-no-margin login-background-container" style="position: relative">
+          <div class="login-background" id="login-background">
+          </div>
+        </ion-col>
+        <ion-col size="12" size-lg="6" class="ion-align-self-center">
 
-      <div class="login-container">
-        <div class="title-container">
-          <p class="title">¡Bienvenido a Grupo Apollo!</p>
-        </div>
-        <br>
-        <p class="iniciar-sesion">Accede con tus credenciales</p>
-        <br>
-        <form [formGroup]="loginForm" (submit)="onSubmit()">
-          <div class="login-content">
-            <mat-form-field appearance="outline">
-              <mat-label>Username</mat-label>
-              <input type="text" matInput formControlName="email" class="padding-left" autocomplete="off">
-              <mat-error *ngIf="cf.email.errors?.required">Campo requerido</mat-error>
-              <mat-error *ngIf="cf.email.errors?.email">Email invalido</mat-error>
-            </mat-form-field>
-
-            <mat-form-field appearance="outline">
-              <mat-label>Password</mat-label>
-              <input type="password" matInput formControlName="password" class="padding-left" autocomplete="off">
-              <mat-error *ngIf="cf.password.errors?.required">Contraseña requerida</mat-error>
-              <mat-error *ngIf="cf.password.errors?.minlength">La contraseña debe tener al menos 6 caracteres</mat-error>
-            </mat-form-field>
-
-            <div class="forgot-pwd">
-              <a (click)="goToPwdRecovery()">¿Olvidaste tú contraseña?</a>
-            </div>
-
-            <div class="spinner" *ngIf="spinner === true">
-              <ion-spinner></ion-spinner>
+          <div class="login-container">
+            <div class="title-container">
+              <p class="title">¡Bienvenido a Grupo Apollo!</p>
             </div>
             <br>
-            <ion-button class="submit-btn btn-shadow" color="primary" [disabled]="loginForm.invalid" expand="block" type="submit" style="width: 60%; margin: 0 auto;"
-                        *ngIf="spinner === false">LOGIN</ion-button>
+            <p class="iniciar-sesion">Accede con tus credenciales</p>
+            <br>
+            <form [formGroup]="loginForm" (submit)="onSubmit()">
+              <div class="login-content">
+                <mat-form-field appearance="outline">
+                  <mat-label>Username</mat-label>
+                  <input type="text" matInput formControlName="email" class="padding-left" autocomplete="off">
+                  <mat-error *ngIf="cf.email.errors?.required">Campo requerido</mat-error>
+                  <mat-error *ngIf="cf.email.errors?.email">Email invalido</mat-error>
+                </mat-form-field>
 
-            <!--          <div class="not-user">-->
-            <!--            <p>¿Aún no eres usuario?</p>-->
-            <!--            <p>Crea tu cuenta </p>-->
-            <!--            <a [routerLink]="['/register']">Registrarme</a>-->
-            <!--          </div>-->
+                <mat-form-field appearance="outline">
+                  <mat-label>Password</mat-label>
+                  <input type="password" matInput formControlName="password" class="padding-left" autocomplete="off">
+                  <mat-error *ngIf="cf.password.errors?.required">Contraseña requerida</mat-error>
+                  <mat-error *ngIf="cf.password.errors?.minlength">La contraseña debe tener al menos 6 caracteres</mat-error>
+                </mat-form-field>
+
+                <div class="forgot-pwd">
+                  <a (click)="goToPwdRecovery()">¿Olvidaste tú contraseña?</a>
+                </div>
+
+                <div class="spinner" *ngIf="spinner === true">
+                  <ion-spinner></ion-spinner>
+                </div>
+                <br>
+                <ion-button class="submit-btn btn-shadow" color="primary" [disabled]="loginForm.invalid" expand="block" type="submit" style="width: 60%; margin: 0 auto;"
+                            *ngIf="spinner === false">LOGIN</ion-button>
+
+                <!--          <div class="not-user">-->
+                <!--            <p>¿Aún no eres usuario?</p>-->
+                <!--            <p>Crea tu cuenta </p>-->
+                <!--            <a [routerLink]="['/register']">Registrarme</a>-->
+                <!--          </div>-->
+              </div>
+            </form>
           </div>
-        </form>
-      </div>
 
-    </ion-col>
-  </ion-row>
+        </ion-col>
+      </ion-row>
+    </div>
+
+  </div>
+
 
 </ion-content>
 

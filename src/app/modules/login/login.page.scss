@@ -1,11 +1,42 @@
+.login-card-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .login-card-content {
+    height: 90%;
+    width: 85%;
+    border-radius: 20px;
+    box-shadow: 0 1px 5px 3px #0000004d;
+
+    @media(min-width: 992px) {
+      height: 75%;
+      width: 75%;
+    }
+  }
+}
 .login-background {
   background-image: url('../../../assets/img/login-background.jpeg');
   background-repeat: no-repeat;
   background-size: cover;
-  height: 100vh;
+  height: 100%;
   background-position-x: center;
-}
+  background-position-y: center;
+  border-radius: 20px 20px 0 0;
 
+
+  @media (min-width: 992px) {
+    border-radius: 20px 0 0 20px;
+  }
+}
+.login-background-container {
+  height: 40%;
+  @media(min-width: 992px) {
+    height: inherit;
+  }
+}
 .login-container {
   margin: 1.2rem;
 }
@@ -17,14 +48,14 @@
   left: 5%;
   border-radius: 15px;
   box-shadow: 0 3px 4px 0px #0000006b;
-  //top: 1rem;
-  @media (min-width: 768px) {
-    position: inherit;
-    background: none;
-    border-radius: 0;
-    left: 0;
-    box-shadow: none;
-  }
+
+  //@media (min-width: 768px) {
+  //  position: inherit;
+  //  background: none;
+  //  border-radius: 0;
+  //  left: 0;
+  //  box-shadow: none;
+  //}
 }
 
 .iniciar-sesion {
@@ -59,9 +90,9 @@
   background: none;
   padding: 0.5rem;
 
-  @media(min-width: 768px) {
-    background: white;
-  }
+  //@media(min-width: 768px) {
+  //  background: white;
+  //}
 }
 
 .login-errors {

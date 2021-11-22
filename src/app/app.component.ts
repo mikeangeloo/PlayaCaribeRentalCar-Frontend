@@ -41,7 +41,7 @@ export class AppComponent implements OnDestroy {
           this.showMenu = true;
         }
       });
-    })
+    });
   }
 
   closeMenu() {
