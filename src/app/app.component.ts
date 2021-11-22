@@ -3,6 +3,7 @@ import {ActivatedRoute, NavigationEnd, Router, RouterEvent, RouterLinkActive} fr
 import {MenuController, Platform} from "@ionic/angular";
 import {filter, Subject, takeUntil} from "rxjs";
 import {SessionService} from "./services/session.service";
+import {ProfileDataI} from "./interfaces/profile/profile-data.interface";
 
 @Component({
   selector: 'app-root',
@@ -16,6 +17,9 @@ export class AppComponent implements OnDestroy {
   showSubmenu: string;
   public subMenuOpen = false;
   public _navRoute: string;
+
+  public profileData: ProfileDataI;
+  public role: string;
 
   constructor(
     public route: ActivatedRoute,
@@ -41,6 +45,15 @@ export class AppComponent implements OnDestroy {
           this.showMenu = true;
         }
       });
+
+      if (this.sessionService.getRole()) {
+        this.role = this.sessionService.getRole();
+      }
+
+      if (this.sessionService.getProfile()) {
+        this.profileData= this.sessionService.getProfile();
+      }
+
     });
   }
 

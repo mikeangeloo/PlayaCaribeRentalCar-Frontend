@@ -18,7 +18,7 @@
                 </ion-avatar>
               </ng-container>
 
-              <ion-label class="ion-text-wrap ion-text-center label-name">Admin - Demo</ion-label>
+              <ion-label class="ion-text-wrap ion-text-center label-name" *ngIf="profileData">{{profileData.nombre}} - {{profileData.area_trabajo.area}}</ion-label>
             </ion-item>
           </div>
         </div>
@@ -49,6 +49,10 @@
 
           <ion-item class="item item-icon-left" routerLinkActive="active-route" (click)="closeMenu()">
             <ion-icon name="car-sport-outline"></ion-icon>&nbsp; Vehículos
+          </ion-item>
+
+          <ion-item class="item item-icon-left" routerLinkActive="active-route" (click)="closeMenu()">
+            <ion-icon name="document-text-outline"></ion-icon>&nbsp; Reportes
           </ion-item>
 
 <!--          <div class="hr5"><span>... Otros</span></div>-->

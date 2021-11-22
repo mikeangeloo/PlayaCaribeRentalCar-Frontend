@@ -3,6 +3,7 @@ import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {environment} from "../../environments/environment";
 import {map, Observable} from "rxjs";
 import {NavController} from "@ionic/angular";
+import {ProfileDataI} from "../interfaces/profile/profile-data.interface";
 
 class Router {
 }
@@ -79,25 +80,28 @@ export class SessionService {
   // }
 
   // Obtiene el objeto de tipo user que esta guardado en sessionStorage
-  // getProfile(): Profile {
-  //   if (sessionStorage.getItem(this.profileToken)) {
-  //     const profile = JSON.parse(atob(sessionStorage.getItem(this.profileToken)));
-  //     if (profile) {
-  //       return profile.profile as Profile;
-  //     } else {
-  //       return null;
-  //     }
-  //   } else {
-  //     return null;
-  //   }
-  // }
+  getProfile(): ProfileDataI {
+    if (sessionStorage.getItem(this.profileToken)) {
+      const profile = JSON.parse(sessionStorage.getItem(this.profileToken));
+      if (profile) {
+        return profile as ProfileDataI;
+      } else {
+        return null;
+      }
+    } else {
+      return null;
+    }
+  }
 
 
   // Obtiene el rol almacenado en sessionStorage, si no existe devuleve null
   public getRole(): string {
-    const role = sessionStorage.getItem(JSON.parse(this.profileToken).role);
+    if (!sessionStorage.getItem(this.profileToken)) {
+      return null;
+    }
+    const role = sessionStorage.getItem(this.profileToken);
     if (role != 'undefined') {
-      return  role;
+      return  JSON.parse(role).rol.rol;
     } else {
       return null;
     }

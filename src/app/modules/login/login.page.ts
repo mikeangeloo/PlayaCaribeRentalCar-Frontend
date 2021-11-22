@@ -3,7 +3,7 @@ import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {environment} from "../../../environments/environment";
 import {SessionService} from "../../services/session.service";
 import {AlertController, NavController} from "@ionic/angular";
-import {ActivatedRoute} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 import {SweetMessagesService} from "../../services/sweet-messages.service";
 import {HttpErrorResponse} from "@angular/common/http";
 import {GeneralService} from "../../services/general.service";
@@ -25,10 +25,13 @@ export class LoginPage implements OnInit {
   public message_success: string;
   public app_title = environment.app_name;
 
+  public canShow = true;
+
   constructor(
     private sessionService: SessionService,
     public navigate: NavController,
     private route: ActivatedRoute,
+    public router: Router,
     private alertCtrl: AlertController,
     private fb: FormBuilder,
     public sweetMsg: SweetMessagesService,
@@ -39,8 +42,13 @@ export class LoginPage implements OnInit {
       password: ['', [Validators.required, Validators.minLength(6)]],
     });
 
+
+  }
+
+  ionViewWillEnter() {
     if (this.sessionService.getToken()) {
-      this.navigate.navigateForward(['/dashboard']);
+      this.canShow = false;
+      this.navigate.navigateRoot(['dashboard']);
     }
   }
 
@@ -86,10 +94,13 @@ export class LoginPage implements OnInit {
           }
           this.token = res.token;
           sessionStorage.setItem(this.sessionService.JWToken, this.token);
+          sessionStorage.setItem(this.sessionService.profileToken, JSON.stringify(res.data));
 
           this.loginForm.reset();
           this.sweetMsg.printStatus(res.message, 'success');
+
           this.navigate.navigateRoot(['dashboard']);
+          //this.router.navigate(['dashboard']);
         }
       },
       (error: HttpErrorResponse) => {
