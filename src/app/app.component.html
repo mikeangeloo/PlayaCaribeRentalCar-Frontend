@@ -73,7 +73,7 @@
               <ion-icon name="pricetags-outline"></ion-icon>
               &nbsp; Marcas - Autos
             </ion-item>
-            <ion-item submenu-item >
+            <ion-item submenu-item [routerLink]="['catalogos/modelos']" routerLinkActive="active-route" (click)="closeMenu()">
               <ion-icon name="invert-mode-outline"></ion-icon>
               &nbsp; Modelos - Autos
             </ion-item>

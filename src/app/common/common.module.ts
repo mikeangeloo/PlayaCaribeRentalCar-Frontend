@@ -10,6 +10,8 @@ import {SucursalesListComponent} from "./components/sucursales/sucursales-list/s
 import {SucursalFormComponent} from "./components/sucursales/sucursal-form/sucursal-form.component";
 import {MarcasListComponent} from "./components/marcas/marcas-list/marcas-list.component";
 import {MarcasFormComponent} from "./components/marcas/marcas-form/marcas-form.component";
+import {ModelosListComponent} from "./components/modelos/modelos-list/modelos-list.component";
+import {ModelosFormComponent} from "./components/modelos/modelos-form/modelos-form.component";
 
 
 
@@ -20,7 +22,9 @@ import {MarcasFormComponent} from "./components/marcas/marcas-form/marcas-form.c
     SucursalesListComponent,
     SucursalFormComponent,
     MarcasListComponent,
-    MarcasFormComponent
+    MarcasFormComponent,
+    ModelosListComponent,
+    ModelosFormComponent
   ],
   exports: [
     EmpresasListComponent,
@@ -28,7 +32,9 @@ import {MarcasFormComponent} from "./components/marcas/marcas-form/marcas-form.c
     SucursalesListComponent,
     SucursalFormComponent,
     MarcasListComponent,
-    MarcasFormComponent
+    MarcasFormComponent,
+    ModelosListComponent,
+    ModelosFormComponent
   ],
   entryComponents: [
     EmpresasListComponent,
@@ -36,7 +42,9 @@ import {MarcasFormComponent} from "./components/marcas/marcas-form/marcas-form.c
     SucursalesListComponent,
     SucursalFormComponent,
     MarcasListComponent,
-    MarcasFormComponent
+    MarcasFormComponent,
+    ModelosListComponent,
+    ModelosFormComponent
   ],
   imports: [
     CommonModule,

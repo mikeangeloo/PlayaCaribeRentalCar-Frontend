@@ -31,14 +31,18 @@ const routes: Routes = [
       {
         path: 'catalogos/marcas',
         loadChildren: () => import('./modules/catalogs/marcas/marcas.module').then( m => m.MarcasPageModule)
-      }
+      },
+      {
+        path: 'catalogos/modelos',
+        loadChildren: () => import('./modules/catalogs/modelos/modelos.module').then(m => m.ModelosPageModule)
+      },
     ]
   },
   {
     path: '',
     redirectTo: 'dashboard',
     pathMatch: 'full'
-  },
+  }
 ];
 
 @NgModule({
