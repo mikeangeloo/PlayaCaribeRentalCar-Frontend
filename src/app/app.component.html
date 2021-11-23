@@ -14,11 +14,11 @@
 
               <ng-container>
                 <ion-avatar slot="start" style="height: 60px;width: 60px;">
-                  <img src="assets/img/man-avatar.png" style="object-position: top;">
+                  <img [src]="returnInsignia()" style="object-position: top;">
                 </ion-avatar>
               </ng-container>
 
-              <ion-label class="ion-text-wrap ion-text-center label-name" *ngIf="profileData">{{profileData.nombre}} - {{profileData.area_trabajo.area}}</ion-label>
+              <ion-label class="ion-text-wrap ion-text-center label-name" *ngIf="sessionService.$profileData.value">{{sessionService.$profileData.value.nombre}} - {{sessionService.$profileData.value.area_trabajo.area}}</ion-label>
             </ion-item>
           </div>
         </div>

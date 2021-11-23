@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {environment} from "../../environments/environment";
-import {map, Observable} from "rxjs";
+import {BehaviorSubject, map, Observable} from "rxjs";
 import {NavController} from "@ionic/angular";
 import {ProfileDataI} from "../interfaces/profile/profile-data.interface";
 
@@ -17,6 +17,9 @@ export class SessionService {
   public JWToken = 'TK1983!';
   public profileToken = 'PF849!';
   public permissionToken = 'PSK2358!';
+
+  public $profileData = new BehaviorSubject<ProfileDataI>(null);
+  public $role = new BehaviorSubject<string>(null);
 
   public role;
   public dashURL: string;
@@ -84,6 +87,7 @@ export class SessionService {
     if (sessionStorage.getItem(this.profileToken)) {
       const profile = JSON.parse(sessionStorage.getItem(this.profileToken));
       if (profile) {
+        this.$profileData.next(profile);
         return profile as ProfileDataI;
       } else {
         return null;
@@ -101,7 +105,9 @@ export class SessionService {
     }
     const role = sessionStorage.getItem(this.profileToken);
     if (role != 'undefined') {
-      return  JSON.parse(role).rol.rol;
+      let _parseRole = JSON.parse(role).rol.rol;
+      this.$role.next(_parseRole);
+      return  _parseRole;
     } else {
       return null;
     }

@@ -1,7 +1,7 @@
 import {Component, OnDestroy} from '@angular/core';
 import {ActivatedRoute, NavigationEnd, Router, RouterEvent, RouterLinkActive} from "@angular/router";
 import {MenuController, Platform} from "@ionic/angular";
-import {filter, Subject, takeUntil} from "rxjs";
+import {BehaviorSubject, filter, Subject, takeUntil} from "rxjs";
 import {SessionService} from "./services/session.service";
 import {ProfileDataI} from "./interfaces/profile/profile-data.interface";
 
@@ -18,8 +18,7 @@ export class AppComponent implements OnDestroy {
   public subMenuOpen = false;
   public _navRoute: string;
 
-  public profileData: ProfileDataI;
-  public role: string;
+
 
   constructor(
     public route: ActivatedRoute,
@@ -46,13 +45,8 @@ export class AppComponent implements OnDestroy {
         }
       });
 
-      if (this.sessionService.getRole()) {
-        this.role = this.sessionService.getRole();
-      }
-
-      if (this.sessionService.getProfile()) {
-        this.profileData= this.sessionService.getProfile();
-      }
+      this.sessionService.getRole();
+      this.sessionService.getProfile();
 
     });
   }
@@ -79,6 +73,26 @@ export class AppComponent implements OnDestroy {
       return _navArray.find(x => x == check);
     }
   }
+
+  returnInsignia(): string {
+    if (this.sessionService.$role.value) {
+      switch (this.sessionService.$role.value.toLowerCase()) {
+        case 'administrador':
+          return 'assets/img/insignias/Octavio.png';
+          break;
+        case 'vendedor':
+          return 'assets/img/insignias/Vendedor.png';
+        case 'gerente':
+          return 'assets/img/insignias/Gerente.png';
+        default:
+          return 'assets/img/insignias/Vendedor.png';
+      }
+    } else {
+      return 'assets/img/insignias/Vendedor.png';
+    }
+  }
+
+
   ngOnDestroy(): void {
     this.destroyed.unsubscribe();
   }
