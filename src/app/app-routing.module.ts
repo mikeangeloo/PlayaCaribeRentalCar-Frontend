@@ -28,13 +28,17 @@ const routes: Routes = [
         path: 'catalogos/sucursales',
         loadChildren: () => import('./modules/catalogs/sucursales/sucursales.module').then( m => m.SucursalesPageModule)
       },
+      {
+        path: 'catalogos/marcas',
+        loadChildren: () => import('./modules/catalogs/marcas/marcas.module').then( m => m.MarcasPageModule)
+      }
     ]
   },
   {
     path: '',
     redirectTo: 'dashboard',
     pathMatch: 'full'
-  }
+  },
 ];
 
 @NgModule({

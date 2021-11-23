@@ -8,6 +8,8 @@ import {RouterModule} from "@angular/router";
 import {EmpresaFormComponent} from "./components/empresas/empresa-form/empresa-form.component";
 import {SucursalesListComponent} from "./components/sucursales/sucursales-list/sucursales-list.component";
 import {SucursalFormComponent} from "./components/sucursales/sucursal-form/sucursal-form.component";
+import {MarcasListComponent} from "./components/marcas/marcas-list/marcas-list.component";
+import {MarcasFormComponent} from "./components/marcas/marcas-form/marcas-form.component";
 
 
 
@@ -16,19 +18,25 @@ import {SucursalFormComponent} from "./components/sucursales/sucursal-form/sucur
     EmpresasListComponent,
     EmpresaFormComponent,
     SucursalesListComponent,
-    SucursalFormComponent
+    SucursalFormComponent,
+    MarcasListComponent,
+    MarcasFormComponent
   ],
   exports: [
     EmpresasListComponent,
     EmpresaFormComponent,
     SucursalesListComponent,
-    SucursalFormComponent
+    SucursalFormComponent,
+    MarcasListComponent,
+    MarcasFormComponent
   ],
   entryComponents: [
     EmpresasListComponent,
     EmpresaFormComponent,
     SucursalesListComponent,
-    SucursalFormComponent
+    SucursalFormComponent,
+    MarcasListComponent,
+    MarcasFormComponent
   ],
   imports: [
     CommonModule,

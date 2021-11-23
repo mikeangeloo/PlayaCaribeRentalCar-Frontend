@@ -63,23 +63,23 @@
           <ion-item-group submenu [class.visible]="showSubmenu === 'catalogos'" >
             <ion-item submenu-item [routerLink]="['catalogos/empresas']" routerLinkActive="active-route" (click)="closeMenu()">
               <ion-icon name="business-outline"></ion-icon>
-              Empresas
+              &nbsp; Empresas
             </ion-item>
             <ion-item submenu-item [routerLink]="['catalogos/sucursales']" routerLinkActive="active-route" (click)="closeMenu()">
               <ion-icon name="pin-outline"></ion-icon>
-              Sucursales
+              &nbsp; Sucursales
             </ion-item>
-            <ion-item submenu-item >
+            <ion-item submenu-item [routerLink]="['catalogos/marcas']" routerLinkActive="active-route" (click)="closeMenu()">
               <ion-icon name="pricetags-outline"></ion-icon>
-              Marcas - Autos
+              &nbsp; Marcas - Autos
             </ion-item>
             <ion-item submenu-item >
               <ion-icon name="invert-mode-outline"></ion-icon>
-              Modelos - Autos
+              &nbsp; Modelos - Autos
             </ion-item>
             <ion-item submenu-item >
               <ion-icon name="color-palette-outline"></ion-icon>
-              Colores - Autos
+              &nbsp; Colores - Autos
             </ion-item>
           </ion-item-group>
 
