@@ -65,7 +65,7 @@
               <ion-icon name="business-outline"></ion-icon>
               Empresas
             </ion-item>
-            <ion-item submenu-item >
+            <ion-item submenu-item [routerLink]="['catalogos/sucursales']" routerLinkActive="active-route" (click)="closeMenu()">
               <ion-icon name="pin-outline"></ion-icon>
               Sucursales
             </ion-item>

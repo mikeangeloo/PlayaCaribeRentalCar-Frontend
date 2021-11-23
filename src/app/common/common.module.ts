@@ -6,21 +6,29 @@ import {MaterialModule} from "../material/material.module";
 import {IonicModule} from "@ionic/angular";
 import {RouterModule} from "@angular/router";
 import {EmpresaFormComponent} from "./components/empresas/empresa-form/empresa-form.component";
+import {SucursalesListComponent} from "./components/sucursales/sucursales-list/sucursales-list.component";
+import {SucursalFormComponent} from "./components/sucursales/sucursal-form/sucursal-form.component";
 
 
 
 @NgModule({
   declarations: [
     EmpresasListComponent,
-    EmpresaFormComponent
+    EmpresaFormComponent,
+    SucursalesListComponent,
+    SucursalFormComponent
   ],
   exports: [
     EmpresasListComponent,
-    EmpresaFormComponent
+    EmpresaFormComponent,
+    SucursalesListComponent,
+    SucursalFormComponent
   ],
   entryComponents: [
     EmpresasListComponent,
-    EmpresaFormComponent
+    EmpresaFormComponent,
+    SucursalesListComponent,
+    SucursalFormComponent
   ],
   imports: [
     CommonModule,

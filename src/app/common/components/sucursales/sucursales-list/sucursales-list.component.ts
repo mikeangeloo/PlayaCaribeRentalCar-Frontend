@@ -1,5 +1,5 @@
-import {Component, EventEmitter, Input, OnInit, Output, SimpleChanges, ViewChild} from '@angular/core';
-import {EmpresasI} from "../../../../interfaces/Empresas.interface";
+import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild} from '@angular/core';
+import {EmpresasI} from "../../../../interfaces/empresas.interface";
 import {MatTableDataSource} from "@angular/material/table";
 import {MatPaginator} from "@angular/material/paginator";
 import {MatSort} from "@angular/material/sort";
@@ -11,30 +11,33 @@ import {ToastMessageService} from "../../../../services/toast-message.service";
 import * as moment from "moment";
 import {TxtConv} from "../../../../helpers/txt-conv";
 import {EmpresaFormComponent} from "../../empresas/empresa-form/empresa-form.component";
+import {SucursalesI} from "../../../../interfaces/sucursales.interface";
+import {SucursalesService} from "../../../../services/sucursales.service";
+import {SucursalFormComponent} from "../sucursal-form/sucursal-form.component";
 
 @Component({
   selector: 'app-sucursales-list',
   templateUrl: './sucursales-list.component.html',
   styleUrls: ['./sucursales-list.component.scss'],
 })
-export class SucursalesListComponent implements OnInit {
+export class SucursalesListComponent implements OnInit, OnChanges {
 
   public spinner = false;
-  public editEmpresa: EmpresasI;
-  @Input() public empresas: EmpresasI[] = [];
+  public editSucursal: SucursalesI;
+  @Input() public sucursales: SucursalesI[] = [];
   @Input() isModal: boolean;
   @Output() emitData = new EventEmitter();
   displayedColumns: string[] = [
     'id',
     'nombre',
-    'rfc',
     'direccion',
-    'tel_contacto',
+    'codigo',
+    'cp',
     'activo',
     'created_at',
     'acciones'
   ];
-  listEmpresas: MatTableDataSource<any>;
+  listSucursales: MatTableDataSource<any>;
   public searchKey: string;
   @ViewChild(MatPaginator, {static: false}) paginator3: MatPaginator;
   @ViewChild(MatSort, {static: true}) sort: MatSort;
@@ -43,7 +46,7 @@ export class SucursalesListComponent implements OnInit {
 
   constructor(
     public generalService: GeneralService,
-    public empresasService: EmpresasService,
+    public sucursalesService: SucursalesService,
     public modalCtr: ModalController,
     public navigateCtrl: NavController,
     public actionSheetController: ActionSheetController,
@@ -51,7 +54,7 @@ export class SucursalesListComponent implements OnInit {
     public toastServ: ToastMessageService
   ) {
     //this.loadSurveysTable();
-    this.initEmpresas();
+    this.initSucursales();
   }
 
   ngOnInit() {
@@ -59,45 +62,44 @@ export class SucursalesListComponent implements OnInit {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    const empresasChange = changes.empresas;
-    if (empresasChange.isFirstChange() === true || empresasChange.firstChange === false) {
-      if (this.empresas) {
-        console.log('array');
-        this.loadEmpresasTable(this.empresas);
+    const sucursalesChange = changes.sucursales;
+    if (sucursalesChange.isFirstChange() === true || sucursalesChange.firstChange === false) {
+      if (this.sucursales) {
+        this.loadSucursalesTable(this.sucursales);
       } else {
-        this.loadEmpresasTable();
+        this.loadSucursalesTable();
       }
     }
   }
 
-  initEmpresas() {
+  initSucursales() {
     const currDate = moment().format('YYYY-MM-DD');
-    this.editEmpresa = {
+    this.editSucursal = {
       id: 0,
     };
   }
 
   // Método para cargar datos de los campus
-  loadEmpresasTable(_empresa?: EmpresasI[]) {
+  loadSucursalesTable(_sucursales?: SucursalesI[]) {
     //this.empresas = null;
-    this.listEmpresas = null;
-    this.initEmpresas();
+    this.listSucursales = null;
+    this.initSucursales();
     this.spinner = true;
 
-    if (_empresa) {
-      this.empresas = _empresa;
+    if (_sucursales) {
+      this.sucursales = _sucursales;
       this.spinner = false;
-      this.listEmpresas = new MatTableDataSource(_empresa);
-      this.listEmpresas.sort = this.sort;
-      this.listEmpresas.paginator = this.paginator3;
+      this.listSucursales = new MatTableDataSource(_sucursales);
+      this.listSucursales.sort = this.sort;
+      this.listSucursales.paginator = this.paginator3;
     } else {
-      this.empresasService.getAll().subscribe(response => {
+      this.sucursalesService.getAll().subscribe(response => {
         if (response.ok === true) {
           this.spinner = false;
-          this.listEmpresas = new MatTableDataSource(response.empresas);
-          this.listEmpresas.sort = this.sort;
-          this.listEmpresas.paginator = this.paginator3;
-          this.empresas = response.empresas;
+          this.listSucursales = new MatTableDataSource(response.sucursales);
+          this.listSucursales.sort = this.sort;
+          this.listSucursales.paginator = this.paginator3;
+          this.sucursales = response.sucursales;
         }
       }, error => {
         this.spinner = false;
@@ -109,7 +111,7 @@ export class SucursalesListComponent implements OnInit {
   // Method to filter mat-table according to the value enter at input search filter
   applyFilter(event?) {
     const searchValue = event.target.value;
-    this.listEmpresas.filter = TxtConv.txtCon(searchValue, 'lowercase');
+    this.listSucursales.filter = TxtConv.txtCon(searchValue, 'lowercase');
     // this.listSurveys.filter = this.searchKey.trim().toLocaleLowerCase();
     // if (this.dataSource.paginator) {
     //   this.dataSource.paginator.firstPage();
@@ -122,22 +124,22 @@ export class SucursalesListComponent implements OnInit {
     this.applyFilter();
   }
 
-  catchSelectedRow(_empresa: EmpresasI) {
-    this.editEmpresa = _empresa;
+  catchSelectedRow(_sucursal: SucursalesI) {
+    this.editSucursal = _sucursal;
   }
   // Método para editar survey
-  async openEmpresaForm(_empresa?: EmpresasI) {
-    if (_empresa) {
-      this.editEmpresa = _empresa;
+  async openSucursalForm(_sucursal?: SucursalesI) {
+    if (_sucursal) {
+      this.editSucursal = _sucursal;
     } else {
-      this.initEmpresas();
+      this.initSucursales();
     }
     //this.generalService.presentLoading();
     const modal = await this.modalCtr.create({
-      component: EmpresaFormComponent,
+      component: SucursalFormComponent,
       componentProps: {
         'asModal': true,
-        'empresa_id': (_empresa && _empresa.id) ? _empresa.id : null
+        'sucursal_id': (_sucursal && _sucursal.id) ? _sucursal.id : null
       },
       swipeToClose: true,
       cssClass: 'edit-form'
@@ -145,17 +147,17 @@ export class SucursalesListComponent implements OnInit {
     await modal.present();
     const {data} = await modal.onWillDismiss();
     if (data.reload && data.reload === true) {
-      this.loadEmpresasTable();
+      this.loadSucursalesTable();
     }
   }
 
-  inactiveEmpresa(empresa: EmpresasI) {
+  inactiveSucursal(sucursal: SucursalesI) {
     this.sweetServ.confirmRequest('¿Estás seguro de querer deshabilitar este registro ?').then((data) => {
       if (data.value) {
-        this.empresasService.setInactive(empresa.id).subscribe(res => {
+        this.sucursalesService.setInactive(sucursal.id).subscribe(res => {
           if (res.ok === true) {
             this.toastServ.presentToast('success', res.message, 'top');
-            this.loadEmpresasTable();
+            this.loadSucursalesTable();
           }
         }, error => {
           console.log(error);
@@ -165,13 +167,13 @@ export class SucursalesListComponent implements OnInit {
     });
   }
 
-  activeEmpresa(empresa: EmpresasI) {
+  activeSucursal(sucursal: SucursalesI) {
     this.sweetServ.confirmRequest('¿Estás seguro de querer habilitar este registro ?').then((data) => {
       if (data.value) {
-        this.empresasService.setEnable(empresa.id).subscribe(res => {
+        this.sucursalesService.setEnable(sucursal.id).subscribe(res => {
           if (res.ok === true) {
             this.toastServ.presentToast('success', res.message, 'top');
-            this.loadEmpresasTable();
+            this.loadSucursalesTable();
           }
         }, error => {
           console.log(error);
@@ -181,33 +183,4 @@ export class SucursalesListComponent implements OnInit {
     });
   }
 
-
-  async editAction(_empresa: EmpresasI) {
-    const actionSheet = await this.actionSheetController.create({
-      header: 'Actions',
-      cssClass: 'my-custom-class',
-      buttons: [
-        {
-          text: 'Continue Editing',
-          icon: 'create',
-          role: 'edit',
-          handler: () => {
-            console.log('Edit clicked');
-            //this.navigateCtrl.navigateRoot([`/sales-survey/new/${_empresa.idsurvey}`]);
-            this.emitData.emit(true);
-          }
-        }, {
-          text: 'Close',
-          icon: 'close',
-          role: 'cancel',
-          handler: () => {
-            console.log('Close clicked');
-          }
-        }]
-    });
-    await actionSheet.present();
-
-    const {role} = await actionSheet.onDidDismiss();
-    console.log('onDidDismiss resolved with role', role);
-  }
 }
