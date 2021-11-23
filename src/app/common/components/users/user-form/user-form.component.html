@@ -1,0 +1,142 @@
+<ion-header translucent *ngIf="asModal">
+  <ion-toolbar>
+    <ion-title>{{ title }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button class="close-btn" (click)="dismiss()">
+        <ion-icon name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content fullscreen>
+
+  <ion-card class="app-card">
+    <ion-card-content>
+
+      <ion-row style="height: 100%; align-content: center; justify-content: center">
+        <ion-col size="12" style="height: 90%">
+          <div class="title-container">
+          </div>
+
+          <form [formGroup]="usuarioForm">
+            <div class="form-content">
+              <ion-row class="ion-no-padding ion-no-margin">
+
+                <ion-col size="6">
+                  <mat-form-field appearance="legacy">
+                    <mat-label>Nombre</mat-label>
+                    <input matInput type="text" formControlName="nombre">
+                    <mat-error *ngIf="uf.nombre.errors?.required">Campo requerido</mat-error>
+                  </mat-form-field>
+                </ion-col>
+
+                <ion-col size="6">
+                  <mat-form-field appearance="legacy">
+                    <mat-label>Apellidos</mat-label>
+                    <input matInput type="text" formControlName="apellidos">
+                    <mat-error *ngIf="uf.apellidos.errors?.required">Campo requerido</mat-error>
+                  </mat-form-field>
+                </ion-col>
+              </ion-row>
+
+              <ion-row class="ion-no-padding ion-no-margin">
+                <ion-col size="6">
+                  <mat-form-field appearance="legacy">
+                    <mat-label>Email</mat-label>
+                    <input type="email" matInput formControlName="email">
+                    <mat-error *ngIf="uf.email.errors?.required">Campo requerido</mat-error>
+                  </mat-form-field>
+                </ion-col>
+
+                <ion-col size="6">
+                  <mat-form-field appearance="legacy">
+                    <mat-label>Teléfono</mat-label>
+                    <input type="email" matInput formControlName="telefono">
+                    <mat-error *ngIf="uf.telefono.errors?.required">Campo requerido</mat-error>
+                  </mat-form-field>
+                </ion-col>
+              </ion-row>
+
+              <ion-row class="ion-no-padding ion-no-margin">
+                <ion-col size="6">
+                  <mat-form-field appearance="legacy">
+                    <mat-label>UserName</mat-label>
+                    <input type="text" matInput formControlName="username">
+                    <mat-error *ngIf="uf.username.errors?.required">Campo requerido</mat-error>
+                  </mat-form-field>
+                </ion-col>
+
+                <ion-col size="6">
+                  <mat-form-field appearance="legacy">
+                    <mat-label>Password</mat-label>
+                    <input type="email" matInput formControlName="password">
+                    <mat-error *ngIf="uf.password.errors?.required">Campo requerido</mat-error>
+                  </mat-form-field>
+                </ion-col>
+              </ion-row>
+
+              <ion-row class="ion-no-padding ion-no-margin">
+                <ion-col size="6">
+                  <mat-form-field appearance="legacy">
+                    <mat-label>Sucursal</mat-label>
+                    <mat-select formControlName="sucursal_id">
+                      <mat-option *ngFor="let sucursal of sucursales" [value]="sucursal.id">{{sucursal.nombre}}</mat-option>
+                    </mat-select>
+                    <mat-error *ngIf="uf.sucursal_id.errors?.required">Campo requerido</mat-error>
+                  </mat-form-field>
+                </ion-col>
+
+                <ion-col size="6">
+                  <mat-form-field appearance="legacy">
+                    <mat-label>Rol</mat-label>
+                    <mat-select formControlName="role_id">
+                      <mat-option *ngFor="let rol of roles" [value]="rol.id">{{rol.rol}}</mat-option>
+                    </mat-select>
+                    <mat-error *ngIf="uf.role_id.errors?.required">Campo requerido</mat-error>
+                  </mat-form-field>
+                </ion-col>
+              </ion-row>
+
+              <ion-row class="ion-no-padding ion-no-margin">
+                <ion-col size="6">
+                  <mat-form-field appearance="legacy">
+                    <mat-label>Aréa de Trabajo</mat-label>
+                    <mat-select formControlName="area_trabajo_id">
+                      <mat-option *ngFor="let area of areaTrabajo" [value]="area.id">{{area.nombre}}</mat-option>
+                    </mat-select>
+                    <mat-error *ngIf="uf.area_trabajo_id.errors?.required">Campo requerido</mat-error>
+                  </mat-form-field>
+                </ion-col>
+                <ion-col size="6">
+                  <mat-form-field appearance="legacy">
+                    <mat-label>Activo</mat-label>
+                    <mat-select formControlName="activo">
+                      <mat-option [value]="1">Si</mat-option>
+                      <mat-option [value]="0">No</mat-option>
+                    </mat-select>
+                    <mat-error *ngIf="uf.activo.errors?.required">Campo requerido</mat-error>
+                  </mat-form-field>
+                </ion-col>
+              </ion-row>
+              <br />
+              <ion-button class="btn-shadow" color="secondary" expand="full" (click)="saveUpdate()">
+                Guardar
+              </ion-button>
+            </div>
+          </form>
+        </ion-col>
+      </ion-row>
+    </ion-card-content>
+  </ion-card>
+</ion-content>
+
+<ion-footer>
+  <ion-toolbar>
+    <ion-buttons slot="end">
+      <ion-button color="medium" (click)="dismiss()">
+        Cerrar Ventana
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-footer>

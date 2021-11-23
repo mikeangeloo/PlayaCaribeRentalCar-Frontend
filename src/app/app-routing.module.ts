@@ -39,6 +39,10 @@ const routes: Routes = [
       {
         path: 'catalogos/colores',
         loadChildren: () => import('./modules/catalogs/colores/colores.module').then(m => m.ColoresPageModule)
+      },
+      {
+        path: 'usuarios',
+        loadChildren: () => import('./modules/users/users.module').then( m => m.UsersPageModule)
       }
     ]
   },
@@ -46,7 +50,8 @@ const routes: Routes = [
     path: '',
     redirectTo: 'dashboard',
     pathMatch: 'full'
-  }
+  },
+
 ];
 
 @NgModule({

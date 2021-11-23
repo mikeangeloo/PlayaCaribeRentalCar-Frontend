@@ -29,9 +29,15 @@
             <ion-icon name="apps-outline"></ion-icon>&nbsp; Dashboard
           </ion-item>
 
-          <ion-item class="item item-icon-left" routerLinkActive="active-route" (click)="closeMenu()">
+          <ion-item class="item item-icon-left" (click)="menuItemHandler('usuarios')" detail [ngClass]="{'active-route': isActive('usuarios')}">
             <ion-icon name="people-circle-outline"></ion-icon>&nbsp; Usuarios
           </ion-item>
+          <ion-item-group submenu [class.visible]="showSubmenu === 'usuarios'" >
+            <ion-item submenu-item  routerLinkActive="active-route" (click)="closeMenu()" [routerLink]="['usuarios']">
+              <ion-icon name="document-outline"></ion-icon>
+              Listado Usuarios
+            </ion-item>
+          </ion-item-group>
 
           <ion-item class="item item-icon-left" (click)="menuItemHandler('contratos')" detail>
             <ion-icon name="clipboard-outline"></ion-icon>&nbsp; Contratos
@@ -46,6 +52,9 @@
           <ion-item class="item item-icon-left" routerLinkActive="active-route" (click)="closeMenu()">
             <ion-icon name="happy-outline"></ion-icon>&nbsp; Clientes
           </ion-item>
+
+
+
 
           <ion-item class="item item-icon-left" routerLinkActive="active-route" (click)="closeMenu()">
             <ion-icon name="car-sport-outline"></ion-icon>&nbsp; Vehículos

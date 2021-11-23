@@ -7,7 +7,7 @@ import {map, Observable} from "rxjs";
 @Injectable({
   providedIn: 'root'
 })
-export class SucursalesService {
+export class AreasTrabajoService {
 
   // region Atributos
   public dashURL: string;
@@ -27,43 +27,43 @@ export class SucursalesService {
   // endregion
 
   public getAll(): Observable<any> {
-    return this.httpClient.get<any>(`${this.dashURL}/sucursales/all`).pipe(map(response => {
+    return this.httpClient.get<any>(`${this.dashURL}/areas-trabajo/all`).pipe(map(response => {
       return response;
     }));
   }
 
   public getActive(): Observable<any> {
-    return this.httpClient.get<any>(`${this.dashURL}/sucursales`).pipe(map(response => {
+    return this.httpClient.get<any>(`${this.dashURL}/areas-trabajo`).pipe(map(response => {
       return response;
     }));
   }
 
   public getDataById(id): Observable<any> {
-    return this.httpClient.get<any>(`${this.dashURL}/sucursales/${id}`).pipe(map(response => {
+    return this.httpClient.get<any>(`${this.dashURL}/areas-trabajo/${id}`).pipe(map(response => {
       return response;
     }));
   }
 
   public saveUpdate(data, id?): Observable<any> {
     if (id && id > 0) {
-      return this.httpClient.put<any>(`${this.dashURL}/sucursales/${id}`, data).pipe(map(response => {
+      return this.httpClient.put<any>(`${this.dashURL}/areas-trabajo/${id}`, data).pipe(map(response => {
         return response;
       }));
     } else {
-      return this.httpClient.post<any>(`${this.dashURL}/sucursales`, data).pipe(map(response => {
+      return this.httpClient.post<any>(`${this.dashURL}/areas-trabajo`, data).pipe(map(response => {
         return response;
       }));
     }
   }
 
   public setInactive(id): Observable<any> {
-    return this.httpClient.delete<any>(`${this.dashURL}/sucursales/${id}`).pipe(map(response => {
+    return this.httpClient.delete<any>(`${this.dashURL}/areas-trabajo/${id}`).pipe(map(response => {
       return response;
     }));
   }
 
   public setEnable(id): Observable<any> {
-    return this.httpClient.get<any>(`${this.dashURL}/sucursales/enable/${id}`).pipe(map(response => {
+    return this.httpClient.get<any>(`${this.dashURL}/areas-trabajo/enable/${id}`).pipe(map(response => {
       return response;
     }));
   }

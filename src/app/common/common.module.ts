@@ -14,6 +14,8 @@ import {ModelosListComponent} from "./components/modelos/modelos-list/modelos-li
 import {ModelosFormComponent} from "./components/modelos/modelos-form/modelos-form.component";
 import {ColoresListComponent} from "./components/colores/colores-list/colores-list.component";
 import {ColorFormComponent} from "./components/colores/color-form/color-form.component";
+import {UserFormComponent} from "./components/users/user-form/user-form.component";
+import {UsersListComponent} from "./components/users/users-list/users-list.component";
 
 
 
@@ -28,7 +30,9 @@ import {ColorFormComponent} from "./components/colores/color-form/color-form.com
     ModelosListComponent,
     ModelosFormComponent,
     ColoresListComponent,
-    ColorFormComponent
+    ColorFormComponent,
+    UserFormComponent,
+    UsersListComponent
   ],
   exports: [
     EmpresasListComponent,
@@ -40,7 +44,9 @@ import {ColorFormComponent} from "./components/colores/color-form/color-form.com
     ModelosListComponent,
     ModelosFormComponent,
     ColoresListComponent,
-    ColorFormComponent
+    ColorFormComponent,
+    UserFormComponent,
+    UsersListComponent
   ],
   entryComponents: [
     EmpresasListComponent,
@@ -52,7 +58,9 @@ import {ColorFormComponent} from "./components/colores/color-form/color-form.com
     ModelosListComponent,
     ModelosFormComponent,
     ColoresListComponent,
-    ColorFormComponent
+    ColorFormComponent,
+    UserFormComponent,
+    UsersListComponent
   ],
   imports: [
     CommonModule,
