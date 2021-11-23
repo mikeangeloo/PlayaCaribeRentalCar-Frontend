@@ -23,16 +23,18 @@ const routes: Routes = [
       {
         path: 'catalogos/empresas',
         loadChildren: () => import('./modules/catalogs/empresas/empresas.module').then( m => m.EmpresasPageModule)
-      }
+      },
+      {
+        path: 'sucursales',
+        loadChildren: () => import('./modules/catalogs/sucursales/sucursales.module').then( m => m.SucursalesPageModule)
+      },
     ]
   },
   {
     path: '',
     redirectTo: 'dashboard',
     pathMatch: 'full'
-  },
-
-
+  }
 ];
 
 @NgModule({
