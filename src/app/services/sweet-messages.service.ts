@@ -97,9 +97,10 @@ export class SweetMessagesService {
       icon: 'warning',
       showCancelButton: true,
       focusCancel: true,
+      showConfirmButton: true,
       confirmButtonText: confirmBtnText ? confirmBtnText : 'Continuar',
       cancelButtonText: cancelBtnText ? cancelBtnText : 'Descartar',
-      confirmButtonColor: 'var(--app-secondary)',
+      confirmButtonColor: 'var(--ion-color-success)',
       heightAuto: false,
     });
     return this.deletePopOup;

@@ -9,6 +9,9 @@ import {ActionSheetController, ModalController, NavController} from "@ionic/angu
 import * as moment from 'moment';
 import {TxtConv} from "../../../../helpers/txt-conv";
 import {EmpresaFormComponent} from "../empresa-form/empresa-form.component";
+import {SweetMessagesService} from "../../../../services/sweet-messages.service";
+import {ToastMessageService} from "../../../../services/toast-message.service";
+import {error} from "protractor";
 
 @Component({
   selector: 'app-empresas-list',
@@ -32,7 +35,7 @@ export class EmpresasListComponent implements OnInit, OnChanges {
     'created_at',
     'acciones'
   ];
-  listEmprasas: MatTableDataSource<any>;
+  listEmpresas: MatTableDataSource<any>;
   public searchKey: string;
   @ViewChild(MatPaginator, {static: false}) paginator3: MatPaginator;
   @ViewChild(MatSort, {static: true}) sort: MatSort;
@@ -44,7 +47,9 @@ export class EmpresasListComponent implements OnInit, OnChanges {
     public empresasService: EmpresasService,
     public modalCtr: ModalController,
     public navigateCtrl: NavController,
-    public actionSheetController: ActionSheetController
+    public actionSheetController: ActionSheetController,
+    public sweetServ: SweetMessagesService,
+    public toastServ: ToastMessageService
   ) {
     //this.loadSurveysTable();
     this.initEmpresas();
@@ -73,31 +78,26 @@ export class EmpresasListComponent implements OnInit, OnChanges {
     };
   }
 
-  newEmpresa() {
-    this.initEmpresas();
-    //this.navigateCtrl.navigateRoot(['/sales-survey/new']);
-  }
-
   // Método para cargar datos de los campus
   loadEmpresasTable(_empresa?: EmpresasI[]) {
-    this.empresas = null;
-    this.listEmprasas = null;
+    //this.empresas = null;
+    this.listEmpresas = null;
     this.initEmpresas();
     this.spinner = true;
 
     if (_empresa) {
       this.empresas = _empresa;
       this.spinner = false;
-      this.listEmprasas = new MatTableDataSource(_empresa);
-      this.listEmprasas.sort = this.sort;
-      this.listEmprasas.paginator = this.paginator3;
+      this.listEmpresas = new MatTableDataSource(_empresa);
+      this.listEmpresas.sort = this.sort;
+      this.listEmpresas.paginator = this.paginator3;
     } else {
       this.empresasService.getAll().subscribe(response => {
         if (response.ok === true) {
           this.spinner = false;
-          this.listEmprasas = new MatTableDataSource(response.empresas);
-          this.listEmprasas.sort = this.sort;
-          this.listEmprasas.paginator = this.paginator3;
+          this.listEmpresas = new MatTableDataSource(response.empresas);
+          this.listEmpresas.sort = this.sort;
+          this.listEmpresas.paginator = this.paginator3;
           this.empresas = response.empresas;
         }
       }, error => {
@@ -110,7 +110,7 @@ export class EmpresasListComponent implements OnInit, OnChanges {
   // Method to filter mat-table according to the value enter at input search filter
   applyFilter(event?) {
     const searchValue = event.target.value;
-    this.listEmprasas.filter = TxtConv.txtCon(searchValue, 'lowercase');
+    this.listEmpresas.filter = TxtConv.txtCon(searchValue, 'lowercase');
     // this.listSurveys.filter = this.searchKey.trim().toLocaleLowerCase();
     // if (this.dataSource.paginator) {
     //   this.dataSource.paginator.firstPage();
@@ -127,18 +127,59 @@ export class EmpresasListComponent implements OnInit, OnChanges {
     this.editEmpresa = _empresa;
   }
   // Método para editar survey
-  async editEmpresaRow(_empresa: EmpresasI) {
-    this.editEmpresa = _empresa;
+  async openEmpresaForm(_empresa?: EmpresasI) {
+    if (_empresa) {
+      this.editEmpresa = _empresa;
+    } else {
+      this.initEmpresas();
+    }
     //this.generalService.presentLoading();
     const modal = await this.modalCtr.create({
       component: EmpresaFormComponent,
       componentProps: {
-        'asModal': true
+        'asModal': true,
+        'empresa_id': (_empresa && _empresa.id) ? _empresa.id : null
       },
       swipeToClose: true,
       cssClass: 'edit-form'
     });
-    return await modal.present();
+    await modal.present();
+    const {data} = await modal.onWillDismiss();
+    if (data.reload && data.reload === true) {
+      this.loadEmpresasTable();
+    }
+  }
+
+  inactiveEmpresa(empresa: EmpresasI) {
+    this.sweetServ.confirmRequest('¿Estás seguro de querer deshabilitar este registro ?').then((data) => {
+      if (data.value) {
+        this.empresasService.setInactive(empresa.id).subscribe(res => {
+          if (res.ok === true) {
+            this.toastServ.presentToast('success', res.message, 'top');
+            this.loadEmpresasTable();
+          }
+        }, error => {
+          console.log(error);
+          this.sweetServ.printStatusArray(error.error.errors, 'error');
+        });
+      }
+    });
+  }
+
+  activeEmpresa(empresa: EmpresasI) {
+    this.sweetServ.confirmRequest('¿Estás seguro de querer habilitar este registro ?').then((data) => {
+      if (data.value) {
+        this.empresasService.setEnable(empresa.id).subscribe(res => {
+          if (res.ok === true) {
+            this.toastServ.presentToast('success', res.message, 'top');
+            this.loadEmpresasTable();
+          }
+        }, error => {
+          console.log(error);
+          this.sweetServ.printStatusArray(error.error.errors, 'error');
+        });
+      }
+    });
   }
 
 

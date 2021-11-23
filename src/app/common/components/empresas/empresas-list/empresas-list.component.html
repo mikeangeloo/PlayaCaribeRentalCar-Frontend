@@ -11,7 +11,7 @@
             <ion-row>
               <ion-col size="12" size-md="2" class="ion-align-self-center" *ngIf="isModal === false || !isModal">
 <!--                <button mat-raised-button color="primary">Nuevo</button>-->
-                <ion-button color="primary" class="btn-shadow no-contrast">Nuevo</ion-button>
+                <ion-button color="primary" class="btn-shadow no-contrast" (click)="openEmpresaForm()">Nuevo</ion-button>
               </ion-col>
               <ion-col size="12" size-md="10">
                 <!--<div class="input-group mb-3 filter-form">
@@ -32,7 +32,7 @@
               </ion-col>
             </ion-row>
             <div class="mat-elevation-z8 table-container">
-              <mat-table [dataSource]="listEmprasas" matSort>
+              <mat-table [dataSource]="listEmpresas" matSort>
                 <!-- id -->
                 <ng-container matColumnDef="id">
                   <mat-header-cell *matHeaderCellDef mat-sort-header>Id</mat-header-cell>
@@ -99,7 +99,7 @@
                   <mat-cell *matCellDef="let row">
                     <div class="column">
                       <p>
-                        {{(row.activo && row.activo === true) ? 'Si': 'No'}}
+                        {{(row.activo && row.activo === 1) ? 'Si': 'No'}}
                       </p>
                     </div>
                   </mat-cell>
@@ -124,11 +124,14 @@
                   <mat-cell *matCellDef="let row">
                     <div class="column">
                       <div class="action-btn-container">
-                        <ion-button fill="clear">
+                        <ion-button fill="clear" (click)="openEmpresaForm(row)">
                           <ion-icon  name="create-outline"></ion-icon>
                         </ion-button>
-                        <ion-button fill="clear">
-                          <ion-icon name="trash-outline"></ion-icon>
+                        <ion-button fill="clear" (click)="inactiveEmpresa(row)" *ngIf="row.activo === 1" title="Deshabilitar registro">
+                          <ion-icon name="close-circle-outline" color="danger" ></ion-icon>
+                        </ion-button>
+                        <ion-button fill="clear" (click)="activeEmpresa(row)" *ngIf="row.activo === 0" title="Habilitar registro">
+                          <ion-icon name="checkmark-circle-outline" color="medium"></ion-icon>
                         </ion-button>
                       </div>
 
@@ -162,13 +165,13 @@
 <!--                  <mat-row *matRowDef="let row; columns: displayedColumns;" (click)="editAction(row)" [ngClass]="{hovered: row.hovered, highlighted: row.id === editEmpresa.id}" (mouseover)="row.hovered = true" (mouseout)="row.hovered = false"></mat-row>-->
 <!--                </ng-container>-->
                 <ng-container *ngIf="isModal === false || !isModal">
-                  <mat-row *matRowDef="let row; columns: displayedColumns;" (click)="editEmpresaRow(row)" [ngClass]="{hovered: row.hovered, highlighted: row.id === editEmpresa.id}" (mouseover)="row.hovered = true" (mouseout)="row.hovered = false"></mat-row>
+                  <mat-row *matRowDef="let row; columns: displayedColumns;"  [ngClass]="{hovered: row.hovered, highlighted: row.id === editEmpresa.id}" (mouseover)="row.hovered = true" (mouseout)="row.hovered = false"></mat-row>
                 </ng-container>
 
                 <mat-footer-row *matFooterRowDef="['loading']" [ngClass]="{hide: spinner === false}"></mat-footer-row>
-                <mat-footer-row *matFooterRowDef="['init']" [ngClass]="{'hide':listEmprasas!=null || spinner === true}"></mat-footer-row>
+                <mat-footer-row *matFooterRowDef="['init']" [ngClass]="{'hide':listEmpresas!=null || spinner === true}"></mat-footer-row>
                 <mat-footer-row *matFooterRowDef="['noData']"
-                                [ngClass]="{hide:!(listEmprasas!=null && listEmprasas.data.length==0)}">
+                                [ngClass]="{hide:!(listEmpresas!=null && listEmpresas.data.length==0)}">
                 </mat-footer-row>
               </mat-table>
 
