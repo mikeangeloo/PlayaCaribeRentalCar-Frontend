@@ -12,6 +12,8 @@ import {MarcasListComponent} from "./components/marcas/marcas-list/marcas-list.c
 import {MarcasFormComponent} from "./components/marcas/marcas-form/marcas-form.component";
 import {ModelosListComponent} from "./components/modelos/modelos-list/modelos-list.component";
 import {ModelosFormComponent} from "./components/modelos/modelos-form/modelos-form.component";
+import {ColoresListComponent} from "./components/colores/colores-list/colores-list.component";
+import {ColorFormComponent} from "./components/colores/color-form/color-form.component";
 
 
 
@@ -24,7 +26,9 @@ import {ModelosFormComponent} from "./components/modelos/modelos-form/modelos-fo
     MarcasListComponent,
     MarcasFormComponent,
     ModelosListComponent,
-    ModelosFormComponent
+    ModelosFormComponent,
+    ColoresListComponent,
+    ColorFormComponent
   ],
   exports: [
     EmpresasListComponent,
@@ -34,7 +38,9 @@ import {ModelosFormComponent} from "./components/modelos/modelos-form/modelos-fo
     MarcasListComponent,
     MarcasFormComponent,
     ModelosListComponent,
-    ModelosFormComponent
+    ModelosFormComponent,
+    ColoresListComponent,
+    ColorFormComponent
   ],
   entryComponents: [
     EmpresasListComponent,
@@ -44,7 +50,9 @@ import {ModelosFormComponent} from "./components/modelos/modelos-form/modelos-fo
     MarcasListComponent,
     MarcasFormComponent,
     ModelosListComponent,
-    ModelosFormComponent
+    ModelosFormComponent,
+    ColoresListComponent,
+    ColorFormComponent
   ],
   imports: [
     CommonModule,

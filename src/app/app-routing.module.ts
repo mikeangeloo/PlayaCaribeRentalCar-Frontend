@@ -36,6 +36,10 @@ const routes: Routes = [
         path: 'catalogos/modelos',
         loadChildren: () => import('./modules/catalogs/modelos/modelos.module').then(m => m.ModelosPageModule)
       },
+      {
+        path: 'catalogos/colores',
+        loadChildren: () => import('./modules/catalogs/colores/colores.module').then(m => m.ColoresPageModule)
+      }
     ]
   },
   {
