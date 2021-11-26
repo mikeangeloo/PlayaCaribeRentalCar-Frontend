@@ -1,7 +1,7 @@
 {
-  "name": "apollo-app",
-  "short_name": "apollo-app",
-  "theme_color": "#1976d2",
+  "name": "Apollo-App",
+  "short_name": "Apollo-App",
+  "theme_color": "#ffff",
   "background_color": "#fafafa",
   "display": "standalone",
   "scope": "./",

@@ -1,22 +1,22 @@
-<ion-content>
+<ion-content [fullscreen]="true">
 
   <div class="login-card-container" *ngIf="canShow">
     <div class="login-card-content">
       <ion-row class="ion-no-margin ion-no-padding" style="height: 100%">
-        <ion-col size="12" size-lg="6" class="ion-no-padding ion-no-margin login-background-container" style="position: relative">
+        <ion-col size="12" size-lg="6" class="ion-no-padding ion-no-margin login-background-container">
           <div class="login-background" id="login-background">
           </div>
         </ion-col>
-        <ion-col size="12" size-lg="6" class="ion-align-self-center">
+        <ion-col size="12" size-lg="6" class="ion-align-self-center login-form-container">
 
           <div class="login-container">
             <div class="title-container">
               <p class="title">¡Bienvenido a Grupo Apollo!</p>
             </div>
-            <br>
+
             <p class="iniciar-sesion">Accede con tus credenciales</p>
             <br>
-            <form [formGroup]="loginForm" (submit)="onSubmit()">
+            <form [formGroup]="loginForm" (submit)="onSubmit()" style="height: 100%">
               <div class="login-content">
                 <mat-form-field appearance="outline">
                   <mat-label>Username</mat-label>

@@ -61,11 +61,6 @@ export class LoginPage implements OnInit {
 
   }
 
-  onResize(event) {
-    console.log(event);
-    let _height = document.getElementById('login-form').offsetHeight;
-    document.getElementById('login-background').style.height = String(_height) + 'px';
-  }
 
   onSubmit() {
     this.spinner = true;
