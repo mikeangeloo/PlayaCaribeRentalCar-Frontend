@@ -16,6 +16,10 @@ import {ColoresListComponent} from "./components/colores/colores-list/colores-li
 import {ColorFormComponent} from "./components/colores/color-form/color-form.component";
 import {UserFormComponent} from "./components/users/user-form/user-form.component";
 import {UsersListComponent} from "./components/users/users-list/users-list.component";
+import {AreasTrabajoListComponent} from "./components/areas-trabajo/areas-trabajo-list/areas-trabajo-list.component";
+import {AreaTrabajoFormComponent} from "./components/areas-trabajo/area-trabajo-form/area-trabajo-form.component";
+import {RolesListComponent} from "./components/roles/roles-list/roles-list.component";
+import {RolFormComponent} from "./components/roles/rol-form/rol-form.component";
 
 
 
@@ -32,7 +36,11 @@ import {UsersListComponent} from "./components/users/users-list/users-list.compo
     ColoresListComponent,
     ColorFormComponent,
     UserFormComponent,
-    UsersListComponent
+    UsersListComponent,
+    AreasTrabajoListComponent,
+    AreaTrabajoFormComponent,
+    RolesListComponent,
+    RolFormComponent
   ],
   exports: [
     EmpresasListComponent,
@@ -46,7 +54,11 @@ import {UsersListComponent} from "./components/users/users-list/users-list.compo
     ColoresListComponent,
     ColorFormComponent,
     UserFormComponent,
-    UsersListComponent
+    UsersListComponent,
+    AreasTrabajoListComponent,
+    AreaTrabajoFormComponent,
+    RolesListComponent,
+    RolFormComponent
   ],
   entryComponents: [
     EmpresasListComponent,
@@ -60,7 +72,11 @@ import {UsersListComponent} from "./components/users/users-list/users-list.compo
     ColoresListComponent,
     ColorFormComponent,
     UserFormComponent,
-    UsersListComponent
+    UsersListComponent,
+    AreasTrabajoListComponent,
+    AreaTrabajoFormComponent,
+    RolesListComponent,
+    RolFormComponent
   ],
   imports: [
     CommonModule,

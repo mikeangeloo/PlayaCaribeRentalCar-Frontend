@@ -78,17 +78,17 @@ export class AppComponent implements OnDestroy {
     if (this.sessionService.$role.value) {
       switch (this.sessionService.$role.value.toLowerCase()) {
         case 'administrador':
-          return 'assets/img/insignias/Octavio.png';
+          return 'assets/img/insignias/admin.png';
           break;
         case 'vendedor':
-          return 'assets/img/insignias/Vendedor.png';
+          return 'assets/img/insignias/sales.png';
         case 'gerente':
-          return 'assets/img/insignias/Gerente.png';
+          return 'assets/img/insignias/manager.png';
         default:
-          return 'assets/img/insignias/Vendedor.png';
+          return 'assets/img/insignias/sales.png';
       }
     } else {
-      return 'assets/img/insignias/Vendedor.png';
+      return 'assets/img/insignias/sales.png';
     }
   }
 

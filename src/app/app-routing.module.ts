@@ -43,7 +43,15 @@ const routes: Routes = [
       {
         path: 'usuarios',
         loadChildren: () => import('./modules/users/users.module').then( m => m.UsersPageModule)
-      }
+      },
+      {
+        path: 'usuarios/areas-trabajo',
+        loadChildren: () => import('./modules/areas-trabajo/areas-trabajo.module').then( m => m.AreasTrabajoPageModule)
+      },
+      {
+        path: 'usuarios/roles',
+        loadChildren: () => import('./modules/roles/roles.module').then( m => m.RolesPageModule)
+      },
     ]
   },
   {

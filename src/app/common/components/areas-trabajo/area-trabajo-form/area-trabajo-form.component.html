@@ -1,0 +1,65 @@
+<ion-header translucent *ngIf="asModal">
+  <ion-toolbar>
+    <ion-title>{{ title }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button class="close-btn" (click)="dismiss()">
+        <ion-icon name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content fullscreen>
+
+  <ion-card class="app-card">
+    <ion-card-content>
+
+      <ion-row style="height: 100%; align-content: center; justify-content: center">
+        <ion-col size="12" style="height: 90%">
+          <div class="title-container">
+          </div>
+
+          <form [formGroup]="areaTrabajoForm">
+            <div class="form-content">
+              <ion-row class="ion-no-padding ion-no-margin">
+
+                <ion-col size="6">
+                  <mat-form-field appearance="legacy">
+                    <mat-label>Aréa Trabajo</mat-label>
+                    <input matInput type="text" formControlName="nombre">
+                    <mat-error *ngIf="cf.nombre.errors?.required">Campo requerido</mat-error>
+                  </mat-form-field>
+                </ion-col>
+
+                <ion-col size="6">
+                  <mat-form-field appearance="legacy">
+                    <mat-label>Activo</mat-label>
+                    <mat-select formControlName="activo">
+                      <mat-option [value]="1">Si</mat-option>
+                      <mat-option [value]="0">No</mat-option>
+                    </mat-select>
+                    <mat-error *ngIf="cf.activo.errors?.required">Campo requerido</mat-error>
+                  </mat-form-field>
+                </ion-col>
+              </ion-row>
+              <br />
+              <ion-button class="btn-shadow" color="secondary" expand="full" (click)="saveUpdate()">
+                Guardar
+              </ion-button>
+            </div>
+          </form>
+        </ion-col>
+      </ion-row>
+    </ion-card-content>
+  </ion-card>
+</ion-content>
+
+<ion-footer>
+  <ion-toolbar>
+    <ion-buttons slot="end">
+      <ion-button color="medium" (click)="dismiss()">
+        Cerrar Ventana
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-footer>

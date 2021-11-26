@@ -33,9 +33,17 @@
             <ion-icon name="people-circle-outline"></ion-icon>&nbsp; Usuarios
           </ion-item>
           <ion-item-group submenu [class.visible]="showSubmenu === 'usuarios'" >
-            <ion-item submenu-item  routerLinkActive="active-route" (click)="closeMenu()" [routerLink]="['usuarios']">
+            <ion-item submenu-item  routerLinkActive="active-route" [routerLinkActiveOptions]={exact:true} (click)="closeMenu()" [routerLink]="['usuarios']">
               <ion-icon name="document-outline"></ion-icon>
               Listado Usuarios
+            </ion-item>
+            <ion-item submenu-item  routerLinkActive="active-route" [routerLinkActiveOptions]={exact:true} (click)="closeMenu()" [routerLink]="['usuarios/areas-trabajo']">
+              <ion-icon name="person-circle-outline"></ion-icon>
+              Listado Aréas Trabajo
+            </ion-item>
+            <ion-item submenu-item  routerLinkActive="active-route" [routerLinkActiveOptions]={exact:true} (click)="closeMenu()" [routerLink]="['usuarios/roles']">
+              <ion-icon name="git-network-outline"></ion-icon>
+              Listado Roles
             </ion-item>
           </ion-item-group>
 
