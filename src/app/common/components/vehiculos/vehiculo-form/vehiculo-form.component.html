@@ -1,0 +1,134 @@
+<ion-header translucent *ngIf="asModal">
+  <ion-toolbar>
+    <ion-title>{{ title }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button class="close-btn" (click)="dismiss()">
+        <ion-icon name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content fullscreen>
+
+  <ion-card class="app-card">
+    <ion-card-content>
+
+      <ion-row style="height: 100%; align-content: center; justify-content: center">
+        <ion-col size="12" style="height: 90%">
+          <div class="title-container">
+          </div>
+
+          <form [formGroup]="vehiculoForm">
+            <div class="form-content">
+
+              <ion-row class="ion-no-padding ion-no-margin">
+                <ion-col size="6">
+                  <mat-form-field appearance="legacy">
+                    <mat-label>Nombre</mat-label>
+                    <input type="text" matInput formControlName="nombre">
+                    <mat-error *ngIf="vf.nombre.errors?.required">Campo requerido</mat-error>
+                  </mat-form-field>
+                </ion-col>
+                <ion-col size="6">
+                  <mat-form-field appearance="legacy">
+                    <mat-label>Versión</mat-label>
+                    <mat-select formControlName="version">
+                      <mat-option value="estándar">Estándar</mat-option>
+                      <mat-option value="Automático">Automático</mat-option>
+                    </mat-select>
+                    <mat-error *ngIf="vf.nombre.errors?.required">Campo requerido</mat-error>
+                  </mat-form-field>
+                </ion-col>
+              </ion-row>
+
+              <ion-row class="ion-no-padding ion-no-margin">
+                <ion-col size="4">
+                  <mat-form-field appearance="legacy">
+                    <mat-label>Marca</mat-label>
+                    <mat-select formControlName="marca_id">
+                      <mat-option *ngFor="let marca of marcasV" [value]="marca.id">{{marca.marca}}</mat-option>
+                    </mat-select>
+                    <mat-error *ngIf="vf.marca_id.errors?.required">Campo requerido</mat-error>
+                  </mat-form-field>
+                </ion-col>
+
+                <ion-col size="4">
+                  <mat-form-field appearance="legacy">
+                    <mat-label>Modelo</mat-label>
+                    <mat-select formControlName="modelo_id">
+                      <mat-option *ngFor="let modelo of modeloV" [value]="modelo.id">{{modelo.modelo}}</mat-option>
+                    </mat-select>
+                    <mat-error *ngIf="vf.modelo_id.errors?.required">Campo requerido</mat-error>
+                  </mat-form-field>
+                </ion-col>
+
+                <ion-col size="4">
+                  <mat-form-field appearance="legacy">
+                    <mat-label>Color</mat-label>
+                    <mat-select formControlName="color_id">
+                      <mat-option *ngFor="let color of coloresV" [value]="color.id">{{color.color}}</mat-option>
+                    </mat-select>
+                    <mat-error *ngIf="vf.color_id.errors?.required">Campo requerido</mat-error>
+                  </mat-form-field>
+                </ion-col>
+              </ion-row>
+
+              <ion-row class="ion-no-padding ion-no-margin">
+                <ion-col size="6">
+                  <mat-form-field appearance="legacy">
+                    <mat-label>No. Placas</mat-label>
+                    <input matInput type="text" formControlName="no_placas">
+                    <mat-error *ngIf="vf.no_placas.errors?.required">Campo requerido</mat-error>
+                  </mat-form-field>
+                </ion-col>
+
+                <ion-col size="6">
+                  <mat-form-field appearance="legacy">
+                    <mat-label>Cap. Tanque</mat-label>
+                    <input matInput type="text" formControlName="cap_tanque">
+                    <mat-error *ngIf="vf.cap_tanque.errors?.required">Campo requerido</mat-error>
+                  </mat-form-field>
+                </ion-col>
+              </ion-row>
+
+              <ion-row class="ion-no-padding ion-no-margin">
+                <ion-col size="6">
+                  <mat-form-field appearance="legacy">
+                    <mat-label>Precio</mat-label>
+                    <input matInput type="number" formControlName="precio_venta">
+                    <mat-error *ngIf="vf.precio_venta.errors?.required">Campo requerido</mat-error>
+                  </mat-form-field>
+                </ion-col>
+                <ion-col size="6">
+                  <mat-form-field appearance="legacy">
+                    <mat-label>Activo</mat-label>
+                    <mat-select formControlName="activo">
+                      <mat-option [value]="1">Si</mat-option>
+                      <mat-option [value]="0">No</mat-option>
+                    </mat-select>
+                    <mat-error *ngIf="vf.activo.errors?.required">Campo requerido</mat-error>
+                  </mat-form-field>
+                </ion-col>
+              </ion-row>
+              <br />
+              <ion-button class="btn-shadow" color="secondary" expand="full" (click)="saveUpdate()">
+                Guardar
+              </ion-button>
+            </div>
+          </form>
+        </ion-col>
+      </ion-row>
+    </ion-card-content>
+  </ion-card>
+</ion-content>
+
+<ion-footer>
+  <ion-toolbar>
+    <ion-buttons slot="end">
+      <ion-button color="medium" (click)="dismiss()">
+        Cerrar Ventana
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-footer>

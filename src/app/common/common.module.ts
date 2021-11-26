@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {CommonModule, CurrencyPipe} from '@angular/common';
 import {EmpresasListComponent} from "./components/empresas/empresas-list/empresas-list.component";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {MaterialModule} from "../material/material.module";
@@ -20,6 +20,8 @@ import {AreasTrabajoListComponent} from "./components/areas-trabajo/areas-trabaj
 import {AreaTrabajoFormComponent} from "./components/areas-trabajo/area-trabajo-form/area-trabajo-form.component";
 import {RolesListComponent} from "./components/roles/roles-list/roles-list.component";
 import {RolFormComponent} from "./components/roles/rol-form/rol-form.component";
+import {VehiculosListComponent} from "./components/vehiculos/vehiculos-list/vehiculos-list.component";
+import {VehiculoFormComponent} from "./components/vehiculos/vehiculo-form/vehiculo-form.component";
 
 
 
@@ -40,7 +42,9 @@ import {RolFormComponent} from "./components/roles/rol-form/rol-form.component";
     AreasTrabajoListComponent,
     AreaTrabajoFormComponent,
     RolesListComponent,
-    RolFormComponent
+    RolFormComponent,
+    VehiculosListComponent,
+    VehiculoFormComponent
   ],
   exports: [
     EmpresasListComponent,
@@ -58,7 +62,9 @@ import {RolFormComponent} from "./components/roles/rol-form/rol-form.component";
     AreasTrabajoListComponent,
     AreaTrabajoFormComponent,
     RolesListComponent,
-    RolFormComponent
+    RolFormComponent,
+    VehiculosListComponent,
+    VehiculoFormComponent
   ],
   entryComponents: [
     EmpresasListComponent,
@@ -76,7 +82,9 @@ import {RolFormComponent} from "./components/roles/rol-form/rol-form.component";
     AreasTrabajoListComponent,
     AreaTrabajoFormComponent,
     RolesListComponent,
-    RolFormComponent
+    RolFormComponent,
+    VehiculosListComponent,
+    VehiculoFormComponent
   ],
   imports: [
     CommonModule,
@@ -85,6 +93,9 @@ import {RolFormComponent} from "./components/roles/rol-form/rol-form.component";
     IonicModule,
     RouterModule,
     ReactiveFormsModule
+  ],
+  providers: [
+    CurrencyPipe
   ]
 })
 export class AppCommonModule { }

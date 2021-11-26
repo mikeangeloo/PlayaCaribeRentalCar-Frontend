@@ -52,6 +52,10 @@ const routes: Routes = [
         path: 'usuarios/roles',
         loadChildren: () => import('./modules/roles/roles.module').then( m => m.RolesPageModule)
       },
+      {
+        path: 'vehiculos/disponibles',
+        loadChildren: () => import('./modules/vehiculos/vehiculos.module').then( m => m.VehiculosPageModule)
+      },
     ]
   },
   {
@@ -59,6 +63,7 @@ const routes: Routes = [
     redirectTo: 'dashboard',
     pathMatch: 'full'
   },
+
 
 ];
 
