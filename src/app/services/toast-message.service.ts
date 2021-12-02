@@ -12,7 +12,7 @@ export class ToastMessageService {
     let color = 'primary';
     switch (status) {
       case 'success':
-        color = 'secondary';
+        color = 'success';
         break;
       case 'error':
         color = 'danger';

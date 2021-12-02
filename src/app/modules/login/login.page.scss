@@ -1,11 +1,75 @@
+$border-radius: 50px;
+
+.login-card-container {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh + 95vh);
+  //min-height: 625px;
+  @media (min-width: 667px) and (orientation: portrait) {
+    min-height: 625px;
+  }
+
+  @media(min-width: 320px) {
+    min-height: 730px;
+  }
+
+
+
+  .login-card-content {
+    height: 90%;
+    width: 85%;
+    border-radius: $border-radius;
+    box-shadow: 0 1px 5px 3px #0000004d;
+
+    @media (min-width: 768px) and (orientation: portrait) {
+      height: 70%;
+    }
+
+    @media(min-width: 992px) {
+      height: 75%;
+      width: 87%;
+    }
+  }
+}
 .login-background {
-  background-image: url('../../../assets/img/login-background.jpeg');
+  background-image: url('../../../assets/img/login-background.jpg');
   background-repeat: no-repeat;
   background-size: cover;
-  height: 100vh;
+  height: 100%;
   background-position-x: center;
-}
+  background-position-y: center;
+  border-radius: $border-radius $border-radius 0 0;
 
+
+  @media (min-width: 992px) {
+    border-radius: $border-radius 0 0 $border-radius;
+  }
+}
+.login-background-container {
+  height: 30%;
+
+  @media(min-width: 650px)  {
+    height: 40%;
+  }
+  @media (min-width: 667px) and (orientation: portrait) {
+    height: 40%;
+  }
+  @media (min-width: 768px) and (orientation: portrait) {
+    height: 40%;
+  }
+  @media(min-width: 992px) {
+    height: inherit;
+  }
+}
+.login-form-container {
+  height: auto;
+  @media (min-width: 768px) and (orientation: portrait) {
+    height: 60%;
+  }
+}
 .login-container {
   margin: 1.2rem;
 }
@@ -17,14 +81,14 @@
   left: 5%;
   border-radius: 15px;
   box-shadow: 0 3px 4px 0px #0000006b;
-  //top: 1rem;
-  @media (min-width: 768px) {
-    position: inherit;
-    background: none;
-    border-radius: 0;
-    left: 0;
-    box-shadow: none;
-  }
+
+  //@media (min-width: 768px) {
+  //  position: inherit;
+  //  background: none;
+  //  border-radius: 0;
+  //  left: 0;
+  //  box-shadow: none;
+  //}
 }
 
 .iniciar-sesion {
@@ -57,11 +121,11 @@
   display: flex;
   flex-flow: column;
   background: none;
-  padding: 0.5rem;
+  //padding: 0.5rem;
 
-  @media(min-width: 768px) {
-    background: white;
-  }
+  //@media(min-width: 768px) {
+  //  background: white;
+  //}
 }
 
 .login-errors {

@@ -1,0 +1,160 @@
+<div class="main-content">
+
+  <ion-row>
+    <ion-col size="12" [ngClass]="{hide: !areasTrabajo || areasTrabajo.length === 0}">
+      <ion-card class="ion-no-margin ion-no-padding">
+        <ion-card-header>
+          <h2>Listado de Aréas Trabajo</h2>
+        </ion-card-header>
+        <ion-card-content>
+
+          <ion-row>
+            <ion-col size="12" size-md="2" class="ion-align-self-center" *ngIf="isModal === false || !isModal">
+              <!--                <button mat-raised-button color="primary">Nuevo</button>-->
+              <ion-button color="primary" class="btn-shadow no-contrast" (click)="openAreaTrabajoForm()">Nuevo</ion-button>
+            </ion-col>
+            <ion-col size="12" size-md="10">
+              <!--<div class="input-group mb-3 filter-form">
+                <input type="text" class="form-control"
+                       placeholder="Ingrese un valor para filtrar los resultados de la tabla ..." [(ngModel)]="searchKey"
+                       (keyup)="applyFilter()">
+                <button mat-button matSuffix mat-icon-button aria-label="Clear" class="clear-bnt" *ngIf="searchKey"
+                        (click)="onSearchClear()">
+                  <mat-icon>close</mat-icon>
+                </button>
+                <div class="input-group-append">
+                  <button mat-raised-button class="btn btn-info" style="background-color: var(&#45;&#45;coe-primary-bold)" type="button" (click)="applyFilter()">
+                    <i class="material-icons">find_in_page</i>
+                  </button>
+                </div>
+              </div> &lt;!&ndash; filter form&ndash;&gt;-->
+              <ion-searchbar placeholder="Ingrese un valor para filtrar los resultados de la tabla..." class="ion-no-padding" (ionInput)="applyFilter($event)" (ionCancel)="onSearchClear()"></ion-searchbar>
+            </ion-col>
+          </ion-row>
+          <div class="mat-elevation-z8 table-container">
+            <mat-table [dataSource]="listAreasTrabajo" matSort>
+              <!-- id -->
+              <ng-container matColumnDef="id">
+                <mat-header-cell *matHeaderCellDef mat-sort-header>Id</mat-header-cell>
+                <mat-cell *matCellDef="let row">
+                  <div class="column">
+                    <p>
+                      {{row.id}}
+                    </p>
+                  </div>
+                </mat-cell>
+              </ng-container>
+
+              <!-- nombre-->
+              <ng-container matColumnDef="nombre">
+                <mat-header-cell *matHeaderCellDef mat-sort-header>Aréa</mat-header-cell>
+                <mat-cell *matCellDef="let row">
+                  <div class="column">
+                    <p>
+                      {{row.nombre}}
+                    </p>
+                  </div>
+                </mat-cell>
+              </ng-container>
+
+              <!-- activo -->
+              <ng-container matColumnDef="activo">
+                <mat-header-cell *matHeaderCellDef mat-sort-header>Activo</mat-header-cell>
+                <mat-cell *matCellDef="let row">
+                  <div class="column">
+                    <p>
+                      {{(row.activo && row.activo === 1) ? 'Si': 'No'}}
+                    </p>
+                  </div>
+                </mat-cell>
+              </ng-container>
+
+
+              <!-- created_at -->
+              <ng-container matColumnDef="created_at">
+                <mat-header-cell *matHeaderCellDef mat-sort-header>Fecha de Alta</mat-header-cell>
+                <mat-cell *matCellDef="let row">
+                  <div class="column">
+                    <p>
+                      {{row.created_at | date: 'short'}}
+                    </p>
+                  </div>
+                </mat-cell>
+              </ng-container>
+
+              <!-- acciones -->
+              <ng-container matColumnDef="acciones">
+                <mat-header-cell *matHeaderCellDef mat-sort-header>Acciones</mat-header-cell>
+                <mat-cell *matCellDef="let row">
+                  <div class="column">
+                    <div class="action-btn-container">
+                      <ion-button fill="clear" (click)="openAreaTrabajoForm(row)">
+                        <ion-icon  name="create-outline"></ion-icon>
+                      </ion-button>
+                      <ion-button fill="clear" (click)="inactiveAreaTrabajo(row)" *ngIf="row.activo === 1" title="Deshabilitar registro">
+                        <ion-icon name="close-circle-outline" color="danger" ></ion-icon>
+                      </ion-button>
+                      <ion-button fill="clear" (click)="activeAreaTrabajo(row)" *ngIf="row.activo === 0" title="Habilitar registro">
+                        <ion-icon name="checkmark-circle-outline" color="medium"></ion-icon>
+                      </ion-button>
+                    </div>
+
+                  </div>
+                </mat-cell>
+              </ng-container>
+
+
+              <!-- rows staticos-->
+              <ng-container matColumnDef="init">
+                <mat-footer-cell *matFooterCellDef colspan="7" style="color: var(--ion-color-primary); font-weight: 400;">
+                  Ingrese un valor usando el motor de búsqueda ubicado en la parte superior
+                </mat-footer-cell>
+              </ng-container>
+
+              <ng-container matColumnDef="loading">
+                <mat-footer-cell *matFooterCellDef colspan="7">
+                  <mat-spinner [diameter]="40"></mat-spinner>
+                </mat-footer-cell>
+              </ng-container>
+
+              <ng-container matColumnDef="noData">
+                <mat-footer-cell *matFooterCellDef colspan="8" style="color: #2196F3">
+                  No data was found
+                </mat-footer-cell>
+              </ng-container>
+
+              <!--Table Footer-->
+              <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+              <!--                <ng-container *ngIf="isModal">-->
+              <!--                  <mat-row *matRowDef="let row; columns: displayedColumns;" (click)="editAction(row)" [ngClass]="{hovered: row.hovered, highlighted: row.id === editEmpresa.id}" (mouseover)="row.hovered = true" (mouseout)="row.hovered = false"></mat-row>-->
+              <!--                </ng-container>-->
+              <ng-container *ngIf="isModal === false || !isModal">
+                <mat-row *matRowDef="let row; columns: displayedColumns;" [ngClass]="{hovered: row.hovered, highlighted: row.id === editAreaTrabajo.id}" (mouseover)="row.hovered = true" (mouseout)="row.hovered = false"></mat-row>
+              </ng-container>
+
+              <mat-footer-row *matFooterRowDef="['loading']" [ngClass]="{hide: spinner === false}"></mat-footer-row>
+              <mat-footer-row *matFooterRowDef="['init']" [ngClass]="{'hide':listAreasTrabajo!=null || spinner === true}"></mat-footer-row>
+              <mat-footer-row *matFooterRowDef="['noData']"
+                              [ngClass]="{hide:!(listAreasTrabajo!=null && listAreasTrabajo.data.length==0)}">
+              </mat-footer-row>
+            </mat-table>
+
+            <!-- paginator -->
+            <mat-paginator [pageSizeOptions]="[2, 5, 10, 25, 100]" [pageSize]="8"
+                           showFirstLastButtons></mat-paginator>
+          </div> <!-- table content-->
+        </ion-card-content>
+      </ion-card>
+    </ion-col>
+
+    <ion-col size="12" *ngIf="areasTrabajo && areasTrabajo.length === 0">
+      <div class="empty-container">
+        <ion-icon name="alert-circle"></ion-icon>
+        <p>
+          No se encontraron registros
+        </p>
+      </div>
+    </ion-col>
+  </ion-row>
+
+</div>
