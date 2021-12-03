@@ -27,150 +27,112 @@
 
         <ion-list id="sidenav" class="links-container">
 
-          <ion-item class="item item-icon-left" routerLinkActive="active-route" [routerLink]="['dashboard']"
-                    (click)="closeMenu()">
-            <ion-icon name="apps-outline"></ion-icon>&nbsp; Dashboard
-          </ion-item>
-
-          <ion-item class="item item-icon-left" (click)="menuItemHandler('usuarios')" detail
-                    [ngClass]="{'active-route': isActive('usuarios')}">
-            <ion-icon name="people-circle-outline"></ion-icon>&nbsp; Usuarios
-          </ion-item>
-          <ion-item-group submenu [class.visible]="showSubmenu === 'usuarios'">
-            <ion-item submenu-item routerLinkActive="active-route" [routerLinkActiveOptions]={exact:true}
-                      (click)="closeMenu()" [routerLink]="['usuarios']">
-              <ion-icon name="document-outline"></ion-icon>
-              Listado Usuarios
-            </ion-item>
-            <ion-item submenu-item routerLinkActive="active-route" [routerLinkActiveOptions]={exact:true}
-                      (click)="closeMenu()" [routerLink]="['usuarios/areas-trabajo']">
-              <ion-icon name="person-circle-outline"></ion-icon>
-              Listado Aréas Trabajo
-            </ion-item>
-            <ion-item submenu-item routerLinkActive="active-route" [routerLinkActiveOptions]={exact:true}
-                      (click)="closeMenu()" [routerLink]="['usuarios/roles']">
-              <ion-icon name="git-network-outline"></ion-icon>
-              Listado Roles
-            </ion-item>
-          </ion-item-group>
-
-          <ion-item class="item item-icon-left" (click)="menuItemHandler('contratos')" detail>
-            <ion-icon name="clipboard-outline"></ion-icon>&nbsp; Contratos
-          </ion-item>
-          <ion-item-group submenu [class.visible]="showSubmenu === 'contratos'">
-            <ion-item submenu-item routerLinkActive="active-route" (click)="closeMenu()">
-              <ion-icon name="document-outline"></ion-icon>
-              Nuevo Contrato
-            </ion-item>
-          </ion-item-group>
-
-          <ion-item class="item item-icon-left" routerLinkActive="active-route" (click)="closeMenu()">
-            <ion-icon name="happy-outline"></ion-icon>&nbsp; Clientes
-          </ion-item>
-
-
-          <ion-item class="item item-icon-left" (click)="menuItemHandler('vehiculos')" detail [ngClass]="{'active-route': isActive('vehiculos')}">
-            <ion-icon name="car-sport-outline"></ion-icon>&nbsp; Vehículos
-          </ion-item>
-          <ion-item-group  submenu [class.visible]="showSubmenu === 'vehiculos'">
-            <ion-item submenu-item routerLinkActive="active-route" [routerLinkActiveOptions]={exact:true}
-                      (click)="closeMenu()" [routerLink]="['vehiculos/disponibles']">
-            <ion-icon name="list-outline"></ion-icon>&nbsp; <span>Listado Véhiculos</span>
-            </ion-item>
-          </ion-item-group>
-
-          <ion-item class="item item-icon-left" routerLinkActive="active-route" (click)="closeMenu()">
-            <ion-icon name="document-text-outline"></ion-icon>&nbsp; Reportes
-          </ion-item>
-
-          <!--          <div class="hr5"><span>... Otros</span></div>-->
-
-          <ion-item (click)="menuItemHandler('catalogos')" detail [ngClass]="{'active-route': isActive('catalogos')}">
-            <ion-icon name="bookmarks"></ion-icon>
-            Catálogos
-          </ion-item>
-          <ion-item-group submenu [class.visible]="showSubmenu === 'catalogos'">
-            <ion-item submenu-item [routerLink]="['catalogos/empresas']" routerLinkActive="active-route"
+          <ng-container> <!-- Dashboard -->
+            <ion-item class="item item-icon-left" routerLinkActive="active-route" [routerLink]="['dashboard']"
                       (click)="closeMenu()">
-              <ion-icon name="business-outline"></ion-icon>
-              &nbsp; Empresas
+              <ion-icon name="apps-outline"></ion-icon>&nbsp; Dashboard
             </ion-item>
-            <ion-item submenu-item [routerLink]="['catalogos/sucursales']" routerLinkActive="active-route"
-                      (click)="closeMenu()">
-              <ion-icon name="pin-outline"></ion-icon>
-              &nbsp; Sucursales
+          </ng-container> <!-- Dashboard -->
+          <ng-container> <!-- Contratos -->
+            <ion-item class="item item-icon-left" (click)="menuItemHandler('contratos')" detail>
+              <ion-icon name="clipboard-outline"></ion-icon>&nbsp; Contratos
             </ion-item>
-            <ion-item submenu-item [routerLink]="['catalogos/marcas']" routerLinkActive="active-route"
-                      (click)="closeMenu()">
-              <ion-icon name="pricetags-outline"></ion-icon>
-              &nbsp; Marcas - Autos
+            <ion-item-group submenu [class.visible]="showSubmenu === 'contratos'">
+              <ion-item submenu-item routerLinkActive="active-route" (click)="closeMenu()">
+                <ion-icon name="document-outline"></ion-icon>
+                Nuevo Contrato
+              </ion-item>
+            </ion-item-group>
+          </ng-container> <!-- Contratos -->
+          <ng-container> <!-- Vehículos -->
+            <ion-item class="item item-icon-left" routerLinkActive="active-route" (click)="closeMenu()">
+              <ion-icon name="document-text-outline"></ion-icon>&nbsp; Vehículos
             </ion-item>
-            <ion-item submenu-item [routerLink]="['catalogos/modelos']" routerLinkActive="active-route"
-                      (click)="closeMenu()">
-              <ion-icon name="invert-mode-outline"></ion-icon>
-              &nbsp; Modelos - Autos
+          </ng-container> <!-- Vehículos -->
+          <ng-container> <!-- Reportes -->
+            <ion-item class="item item-icon-left" routerLinkActive="active-route" (click)="closeMenu()">
+              <ion-icon name="document-text-outline"></ion-icon>&nbsp; Reportes
             </ion-item>
-            <ion-item submenu-item [routerLink]="['catalogos/colores']" routerLinkActive="active-route"
-                      (click)="closeMenu()">
-              <ion-icon name="color-palette-outline"></ion-icon>
-              &nbsp; Colores - Autos
+          </ng-container> <!-- Reportes -->
+          <ng-container> <!-- Administración -->
+            <ion-item class="item item-icon-left" detail>
+              <ion-icon name="clipboard-outline"></ion-icon>&nbsp; Administración
             </ion-item>
-          </ion-item-group>
+            <ng-container> <!-- Cátalogo de vehículos -->
+              <ion-item-group submenu class="visible"> <!-- Cátalogo de vehículos -->
+                <ion-item detail>
+                  <ion-icon name="bookmarks"></ion-icon>
+                  Catálogos de Vehículos
+                </ion-item>
+                <ion-item-group submenu class="visible">
+                  <ion-item submenu-item (click)="closeMenu()">
+                    <ion-icon name="pricetags-outline"></ion-icon>
+                    &nbsp; Listado de Vehículos
+                  </ion-item>
+                  <ion-item submenu-item  routerLinkActive="active-route" (click)="closeMenu()">
+                    <ion-icon name="pricetags-outline"></ion-icon>
+                    &nbsp; Listado de Marcas
+                  </ion-item>
+                  <ion-item submenu-item  routerLinkActive="active-route" (click)="closeMenu()">
+                    <ion-icon name="pricetags-outline"></ion-icon>
+                    &nbsp; Listado de Categorías
+                  </ion-item>
+                </ion-item-group>
+
+              </ion-item-group>
+            </ng-container> <!-- Cátalogo de vehículos -->
+            <ng-container> <!-- Control de acceso -->
+              <ion-item detail>
+                <ion-icon name="bookmarks"></ion-icon>
+                Control de acceso
+              </ion-item>
+              <ion-item-group submenu [class.visible]="true">
+                <ion-item submenu-item [routerLink]="['catalogos/marcas']" routerLinkActive="active-route" (click)="closeMenu()">
+                  <ion-icon name="pricetags-outline"></ion-icon>
+                  &nbsp; Listado de usuarios
+                </ion-item>
+                <ion-item submenu-item [routerLink]="['catalogos/marcas']" routerLinkActive="active-route" (click)="closeMenu()">
+                  <ion-icon name="pricetags-outline"></ion-icon>
+                  &nbsp; Listado de Áreas de Trabajo
+                </ion-item>
+                <ion-item submenu-item [routerLink]="['catalogos/marcas']" routerLinkActive="active-route" (click)="closeMenu()">
+                  <ion-icon name="pricetags-outline"></ion-icon>
+                  &nbsp; Listado de Sucursales
+                </ion-item>
+              </ion-item-group>
+            </ng-container> <!-- Control de acceso -->
+            <ng-container> <!-- Clientes -->
+              <ion-item detail>
+                <ion-icon name="bookmarks"></ion-icon>
+                Clientes
+              </ion-item>
+              <ion-item-group submenu [class.visible]="true">
+                <ion-item submenu-item [routerLink]="['catalogos/marcas']" routerLinkActive="active-route" (click)="closeMenu()">
+                  <ion-icon name="pricetags-outline"></ion-icon>
+                  &nbsp; Listado de clientes
+                </ion-item>
+              </ion-item-group>
+            </ng-container> <!-- Clientes -->
+
+          </ng-container> <!-- Administración -->
 
 
-          <!--          <ion-item class="item item-icon-left" routerLinkActive="active-route" [routerLink]="['home']" (click)="closeMenu()">-->
-          <!--            <ion-icon name="restaurant-outline"></ion-icon>&nbsp; Mis Comidas-->
-          <!--          </ion-item>-->
+          <ng-container *ngTemplateOutlet="recursiveMenu; context: {$implicit: demoMenu}"></ng-container>
+          <ng-template #recursiveMenu let-demoMenu>
+            <ng-container *ngFor="let menu of demoMenu">
+              <ion-item class="item item-icon-left" detail>
+                <ion-icon name="clipboard-outline"></ion-icon>&nbsp; {{menu.label}}
+              </ion-item>
+              <ion-item-group *ngIf="menu.children && menu.children.length > 0" submenu [class.visible]="true">
+                <ng-container *ngTemplateOutlet="recursiveMenu; context: {$implicit: menu.children}"></ng-container>
 
-          <!--          <ion-item class="item item-icon-left" routerLinkActive="active-route" [routerLink]="['mi-cuenta']" (click)="closeMenu()">-->
-          <!--            <ion-icon name="person-circle-outline"></ion-icon>&nbsp; Mi Cuenta-->
-          <!--          </ion-item>-->
+              </ion-item-group>
 
-          <!--          <ion-item class="item item-icon-left" routerLinkActive="active-route" [routerLink]="['mi-historia']" (click)="closeMenu()">-->
-          <!--            <ion-icon name="time-outline"></ion-icon>&nbsp; Mi Historia-->
-          <!--          </ion-item>-->
 
-          <!-- <ion-item class="item item-icon-left" routerLinkActive="active-route" [routerLink]="['/tablero-rankings']">
-            <ion-icon name="podium-outline"></ion-icon>&nbsp; Tablero de rankings
-          </ion-item> -->
+            </ng-container>
+          </ng-template>
 
-          <!--          <ion-item class="item item-icon-left" routerLinkActive="active-route" [routerLink]="['notificaciones']" (click)="closeMenu()">-->
-          <!--            <ion-icon name="notifications-outline"></ion-icon>&nbsp; Listado de notificaciones-->
-          <!--          </ion-item>-->
 
-          <!--          <ion-item (click)="menuItemHandler()" detail>-->
-          <!--            <ion-icon name="bookmarks"></ion-icon> Bookings-->
-          <!--          </ion-item>-->
-          <!--          <ion-item-group submenu [class.visible]="showSubmenu">-->
-          <!--            <ion-item submenu-item [routerLink]="['/bookings/new']">-->
-          <!--              <ion-icon name="add-circle"></ion-icon>-->
-          <!--              New Booking-->
-          <!--            </ion-item>-->
-          <!--            <ion-item submenu-item [routerLink]="['bookings/booking-list']">-->
-          <!--              <ion-icon name="pricetags"></ion-icon>-->
-          <!--              My Bookings-->
-          <!--            </ion-item>-->
-          <!--          </ion-item-group>-->
-
-          <!--          <ion-item class="item item-icon-left" routerLinkActive="active-route" [routerLink]="['subir-post', 'food']" (click)="closeMenu()">-->
-          <!--            <ion-icon name="push-outline"></ion-icon>&nbsp; Postear comida-->
-          <!--          </ion-item>-->
-
-          <!--          <ion-item class="item item-icon-left" routerLinkActive="active-route" [routerLink]="['subir-post', 'body']" (click)="closeMenu()">-->
-          <!--            <ion-icon name="push-outline"></ion-icon>&nbsp; Postear foto semanal-->
-          <!--          </ion-item>-->
-
-          <!-- <ion-item class="item item-icon-left" [routerLink]="['/']">
-            Recomendaciones del coach
-          </ion-item> -->
-
-          <!--      <ion-item *ngIf="authService.getProfile() !== null" class="item item-icon-left" href="https://api.whatsapp.com/send?phone=+506-6317-5527&amp;text=I%20need%20some%20help%20My%20membership:%20{{authService.membership.agreement_number}}%20My%20name:%20{{authService.member.name}}">-->
-          <!--        <ion-icon name="logo-whatsapp"></ion-icon> WhatsApp-->
-          <!--      </ion-item>-->
-          <!--          <hr style="background: #e5e5e5;height: 2px;">-->
-          <!--          <ion-item class="item item-icon-left" routerLinkActive="active-route" [routerLink]="['tour-guide']" (click)="closeMenu()">-->
-          <!--            <ion-icon name="play-circle"></ion-icon>&nbsp; Tour Guide - App-->
-          <!--          </ion-item>-->
         </ion-list>
       </ion-content>
       <ion-footer class="ion-no-padding ion-no-margin">
