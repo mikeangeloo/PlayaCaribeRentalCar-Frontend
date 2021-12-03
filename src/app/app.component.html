@@ -121,14 +121,11 @@
           <ng-template #recursiveMenu let-demoMenu>
             <ng-container *ngFor="let menu of demoMenu">
               <ion-item class="item item-icon-left" detail>
-                <ion-icon name="clipboard-outline"></ion-icon>&nbsp; {{menu.label}}
+                <ion-icon name="{{menu.icon}}"></ion-icon>&nbsp; {{menu.label}}
               </ion-item>
               <ion-item-group *ngIf="menu.children && menu.children.length > 0" submenu [class.visible]="true">
                 <ng-container *ngTemplateOutlet="recursiveMenu; context: {$implicit: menu.children}"></ng-container>
-
               </ion-item-group>
-
-
             </ng-container>
           </ng-template>
 

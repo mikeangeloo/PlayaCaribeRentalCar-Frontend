@@ -29,46 +29,35 @@ export class AppComponent implements OnDestroy {
 
   public demoMenu: MenuTreeI[] = [
     {
-      module: 'people',
-      icon: 'people',
-      label: 'Primer Nivel',
-      route: '/test',
+      module: 'dashboard',
+      icon: 'apps-outline',
+      label: 'Dashboard',
+      route: '/dashboard',
+      level: 0
+    },
+    {
+      module: 'contratos',
+      icon: 'clipboard-outline',
+      label: 'Contratos',
+      route: '/',
       level: 0,
       children: [
         {
-          module: 'people',
-          icon: 'people',
-          label: 'Segundo Nivel',
-          route: '/test/test2',
-          level: 1,
-          children: [
-            {
-              module: 'people',
-              icon: 'people',
-              label: 'Tercer 3.1 Nivel',
-              route: '/test/test2/test3',
-              level: 3,
-              children: [
-                {
-                  module: 'people',
-                  icon: 'people',
-                  label: 'Cuarto Nivel',
-                  route: '/test/test2/test3/test/4',
-                  level: 4,
-                }
-              ]
-            },
-            {
-              module: 'people',
-              icon: 'people',
-              label: 'Tercer 3.2 Nivel',
-              route: '/test/test2/test3',
-              level: 3,
-            }
-          ]
-        }
+          module: 'contratos',
+          icon: 'document-outline',
+          label: 'Nuevo Contrato',
+          route: '/',
+          level: 1
+        },
       ]
-    }
+    },
+    {
+      module: 'vehiculos',
+      icon: 'car-sport-outline',
+      label: 'Vehículos',
+      route: '/',
+      level: 0
+    },
   ];
   constructor(
     public route: ActivatedRoute,
