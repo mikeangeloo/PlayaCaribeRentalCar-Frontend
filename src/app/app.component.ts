@@ -4,13 +4,15 @@ import {MenuController, Platform} from "@ionic/angular";
 import {BehaviorSubject, filter, Subject, takeUntil} from "rxjs";
 import {SessionService} from "./services/session.service";
 import {ProfileDataI} from "./interfaces/profile/profile-data.interface";
+import * as module from "module";
 export interface MenuTreeI
 {
   module: string;
   level: number;
   icon: string;
   label: string;
-  route: string;
+  route?: string;
+  active: boolean;
   children?: MenuTreeI [];
 }
 @Component({
@@ -26,28 +28,32 @@ export class AppComponent implements OnDestroy {
   showSubmenu: string;
   public subMenuOpen = false;
   public _navRoute: string;
-
+  public selectedMenu: MenuTreeI;
+  public openMenu: MenuTreeI;
   public demoMenu: MenuTreeI[] = [
     {
       module: 'dashboard',
       icon: 'apps-outline',
       label: 'Dashboard',
       route: '/dashboard',
-      level: 0
+      level: 0,
+      active: false
     },
     {
       module: 'contratos',
       icon: 'clipboard-outline',
       label: 'Contratos',
-      route: '/',
+      route: null,
       level: 0,
+      active: false,
       children: [
         {
           module: 'contratos',
           icon: 'document-outline',
           label: 'Nuevo Contrato',
           route: '/',
-          level: 1
+          level: 1,
+          active: false
         },
       ]
     },
@@ -55,8 +61,121 @@ export class AppComponent implements OnDestroy {
       module: 'vehiculos',
       icon: 'car-sport-outline',
       label: 'Vehículos',
-      route: '/',
-      level: 0
+      route: null,
+      level: 0,
+      active: false
+    },
+    {
+      module: 'reportes',
+      icon: 'document-text-outline',
+      label: 'Reportes',
+      route: null,
+      level: 0,
+      active: false
+    },
+    {
+      module: 'administracion',
+      icon: 'clipboard-outline',
+      label: 'Administración',
+      route: null,
+      level: 0,
+      active: false,
+      children: [
+        {
+          module: 'cat-vehiculos',
+          icon: 'bookmarks',
+          label: 'Catálogo de Vehículos',
+          route: null,
+          level: 1,
+          active: false,
+          children: [
+            {
+              module: 'cat-vehiculos',
+              icon: 'bookmarks',
+              label: 'Listado de Vehículos',
+              route: '/administracion/cat-vehiculos/disponibles',
+              level: 2,
+              active: false,
+            },
+            {
+              module: 'cat-vehiculos',
+              icon: 'bookmarks',
+              label: 'Listado de Marcas',
+              route: '/administracion/cat-vehiculos/marcas',
+              level: 2,
+              active: false,
+            },
+            {
+              module: 'cat-vehiculos',
+              icon: 'bookmarks',
+              label: 'Listado de Categorías',
+              route: '/',
+              level: 2,
+              active: false,
+            }
+          ]
+        },
+        {
+          module: 'acceso',
+          icon: 'bookmarks',
+          label: 'Control de Acceso',
+          route: null,
+          level: 1,
+          active: false,
+          children: [
+            {
+              module: 'acceso',
+              icon: 'bookmarks',
+              label: 'Listado de Usuarios',
+              route: '/administracion/acceso/usuarios',
+              level: 2,
+              active: false,
+            },
+            {
+              module: 'acceso',
+              icon: 'bookmarks',
+              label: 'Listado de Roles',
+              route: '/administracion/acceso/roles',
+              level: 2,
+              active: false,
+            },
+            {
+              module: 'acceso',
+              icon: 'bookmarks',
+              label: 'Listado de Aréas de trabajo',
+              route: '/administracion/acceso/areas-trabajo',
+              level: 2,
+              active: false,
+            },
+            {
+              module: 'acceso',
+              icon: 'bookmarks',
+              label: 'Listado de Sucursales',
+              route: '/administracion/acceso/sucursales',
+              level: 2,
+              active: false,
+            }
+          ]
+        },
+        {
+          module: 'clientes',
+          icon: 'bookmarks',
+          label: 'Clientes',
+          route: null,
+          level: 1,
+          active: false,
+          children: [
+            {
+              module: 'clientes',
+              icon: 'bookmarks',
+              label: 'Listado de Clientes',
+              route: '/',
+              level: 2,
+              active: false,
+            }
+          ]
+        }
+      ]
     },
   ];
   constructor(
@@ -75,7 +194,7 @@ export class AppComponent implements OnDestroy {
         filter((event: RouterEvent) => event instanceof NavigationEnd),
         takeUntil(this.destroyed)
       ).subscribe((response) => {
-        console.log('route sub -->', response);
+        //console.log('route sub -->', response);
         this._navRoute = response.url;
         if (response.url === '/login' || response.url === '/otp/recovery-pwd') {
           this.showMenu = false;
@@ -95,15 +214,33 @@ export class AppComponent implements OnDestroy {
     //this.menu.toggle();
   }
 
-  menuItemHandler(type): void {
-    if (this.subMenuOpen === false) {
-      this.subMenuOpen = true;
-      this.showSubmenu = type;
-    } else {
-      this.subMenuOpen = false;
-      this.showSubmenu = null;
+  menuItemHandler(node: MenuTreeI): void {
+
+    console.log('selected node --->', this.selectedMenu);
+    console.log('node -->', node);
+
+    if (this.selectedMenu && (this.selectedMenu.module !== node.module && this.selectedMenu.level === node.level)) {
+      this.selectedMenu.active = false;
+    }
+    if (node !== this.selectedMenu && node.active) {
+      node.active = false;
+      //this.selectedMenu = node;
+      console.log(node !== this.selectedMenu && node.active);
+      return;
+    }
+    if (node === this.selectedMenu && node.active) {
+      node.active = false;
+      //this.selectedMenu = node;
+      console.log(node === this.selectedMenu && node.active);
+      return;
     }
 
+
+      node.active = true;
+
+    this.selectedMenu = node;
+    return;
+    //this.selectedMenu.active = true;
   }
 
   isActive(check) {

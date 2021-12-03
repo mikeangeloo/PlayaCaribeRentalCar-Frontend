@@ -25,11 +25,11 @@ const routes: Routes = [
         loadChildren: () => import('./modules/catalogs/empresas/empresas.module').then( m => m.EmpresasPageModule)
       },
       {
-        path: 'catalogos/sucursales',
+        path: 'administracion/acceso/sucursales',
         loadChildren: () => import('./modules/catalogs/sucursales/sucursales.module').then( m => m.SucursalesPageModule)
       },
       {
-        path: 'catalogos/marcas',
+        path: 'administracion/cat-vehiculos/marcas',
         loadChildren: () => import('./modules/catalogs/marcas/marcas.module').then( m => m.MarcasPageModule)
       },
       {
@@ -41,19 +41,19 @@ const routes: Routes = [
         loadChildren: () => import('./modules/catalogs/colores/colores.module').then(m => m.ColoresPageModule)
       },
       {
-        path: 'usuarios',
+        path: 'administracion/acceso/usuarios',
         loadChildren: () => import('./modules/users/users.module').then( m => m.UsersPageModule)
       },
       {
-        path: 'usuarios/areas-trabajo',
+        path: 'administracion/acceso/areas-trabajo',
         loadChildren: () => import('./modules/areas-trabajo/areas-trabajo.module').then( m => m.AreasTrabajoPageModule)
       },
       {
-        path: 'usuarios/roles',
+        path: 'administracion/acceso/roles',
         loadChildren: () => import('./modules/roles/roles.module').then( m => m.RolesPageModule)
       },
       {
-        path: 'vehiculos/disponibles',
+        path: 'administracion/cat-vehiculos/disponibles',
         loadChildren: () => import('./modules/vehiculos/vehiculos.module').then( m => m.VehiculosPageModule)
       },
     ]

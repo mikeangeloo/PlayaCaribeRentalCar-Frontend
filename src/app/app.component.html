@@ -27,13 +27,13 @@
 
         <ion-list id="sidenav" class="links-container">
 
-          <ng-container> <!-- Dashboard -->
+          <!--<ng-container> &lt;!&ndash; Dashboard &ndash;&gt;
             <ion-item class="item item-icon-left" routerLinkActive="active-route" [routerLink]="['dashboard']"
                       (click)="closeMenu()">
               <ion-icon name="apps-outline"></ion-icon>&nbsp; Dashboard
             </ion-item>
-          </ng-container> <!-- Dashboard -->
-          <ng-container> <!-- Contratos -->
+          </ng-container> &lt;!&ndash; Dashboard &ndash;&gt;
+          <ng-container> &lt;!&ndash; Contratos &ndash;&gt;
             <ion-item class="item item-icon-left" (click)="menuItemHandler('contratos')" detail>
               <ion-icon name="clipboard-outline"></ion-icon>&nbsp; Contratos
             </ion-item>
@@ -43,23 +43,23 @@
                 Nuevo Contrato
               </ion-item>
             </ion-item-group>
-          </ng-container> <!-- Contratos -->
-          <ng-container> <!-- Vehículos -->
+          </ng-container> &lt;!&ndash; Contratos &ndash;&gt;
+          <ng-container> &lt;!&ndash; Vehículos &ndash;&gt;
             <ion-item class="item item-icon-left" routerLinkActive="active-route" (click)="closeMenu()">
               <ion-icon name="document-text-outline"></ion-icon>&nbsp; Vehículos
             </ion-item>
-          </ng-container> <!-- Vehículos -->
-          <ng-container> <!-- Reportes -->
+          </ng-container> &lt;!&ndash; Vehículos &ndash;&gt;
+          <ng-container> &lt;!&ndash; Reportes &ndash;&gt;
             <ion-item class="item item-icon-left" routerLinkActive="active-route" (click)="closeMenu()">
               <ion-icon name="document-text-outline"></ion-icon>&nbsp; Reportes
             </ion-item>
-          </ng-container> <!-- Reportes -->
-          <ng-container> <!-- Administración -->
+          </ng-container> &lt;!&ndash; Reportes &ndash;&gt;
+          <ng-container> &lt;!&ndash; Administración &ndash;&gt;
             <ion-item class="item item-icon-left" detail>
               <ion-icon name="clipboard-outline"></ion-icon>&nbsp; Administración
             </ion-item>
-            <ng-container> <!-- Cátalogo de vehículos -->
-              <ion-item-group submenu class="visible"> <!-- Cátalogo de vehículos -->
+            <ng-container> &lt;!&ndash; Cátalogo de vehículos &ndash;&gt;
+              <ion-item-group submenu class="visible"> &lt;!&ndash; Cátalogo de vehículos &ndash;&gt;
                 <ion-item detail>
                   <ion-icon name="bookmarks"></ion-icon>
                   Catálogos de Vehículos
@@ -80,8 +80,8 @@
                 </ion-item-group>
 
               </ion-item-group>
-            </ng-container> <!-- Cátalogo de vehículos -->
-            <ng-container> <!-- Control de acceso -->
+            </ng-container> &lt;!&ndash; Cátalogo de vehículos &ndash;&gt;
+            <ng-container> &lt;!&ndash; Control de acceso &ndash;&gt;
               <ion-item detail>
                 <ion-icon name="bookmarks"></ion-icon>
                 Control de acceso
@@ -100,8 +100,8 @@
                   &nbsp; Listado de Sucursales
                 </ion-item>
               </ion-item-group>
-            </ng-container> <!-- Control de acceso -->
-            <ng-container> <!-- Clientes -->
+            </ng-container> &lt;!&ndash; Control de acceso &ndash;&gt;
+            <ng-container> &lt;!&ndash; Clientes &ndash;&gt;
               <ion-item detail>
                 <ion-icon name="bookmarks"></ion-icon>
                 Clientes
@@ -112,18 +112,25 @@
                   &nbsp; Listado de clientes
                 </ion-item>
               </ion-item-group>
-            </ng-container> <!-- Clientes -->
+            </ng-container> &lt;!&ndash; Clientes &ndash;&gt;
 
-          </ng-container> <!-- Administración -->
+          </ng-container> &lt;!&ndash; Administración &ndash;&gt;-->
 
 
           <ng-container *ngTemplateOutlet="recursiveMenu; context: {$implicit: demoMenu}"></ng-container>
           <ng-template #recursiveMenu let-demoMenu>
             <ng-container *ngFor="let menu of demoMenu">
-              <ion-item class="item item-icon-left" detail>
-                <ion-icon name="{{menu.icon}}"></ion-icon>&nbsp; {{menu.label}}
-              </ion-item>
-              <ion-item-group *ngIf="menu.children && menu.children.length > 0" submenu [class.visible]="true">
+              <ng-container *ngIf="menu.route; else noItemRoute">
+                <ion-item class="item item-icon-left" detail [routerLink]="menu.route" [routerLinkActiveOptions]="{exact: true}" (click)="menuItemHandler(menu)" routerLinkActive="active-route" (click)="closeMenu()">
+                  <ion-icon name="{{menu.icon}}"></ion-icon>&nbsp;<span style="width: 100%; margin-left: 7px;">{{menu.label}}</span>
+                </ion-item>
+              </ng-container>
+              <ng-template #noItemRoute>
+                <ion-item class="item item-icon-left" detail (click)="menuItemHandler(menu)"  [ngClass]="{'active-route': isActive(menu.module)}" (click)="closeMenu()">
+                  <ion-icon name="{{menu.icon}}"></ion-icon>&nbsp;<span style="width: 100%; margin-left: 7px;">{{menu.label}}</span>
+                </ion-item>
+              </ng-template>
+              <ion-item-group *ngIf="menu.children && menu.children.length > 0" submenu [class.visible]="menu.active">
                 <ng-container *ngTemplateOutlet="recursiveMenu; context: {$implicit: menu.children}"></ng-container>
               </ion-item-group>
             </ng-container>
