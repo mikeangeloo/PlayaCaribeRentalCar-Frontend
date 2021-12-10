@@ -1,44 +1,38 @@
-import {Component, EventEmitter, Input, OnInit, Output, SimpleChanges, ViewChild} from '@angular/core';
-import {UsersI} from "../../../../interfaces/users.interface";
+import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild} from '@angular/core';
 import {MatTableDataSource} from "@angular/material/table";
 import {MatPaginator} from "@angular/material/paginator";
 import {MatSort} from "@angular/material/sort";
 import {GeneralService} from "../../../../services/general.service";
-import {UsersService} from "../../../../services/users.service";
 import {ActionSheetController, ModalController, NavController} from "@ionic/angular";
 import {SweetMessagesService} from "../../../../services/sweet-messages.service";
 import {ToastMessageService} from "../../../../services/toast-message.service";
 import * as moment from "moment";
 import {TxtConv} from "../../../../helpers/txt-conv";
-import {UserFormComponent} from "../../users/user-form/user-form.component";
-import {VehiculosI} from "../../../../interfaces/catalogo-vehiculos/vehiculos.interface";
-import {VehiculosService} from "../../../../services/vehiculos.service";
-import {VehiculoFormComponent} from "../vehiculo-form/vehiculo-form.component";
+import {MarcasVehiculosService} from "../../../../services/marcas-vehiculos.service";
+import {MarcasVehiculosI} from "../../../../interfaces/catalogo-vehiculos/marcas-vehiculos.interface";
+import {MarcaVehiculoFormComponent} from "../marca-vehiculo-form/marca-vehiculo-form.component";
 
 @Component({
-  selector: 'app-vehiculos-list',
-  templateUrl: './vehiculos-list.component.html',
-  styleUrls: ['./vehiculos-list.component.scss'],
+  selector: 'app-marcas-vehiculos-list',
+  templateUrl: './marcas-vehiculos-list.component.html',
+  styleUrls: ['./marcas-vehiculos-list.component.scss'],
 })
-export class VehiculosListComponent implements OnInit {
+export class MarcasVehiculosListComponent implements OnInit, OnChanges {
+
   public spinner = false;
-  public editVehiculo: VehiculosI;
-  @Input() public vehiculos: VehiculosI[] = [];
+  public editMarca: MarcasVehiculosI;
+  @Input() public marcas: MarcasVehiculosI[] = [];
   @Input() isModal: boolean;
   @Output() emitData = new EventEmitter();
   displayedColumns: string[] = [
     'id',
-    'nombre',
     'marca',
-    'modelo',
-    'precio',
-    'no_placas',
-    'version',
+    'tipo',
     'activo',
     'created_at',
     'acciones'
   ];
-  listVehiculos: MatTableDataSource<any>;
+  listMarcas: MatTableDataSource<any>;
   public searchKey: string;
   @ViewChild(MatPaginator, {static: false}) paginator3: MatPaginator;
   @ViewChild(MatSort, {static: true}) sort: MatSort;
@@ -47,7 +41,7 @@ export class VehiculosListComponent implements OnInit {
 
   constructor(
     public generalService: GeneralService,
-    public vehiculosServ: VehiculosService,
+    public marcasServ: MarcasVehiculosService,
     public modalCtr: ModalController,
     public navigateCtrl: NavController,
     public actionSheetController: ActionSheetController,
@@ -55,7 +49,7 @@ export class VehiculosListComponent implements OnInit {
     public toastServ: ToastMessageService
   ) {
     //this.loadSurveysTable();
-    this.initVehiculo();
+    this.initMarca();
   }
 
   ngOnInit() {
@@ -63,45 +57,44 @@ export class VehiculosListComponent implements OnInit {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    const vehiculosChange = changes.vehiculos;
-    if (vehiculosChange.isFirstChange() === true || vehiculosChange.firstChange === false) {
-      if (this.vehiculos) {
-        this.loadVehiculosTable(this.vehiculos);
+    const marcasChange = changes.marcas;
+    if (marcasChange.isFirstChange() === true || marcasChange.firstChange === false) {
+      if (this.marcas) {
+        this.loadMarcasTable(this.marcas);
       } else {
-        this.loadVehiculosTable();
+        this.loadMarcasTable();
       }
     }
   }
 
-  initVehiculo() {
+  initMarca() {
     const currDate = moment().format('YYYY-MM-DD');
-    this.editVehiculo = {
+    this.editMarca = {
       id: 0,
     };
   }
 
   // Método para cargar datos de los campus
-  loadVehiculosTable(_data?: VehiculosI[]) {
+  loadMarcasTable(_marcas?: MarcasVehiculosI[]) {
     //this.empresas = null;
-    this.listVehiculos = null;
-    this.initVehiculo();
+    this.listMarcas = null;
+    this.initMarca();
     this.spinner = true;
 
-    if (_data) {
-      this.vehiculos = _data;
+    if (_marcas) {
+      this.marcas = _marcas;
       this.spinner = false;
-      this.listVehiculos = new MatTableDataSource(_data);
-      this.listVehiculos.sort = this.sort;
-      this.listVehiculos.paginator = this.paginator3;
+      this.listMarcas = new MatTableDataSource(_marcas);
+      this.listMarcas.sort = this.sort;
+      this.listMarcas.paginator = this.paginator3;
     } else {
-      console.log(this.vehiculos);
-      this.vehiculosServ.getAll().subscribe(response => {
+      this.marcasServ.getAll().subscribe(response => {
         if (response.ok === true) {
           this.spinner = false;
-          this.listVehiculos = new MatTableDataSource(response.vehiculos);
-          this.listVehiculos.sort = this.sort;
-          this.listVehiculos.paginator = this.paginator3;
-          this.vehiculos = response.vehiculos;
+          this.listMarcas = new MatTableDataSource(response.marcas);
+          this.listMarcas.sort = this.sort;
+          this.listMarcas.paginator = this.paginator3;
+          this.marcas = response.marcas;
         }
       }, error => {
         this.spinner = false;
@@ -113,7 +106,7 @@ export class VehiculosListComponent implements OnInit {
   // Method to filter mat-table according to the value enter at input search filter
   applyFilter(event?) {
     const searchValue = event.target.value;
-    this.listVehiculos.filter = TxtConv.txtCon(searchValue, 'lowercase');
+    this.listMarcas.filter = TxtConv.txtCon(searchValue, 'lowercase');
     // this.listSurveys.filter = this.searchKey.trim().toLocaleLowerCase();
     // if (this.dataSource.paginator) {
     //   this.dataSource.paginator.firstPage();
@@ -126,22 +119,22 @@ export class VehiculosListComponent implements OnInit {
     this.applyFilter();
   }
 
-  catchSelectedRow(_data: VehiculosI) {
-    this.editVehiculo = _data;
+  catchSelectedRow(_marca: MarcasVehiculosI) {
+    this.editMarca = _marca;
   }
   // Método para editar survey
-  async openVehiculoForm(_data?: VehiculosI) {
-    if (_data) {
-      this.editVehiculo = _data;
+  async openMarcaForm(_marca?: MarcasVehiculosI) {
+    if (_marca) {
+      this.editMarca = _marca;
     } else {
-      this.initVehiculo();
+      this.initMarca();
     }
     //this.generalService.presentLoading();
     const modal = await this.modalCtr.create({
-      component: VehiculoFormComponent,
+      component: MarcaVehiculoFormComponent,
       componentProps: {
         'asModal': true,
-        'vehiculo_id': (_data && _data.id) ? _data.id : null
+        'marca_id': (_marca && _marca.id) ? _marca.id : null
       },
       swipeToClose: true,
       cssClass: 'edit-form'
@@ -149,17 +142,17 @@ export class VehiculosListComponent implements OnInit {
     await modal.present();
     const {data} = await modal.onWillDismiss();
     if (data.reload && data.reload === true) {
-      this.loadVehiculosTable();
+      this.loadMarcasTable();
     }
   }
 
-  inactiveVehiculo(_data: VehiculosI) {
+  inactiveMarca(marca: MarcasVehiculosI) {
     this.sweetServ.confirmRequest('¿Estás seguro de querer deshabilitar este registro ?').then((data) => {
       if (data.value) {
-        this.vehiculosServ.setInactive(_data.id).subscribe(res => {
+        this.marcasServ.setInactive(marca.id).subscribe(res => {
           if (res.ok === true) {
             this.toastServ.presentToast('success', res.message, 'top');
-            this.loadVehiculosTable();
+            this.loadMarcasTable();
           }
         }, error => {
           console.log(error);
@@ -169,13 +162,13 @@ export class VehiculosListComponent implements OnInit {
     });
   }
 
-  activeVehiculo(_data: VehiculosI) {
+  activeMarca(marca: MarcasVehiculosI) {
     this.sweetServ.confirmRequest('¿Estás seguro de querer habilitar este registro ?').then((data) => {
       if (data.value) {
-        this.vehiculosServ.setEnable(_data.id).subscribe(res => {
+        this.marcasServ.setEnable(marca.id).subscribe(res => {
           if (res.ok === true) {
             this.toastServ.presentToast('success', res.message, 'top');
-            this.loadVehiculosTable();
+            this.loadMarcasTable();
           }
         }, error => {
           console.log(error);
@@ -183,6 +176,19 @@ export class VehiculosListComponent implements OnInit {
         });
       }
     });
+  }
+
+  returnTipoMarca(tipo) {
+    switch (tipo) {
+      case 0:
+        return 'Multi-Marca';
+      case 1:
+        return 'Véhiculo';
+      case 2:
+        return 'Motocicleta';
+      default:
+        return 'No especificado';
+    }
   }
 
 }

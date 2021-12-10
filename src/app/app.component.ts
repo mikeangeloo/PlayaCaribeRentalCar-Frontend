@@ -101,7 +101,7 @@ export class AppComponent implements OnDestroy {
               module: 'cat-vehiculos',
               icon: 'bookmarks',
               label: 'Listado de Marcas',
-              route: '/administracion/cat-vehiculos/marcas',
+              route: '/administracion/cat-vehiculos/marcas-vehiculos-vehiculos',
               level: 2,
               active: false,
             },

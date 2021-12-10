@@ -29,16 +29,12 @@ const routes: Routes = [
         loadChildren: () => import('./modules/catalogs/sucursales/sucursales.module').then( m => m.SucursalesPageModule)
       },
       {
-        path: 'administracion/cat-vehiculos/marcas',
-        loadChildren: () => import('./modules/catalogs/marcas/marcas.module').then( m => m.MarcasPageModule)
+        path: 'administracion/cat-vehiculos/marcas-vehiculos-vehiculos',
+        loadChildren: () => import('./modules/catalogo-vehiculos/marcas-vehiculos/marcas-vehiculos.module').then(m => m.MarcasVehiculosPageModule)
       },
       {
-        path: 'catalogos/modelos',
-        loadChildren: () => import('./modules/catalogs/modelos/modelos.module').then(m => m.ModelosPageModule)
-      },
-      {
-        path: 'catalogos/colores',
-        loadChildren: () => import('./modules/catalogs/colores/colores.module').then(m => m.ColoresPageModule)
+        path: 'catalogos/categorias-vehiculos',
+        loadChildren: () => import('./modules/catalogo-vehiculos/categorias-vehiculos/categorias-vehiculos.module').then(m => m.CategoriasVehiculosPageModule)
       },
       {
         path: 'administracion/acceso/usuarios',
@@ -54,7 +50,7 @@ const routes: Routes = [
       },
       {
         path: 'administracion/cat-vehiculos/disponibles',
-        loadChildren: () => import('./modules/vehiculos/vehiculos.module').then( m => m.VehiculosPageModule)
+        loadChildren: () => import('./modules/catalogo-vehiculos/vehiculos/vehiculos.module').then(m => m.VehiculosPageModule)
       },
     ]
   },

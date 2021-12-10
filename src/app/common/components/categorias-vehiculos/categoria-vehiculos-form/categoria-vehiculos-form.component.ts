@@ -6,66 +6,68 @@ import {MarcasVehiculosService} from "../../../../services/marcas-vehiculos.serv
 import {GeneralService} from "../../../../services/general.service";
 import {SweetMessagesService} from "../../../../services/sweet-messages.service";
 import {ToastMessageService} from "../../../../services/toast-message.service";
-import {ColoresI} from "../../../../interfaces/colores.interface";
-import {ColoresService} from "../../../../services/colores.service";
+import {CategoriasVehiculosI} from "../../../../interfaces/catalogo-vehiculos/categorias-vehiculos.interface";
+import {CategoriaVehiculosService} from "../../../../services/categoria-vehiculos.service";
 
 @Component({
-  selector: 'app-color-form',
-  templateUrl: './color-form.component.html',
-  styleUrls: ['./color-form.component.scss'],
+  selector: 'app-categoria-vehiculos-form',
+  templateUrl: './categoria-vehiculos-form.component.html',
+  styleUrls: ['./categoria-vehiculos-form.component.scss'],
 })
-export class ColorFormComponent implements OnInit {
+export class CategoriaVehiculosFormComponent implements OnInit {
 
   @Input() asModal: boolean;
-  @Input() color_id: number;
+  @Input() categoria_vehiculo_id: number;
   public title: string;
-  public colorForm: FormGroup;
-  public colorData: ColoresI;
+  public categoriaVehiculoForm: FormGroup;
+  public categoriaVehiculoData: CategoriasVehiculosI;
   constructor(
     public modalCtrl: ModalController,
     private fb: FormBuilder,
-    private colorServ: ColoresService,
+    private catVehiculosServ: CategoriaVehiculosService,
+    private marcaServ: MarcasVehiculosService,
     private generalServ: GeneralService,
     private sweetMsg: SweetMessagesService,
     private toastServ: ToastMessageService
   ) {
-    this.title = 'Formulario Color Vehículos';
-    this.colorForm = this.fb.group({
+    this.title = 'Formulario Categorías Vehículos';
+    this.categoriaVehiculoForm = this.fb.group({
       id: [null],
-      color: [null, Validators.required],
+      categoria: [null, Validators.required],
       activo: [null]
     });
   }
 
-  get cf() {
-    return this.colorForm.controls;
+  get mf() {
+    return this.categoriaVehiculoForm.controls;
   }
 
   ngOnInit() {
-    if (this.color_id) {
-      this.loadColorData();
+    if (this.categoria_vehiculo_id) {
+      this.loadCategoriasVehiculosData();
     } else {
-      this.initColorForm();
+      this.initCategoriaVehiculoForm();
     }
   }
 
-  initColorForm(data?) {
-    this.colorForm.setValue({
+  initCategoriaVehiculoForm(data?) {
+    this.categoriaVehiculoForm.setValue({
       id: (data && data.id) ? data.id : null,
-      color: (data && data.color) ? data.color : null,
+      modelo: (data && data.modelo) ? data.modelo : null,
+      marca_id: (data && data.marca_id) ? data.marca_id : null,
       activo: (data && data.activo) ? data.activo : 0,
     });
-    this.cf.activo.disable();
+    this.mf.activo.disable();
   }
 
 
 
-  loadColorData() {
+  loadCategoriasVehiculosData() {
     this.generalServ.presentLoading();
-    this.colorServ.getDataById(this.color_id).subscribe(res => {
+    this.catVehiculosServ.getDataById(this.categoria_vehiculo_id).subscribe(res => {
       this.generalServ.dismissLoading();
       if (res.ok === true) {
-        this.initColorForm(res.color);
+        this.initCategoriaVehiculoForm(res.categorias);
       }
     }, error => {
       this.generalServ.dismissLoading();
@@ -74,13 +76,13 @@ export class ColorFormComponent implements OnInit {
   }
 
   saveUpdate() {
-    if (this.colorForm.invalid) {
+    if (this.categoriaVehiculoForm.invalid) {
       this.sweetMsg.printStatus('Debe llenar los campos requeridos', 'warning');
-      this.colorForm.markAllAsTouched();
+      this.categoriaVehiculoForm.markAllAsTouched();
       return;
     }
     this.generalServ.presentLoading('Guardando cambios ...');
-    this.colorServ.saveUpdate(this.colorForm.value, this.color_id).subscribe(res => {
+    this.catVehiculosServ.saveUpdate(this.categoriaVehiculoForm.value, this.categoria_vehiculo_id).subscribe(res => {
       this.generalServ.dismissLoading();
       this.dismiss(true);
       if (res.ok === true) {
@@ -97,4 +99,5 @@ export class ColorFormComponent implements OnInit {
       reload
     });
   }
+
 }

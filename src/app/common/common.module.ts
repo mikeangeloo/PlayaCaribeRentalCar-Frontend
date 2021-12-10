@@ -8,10 +8,10 @@ import {RouterModule} from "@angular/router";
 import {EmpresaFormComponent} from "./components/empresas/empresa-form/empresa-form.component";
 import {SucursalesListComponent} from "./components/sucursales/sucursales-list/sucursales-list.component";
 import {SucursalFormComponent} from "./components/sucursales/sucursal-form/sucursal-form.component";
-import {MarcasListComponent} from "./components/marcas/marcas-list/marcas-list.component";
-import {MarcasFormComponent} from "./components/marcas/marcas-form/marcas-form.component";
-import {ModelosListComponent} from "./components/modelos/modelos-list/modelos-list.component";
-import {ModelosFormComponent} from "./components/modelos/modelos-form/modelos-form.component";
+import {MarcasVehiculosListComponent} from "./components/marcas-vehiculos/marcas-vehiculos-list/marcas-vehiculos-list.component";
+import {MarcaVehiculoFormComponent} from "./components/marcas-vehiculos/marca-vehiculo-form/marca-vehiculo-form.component";
+import {CategoriaVehiculosListComponent} from "./components/categorias-vehiculos/categoria-vehiculos-list/categoria-vehiculos-list.component";
+import {CategoriaVehiculosFormComponent} from "./components/categorias-vehiculos/categoria-vehiculos-form/categoria-vehiculos-form.component";
 import {ColoresListComponent} from "./components/colores/colores-list/colores-list.component";
 import {ColorFormComponent} from "./components/colores/color-form/color-form.component";
 import {UserFormComponent} from "./components/users/user-form/user-form.component";
@@ -31,10 +31,10 @@ import {VehiculoFormComponent} from "./components/vehiculos/vehiculo-form/vehicu
     EmpresaFormComponent,
     SucursalesListComponent,
     SucursalFormComponent,
-    MarcasListComponent,
-    MarcasFormComponent,
-    ModelosListComponent,
-    ModelosFormComponent,
+    MarcasVehiculosListComponent,
+    MarcaVehiculoFormComponent,
+    CategoriaVehiculosListComponent,
+    CategoriaVehiculosFormComponent,
     ColoresListComponent,
     ColorFormComponent,
     UserFormComponent,
@@ -51,10 +51,10 @@ import {VehiculoFormComponent} from "./components/vehiculos/vehiculo-form/vehicu
     EmpresaFormComponent,
     SucursalesListComponent,
     SucursalFormComponent,
-    MarcasListComponent,
-    MarcasFormComponent,
-    ModelosListComponent,
-    ModelosFormComponent,
+    MarcasVehiculosListComponent,
+    MarcaVehiculoFormComponent,
+    CategoriaVehiculosListComponent,
+    CategoriaVehiculosFormComponent,
     ColoresListComponent,
     ColorFormComponent,
     UserFormComponent,
@@ -71,10 +71,10 @@ import {VehiculoFormComponent} from "./components/vehiculos/vehiculo-form/vehicu
     EmpresaFormComponent,
     SucursalesListComponent,
     SucursalFormComponent,
-    MarcasListComponent,
-    MarcasFormComponent,
-    ModelosListComponent,
-    ModelosFormComponent,
+    MarcasVehiculosListComponent,
+    MarcaVehiculoFormComponent,
+    CategoriaVehiculosListComponent,
+    CategoriaVehiculosFormComponent,
     ColoresListComponent,
     ColorFormComponent,
     UserFormComponent,

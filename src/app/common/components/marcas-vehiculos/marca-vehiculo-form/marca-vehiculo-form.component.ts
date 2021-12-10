@@ -1,71 +1,71 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
-import {MarcasVehiculosI} from "../../../../interfaces/catalogo-vehiculos/marcas-vehiculos.interface";
 import {ModalController} from "@ionic/angular";
-import {MarcasVehiculosService} from "../../../../services/marcas-vehiculos.service";
 import {GeneralService} from "../../../../services/general.service";
 import {SweetMessagesService} from "../../../../services/sweet-messages.service";
 import {ToastMessageService} from "../../../../services/toast-message.service";
-import {ColoresI} from "../../../../interfaces/colores.interface";
-import {ColoresService} from "../../../../services/colores.service";
+import {MarcasVehiculosI} from "../../../../interfaces/catalogo-vehiculos/marcas-vehiculos.interface";
+import {MarcasVehiculosService} from "../../../../services/marcas-vehiculos.service";
 
 @Component({
-  selector: 'app-color-form',
-  templateUrl: './color-form.component.html',
-  styleUrls: ['./color-form.component.scss'],
+  selector: 'app-marca-vehiculo-form',
+  templateUrl: './marca-vehiculo-form.component.html',
+  styleUrls: ['./marca-vehiculo-form.component.scss'],
 })
-export class ColorFormComponent implements OnInit {
+export class MarcaVehiculoFormComponent implements OnInit {
 
   @Input() asModal: boolean;
-  @Input() color_id: number;
+  @Input() marca_id: number;
   public title: string;
-  public colorForm: FormGroup;
-  public colorData: ColoresI;
+  public marcaForm: FormGroup;
+  public marcaData: MarcasVehiculosI;
   constructor(
     public modalCtrl: ModalController,
     private fb: FormBuilder,
-    private colorServ: ColoresService,
+    private marcasServ: MarcasVehiculosService,
     private generalServ: GeneralService,
     private sweetMsg: SweetMessagesService,
     private toastServ: ToastMessageService
   ) {
-    this.title = 'Formulario Color Vehículos';
-    this.colorForm = this.fb.group({
+    this.title = 'Formulario Marca Vehículos';
+    this.marcaForm = this.fb.group({
       id: [null],
-      color: [null, Validators.required],
+      marca: [null, Validators.required],
+      tipo: [null, Validators.required],
       activo: [null]
     });
   }
 
-  get cf() {
-    return this.colorForm.controls;
+  get mf() {
+    return this.marcaForm.controls;
   }
 
   ngOnInit() {
-    if (this.color_id) {
-      this.loadColorData();
+    if (this.marca_id) {
+      this.loadMarcaData();
     } else {
-      this.initColorForm();
+      this.initMarcaForm();
     }
   }
 
-  initColorForm(data?) {
-    this.colorForm.setValue({
+  initMarcaForm(data?) {
+    this.marcaForm.setValue({
       id: (data && data.id) ? data.id : null,
-      color: (data && data.color) ? data.color : null,
+      marca: (data && data.marca) ? data.marca : null,
+      tipo: (data && data.tipo) ? data.tipo : 0,
       activo: (data && data.activo) ? data.activo : 0,
     });
-    this.cf.activo.disable();
+    this.mf.activo.disable();
   }
 
 
 
-  loadColorData() {
+  loadMarcaData() {
     this.generalServ.presentLoading();
-    this.colorServ.getDataById(this.color_id).subscribe(res => {
+    this.marcasServ.getDataById(this.marca_id).subscribe(res => {
       this.generalServ.dismissLoading();
       if (res.ok === true) {
-        this.initColorForm(res.color);
+        this.initMarcaForm(res.marca);
       }
     }, error => {
       this.generalServ.dismissLoading();
@@ -74,13 +74,13 @@ export class ColorFormComponent implements OnInit {
   }
 
   saveUpdate() {
-    if (this.colorForm.invalid) {
+    if (this.marcaForm.invalid) {
       this.sweetMsg.printStatus('Debe llenar los campos requeridos', 'warning');
-      this.colorForm.markAllAsTouched();
+      this.marcaForm.markAllAsTouched();
       return;
     }
     this.generalServ.presentLoading('Guardando cambios ...');
-    this.colorServ.saveUpdate(this.colorForm.value, this.color_id).subscribe(res => {
+    this.marcasServ.saveUpdate(this.marcaForm.value, this.marca_id).subscribe(res => {
       this.generalServ.dismissLoading();
       this.dismiss(true);
       if (res.ok === true) {

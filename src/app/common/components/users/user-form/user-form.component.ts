@@ -1,8 +1,8 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
-import {MarcasI} from "../../../../interfaces/marcas.interface";
+import {MarcasVehiculosI} from "../../../../interfaces/catalogo-vehiculos/marcas-vehiculos.interface";
 import {ModalController} from "@ionic/angular";
-import {MarcasService} from "../../../../services/marcas.service";
+import {MarcasVehiculosService} from "../../../../services/marcas-vehiculos.service";
 import {GeneralService} from "../../../../services/general.service";
 import {SweetMessagesService} from "../../../../services/sweet-messages.service";
 import {ToastMessageService} from "../../../../services/toast-message.service";
