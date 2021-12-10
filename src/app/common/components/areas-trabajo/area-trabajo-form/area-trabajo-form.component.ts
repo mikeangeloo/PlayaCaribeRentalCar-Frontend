@@ -1,8 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
-import {ColoresI} from "../../../../interfaces/colores.interface";
 import {ModalController} from "@ionic/angular";
-import {ColoresService} from "../../../../services/colores.service";
 import {GeneralService} from "../../../../services/general.service";
 import {SweetMessagesService} from "../../../../services/sweet-messages.service";
 import {ToastMessageService} from "../../../../services/toast-message.service";

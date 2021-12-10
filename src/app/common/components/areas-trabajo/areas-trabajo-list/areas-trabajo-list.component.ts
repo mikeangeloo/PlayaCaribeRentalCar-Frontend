@@ -1,16 +1,13 @@
 import {Component, EventEmitter, Input, OnInit, Output, SimpleChanges, ViewChild} from '@angular/core';
-import {ColoresI} from "../../../../interfaces/colores.interface";
 import {MatTableDataSource} from "@angular/material/table";
 import {MatPaginator} from "@angular/material/paginator";
 import {MatSort} from "@angular/material/sort";
 import {GeneralService} from "../../../../services/general.service";
-import {ColoresService} from "../../../../services/colores.service";
 import {ActionSheetController, ModalController, NavController} from "@ionic/angular";
 import {SweetMessagesService} from "../../../../services/sweet-messages.service";
 import {ToastMessageService} from "../../../../services/toast-message.service";
 import * as moment from "moment";
 import {TxtConv} from "../../../../helpers/txt-conv";
-import {ColorFormComponent} from "../../colores/color-form/color-form.component";
 import {AreaTrabajoI} from "../../../../interfaces/profile/area-trabajo.interface";
 import {AreasTrabajoService} from "../../../../services/areas-trabajo.service";
 import {AreaTrabajoFormComponent} from "../area-trabajo-form/area-trabajo-form.component";

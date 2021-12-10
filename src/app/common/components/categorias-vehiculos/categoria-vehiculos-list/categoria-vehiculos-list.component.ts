@@ -26,7 +26,7 @@ export class CategoriaVehiculosListComponent implements OnInit, OnChanges {
   @Output() emitData = new EventEmitter();
   displayedColumns: string[] = [
     'id',
-    'modelo',
+    'categoria',
     'activo',
     'created_at',
     'acciones'
@@ -90,7 +90,7 @@ export class CategoriaVehiculosListComponent implements OnInit, OnChanges {
       this.catVehiculosServ.getAll().subscribe(response => {
         if (response.ok === true) {
           this.spinner = false;
-          this.listCatVehiculos = new MatTableDataSource(response.modelos);
+          this.listCatVehiculos = new MatTableDataSource(response.categorias);
           this.listCatVehiculos.sort = this.sort;
           this.listCatVehiculos.paginator = this.paginator3;
           this.categoriasVehiculos = response.categorias;

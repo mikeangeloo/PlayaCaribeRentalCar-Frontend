@@ -126,7 +126,7 @@
                 </ion-item>
               </ng-container>
               <ng-template #noItemRoute>
-                <ion-item class="item item-icon-left" detail (click)="menuItemHandler(menu)"  [ngClass]="{'active-route': isActive(menu.module)}" (click)="closeMenu()">
+                <ion-item class="item item-icon-left" detail (click)="menuItemHandler(menu)"  [ngClass]="{'active-route': isActive(menu.module)}">
                   <ion-icon name="{{menu.icon}}"></ion-icon>&nbsp;<span style="width: 100%; margin-left: 7px;">{{menu.label}}</span>
                 </ion-item>
               </ng-template>

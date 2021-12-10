@@ -12,8 +12,6 @@ import {MarcasVehiculosListComponent} from "./components/marcas-vehiculos/marcas
 import {MarcaVehiculoFormComponent} from "./components/marcas-vehiculos/marca-vehiculo-form/marca-vehiculo-form.component";
 import {CategoriaVehiculosListComponent} from "./components/categorias-vehiculos/categoria-vehiculos-list/categoria-vehiculos-list.component";
 import {CategoriaVehiculosFormComponent} from "./components/categorias-vehiculos/categoria-vehiculos-form/categoria-vehiculos-form.component";
-import {ColoresListComponent} from "./components/colores/colores-list/colores-list.component";
-import {ColorFormComponent} from "./components/colores/color-form/color-form.component";
 import {UserFormComponent} from "./components/users/user-form/user-form.component";
 import {UsersListComponent} from "./components/users/users-list/users-list.component";
 import {AreasTrabajoListComponent} from "./components/areas-trabajo/areas-trabajo-list/areas-trabajo-list.component";
@@ -35,8 +33,6 @@ import {VehiculoFormComponent} from "./components/vehiculos/vehiculo-form/vehicu
     MarcaVehiculoFormComponent,
     CategoriaVehiculosListComponent,
     CategoriaVehiculosFormComponent,
-    ColoresListComponent,
-    ColorFormComponent,
     UserFormComponent,
     UsersListComponent,
     AreasTrabajoListComponent,
@@ -55,8 +51,6 @@ import {VehiculoFormComponent} from "./components/vehiculos/vehiculo-form/vehicu
     MarcaVehiculoFormComponent,
     CategoriaVehiculosListComponent,
     CategoriaVehiculosFormComponent,
-    ColoresListComponent,
-    ColorFormComponent,
     UserFormComponent,
     UsersListComponent,
     AreasTrabajoListComponent,
@@ -75,8 +69,6 @@ import {VehiculoFormComponent} from "./components/vehiculos/vehiculo-form/vehicu
     MarcaVehiculoFormComponent,
     CategoriaVehiculosListComponent,
     CategoriaVehiculosFormComponent,
-    ColoresListComponent,
-    ColorFormComponent,
     UserFormComponent,
     UsersListComponent,
     AreasTrabajoListComponent,

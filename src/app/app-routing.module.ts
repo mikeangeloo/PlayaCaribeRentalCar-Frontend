@@ -20,6 +20,24 @@ const routes: Routes = [
         path: 'dashboard',
         loadChildren: () => import('./home/home.module').then( m => m.HomePageModule)
       },
+      //region ADMINISTRACION
+
+      //region CATALOGO VEHICULOS
+      {
+        path: 'administracion/catalogo-vehiculos/listado-vehiculos',
+        loadChildren: () => import('./modules/catalogo-vehiculos/vehiculos/vehiculos.module').then(m => m.VehiculosPageModule)
+      },
+      {
+        path: 'administracion/catalogo-vehiculos/categorias-vehiculos',
+        loadChildren: () => import('./modules/catalogo-vehiculos/categorias-vehiculos/categorias-vehiculos.module').then(m => m.CategoriasVehiculosPageModule)
+      },
+      {
+        path: 'administracion/catalogo-vehiculos/marcas-vehiculos',
+        loadChildren: () => import('./modules/catalogo-vehiculos/marcas-vehiculos/marcas-vehiculos.module').then(m => m.MarcasVehiculosPageModule)
+      },
+      //endregion
+
+      //endregion
       {
         path: 'catalogos/empresas',
         loadChildren: () => import('./modules/catalogs/empresas/empresas.module').then( m => m.EmpresasPageModule)
@@ -28,14 +46,7 @@ const routes: Routes = [
         path: 'administracion/acceso/sucursales',
         loadChildren: () => import('./modules/catalogs/sucursales/sucursales.module').then( m => m.SucursalesPageModule)
       },
-      {
-        path: 'administracion/cat-vehiculos/marcas-vehiculos-vehiculos',
-        loadChildren: () => import('./modules/catalogo-vehiculos/marcas-vehiculos/marcas-vehiculos.module').then(m => m.MarcasVehiculosPageModule)
-      },
-      {
-        path: 'catalogos/categorias-vehiculos',
-        loadChildren: () => import('./modules/catalogo-vehiculos/categorias-vehiculos/categorias-vehiculos.module').then(m => m.CategoriasVehiculosPageModule)
-      },
+
       {
         path: 'administracion/acceso/usuarios',
         loadChildren: () => import('./modules/users/users.module').then( m => m.UsersPageModule)
@@ -48,10 +59,7 @@ const routes: Routes = [
         path: 'administracion/acceso/roles',
         loadChildren: () => import('./modules/roles/roles.module').then( m => m.RolesPageModule)
       },
-      {
-        path: 'administracion/cat-vehiculos/disponibles',
-        loadChildren: () => import('./modules/catalogo-vehiculos/vehiculos/vehiculos.module').then(m => m.VehiculosPageModule)
-      },
+
     ]
   },
   {

@@ -82,7 +82,7 @@ export class AppComponent implements OnDestroy {
       active: false,
       children: [
         {
-          module: 'cat-vehiculos',
+          module: 'catalogo-vehiculos',
           icon: 'bookmarks',
           label: 'Catálogo de Vehículos',
           route: null,
@@ -90,26 +90,26 @@ export class AppComponent implements OnDestroy {
           active: false,
           children: [
             {
-              module: 'cat-vehiculos',
+              module: 'catalogo-vehiculos',
               icon: 'bookmarks',
               label: 'Listado de Vehículos',
-              route: '/administracion/cat-vehiculos/disponibles',
+              route: '/administracion/catalogo-vehiculos/listado-vehiculos',
               level: 2,
               active: false,
             },
             {
-              module: 'cat-vehiculos',
-              icon: 'bookmarks',
-              label: 'Listado de Marcas',
-              route: '/administracion/cat-vehiculos/marcas-vehiculos-vehiculos',
-              level: 2,
-              active: false,
-            },
-            {
-              module: 'cat-vehiculos',
+              module: 'catalogo-vehiculos',
               icon: 'bookmarks',
               label: 'Listado de Categorías',
-              route: '/',
+              route: '/administracion/catalogo-vehiculos/categorias-vehiculos',
+              level: 2,
+              active: false,
+            },
+            {
+              module: 'catalogo-vehiculos',
+              icon: 'bookmarks',
+              label: 'Listado de Marcas',
+              route: '/administracion/catalogo-vehiculos/marcas-vehiculos',
               level: 2,
               active: false,
             }
