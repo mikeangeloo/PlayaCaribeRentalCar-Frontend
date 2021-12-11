@@ -45,13 +45,13 @@
                 </mat-cell>
               </ng-container>
 
-              <!-- nombre-->
-              <ng-container matColumnDef="nombre">
-                <mat-header-cell *matHeaderCellDef mat-sort-header>Nombre</mat-header-cell>
+              <!-- modelo-->
+              <ng-container matColumnDef="modelo">
+                <mat-header-cell *matHeaderCellDef mat-sort-header>Modelo</mat-header-cell>
                 <mat-cell *matCellDef="let row">
                   <div class="column">
                     <p class="text-overflow">
-                      {{row.nombre}}
+                      {{row.modelo}}
                     </p>
                   </div>
                 </mat-cell>
@@ -69,13 +69,25 @@
                 </mat-cell>
               </ng-container>
 
-              <!-- modelo -->
-              <ng-container matColumnDef="modelo">
-                <mat-header-cell *matHeaderCellDef mat-sort-header>Modelo</mat-header-cell>
+              <!-- modelo_ano -->
+              <ng-container matColumnDef="modelo_ano">
+                <mat-header-cell *matHeaderCellDef mat-sort-header>Año</mat-header-cell>
                 <mat-cell *matCellDef="let row">
                   <div class="column">
                     <p class="text-overflow">
-                      {{row.modelo.modelo}}
+                      {{row.modelo_ano}}
+                    </p>
+                  </div>
+                </mat-cell>
+              </ng-container>
+
+              <!-- categoria -->
+              <ng-container matColumnDef="categoria">
+                <mat-header-cell *matHeaderCellDef mat-sort-header>Categoría</mat-header-cell>
+                <mat-cell *matCellDef="let row">
+                  <div class="column">
+                    <p class="text-overflow">
+                      {{row.categoria.categoria}}
                     </p>
                   </div>
                 </mat-cell>
@@ -87,31 +99,31 @@
                 <mat-cell *matCellDef="let row">
                   <div class="column">
                     <p class="text-overflow ion-text-uppercase">
-                      {{row.version}}
+                      {{(row.version === 1) ? 'Estándar' : 'Automático'}}
                     </p>
                   </div>
                 </mat-cell>
               </ng-container>
 
               <!-- no_placas -->
-              <ng-container matColumnDef="no_placas">
+              <ng-container matColumnDef="placas">
                 <mat-header-cell *matHeaderCellDef mat-sort-header>No. Placas</mat-header-cell>
                 <mat-cell *matCellDef="let row">
                   <div class="column">
                     <p class="text-overflow">
-                      {{row.no_placas}}
+                      {{row.placas}}
                     </p>
                   </div>
                 </mat-cell>
               </ng-container>
 
               <!-- precio -->
-              <ng-container matColumnDef="precio">
-                <mat-header-cell *matHeaderCellDef mat-sort-header>Precio</mat-header-cell>
+              <ng-container matColumnDef="precio_renta">
+                <mat-header-cell *matHeaderCellDef mat-sort-header>Precio Renta</mat-header-cell>
                 <mat-cell *matCellDef="let row">
                   <div class="column">
                     <p>
-                      {{row.precio_venta | currency}}
+                      {{row.precio_renta | currency}}
                     </p>
                   </div>
                 </mat-cell>
@@ -132,7 +144,7 @@
 
               <!-- created_at -->
               <ng-container matColumnDef="created_at">
-                <mat-header-cell *matHeaderCellDef mat-sort-header>Fecha de Alta</mat-header-cell>
+                <mat-header-cell *matHeaderCellDef mat-sort-header>F. de Alta</mat-header-cell>
                 <mat-cell *matCellDef="let row">
                   <div class="column">
                     <p>

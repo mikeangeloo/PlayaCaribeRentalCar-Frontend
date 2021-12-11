@@ -1,0 +1,16 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/administracion/catalogo-vehiculos/categorias-vehiculos"></ion-back-button>
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="title-container">
+    <p class="title2">Formulario Categorías Vehículos</p>
+  </div>
+  <app-categoria-vehiculos-form *ngIf="ready" [asModal]="false" [categoria_vehiculo_id]="id"></app-categoria-vehiculos-form>
+</ion-content>
+

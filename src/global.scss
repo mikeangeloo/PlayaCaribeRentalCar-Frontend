@@ -132,7 +132,19 @@ ion-content {
   margin-bottom: 2.5em;
   margin-top: 2.5em;
   line-height: 1.2;
-
+  z-index: 1;
+}
+.title2 {
+  font-size: 1.2rem;
+  text-align: center;
+  padding: 0;
+  margin: 0;
+  margin-bottom: 2.5em;
+  margin-top: 2.5em;
+  line-height: 1.2;
+  color: dimgrey;
+  font-weight: 500;
+  z-index: 1;
 }
 .form-content {
   display: flex;
@@ -186,7 +198,10 @@ ion-content {
   overflow: hidden;
   white-space: nowrap;
 }
-
+.inline-single-form {
+  display: flex;
+  justify-content: space-around;
+}
 //#endregion
 
 //#region OTP styles
@@ -368,6 +383,7 @@ ion-content {
 mat-header-row {
   background: #e8c58f42 !important;
   mat-header-cell {
+    position: relative;
     color: var(--ion-color-primary) !important;
   }
 }
@@ -394,6 +410,13 @@ mat-header-row {
 .action-btn-container {
   display: flex;
   justify-content: space-around;
+}
+.mat-focus-indicator {
+  position: initial !important;
+}
+.mat-sort-header-arrow {
+  position: absolute !important;
+  right: 0 !important;
 }
 
 //#endregion

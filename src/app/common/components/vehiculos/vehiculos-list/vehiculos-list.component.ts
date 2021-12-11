@@ -28,11 +28,12 @@ export class VehiculosListComponent implements OnInit {
   @Output() emitData = new EventEmitter();
   displayedColumns: string[] = [
     'id',
-    'nombre',
-    'marca',
     'modelo',
-    'precio',
-    'no_placas',
+    'marca',
+    'modelo_ano',
+    'categoria',
+    'precio_renta',
+    'placas',
     'version',
     'activo',
     'created_at',

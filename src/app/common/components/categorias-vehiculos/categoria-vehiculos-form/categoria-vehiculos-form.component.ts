@@ -43,6 +43,7 @@ export class CategoriaVehiculosFormComponent implements OnInit {
   }
 
   ngOnInit() {
+    console.log('categoria_vehiculo_id', this.categoria_vehiculo_id);
     if (this.categoria_vehiculo_id) {
       this.loadCategoriasVehiculosData();
     } else {
@@ -53,8 +54,7 @@ export class CategoriaVehiculosFormComponent implements OnInit {
   initCategoriaVehiculoForm(data?) {
     this.categoriaVehiculoForm.setValue({
       id: (data && data.id) ? data.id : null,
-      modelo: (data && data.modelo) ? data.modelo : null,
-      marca_id: (data && data.marca_id) ? data.marca_id : null,
+      categoria: (data && data.categoria) ? data.categoria : null,
       activo: (data && data.activo) ? data.activo : 0,
     });
     this.mf.activo.disable();
@@ -67,7 +67,7 @@ export class CategoriaVehiculosFormComponent implements OnInit {
     this.catVehiculosServ.getDataById(this.categoria_vehiculo_id).subscribe(res => {
       this.generalServ.dismissLoading();
       if (res.ok === true) {
-        this.initCategoriaVehiculoForm(res.categorias);
+        this.initCategoriaVehiculoForm(res.categoria);
       }
     }, error => {
       this.generalServ.dismissLoading();

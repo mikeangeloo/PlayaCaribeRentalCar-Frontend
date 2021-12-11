@@ -42,7 +42,7 @@
                     <mat-label>Version</mat-label>
                     <mat-select formControlName="version">
                       <mat-option [value]="1">Estándar</mat-option>
-                      <mat-option [value]="2">Automatico</mat-option>
+                      <mat-option [value]="2">Automático</mat-option>
                     </mat-select>
                     <mat-error *ngIf="vf.version.errors?.required">Campo requerido</mat-error>
                   </mat-form-field>
@@ -51,23 +51,54 @@
 
               <ion-row class="ion-no-padding ion-no-margin">
                 <ion-col size>
-                  <mat-form-field appearance="legacy">
+                  <div>
+                    <ion-button size="small" color="success" (click)="showNewMarca(true)"><ion-icon name="add"></ion-icon></ion-button>
+
+                    <div style="float: right;" *ngIf="newMarcaV">
+                      <ion-button size="small" color="primary" (click)="saveNewMarca()">Guardar</ion-button>
+                      <ion-button size="small" color="medium" (click)="showNewMarca(false)"><ion-icon name="close"></ion-icon></ion-button>
+                    </div>
+                  </div>
+
+                  <mat-form-field appearance="legacy" [ngClass]="{hide: newMarcaV}">
                     <mat-label>Marca</mat-label>
                     <mat-select formControlName="marca_id">
                       <mat-option *ngFor="let marca of marcasV" [value]="marca.id">{{marca.marca}}</mat-option>
                     </mat-select>
                     <mat-error *ngIf="vf.marca_id.errors?.required">Campo requerido</mat-error>
                   </mat-form-field>
+
+                  <div *ngIf="newMarcaV">
+                    <mat-form-field appearance="legacy">
+                      <mat-label>Nueva Marca</mat-label>
+                      <input matInput #newMarcaI>
+                    </mat-form-field>
+                  </div>
                 </ion-col>
 
                 <ion-col size>
-                  <mat-form-field appearance="legacy">
+                  <div>
+                    <ion-button size="small" color="success" (click)="showNewCatV(true)"><ion-icon name="add"></ion-icon></ion-button>
+
+                    <div style="float: right;" *ngIf="newCatV">
+                      <ion-button size="small" color="primary" (click)="saveNewCatV()">Guardar</ion-button>
+                      <ion-button size="small" color="medium" (click)="showNewCatV(false)"><ion-icon name="close"></ion-icon></ion-button>
+                    </div>
+                  </div>
+                  <mat-form-field appearance="legacy" [ngClass]="{hide: newCatV}">
                     <mat-label>Categoría</mat-label>
                     <mat-select formControlName="categoria_vehiculo_id">
                       <mat-option *ngFor="let cat of categoriasV" [value]="cat.id">{{cat.categoria}}</mat-option>
                     </mat-select>
                     <mat-error *ngIf="vf.categoria_vehiculo_id.errors?.required">Campo requerido</mat-error>
                   </mat-form-field>
+
+                  <div *ngIf="newCatV">
+                    <mat-form-field appearance="legacy">
+                      <mat-label>Nueva Cateogoría</mat-label>
+                      <input matInput #newCatVI>
+                    </mat-form-field>
+                  </div>
                 </ion-col>
 
                 <ion-col size>

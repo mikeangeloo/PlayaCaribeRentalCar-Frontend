@@ -8,6 +8,7 @@ import { CategoriasVehiculosPageRoutingModule } from './categorias-vehiculos-rou
 
 import { CategoriasVehiculosPage } from './categorias-vehiculos.page';
 import {AppCommonModule} from "../../../common/common.module";
+import {EditCatVehiculoComponent} from "./edit-cat-vehiculo/edit-cat-vehiculo.component";
 
 @NgModule({
     imports: [
@@ -17,6 +18,9 @@ import {AppCommonModule} from "../../../common/common.module";
         CategoriasVehiculosPageRoutingModule,
         AppCommonModule
     ],
-  declarations: [CategoriasVehiculosPage]
+  declarations: [
+    CategoriasVehiculosPage,
+    EditCatVehiculoComponent
+  ]
 })
 export class CategoriasVehiculosPageModule {}
