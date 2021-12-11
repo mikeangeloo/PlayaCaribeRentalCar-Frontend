@@ -1,37 +1,37 @@
-import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output, SimpleChanges, ViewChild} from '@angular/core';
 import {MatTableDataSource} from "@angular/material/table";
 import {MatPaginator} from "@angular/material/paginator";
 import {MatSort} from "@angular/material/sort";
-import {GeneralService} from "../../../../services/general.service";
+import {GeneralService} from "../../../../../services/general.service";
 import {ActionSheetController, ModalController, NavController} from "@ionic/angular";
-import {SweetMessagesService} from "../../../../services/sweet-messages.service";
-import {ToastMessageService} from "../../../../services/toast-message.service";
+import {SweetMessagesService} from "../../../../../services/sweet-messages.service";
+import {ToastMessageService} from "../../../../../services/toast-message.service";
 import * as moment from "moment";
-import {TxtConv} from "../../../../helpers/txt-conv";
-import {CategoriasVehiculosI} from "../../../../interfaces/catalogo-vehiculos/categorias-vehiculos.interface";
-import {CategoriaVehiculosService} from "../../../../services/categoria-vehiculos.service";
-import {CategoriaVehiculosFormComponent} from "../categoria-vehiculos-form/categoria-vehiculos-form.component";
+import {TxtConv} from "../../../../../helpers/txt-conv";
+import {AreaTrabajoI} from "../../../../../interfaces/profile/area-trabajo.interface";
+import {AreasTrabajoService} from "../../../../../services/areas-trabajo.service";
+import {AreaTrabajoFormComponent} from "../area-trabajo-form/area-trabajo-form.component";
 
 @Component({
-  selector: 'app-categoria-vehiculos-list',
-  templateUrl: './categoria-vehiculos-list.component.html',
-  styleUrls: ['./categoria-vehiculos-list.component.scss'],
+  selector: 'app-areas-trabajo-list',
+  templateUrl: './areas-trabajo-list.component.html',
+  styleUrls: ['./areas-trabajo-list.component.scss'],
 })
-export class CategoriaVehiculosListComponent implements OnInit, OnChanges {
+export class AreasTrabajoListComponent implements OnInit {
 
   public spinner = false;
-  public editCategoriasVehiculos: CategoriasVehiculosI;
-  @Input() public categoriasVehiculos: CategoriasVehiculosI[] = [];
+  public editAreaTrabajo: AreaTrabajoI;
+  @Input() public areasTrabajo: AreaTrabajoI[] = [];
   @Input() isModal: boolean;
   @Output() emitData = new EventEmitter();
   displayedColumns: string[] = [
     'id',
-    'categoria',
+    'nombre',
     'activo',
     'created_at',
     'acciones'
   ];
-  listCatVehiculos: MatTableDataSource<any>;
+  listAreasTrabajo: MatTableDataSource<any>;
   public searchKey: string;
   @ViewChild(MatPaginator, {static: false}) paginator3: MatPaginator;
   @ViewChild(MatSort, {static: true}) sort: MatSort;
@@ -40,7 +40,7 @@ export class CategoriaVehiculosListComponent implements OnInit, OnChanges {
 
   constructor(
     public generalService: GeneralService,
-    public catVehiculosServ: CategoriaVehiculosService,
+    public areasTrabajoServ: AreasTrabajoService,
     public modalCtr: ModalController,
     public navigateCtrl: NavController,
     public actionSheetController: ActionSheetController,
@@ -48,7 +48,7 @@ export class CategoriaVehiculosListComponent implements OnInit, OnChanges {
     public toastServ: ToastMessageService
   ) {
     //this.loadSurveysTable();
-    this.initCatVehiculos();
+    this.initAreaTrabajo();
   }
 
   ngOnInit() {
@@ -56,44 +56,44 @@ export class CategoriaVehiculosListComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    const modelosChange = changes.categoriasVehiculos;
-    if (modelosChange.isFirstChange() === true || modelosChange.firstChange === false) {
-      if (this.categoriasVehiculos) {
-        this.loadCategoriasVehiculosTable(this.categoriasVehiculos);
+    const areasTrabajoChange = changes.areasTrabajo;
+    if (areasTrabajoChange.isFirstChange() === true || areasTrabajoChange.firstChange === false) {
+      if (this.areasTrabajo) {
+        this.loadAreasTrabajoTable(this.areasTrabajo);
       } else {
-        this.loadCategoriasVehiculosTable();
+        this.loadAreasTrabajoTable();
       }
     }
   }
 
-  initCatVehiculos() {
+  initAreaTrabajo() {
     const currDate = moment().format('YYYY-MM-DD');
-    this.editCategoriasVehiculos = {
+    this.editAreaTrabajo = {
       id: 0,
     };
   }
 
   // Método para cargar datos de los campus
-  loadCategoriasVehiculosTable(_data?: CategoriasVehiculosI[]) {
+  loadAreasTrabajoTable(_data?: AreaTrabajoI[]) {
     //this.listado-empresas = null;
-    this.listCatVehiculos = null;
-    this.initCatVehiculos();
+    this.listAreasTrabajo = null;
+    this.initAreaTrabajo();
     this.spinner = true;
 
     if (_data) {
-      this.categoriasVehiculos = _data;
+      this.areasTrabajo = _data;
       this.spinner = false;
-      this.listCatVehiculos = new MatTableDataSource(_data);
-      this.listCatVehiculos.sort = this.sort;
-      this.listCatVehiculos.paginator = this.paginator3;
+      this.listAreasTrabajo = new MatTableDataSource(_data);
+      this.listAreasTrabajo.sort = this.sort;
+      this.listAreasTrabajo.paginator = this.paginator3;
     } else {
-      this.catVehiculosServ.getAll().subscribe(response => {
+      this.areasTrabajoServ.getAll().subscribe(response => {
         if (response.ok === true) {
           this.spinner = false;
-          this.listCatVehiculos = new MatTableDataSource(response.categorias);
-          this.listCatVehiculos.sort = this.sort;
-          this.listCatVehiculos.paginator = this.paginator3;
-          this.categoriasVehiculos = response.categorias;
+          this.listAreasTrabajo = new MatTableDataSource(response.areas_trabajo);
+          this.listAreasTrabajo.sort = this.sort;
+          this.listAreasTrabajo.paginator = this.paginator3;
+          this.areasTrabajo = response.areas_trabajo;
         }
       }, error => {
         this.spinner = false;
@@ -105,7 +105,7 @@ export class CategoriaVehiculosListComponent implements OnInit, OnChanges {
   // Method to filter mat-table according to the value enter at input search filter
   applyFilter(event?) {
     const searchValue = event.target.value;
-    this.listCatVehiculos.filter = TxtConv.txtCon(searchValue, 'lowercase');
+    this.listAreasTrabajo.filter = TxtConv.txtCon(searchValue, 'lowercase');
     // this.listSurveys.filter = this.searchKey.trim().toLocaleLowerCase();
     // if (this.dataSource.paginator) {
     //   this.dataSource.paginator.firstPage();
@@ -118,22 +118,22 @@ export class CategoriaVehiculosListComponent implements OnInit, OnChanges {
     this.applyFilter();
   }
 
-  catchSelectedRow(_data: CategoriasVehiculosI) {
-    this.editCategoriasVehiculos = _data;
+  catchSelectedRow(_data: AreaTrabajoI) {
+    this.editAreaTrabajo = _data;
   }
   // Método para editar survey
-  async openCatVehiculoForm(_data?: CategoriasVehiculosI) {
+  async openAreaTrabajoForm(_data?: AreaTrabajoI) {
     if (_data) {
-      this.editCategoriasVehiculos = _data;
+      this.editAreaTrabajo = _data;
     } else {
-      this.initCatVehiculos();
+      this.initAreaTrabajo();
     }
     //this.generalService.presentLoading();
     const modal = await this.modalCtr.create({
-      component: CategoriaVehiculosFormComponent,
+      component: AreaTrabajoFormComponent,
       componentProps: {
         'asModal': true,
-        'categoria_vehiculo_id': (_data && _data.id) ? _data.id : null
+        'areaTrabajo_id': (_data && _data.id) ? _data.id : null
       },
       swipeToClose: true,
       cssClass: 'edit-form'
@@ -141,17 +141,17 @@ export class CategoriaVehiculosListComponent implements OnInit, OnChanges {
     await modal.present();
     const {data} = await modal.onWillDismiss();
     if (data.reload && data.reload === true) {
-      this.loadCategoriasVehiculosTable();
+      this.loadAreasTrabajoTable();
     }
   }
 
-  inactiveCatVehiculo(_data: CategoriasVehiculosI) {
+  inactiveAreaTrabajo(_data: AreaTrabajoI) {
     this.sweetServ.confirmRequest('¿Estás seguro de querer deshabilitar este registro ?').then((data) => {
       if (data.value) {
-        this.catVehiculosServ.setInactive(_data.id).subscribe(res => {
+        this.areasTrabajoServ.setInactive(_data.id).subscribe(res => {
           if (res.ok === true) {
             this.toastServ.presentToast('success', res.message, 'top');
-            this.loadCategoriasVehiculosTable();
+            this.loadAreasTrabajoTable();
           }
         }, error => {
           console.log(error);
@@ -161,13 +161,13 @@ export class CategoriaVehiculosListComponent implements OnInit, OnChanges {
     });
   }
 
-  activeCatVehiculo(_data: CategoriasVehiculosI) {
+  activeAreaTrabajo(_data: AreaTrabajoI) {
     this.sweetServ.confirmRequest('¿Estás seguro de querer habilitar este registro ?').then((data) => {
       if (data.value) {
-        this.catVehiculosServ.setEnable(_data.id).subscribe(res => {
+        this.areasTrabajoServ.setEnable(_data.id).subscribe(res => {
           if (res.ok === true) {
             this.toastServ.presentToast('success', res.message, 'top');
-            this.loadCategoriasVehiculosTable();
+            this.loadAreasTrabajoTable();
           }
         }, error => {
           console.log(error);
@@ -176,4 +176,5 @@ export class CategoriaVehiculosListComponent implements OnInit, OnChanges {
       }
     });
   }
+
 }

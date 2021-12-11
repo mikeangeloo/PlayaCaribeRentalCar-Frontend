@@ -76,7 +76,7 @@ export class MarcasVehiculosListComponent implements OnInit, OnChanges {
 
   // Método para cargar datos de los campus
   loadMarcasTable(_marcas?: MarcasVehiculosI[]) {
-    //this.empresas = null;
+    //this.listado-empresas = null;
     this.listMarcas = null;
     this.initMarca();
     this.spinner = true;

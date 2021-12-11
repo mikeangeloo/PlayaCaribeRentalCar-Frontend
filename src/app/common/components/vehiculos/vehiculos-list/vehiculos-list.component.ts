@@ -10,7 +10,7 @@ import {SweetMessagesService} from "../../../../services/sweet-messages.service"
 import {ToastMessageService} from "../../../../services/toast-message.service";
 import * as moment from "moment";
 import {TxtConv} from "../../../../helpers/txt-conv";
-import {UserFormComponent} from "../../users/user-form/user-form.component";
+import {UserFormComponent} from "../../control-accesso/users/user-form/user-form.component";
 import {VehiculosI} from "../../../../interfaces/catalogo-vehiculos/vehiculos.interface";
 import {VehiculosService} from "../../../../services/vehiculos.service";
 import {VehiculoFormComponent} from "../vehiculo-form/vehiculo-form.component";
@@ -83,7 +83,7 @@ export class VehiculosListComponent implements OnInit {
 
   // Método para cargar datos de los campus
   loadVehiculosTable(_data?: VehiculosI[]) {
-    //this.empresas = null;
+    //this.listado-empresas = null;
     this.listVehiculos = null;
     this.initVehiculo();
     this.spinner = true;

@@ -116,7 +116,7 @@ export class AppComponent implements OnDestroy {
           ]
         },
         {
-          module: 'acceso',
+          module: 'control-acceso',
           icon: 'bookmarks',
           label: 'Control de Acceso',
           route: null,
@@ -124,34 +124,52 @@ export class AppComponent implements OnDestroy {
           active: false,
           children: [
             {
-              module: 'acceso',
+              module: 'control-acceso',
               icon: 'bookmarks',
               label: 'Listado de Usuarios',
-              route: '/administracion/acceso/usuarios',
+              route: '/administracion/control-acceso/listado-usuarios',
               level: 2,
               active: false,
             },
             {
-              module: 'acceso',
-              icon: 'bookmarks',
-              label: 'Listado de Roles',
-              route: '/administracion/acceso/roles',
-              level: 2,
-              active: false,
-            },
-            {
-              module: 'acceso',
-              icon: 'bookmarks',
-              label: 'Listado de Aréas de trabajo',
-              route: '/administracion/acceso/areas-trabajo',
-              level: 2,
-              active: false,
-            },
-            {
-              module: 'acceso',
+              module: 'control-acceso',
               icon: 'bookmarks',
               label: 'Listado de Sucursales',
-              route: '/administracion/acceso/sucursales',
+              route: '/administracion/control-acceso/listado-sucursales',
+              level: 2,
+              active: false,
+            },
+            {
+              module: 'control-acceso',
+              icon: 'bookmarks',
+              label: 'Listado de Roles',
+              route: '/administracion/control-acceso/listado-roles',
+              level: 2,
+              active: false,
+            },
+            {
+              module: 'control-acceso',
+              icon: 'bookmarks',
+              label: 'Listado de Aréas de trabajo',
+              route: '/administracion/control-acceso/listado-areas-trabajo',
+              level: 2,
+              active: false,
+            },
+          ]
+        },
+        {
+          module: 'empresas',
+          icon: 'business',
+          label: 'Empresas',
+          route: null,
+          level: 1,
+          active: false,
+          children: [
+            {
+              module: 'empresas',
+              icon: 'business',
+              label: 'Listado de Empresas',
+              route: 'administracion/empresas/listado-listado-empresas',
               level: 2,
               active: false,
             }

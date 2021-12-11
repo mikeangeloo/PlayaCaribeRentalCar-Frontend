@@ -1,37 +1,43 @@
 import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild} from '@angular/core';
+import {EmpresasI} from "../../../../../interfaces/empresas.interface";
 import {MatTableDataSource} from "@angular/material/table";
 import {MatPaginator} from "@angular/material/paginator";
 import {MatSort} from "@angular/material/sort";
-import {GeneralService} from "../../../../services/general.service";
+import {GeneralService} from "../../../../../services/general.service";
+import {EmpresasService} from "../../../../../services/empresas.service";
 import {ActionSheetController, ModalController, NavController} from "@ionic/angular";
-import {SweetMessagesService} from "../../../../services/sweet-messages.service";
-import {ToastMessageService} from "../../../../services/toast-message.service";
+import {SweetMessagesService} from "../../../../../services/sweet-messages.service";
+import {ToastMessageService} from "../../../../../services/toast-message.service";
 import * as moment from "moment";
-import {TxtConv} from "../../../../helpers/txt-conv";
-import {CategoriasVehiculosI} from "../../../../interfaces/catalogo-vehiculos/categorias-vehiculos.interface";
-import {CategoriaVehiculosService} from "../../../../services/categoria-vehiculos.service";
-import {CategoriaVehiculosFormComponent} from "../categoria-vehiculos-form/categoria-vehiculos-form.component";
+import {TxtConv} from "../../../../../helpers/txt-conv";
+import {EmpresaFormComponent} from "../../../empresas/listado-empresas/empresa-form/empresa-form.component";
+import {SucursalesI} from "../../../../../interfaces/sucursales.interface";
+import {SucursalesService} from "../../../../../services/sucursales.service";
+import {SucursalFormComponent} from "../sucursal-form/sucursal-form.component";
 
 @Component({
-  selector: 'app-categoria-vehiculos-list',
-  templateUrl: './categoria-vehiculos-list.component.html',
-  styleUrls: ['./categoria-vehiculos-list.component.scss'],
+  selector: 'app-sucursales-list',
+  templateUrl: './sucursales-list.component.html',
+  styleUrls: ['./sucursales-list.component.scss'],
 })
-export class CategoriaVehiculosListComponent implements OnInit, OnChanges {
+export class SucursalesListComponent implements OnInit, OnChanges {
 
   public spinner = false;
-  public editCategoriasVehiculos: CategoriasVehiculosI;
-  @Input() public categoriasVehiculos: CategoriasVehiculosI[] = [];
+  public editSucursal: SucursalesI;
+  @Input() public sucursales: SucursalesI[] = [];
   @Input() isModal: boolean;
   @Output() emitData = new EventEmitter();
   displayedColumns: string[] = [
     'id',
-    'categoria',
+    'nombre',
+    'direccion',
+    'codigo',
+    'cp',
     'activo',
     'created_at',
     'acciones'
   ];
-  listCatVehiculos: MatTableDataSource<any>;
+  listSucursales: MatTableDataSource<any>;
   public searchKey: string;
   @ViewChild(MatPaginator, {static: false}) paginator3: MatPaginator;
   @ViewChild(MatSort, {static: true}) sort: MatSort;
@@ -40,7 +46,7 @@ export class CategoriaVehiculosListComponent implements OnInit, OnChanges {
 
   constructor(
     public generalService: GeneralService,
-    public catVehiculosServ: CategoriaVehiculosService,
+    public sucursalesService: SucursalesService,
     public modalCtr: ModalController,
     public navigateCtrl: NavController,
     public actionSheetController: ActionSheetController,
@@ -48,7 +54,7 @@ export class CategoriaVehiculosListComponent implements OnInit, OnChanges {
     public toastServ: ToastMessageService
   ) {
     //this.loadSurveysTable();
-    this.initCatVehiculos();
+    this.initSucursales();
   }
 
   ngOnInit() {
@@ -56,44 +62,44 @@ export class CategoriaVehiculosListComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    const modelosChange = changes.categoriasVehiculos;
-    if (modelosChange.isFirstChange() === true || modelosChange.firstChange === false) {
-      if (this.categoriasVehiculos) {
-        this.loadCategoriasVehiculosTable(this.categoriasVehiculos);
+    const sucursalesChange = changes.sucursales;
+    if (sucursalesChange.isFirstChange() === true || sucursalesChange.firstChange === false) {
+      if (this.sucursales) {
+        this.loadSucursalesTable(this.sucursales);
       } else {
-        this.loadCategoriasVehiculosTable();
+        this.loadSucursalesTable();
       }
     }
   }
 
-  initCatVehiculos() {
+  initSucursales() {
     const currDate = moment().format('YYYY-MM-DD');
-    this.editCategoriasVehiculos = {
+    this.editSucursal = {
       id: 0,
     };
   }
 
   // Método para cargar datos de los campus
-  loadCategoriasVehiculosTable(_data?: CategoriasVehiculosI[]) {
+  loadSucursalesTable(_sucursales?: SucursalesI[]) {
     //this.listado-empresas = null;
-    this.listCatVehiculos = null;
-    this.initCatVehiculos();
+    this.listSucursales = null;
+    this.initSucursales();
     this.spinner = true;
 
-    if (_data) {
-      this.categoriasVehiculos = _data;
+    if (_sucursales) {
+      this.sucursales = _sucursales;
       this.spinner = false;
-      this.listCatVehiculos = new MatTableDataSource(_data);
-      this.listCatVehiculos.sort = this.sort;
-      this.listCatVehiculos.paginator = this.paginator3;
+      this.listSucursales = new MatTableDataSource(_sucursales);
+      this.listSucursales.sort = this.sort;
+      this.listSucursales.paginator = this.paginator3;
     } else {
-      this.catVehiculosServ.getAll().subscribe(response => {
+      this.sucursalesService.getAll().subscribe(response => {
         if (response.ok === true) {
           this.spinner = false;
-          this.listCatVehiculos = new MatTableDataSource(response.categorias);
-          this.listCatVehiculos.sort = this.sort;
-          this.listCatVehiculos.paginator = this.paginator3;
-          this.categoriasVehiculos = response.categorias;
+          this.listSucursales = new MatTableDataSource(response.sucursales);
+          this.listSucursales.sort = this.sort;
+          this.listSucursales.paginator = this.paginator3;
+          this.sucursales = response.sucursales;
         }
       }, error => {
         this.spinner = false;
@@ -105,7 +111,7 @@ export class CategoriaVehiculosListComponent implements OnInit, OnChanges {
   // Method to filter mat-table according to the value enter at input search filter
   applyFilter(event?) {
     const searchValue = event.target.value;
-    this.listCatVehiculos.filter = TxtConv.txtCon(searchValue, 'lowercase');
+    this.listSucursales.filter = TxtConv.txtCon(searchValue, 'lowercase');
     // this.listSurveys.filter = this.searchKey.trim().toLocaleLowerCase();
     // if (this.dataSource.paginator) {
     //   this.dataSource.paginator.firstPage();
@@ -118,22 +124,22 @@ export class CategoriaVehiculosListComponent implements OnInit, OnChanges {
     this.applyFilter();
   }
 
-  catchSelectedRow(_data: CategoriasVehiculosI) {
-    this.editCategoriasVehiculos = _data;
+  catchSelectedRow(_sucursal: SucursalesI) {
+    this.editSucursal = _sucursal;
   }
   // Método para editar survey
-  async openCatVehiculoForm(_data?: CategoriasVehiculosI) {
-    if (_data) {
-      this.editCategoriasVehiculos = _data;
+  async openSucursalForm(_sucursal?: SucursalesI) {
+    if (_sucursal) {
+      this.editSucursal = _sucursal;
     } else {
-      this.initCatVehiculos();
+      this.initSucursales();
     }
     //this.generalService.presentLoading();
     const modal = await this.modalCtr.create({
-      component: CategoriaVehiculosFormComponent,
+      component: SucursalFormComponent,
       componentProps: {
         'asModal': true,
-        'categoria_vehiculo_id': (_data && _data.id) ? _data.id : null
+        'sucursal_id': (_sucursal && _sucursal.id) ? _sucursal.id : null
       },
       swipeToClose: true,
       cssClass: 'edit-form'
@@ -141,17 +147,17 @@ export class CategoriaVehiculosListComponent implements OnInit, OnChanges {
     await modal.present();
     const {data} = await modal.onWillDismiss();
     if (data.reload && data.reload === true) {
-      this.loadCategoriasVehiculosTable();
+      this.loadSucursalesTable();
     }
   }
 
-  inactiveCatVehiculo(_data: CategoriasVehiculosI) {
+  inactiveSucursal(sucursal: SucursalesI) {
     this.sweetServ.confirmRequest('¿Estás seguro de querer deshabilitar este registro ?').then((data) => {
       if (data.value) {
-        this.catVehiculosServ.setInactive(_data.id).subscribe(res => {
+        this.sucursalesService.setInactive(sucursal.id).subscribe(res => {
           if (res.ok === true) {
             this.toastServ.presentToast('success', res.message, 'top');
-            this.loadCategoriasVehiculosTable();
+            this.loadSucursalesTable();
           }
         }, error => {
           console.log(error);
@@ -161,13 +167,13 @@ export class CategoriaVehiculosListComponent implements OnInit, OnChanges {
     });
   }
 
-  activeCatVehiculo(_data: CategoriasVehiculosI) {
+  activeSucursal(sucursal: SucursalesI) {
     this.sweetServ.confirmRequest('¿Estás seguro de querer habilitar este registro ?').then((data) => {
       if (data.value) {
-        this.catVehiculosServ.setEnable(_data.id).subscribe(res => {
+        this.sucursalesService.setEnable(sucursal.id).subscribe(res => {
           if (res.ok === true) {
             this.toastServ.presentToast('success', res.message, 'top');
-            this.loadCategoriasVehiculosTable();
+            this.loadSucursalesTable();
           }
         }, error => {
           console.log(error);
@@ -176,4 +182,5 @@ export class CategoriaVehiculosListComponent implements OnInit, OnChanges {
       }
     });
   }
+
 }

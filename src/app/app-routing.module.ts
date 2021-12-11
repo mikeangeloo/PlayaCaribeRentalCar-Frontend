@@ -22,49 +22,53 @@ const routes: Routes = [
       },
       //region ADMINISTRACION
 
-      //region CATALOGO VEHICULOS
-      {
-        path: 'administracion/catalogo-vehiculos/listado-vehiculos',
-        loadChildren: () => import('./modules/catalogo-vehiculos/vehiculos/vehiculos.module').then(m => m.VehiculosPageModule)
-      },
-      {
-        path: 'administracion/catalogo-vehiculos/categorias-vehiculos',
-        loadChildren: () => import('./modules/catalogo-vehiculos/categorias-vehiculos/categorias-vehiculos.module').then(m => m.CategoriasVehiculosPageModule)
-      },
-      {
-        path: 'administracion/catalogo-vehiculos/marcas-vehiculos',
-        loadChildren: () => import('./modules/catalogo-vehiculos/marcas-vehiculos/marcas-vehiculos.module').then(m => m.MarcasVehiculosPageModule)
-      },
-      //endregion
+          //region CATALOGO VEHICULOS
+          {
+            path: 'administracion/catalogo-vehiculos/listado-vehiculos',
+            loadChildren: () => import('./modules/catalogo-vehiculos/vehiculos/vehiculos.module').then(m => m.VehiculosPageModule)
+          },
+          {
+            path: 'administracion/catalogo-vehiculos/categorias-vehiculos',
+            loadChildren: () => import('./modules/catalogo-vehiculos/categorias-vehiculos/categorias-vehiculos.module').then(m => m.CategoriasVehiculosPageModule)
+          },
+          {
+            path: 'administracion/catalogo-vehiculos/marcas-vehiculos',
+            loadChildren: () => import('./modules/catalogo-vehiculos/marcas-vehiculos/marcas-vehiculos.module').then(m => m.MarcasVehiculosPageModule)
+          },
+          //endregion
 
-      //endregion
-      {
-        path: 'catalogos/empresas',
-        loadChildren: () => import('./modules/catalogs/empresas/empresas.module').then( m => m.EmpresasPageModule)
-      },
-      {
-        path: 'administracion/acceso/sucursales',
-        loadChildren: () => import('./modules/catalogs/sucursales/sucursales.module').then( m => m.SucursalesPageModule)
-      },
+          //region CONTROL ACCESSO
+          {
+            path: 'administracion/control-acceso/listado-usuarios',
+            loadChildren: () => import('./modules/control-acceso/users/users.module').then(m => m.UsersPageModule)
+          },
+          {
+            path: 'administracion/control-acceso/listado-sucursales',
+            loadChildren: () => import('./modules/control-acceso/sucursales/sucursales.module').then(m => m.SucursalesPageModule)
+          },
+          {
+            path: 'administracion/control-acceso/listado-roles',
+            loadChildren: () => import('./modules/control-acceso/roles/roles.module').then(m => m.RolesPageModule)
+          },
+          {
+            path: 'administracion/control-acceso/listado-areas-trabajo',
+            loadChildren: () => import('./modules/control-acceso/areas-trabajo/areas-trabajo.module').then(m => m.AreasTrabajoPageModule)
+          },
+          //endregion
 
-      {
-        path: 'administracion/acceso/usuarios',
-        loadChildren: () => import('./modules/users/users.module').then( m => m.UsersPageModule)
-      },
-      {
-        path: 'administracion/acceso/areas-trabajo',
-        loadChildren: () => import('./modules/areas-trabajo/areas-trabajo.module').then( m => m.AreasTrabajoPageModule)
-      },
-      {
-        path: 'administracion/acceso/roles',
-        loadChildren: () => import('./modules/roles/roles.module').then( m => m.RolesPageModule)
-      },
+          //region EMPRESAS
+          {
+            path: 'administracion/empresas/listado-listado-empresas',
+            loadChildren: () => import('./modules/empresas/listado-empresas/listado-empresas.module').then(m => m.ListadoEmpresasPageModule)
+          },
+          //endregion
+      //endregion
 
     ]
   },
   {
     path: '',
-    redirectTo: 'dashboard',
+    redirectTo: '/dashboard',
     pathMatch: 'full'
   },
 
