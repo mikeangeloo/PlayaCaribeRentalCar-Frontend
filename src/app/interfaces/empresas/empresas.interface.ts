@@ -1,3 +1,5 @@
+import {ComisionistasI} from "../comisionistas/comisionistas.interface";
+
 export interface EmpresasI
 {
   id: number;
@@ -8,4 +10,6 @@ export interface EmpresasI
   activo?: number;
   created_at?: string;
   updated_at?: string;
+  paga_cupon?: boolean;
+  comisionistas?: ComisionistasI[]
 }

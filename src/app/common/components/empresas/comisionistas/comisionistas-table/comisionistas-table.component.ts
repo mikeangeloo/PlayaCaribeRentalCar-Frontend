@@ -1,43 +1,40 @@
-import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild} from '@angular/core';
-import {EmpresasI} from "../../../../../interfaces/empresas/empresas.interface";
+import {Component, EventEmitter, Input, OnInit, Output, SimpleChanges, ViewChild} from '@angular/core';
 import {MatTableDataSource} from "@angular/material/table";
 import {MatPaginator} from "@angular/material/paginator";
 import {MatSort} from "@angular/material/sort";
 import {GeneralService} from "../../../../../services/general.service";
-import {EmpresasService} from "../../../../../services/empresas.service";
 import {ActionSheetController, ModalController, NavController} from "@ionic/angular";
 import {SweetMessagesService} from "../../../../../services/sweet-messages.service";
 import {ToastMessageService} from "../../../../../services/toast-message.service";
 import * as moment from "moment";
 import {TxtConv} from "../../../../../helpers/txt-conv";
-import {EmpresaFormComponent} from "../../../empresas/listado-empresas/empresa-form/empresa-form.component";
-import {SucursalesI} from "../../../../../interfaces/sucursales.interface";
-import {SucursalesService} from "../../../../../services/sucursales.service";
-import {SucursalFormComponent} from "../sucursal-form/sucursal-form.component";
+import {ComisionistasI} from "../../../../../interfaces/comisionistas/comisionistas.interface";
+import {ComisionistasService} from "../../../../../services/comisionistas.service";
+import {ComisionistaFormComponent} from "../comisionista-form/comisionista-form.component";
 
 @Component({
-  selector: 'app-sucursales-list',
-  templateUrl: './sucursales-list.component.html',
-  styleUrls: ['./sucursales-list.component.scss'],
+  selector: 'app-comisionistas-table',
+  templateUrl: './comisionistas-table.component.html',
+  styleUrls: ['./comisionistas-table.component.scss'],
 })
-export class SucursalesListComponent implements OnInit, OnChanges {
+export class ComisionistasTableComponent implements OnInit {
 
   public spinner = false;
-  public editSucursal: SucursalesI;
-  @Input() public sucursales: SucursalesI[] = [];
+  public editComisionista: ComisionistasI;
+  @Input() public comisionistas: ComisionistasI[] = [];
   @Input() isModal: boolean;
   @Output() emitData = new EventEmitter();
   displayedColumns: string[] = [
     'id',
-    'nombre',
-    'direccion',
-    'codigo',
-    'cp',
+    'nombre_empresa',
+    'tel_contacto',
+    'email_contacto',
+    'comisiones_pactadas',
     'activo',
     'created_at',
     'acciones'
   ];
-  listSucursales: MatTableDataSource<any>;
+  listComisionistas: MatTableDataSource<any>;
   public searchKey: string;
   @ViewChild(MatPaginator, {static: false}) paginator3: MatPaginator;
   @ViewChild(MatSort, {static: true}) sort: MatSort;
@@ -46,7 +43,7 @@ export class SucursalesListComponent implements OnInit, OnChanges {
 
   constructor(
     public generalService: GeneralService,
-    public sucursalesService: SucursalesService,
+    public comisionistasServ: ComisionistasService,
     public modalCtr: ModalController,
     public navigateCtrl: NavController,
     public actionSheetController: ActionSheetController,
@@ -54,7 +51,7 @@ export class SucursalesListComponent implements OnInit, OnChanges {
     public toastServ: ToastMessageService
   ) {
     //this.loadSurveysTable();
-    this.initSucursales();
+    this.initComisionistas();
   }
 
   ngOnInit() {
@@ -62,44 +59,44 @@ export class SucursalesListComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    const sucursalesChange = changes.sucursales;
-    if (sucursalesChange.isFirstChange() === true || sucursalesChange.firstChange === false) {
-      if (this.sucursales) {
-        this.loadSucursalesTable(this.sucursales);
+    const comisionistasChange = changes.comisionistas;
+    if (comisionistasChange.isFirstChange() === true || comisionistasChange.firstChange === false) {
+      if (this.comisionistas) {
+        this.loadComisionistasTable(this.comisionistas);
       } else {
-        this.loadSucursalesTable();
+        this.loadComisionistasTable();
       }
     }
   }
 
-  initSucursales() {
+  initComisionistas() {
     const currDate = moment().format('YYYY-MM-DD');
-    this.editSucursal = {
+    this.editComisionista = {
       id: 0,
     };
   }
 
   // Método para cargar datos de los campus
-  loadSucursalesTable(_sucursales?: SucursalesI[]) {
+  loadComisionistasTable(_data?: ComisionistasI[]) {
     //this.listado-empresas = null;
-    this.listSucursales = null;
-    this.initSucursales();
+    this.listComisionistas = null;
+    this.initComisionistas();
     this.spinner = true;
 
-    if (_sucursales) {
-      this.sucursales = _sucursales;
+    if (_data) {
+      this.comisionistas = _data;
       this.spinner = false;
-      this.listSucursales = new MatTableDataSource(_sucursales);
-      this.listSucursales.sort = this.sort;
-      this.listSucursales.paginator = this.paginator3;
+      this.listComisionistas = new MatTableDataSource(_data);
+      this.listComisionistas.sort = this.sort;
+      this.listComisionistas.paginator = this.paginator3;
     } else {
-      this.sucursalesService.getAll().subscribe(response => {
+      this.comisionistasServ.getAll().subscribe(response => {
         if (response.ok === true) {
           this.spinner = false;
-          this.listSucursales = new MatTableDataSource(response.sucursales);
-          this.listSucursales.sort = this.sort;
-          this.listSucursales.paginator = this.paginator3;
-          this.sucursales = response.sucursales;
+          this.listComisionistas = new MatTableDataSource(response.comisionistas);
+          this.listComisionistas.sort = this.sort;
+          this.listComisionistas.paginator = this.paginator3;
+          this.comisionistas = response.comisionistas;
         }
       }, error => {
         this.spinner = false;
@@ -111,7 +108,7 @@ export class SucursalesListComponent implements OnInit, OnChanges {
   // Method to filter mat-table according to the value enter at input search filter
   applyFilter(event?) {
     const searchValue = event.target.value;
-    this.listSucursales.filter = TxtConv.txtCon(searchValue, 'lowercase');
+    this.listComisionistas.filter = TxtConv.txtCon(searchValue, 'lowercase');
     // this.listSurveys.filter = this.searchKey.trim().toLocaleLowerCase();
     // if (this.dataSource.paginator) {
     //   this.dataSource.paginator.firstPage();
@@ -124,22 +121,22 @@ export class SucursalesListComponent implements OnInit, OnChanges {
     this.applyFilter();
   }
 
-  catchSelectedRow(_sucursal: SucursalesI) {
-    this.editSucursal = _sucursal;
+  catchSelectedRow(_data: ComisionistasI) {
+    this.editComisionista = _data;
   }
   // Método para editar survey
-  async openSucursalForm(_sucursal?: SucursalesI) {
-    if (_sucursal) {
-      this.editSucursal = _sucursal;
+  async openComisionistaForm(_data?: ComisionistasI) {
+    if (_data) {
+      this.editComisionista = _data;
     } else {
-      this.initSucursales();
+      this.initComisionistas();
     }
     //this.generalService.presentLoading();
     const modal = await this.modalCtr.create({
-      component: SucursalFormComponent,
+      component: ComisionistaFormComponent,
       componentProps: {
         'asModal': true,
-        'sucursal_id': (_sucursal && _sucursal.id) ? _sucursal.id : null
+        'comisionista_id': (_data && _data.id) ? _data.id : null
       },
       swipeToClose: true,
       cssClass: 'edit-form'
@@ -147,17 +144,17 @@ export class SucursalesListComponent implements OnInit, OnChanges {
     await modal.present();
     const {data} = await modal.onWillDismiss();
     if (data.reload && data.reload === true) {
-      this.loadSucursalesTable();
+      this.loadComisionistasTable();
     }
   }
 
-  inactiveSucursal(sucursal: SucursalesI) {
+  inactiveComisionista(_data: ComisionistasI) {
     this.sweetServ.confirmRequest('¿Estás seguro de querer deshabilitar este registro ?').then((data) => {
       if (data.value) {
-        this.sucursalesService.setInactive(sucursal.id).subscribe(res => {
+        this.comisionistasServ.setInactive(_data.id).subscribe(res => {
           if (res.ok === true) {
             this.toastServ.presentToast('success', res.message, 'top');
-            this.loadSucursalesTable();
+            this.loadComisionistasTable();
           }
         }, error => {
           console.log(error);
@@ -167,13 +164,13 @@ export class SucursalesListComponent implements OnInit, OnChanges {
     });
   }
 
-  activeSucursal(sucursal: SucursalesI) {
+  activeComisionista(_data: ComisionistasI) {
     this.sweetServ.confirmRequest('¿Estás seguro de querer habilitar este registro ?').then((data) => {
       if (data.value) {
-        this.sucursalesService.setEnable(sucursal.id).subscribe(res => {
+        this.comisionistasServ.setEnable(_data.id).subscribe(res => {
           if (res.ok === true) {
             this.toastServ.presentToast('success', res.message, 'top');
-            this.loadSucursalesTable();
+            this.loadComisionistasTable();
           }
         }, error => {
           console.log(error);
@@ -182,5 +179,4 @@ export class SucursalesListComponent implements OnInit, OnChanges {
       }
     });
   }
-
 }

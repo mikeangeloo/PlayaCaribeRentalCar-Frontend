@@ -20,6 +20,8 @@ import {RolesListComponent} from "./components/control-accesso/roles/roles-list/
 import {RolFormComponent} from "./components/control-accesso/roles/rol-form/rol-form.component";
 import {VehiculosListComponent} from "./components/vehiculos/vehiculos-list/vehiculos-list.component";
 import {VehiculoFormComponent} from "./components/vehiculos/vehiculo-form/vehiculo-form.component";
+import {ComisionistasTableComponent} from "./components/empresas/comisionistas/comisionistas-table/comisionistas-table.component";
+import {ComisionistaFormComponent} from "./components/empresas/comisionistas/comisionista-form/comisionista-form.component";
 
 
 
@@ -40,7 +42,9 @@ import {VehiculoFormComponent} from "./components/vehiculos/vehiculo-form/vehicu
     RolesListComponent,
     RolFormComponent,
     VehiculosListComponent,
-    VehiculoFormComponent
+    VehiculoFormComponent,
+    ComisionistasTableComponent,
+    ComisionistaFormComponent
   ],
   exports: [
     EmpresasListComponent,
@@ -58,7 +62,9 @@ import {VehiculoFormComponent} from "./components/vehiculos/vehiculo-form/vehicu
     RolesListComponent,
     RolFormComponent,
     VehiculosListComponent,
-    VehiculoFormComponent
+    VehiculoFormComponent,
+    ComisionistasTableComponent,
+    ComisionistaFormComponent
   ],
   entryComponents: [
     EmpresasListComponent,
@@ -76,7 +82,9 @@ import {VehiculoFormComponent} from "./components/vehiculos/vehiculo-form/vehicu
     RolesListComponent,
     RolFormComponent,
     VehiculosListComponent,
-    VehiculoFormComponent
+    VehiculoFormComponent,
+    ComisionistasTableComponent,
+    ComisionistaFormComponent
   ],
   imports: [
     CommonModule,

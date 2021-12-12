@@ -1,6 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
-import {EmpresasI} from "../../../../../interfaces/empresas.interface";
+import {EmpresasI} from "../../../../../interfaces/empresas/empresas.interface";
 import {ModalController} from "@ionic/angular";
 import {EmpresasService} from "../../../../../services/empresas.service";
 import {GeneralService} from "../../../../../services/general.service";

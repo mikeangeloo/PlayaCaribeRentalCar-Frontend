@@ -437,4 +437,34 @@ mat-header-row {
   /* padding-right: 0.5rem; */
   box-shadow: -1px 1px 8px 1px #00000042;
 }
+.edit-form {
+  @media (min-width: 768px) {
+    --height: 90%;
+  }
+}
+//#endregion
+
+//#region CUSTOM LEGACY TABLES
+.complement-table {
+
+  width: 100%;
+  border-left: 2px solid white;
+  border-right: 2px solid white;
+  border-top: 2px solid white;
+
+  th {
+    background: var(--ion-color-secondary);
+    color: white;
+    text-align: center;
+    font-weight: 500;
+    border: 1px solid white;
+  }
+
+  td {
+    text-align: center;
+    border: 1px solid gray;
+
+  }
+
+}
 //#endregion

@@ -2,10 +2,12 @@ import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core'
 import {ModalController} from "@ionic/angular";
 import {FormBuilder, FormControl, FormGroup, Validator, Validators} from "@angular/forms";
 import {EmpresasService} from "../../../../../services/empresas.service";
-import {EmpresasI} from "../../../../../interfaces/empresas.interface";
+import {EmpresasI} from "../../../../../interfaces/empresas/empresas.interface";
 import {GeneralService} from "../../../../../services/general.service";
 import {SweetMessagesService} from "../../../../../services/sweet-messages.service";
 import {ToastMessageService} from "../../../../../services/toast-message.service";
+import {ComisionistasI} from "../../../../../interfaces/comisionistas/comisionistas.interface";
+import {ComisionistaFormComponent} from "../../comisionistas/comisionista-form/comisionista-form.component";
 
 @Component({
   selector: 'app-empresa-form',
@@ -24,7 +26,8 @@ export class EmpresaFormComponent implements OnInit {
     private empresasService: EmpresasService,
     private generalServ: GeneralService,
     private sweetMsg: SweetMessagesService,
-    private toastServ: ToastMessageService
+    private toastServ: ToastMessageService,
+    public modalCtr: ModalController,
   ) {
     this.title = 'Formulario Empresa';
     this.empresaForm = this.fb.group({
@@ -58,6 +61,7 @@ export class EmpresaFormComponent implements OnInit {
       tel_contacto: (data && data.tel_contacto) ? data.tel_contacto : null,
       activo: (data && data.activo) ? data.activo : 0,
     });
+    this.empresaForm.controls.activo.disable();
   }
 
 
@@ -67,6 +71,7 @@ export class EmpresaFormComponent implements OnInit {
     this.empresasService.getDataById(this.empresa_id).subscribe(res => {
       this.generalServ.dismissLoading();
       if (res.ok === true) {
+        this.empresaData = res.empresa;
         this.initEmpresaForm(res.empresa);
       }
     }, error => {
@@ -98,5 +103,27 @@ export class EmpresaFormComponent implements OnInit {
     this.modalCtrl.dismiss({
       reload
     });
+  }
+
+  async openComisionistaForm(_data?: ComisionistasI) {
+    const pageEl: HTMLElement = document.querySelector('.ion-page');
+    //this.generalService.presentLoading();
+    const modal = await this.modalCtr.create({
+      component: ComisionistaFormComponent,
+      componentProps: {
+        'asModal': true,
+        'comisionista_id': (_data && _data.id) ? _data.id : null,
+        'empresa_id': this.empresa_id,
+        'loadLoading': false
+      },
+      swipeToClose: true,
+      cssClass: 'edit-form',
+      presentingElement: pageEl
+    });
+    await modal.present();
+    const {data} = await modal.onWillDismiss();
+    if (data.reload && data.reload === true) {
+      this.loadEmpresaData();
+    }
   }
 }

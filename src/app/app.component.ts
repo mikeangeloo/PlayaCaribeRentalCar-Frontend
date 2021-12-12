@@ -169,7 +169,15 @@ export class AppComponent implements OnDestroy {
               module: 'empresas',
               icon: 'business',
               label: 'Listado de Empresas',
-              route: 'administracion/empresas/listado-listado-empresas',
+              route: 'administracion/empresas/listado-empresas',
+              level: 2,
+              active: false,
+            },
+            {
+              module: 'empresas',
+              icon: 'wallet-outline',
+              label: 'Listado de Comisionistas',
+              route: 'administracion/empresas/listado-comisionistas',
               level: 2,
               active: false,
             }
