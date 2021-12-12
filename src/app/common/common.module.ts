@@ -22,6 +22,8 @@ import {VehiculosListComponent} from "./components/vehiculos/vehiculos-list/vehi
 import {VehiculoFormComponent} from "./components/vehiculos/vehiculo-form/vehiculo-form.component";
 import {ComisionistasTableComponent} from "./components/empresas/comisionistas/comisionistas-table/comisionistas-table.component";
 import {ComisionistaFormComponent} from "./components/empresas/comisionistas/comisionista-form/comisionista-form.component";
+import {ClientesTableComponent} from "./components/clientes/clientes-table/clientes-table.component";
+import {ClienteFormComponent} from "./components/clientes/cliente-form/cliente-form.component";
 
 
 
@@ -44,7 +46,9 @@ import {ComisionistaFormComponent} from "./components/empresas/comisionistas/com
     VehiculosListComponent,
     VehiculoFormComponent,
     ComisionistasTableComponent,
-    ComisionistaFormComponent
+    ComisionistaFormComponent,
+    ClientesTableComponent,
+    ClienteFormComponent
   ],
   exports: [
     EmpresasListComponent,
@@ -64,7 +68,9 @@ import {ComisionistaFormComponent} from "./components/empresas/comisionistas/com
     VehiculosListComponent,
     VehiculoFormComponent,
     ComisionistasTableComponent,
-    ComisionistaFormComponent
+    ComisionistaFormComponent,
+    ClientesTableComponent,
+    ClienteFormComponent
   ],
   entryComponents: [
     EmpresasListComponent,
@@ -84,7 +90,9 @@ import {ComisionistaFormComponent} from "./components/empresas/comisionistas/com
     VehiculosListComponent,
     VehiculoFormComponent,
     ComisionistasTableComponent,
-    ComisionistaFormComponent
+    ComisionistaFormComponent,
+    ClientesTableComponent,
+    ClienteFormComponent
   ],
   imports: [
     CommonModule,

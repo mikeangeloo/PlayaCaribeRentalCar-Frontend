@@ -64,7 +64,14 @@ const routes: Routes = [
           {
             path: 'administracion/empresas/listado-comisionistas',
             loadChildren: () => import('./modules/empresas/comisionistas/comisionistas.module').then(m => m.ComisionistasPageModule)
-          }
+          },
+          //endregion
+
+          //region CLIENTES
+          {
+            path: 'administracion/clientes/listado-clientes',
+            loadChildren: () => import('./modules/clientes/listado-clientes/listado-clientes.module').then( m => m.ListadoClientesPageModule)
+          },
           //endregion
       //endregion
 
@@ -74,10 +81,6 @@ const routes: Routes = [
     path: '',
     redirectTo: '/dashboard',
     pathMatch: 'full'
-  },
-  {
-    path: 'comisionistas',
-    loadChildren: () => import('./modules/empresas/comisionistas/comisionistas.module').then( m => m.ComisionistasPageModule)
   },
 
 

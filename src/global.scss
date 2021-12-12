@@ -202,6 +202,17 @@ ion-content {
   display: flex;
   justify-content: space-around;
 }
+
+fieldset {
+  width: 100%;
+  border-color: var(--ion-color-primary);
+  border-radius: 10px;
+  border-style: solid;
+  legend {
+    padding-right: 10px;
+    padding-left: 10px;
+  }
+}
 //#endregion
 
 //#region OTP styles
@@ -440,6 +451,7 @@ mat-header-row {
 .edit-form {
   @media (min-width: 768px) {
     --height: 90%;
+    --width: 60%;
   }
 }
 //#endregion

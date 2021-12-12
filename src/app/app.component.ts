@@ -193,9 +193,9 @@ export class AppComponent implements OnDestroy {
           children: [
             {
               module: 'clientes',
-              icon: 'bookmarks',
+              icon: 'people-circle-outline',
               label: 'Listado de Clientes',
-              route: '/',
+              route: '/administracion/clientes/listado-clientes',
               level: 2,
               active: false,
             }
