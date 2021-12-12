@@ -61,7 +61,7 @@
                 <ion-col size="6">
                   <mat-form-field appearance="legacy">
                     <mat-label>Nombre empresa</mat-label>
-                    <mat-select formControlName="empresa_id" (selectionChange)="setEmpresaNombre($event.value)" [disabled]="empresa_id">
+                    <mat-select formControlName="empresa_id" (selectionChange)="setEmpresaNombre($event.value)" [disabled]="(empresa_id) ? true : false">
                       <mat-option *ngFor="let empresa of empresasList" [value]="empresa.id">{{empresa.nombre}}</mat-option>
                     </mat-select>
                     <mat-error *ngIf="cf.empresa_id.errors?.required">Campo requerido</mat-error>
