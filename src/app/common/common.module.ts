@@ -24,6 +24,7 @@ import {ComisionistasTableComponent} from "./components/empresas/comisionistas/c
 import {ComisionistaFormComponent} from "./components/empresas/comisionistas/comisionista-form/comisionista-form.component";
 import {ClientesTableComponent} from "./components/clientes/clientes-table/clientes-table.component";
 import {ClienteFormComponent} from "./components/clientes/cliente-form/cliente-form.component";
+import {TarjetaFormComponent} from "./components/tarjetas/tarjeta-form/tarjeta-form.component";
 
 
 
@@ -48,7 +49,8 @@ import {ClienteFormComponent} from "./components/clientes/cliente-form/cliente-f
     ComisionistasTableComponent,
     ComisionistaFormComponent,
     ClientesTableComponent,
-    ClienteFormComponent
+    ClienteFormComponent,
+    TarjetaFormComponent
   ],
   exports: [
     EmpresasListComponent,
@@ -70,7 +72,8 @@ import {ClienteFormComponent} from "./components/clientes/cliente-form/cliente-f
     ComisionistasTableComponent,
     ComisionistaFormComponent,
     ClientesTableComponent,
-    ClienteFormComponent
+    ClienteFormComponent,
+    TarjetaFormComponent
   ],
   entryComponents: [
     EmpresasListComponent,
@@ -92,7 +95,8 @@ import {ClienteFormComponent} from "./components/clientes/cliente-form/cliente-f
     ComisionistasTableComponent,
     ComisionistaFormComponent,
     ClientesTableComponent,
-    ClienteFormComponent
+    ClienteFormComponent,
+    TarjetaFormComponent
   ],
   imports: [
     CommonModule,

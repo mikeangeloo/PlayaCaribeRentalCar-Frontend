@@ -11,6 +11,8 @@ import {ComisionistaFormComponent} from "../../empresas/comisionistas/comisionis
 import {ClientesI} from "../../../../interfaces/clientes/clientes.interface";
 import {ClientesService} from "../../../../services/clientes.service";
 import {Months} from "../../../../interfaces/shared/months";
+import {TarjetaFormComponent} from "../../tarjetas/tarjeta-form/tarjeta-form.component";
+import {CardI} from "../../../../interfaces/cards/card.interface";
 
 @Component({
   selector: 'app-cliente-form',
@@ -120,25 +122,25 @@ export class ClienteFormComponent implements OnInit {
     });
   }
 
-  async openTarjetaForm(_data?: ClientesI) {
-  //   const pageEl: HTMLElement = document.querySelector('.ion-page');
-  //   //this.generalService.presentLoading();
-  //   const modal = await this.modalCtr.create({
-  //     component: ComisionistaFormComponent,
-  //     componentProps: {
-  //       'asModal': true,
-  //       'comisionista_id': (_data && _data.id) ? _data.id : null,
-  //       'empresa_id': this.cliente_id,
-  //       'loadLoading': false
-  //     },
-  //     swipeToClose: true,
-  //     cssClass: 'edit-form',
-  //     presentingElement: pageEl
-  //   });
-  //   await modal.present();
-  //   const {data} = await modal.onWillDismiss();
-  //   if (data.reload && data.reload === true) {
-  //     this.loadClienteData();
-  //   }
+  async openTarjetaForm(_data?: CardI) {
+    const pageEl: HTMLElement = document.querySelector('.ion-page');
+    //this.generalService.presentLoading();
+    const modal = await this.modalCtr.create({
+      component: TarjetaFormComponent,
+      componentProps: {
+        'asModal': true,
+        'card_id': (_data && _data.id) ? _data.id : null,
+        'cliente_id': this.cliente_id,
+        'loadLoading': false
+      },
+      swipeToClose: true,
+      cssClass: 'edit-form',
+      presentingElement: pageEl
+    });
+    await modal.present();
+    const {data} = await modal.onWillDismiss();
+    if (data.reload && data.reload === true) {
+      this.loadClienteData();
+    }
   }
 }

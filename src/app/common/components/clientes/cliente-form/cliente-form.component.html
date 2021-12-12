@@ -123,15 +123,19 @@
           <table class="complement-table">
             <thead>
             <tr>
-              <th>Nombre</th>
-              <th>Comisiones</th>
+              <th>Método Pago</th>
+              <th>Tipo Tarjeta</th>
+              <th>Ultimos 4 digitos</th>
+              <th>Fecha Exp</th>
               <th></th>
             </tr>
             </thead>
             <tbody>
             <tr *ngFor="let cm of clienteData.tarjetas">
-              <td>{{cm.nombre}} {{cm.apellidos}}</td>
-              <td>{{cm.comisiones_pactadas}}</td>
+              <td>{{cm.c_method}}</td>
+              <td>{{cm.c_type}}</td>
+              <td>{{cm.c_cn4}}</td>
+              <td>{{cm.c_month}} / {{cm.c_year}}</td>
               <td>
                 <ion-button fill="clear" (click)="openTarjetaForm(cm)">
                   <ion-icon name="create-outline"></ion-icon>
