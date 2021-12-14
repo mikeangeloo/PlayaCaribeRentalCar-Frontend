@@ -1,5 +1,6 @@
 import {CategoriasVehiculosI} from "./categorias-vehiculos.interface";
 import {MarcasVehiculosI} from "./marcas-vehiculos.interface";
+import {VehiculosStatusE} from "../../enums/vehiculos-status.enum";
 
 export interface VehiculosI
 {
@@ -22,4 +23,25 @@ export interface VehiculosI
   activo?: number;
   marca?: MarcasVehiculosI;
   categoria?: CategoriasVehiculosI;
+}
+
+export class VehiculosC
+{
+  static getLabel(status) {
+    switch (status) {
+      case VehiculosStatusE.DISPONIBLE:
+        return 'Disponible';
+        break;
+      case VehiculosStatusE.RENTADO:
+        return 'Rentado';
+      case VehiculosStatusE.ENTALLER:
+        return 'En taller';
+      case VehiculosStatusE.USOPERSONAL:
+        return 'Uso personal';
+      case VehiculosStatusE.RESERVADO:
+        return 'Reservado';
+      default:
+        return 'No especificado';
+    }
+  }
 }

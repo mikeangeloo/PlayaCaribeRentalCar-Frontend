@@ -25,6 +25,7 @@ import {ComisionistaFormComponent} from "./components/empresas/comisionistas/com
 import {ClientesTableComponent} from "./components/clientes/clientes-table/clientes-table.component";
 import {ClienteFormComponent} from "./components/clientes/cliente-form/cliente-form.component";
 import {TarjetaFormComponent} from "./components/tarjetas/tarjeta-form/tarjeta-form.component";
+import {MatChipsModule} from "@angular/material/chips";
 
 
 
@@ -98,14 +99,15 @@ import {TarjetaFormComponent} from "./components/tarjetas/tarjeta-form/tarjeta-f
     ClienteFormComponent,
     TarjetaFormComponent
   ],
-  imports: [
-    CommonModule,
-    FormsModule,
-    MaterialModule,
-    IonicModule,
-    RouterModule,
-    ReactiveFormsModule
-  ],
+    imports: [
+        CommonModule,
+        FormsModule,
+        MaterialModule,
+        IonicModule,
+        RouterModule,
+        ReactiveFormsModule,
+        MatChipsModule
+    ],
   providers: [
     CurrencyPipe
   ]

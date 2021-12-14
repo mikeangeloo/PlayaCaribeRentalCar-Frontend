@@ -7,9 +7,18 @@ import { Component, OnInit } from '@angular/core';
 })
 export class VehiculosPage implements OnInit {
 
+  data = null;
   constructor() { }
 
   ngOnInit() {
+  }
+
+  ionViewWillEnter() {
+    this.data = null;
+  }
+
+  ionViewWillLeave() {
+    this.data = [];
   }
 
 }

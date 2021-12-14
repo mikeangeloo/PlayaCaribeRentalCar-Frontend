@@ -4,7 +4,7 @@ import {ModalController} from "@ionic/angular";
 import {GeneralService} from "../../../../services/general.service";
 import {SweetMessagesService} from "../../../../services/sweet-messages.service";
 import {ToastMessageService} from "../../../../services/toast-message.service";
-import {VehiculosI} from "../../../../interfaces/catalogo-vehiculos/vehiculos.interface";
+import {VehiculosC, VehiculosI} from "../../../../interfaces/catalogo-vehiculos/vehiculos.interface";
 import {MarcasVehiculosI} from "../../../../interfaces/catalogo-vehiculos/marcas-vehiculos.interface";
 import {CategoriasVehiculosI} from "../../../../interfaces/catalogo-vehiculos/categorias-vehiculos.interface";
 import {VehiculosService} from "../../../../services/vehiculos.service";
@@ -32,6 +32,8 @@ export class VehiculoFormComponent implements OnInit {
   public categoriasV: CategoriasVehiculosI[];
   public newCatV = false;
   @ViewChild('newCatVI', {static: false}) newCatVI: ElementRef;
+
+  vehiculoC = VehiculosC;
 
   constructor(
     public modalCtrl: ModalController,

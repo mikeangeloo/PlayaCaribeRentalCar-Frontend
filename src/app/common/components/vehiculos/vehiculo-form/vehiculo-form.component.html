@@ -18,7 +18,17 @@
         <ion-col size="12" style="height: 90%">
           <div class="title-container">
           </div>
-
+          <ion-row *ngIf="vehiculoData && vehiculoData.estatus">
+            <ion-col size="6"></ion-col>
+            <ion-col size="6">
+              <div style="display: flex;justify-content: flex-end;align-items: center;">
+                <ion-label style="margin-right: 1em;font-weight: 500;">Estatus</ion-label>
+                <ion-chip class="{{vehiculoData.estatus}}" title="{{vehiculoC.getLabel(vehiculoData.estatus)}}">
+                  <ion-label>{{vehiculoC.getLabel(vehiculoData.estatus)}}</ion-label>
+                </ion-chip>
+              </div>
+            </ion-col>
+          </ion-row>
           <form [formGroup]="vehiculoForm">
             <div class="form-content">
 

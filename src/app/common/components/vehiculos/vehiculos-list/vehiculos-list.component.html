@@ -33,6 +33,21 @@
           </ion-row>
           <div class="mat-elevation-z8 table-container">
             <mat-table [dataSource]="listVehiculos" matSort>
+
+              <!-- id -->
+              <ng-container matColumnDef="estatus">
+                <mat-header-cell *matHeaderCellDef mat-sort-header>Estatus</mat-header-cell>
+                <mat-cell *matCellDef="let row">
+                  <div class="column">
+                   <p>
+                     <ion-chip class="{{row.estatus}}" title="{{vehiculoC.getLabel(row.estatus)}}">
+                       <ion-label>{{vehiculoC.getLabel(row.estatus)}}</ion-label>
+                     </ion-chip>
+                   </p>
+                  </div>
+                </mat-cell>
+              </ng-container>
+
               <!-- id -->
               <ng-container matColumnDef="id">
                 <mat-header-cell *matHeaderCellDef mat-sort-header>Id</mat-header-cell>

@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnInit, Output, SimpleChanges, ViewChild} from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild} from '@angular/core';
 import {UsersI} from "../../../../interfaces/users.interface";
 import {MatTableDataSource} from "@angular/material/table";
 import {MatPaginator} from "@angular/material/paginator";
@@ -11,7 +11,7 @@ import {ToastMessageService} from "../../../../services/toast-message.service";
 import * as moment from "moment";
 import {TxtConv} from "../../../../helpers/txt-conv";
 import {UserFormComponent} from "../../control-accesso/users/user-form/user-form.component";
-import {VehiculosI} from "../../../../interfaces/catalogo-vehiculos/vehiculos.interface";
+import {VehiculosC, VehiculosI} from "../../../../interfaces/catalogo-vehiculos/vehiculos.interface";
 import {VehiculosService} from "../../../../services/vehiculos.service";
 import {VehiculoFormComponent} from "../vehiculo-form/vehiculo-form.component";
 
@@ -20,14 +20,16 @@ import {VehiculoFormComponent} from "../vehiculo-form/vehiculo-form.component";
   templateUrl: './vehiculos-list.component.html',
   styleUrls: ['./vehiculos-list.component.scss'],
 })
-export class VehiculosListComponent implements OnInit {
+export class VehiculosListComponent implements OnInit, OnChanges {
   public spinner = false;
   public editVehiculo: VehiculosI;
   @Input() public vehiculos: VehiculosI[] = [];
   @Input() isModal: boolean;
   @Output() emitData = new EventEmitter();
+  public vehiculoC = VehiculosC;
   displayedColumns: string[] = [
     'id',
+    'estatus',
     'modelo',
     'marca',
     'modelo_ano',

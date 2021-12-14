@@ -7,7 +7,7 @@ mat-table {
   width: 100%;
   display: grid;
   text-align: center;
-  @media (min-width: 768px) {
+  @media (min-width: 1320px) {
     display: block;
   }
 }

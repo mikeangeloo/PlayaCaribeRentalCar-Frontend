@@ -297,5 +297,7 @@ export class AppComponent implements OnDestroy {
 
   ngOnDestroy(): void {
     this.destroyed.unsubscribe();
+
+    //TODO: agregar ionViewWillLeave() y ionViewWillEnter() a todas las páginas
   }
 }

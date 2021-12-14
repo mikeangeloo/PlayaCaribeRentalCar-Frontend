@@ -101,7 +101,6 @@ mat-form-field {
 }
 //#endregion
 
-
 //#region GENERAL
 ion-content {
   --keyboard-offset: 0px !important;
@@ -211,6 +210,66 @@ fieldset {
   legend {
     padding-right: 10px;
     padding-left: 10px;
+  }
+}
+
+.disponible {
+  color: white;
+  background: var(--ion-color-success);
+
+  ion-label {
+    width: 100%;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    overflow-wrap: initial;
+  }
+}
+.rentado {
+  color: white;
+  background: var(--ion-color-danger);
+
+
+  ion-label {
+    width: 100%;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    overflow-wrap: initial;
+  }
+}
+.en_taller {
+  color: white;
+  background: var(--ion-color-dark-tint);
+
+
+  ion-label {
+    width: 100%;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    overflow-wrap: initial;
+  }
+}
+.uso_personal {
+  color: white;
+  background: var(--ion-color-dark-tint);
+
+
+  ion-label {
+    width: 100%;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    overflow-wrap: initial;
+  }
+}
+.reservado {
+  color: white;
+  background: var(--ion-color-warning);
+  width: 100%;
+
+  ion-label {
+    width: 100%;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    overflow-wrap: initial;
   }
 }
 //#endregion
@@ -391,6 +450,15 @@ fieldset {
 //#endregion
 
 //#region TABLES LIST
+mat-table {
+  .mat-focus-indicator {
+    position: initial !important;
+  }
+  .mat-sort-header-arrow {
+    position: absolute !important;
+    right: 0 !important;
+  }
+}
 mat-header-row {
   background: #e8c58f42 !important;
   mat-header-cell {
@@ -422,13 +490,7 @@ mat-header-row {
   display: flex;
   justify-content: space-around;
 }
-.mat-focus-indicator {
-  position: initial !important;
-}
-.mat-sort-header-arrow {
-  position: absolute !important;
-  right: 0 !important;
-}
+
 
 //#endregion
 
