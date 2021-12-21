@@ -61,4 +61,10 @@ export class UsersService {
       return response;
     }));
   }
+
+  public changePsw(payload): Observable<any> {
+    return this.httpClient.post<any>(`${this.dashURL}/usuarios/change-psw`, payload).pipe(map(response => {
+      return response;
+    }));
+  }
 }

@@ -67,12 +67,30 @@
                   </mat-form-field>
                 </ion-col>
 
-                <ion-col size="6">
-                  <mat-form-field appearance="legacy">
+                <ion-col size="6" style="position: relative">
+                  <div style="position: absolute; top: 0; right: 0; z-index: 999;">
+                    <ion-button size="small" color="success" (click)="showChangePwd(true)" *ngIf="enablePwdForm === false"><ion-icon name="reload-circle-sharp"></ion-icon></ion-button>
+                    <div style="float: right;" *ngIf="enablePwdForm">
+                      <ion-button size="small" color="primary" (click)="savePwdChange()">Cambiar</ion-button>
+                      <ion-button size="small" color="medium" (click)="showChangePwd(false)"><ion-icon name="close"></ion-icon></ion-button>
+                    </div>
+                  </div>
+
+                  <mat-form-field appearance="legacy" [ngClass]="{hide: enablePwdForm === true}">
                     <mat-label>Password</mat-label>
                     <input type="email" matInput formControlName="password">
                     <mat-error *ngIf="uf.password.errors?.required">Campo requerido</mat-error>
                   </mat-form-field>
+
+                  <form [formGroup]="changePwdForm" *ngIf="enablePwdForm === true">
+                    <ion-col size="6">
+                      <mat-form-field appearance="legacy">
+                        <mat-label>Password</mat-label>
+                        <input type="email" matInput formControlName="password" autocomplete="off">
+                        <mat-error *ngIf="uf.password.errors?.required">Campo requerido</mat-error>
+                      </mat-form-field>
+                    </ion-col>
+                  </form>
                 </ion-col>
               </ion-row>
 

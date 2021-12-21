@@ -35,6 +35,13 @@
               <ion-row class="ion-no-padding ion-no-margin">
                 <ion-col size>
                   <mat-form-field appearance="legacy">
+                    <mat-label>Código Vehículo</mat-label>
+                    <input type="text" matInput formControlName="codigo">
+                    <mat-error *ngIf="vf.codigo.errors?.required">Campo requerido</mat-error>
+                  </mat-form-field>
+                </ion-col>
+                <ion-col size>
+                  <mat-form-field appearance="legacy">
                     <mat-label>Modelo</mat-label>
                     <input type="text" matInput formControlName="modelo">
                     <mat-error *ngIf="vf.modelo.errors?.required">Campo requerido</mat-error>
@@ -166,14 +173,28 @@
                 <ion-col size="6">
                   <mat-form-field appearance="legacy">
                     <mat-label>Cantidad Combustible</mat-label>
-                    <input matInput list="combustible" formControlName="cant_combustible" autocomplete="off">
-                    <datalist id="combustible">
-                      <option value="0/1">
-                      <option value="1/4">
-                      <option value="1/2">
-                      <option value="3/4">
-                      <option value="1/1">
-                    </datalist>
+                    <mat-select formControlName="cant_combustible">
+                      <mat-option value="1/8">1/8</mat-option>
+                      <mat-option value="2/8">2/8</mat-option>
+                      <mat-option value="3/8">3/8</mat-option>
+                      <mat-option value="4/8">4/8</mat-option>
+                      <mat-option value="5/8">5/8</mat-option>
+                      <mat-option value="6/8">6/8</mat-option>
+                      <mat-option value="7/8">7/8</mat-option>
+                      <mat-option value="8/8">8/8</mat-option>
+                    </mat-select>
+
+<!--                    <input matInput list="combustible" formControlName="cant_combustible" autocomplete="off">-->
+<!--                    <datalist id="combustible">-->
+<!--                      <option value="1/8">-->
+<!--                      <option value="2/8">-->
+<!--                      <option value="3/8">-->
+<!--                      <option value="4/8">-->
+<!--                      <option value="5/8">-->
+<!--                      <option value="6/8">-->
+<!--                      <option value="7/8">-->
+<!--                      <option value="8/8">-->
+<!--                    </datalist>-->
                     <mat-error *ngIf="vf.cant_combustible.errors?.required">Campo requerido</mat-error>
                   </mat-form-field>
                 </ion-col>
