@@ -101,7 +101,6 @@ mat-form-field {
 }
 //#endregion
 
-
 //#region GENERAL
 ion-content {
   --keyboard-offset: 0px !important;
@@ -132,7 +131,19 @@ ion-content {
   margin-bottom: 2.5em;
   margin-top: 2.5em;
   line-height: 1.2;
-
+  z-index: 1;
+}
+.title2 {
+  font-size: 1.2rem;
+  text-align: center;
+  padding: 0;
+  margin: 0;
+  margin-bottom: 2.5em;
+  margin-top: 2.5em;
+  line-height: 1.2;
+  color: dimgrey;
+  font-weight: 500;
+  z-index: 1;
 }
 .form-content {
   display: flex;
@@ -186,7 +197,81 @@ ion-content {
   overflow: hidden;
   white-space: nowrap;
 }
+.inline-single-form {
+  display: flex;
+  justify-content: space-around;
+}
 
+fieldset {
+  width: 100%;
+  border-color: var(--ion-color-primary);
+  border-radius: 10px;
+  border-style: solid;
+  legend {
+    padding-right: 10px;
+    padding-left: 10px;
+  }
+}
+
+.disponible {
+  color: white;
+  background: var(--ion-color-success);
+
+  ion-label {
+    width: 100%;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    overflow-wrap: initial;
+  }
+}
+.rentado {
+  color: white;
+  background: var(--ion-color-danger);
+
+
+  ion-label {
+    width: 100%;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    overflow-wrap: initial;
+  }
+}
+.en_taller {
+  color: white;
+  background: var(--ion-color-dark-tint);
+
+
+  ion-label {
+    width: 100%;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    overflow-wrap: initial;
+  }
+}
+.uso_personal {
+  color: white;
+  background: var(--ion-color-dark-tint);
+
+
+  ion-label {
+    width: 100%;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    overflow-wrap: initial;
+  }
+}
+.reservado {
+  color: white;
+  background: var(--ion-color-warning);
+  width: 100%;
+
+  ion-label {
+    width: 100%;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    overflow-wrap: initial;
+  }
+}
 //#endregion
 
 //#region OTP styles
@@ -365,9 +450,19 @@ ion-content {
 //#endregion
 
 //#region TABLES LIST
+mat-table {
+  .mat-focus-indicator {
+    position: initial !important;
+  }
+  .mat-sort-header-arrow {
+    position: absolute !important;
+    right: 0 !important;
+  }
+}
 mat-header-row {
   background: #e8c58f42 !important;
   mat-header-cell {
+    position: relative;
     color: var(--ion-color-primary) !important;
   }
 }
@@ -396,6 +491,7 @@ mat-header-row {
   justify-content: space-around;
 }
 
+
 //#endregion
 
 //#region CUSTOM BUTTONS CLASS
@@ -413,5 +509,36 @@ mat-header-row {
   border-radius: 21px;
   /* padding-right: 0.5rem; */
   box-shadow: -1px 1px 8px 1px #00000042;
+}
+.edit-form {
+  @media (min-width: 768px) {
+    --height: 90%;
+    --width: 60%;
+  }
+}
+//#endregion
+
+//#region CUSTOM LEGACY TABLES
+.complement-table {
+
+  width: 100%;
+  border-left: 2px solid white;
+  border-right: 2px solid white;
+  border-top: 2px solid white;
+
+  th {
+    background: var(--ion-color-secondary);
+    color: white;
+    text-align: center;
+    font-weight: 500;
+    border: 1px solid white;
+  }
+
+  td {
+    text-align: center;
+    border: 1px solid gray;
+
+  }
+
 }
 //#endregion

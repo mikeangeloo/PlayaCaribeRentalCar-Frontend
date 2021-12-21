@@ -1,25 +1,16 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
-import {UsersI} from "../../../../interfaces/users.interface";
-import {RoleI} from "../../../../interfaces/profile/role.interface";
-import {AreaTrabajoI} from "../../../../interfaces/profile/area-trabajo.interface";
-import {SucursalesI} from "../../../../interfaces/sucursales.interface";
 import {ModalController} from "@ionic/angular";
-import {UsersService} from "../../../../services/users.service";
 import {GeneralService} from "../../../../services/general.service";
 import {SweetMessagesService} from "../../../../services/sweet-messages.service";
 import {ToastMessageService} from "../../../../services/toast-message.service";
-import {RolesService} from "../../../../services/roles.service";
-import {AreasTrabajoService} from "../../../../services/areas-trabajo.service";
-import {SucursalesService} from "../../../../services/sucursales.service";
-import {VehiculosI} from "../../../../interfaces/vehiculos.interface";
-import {MarcasI} from "../../../../interfaces/marcas.interface";
-import {ModelosI} from "../../../../interfaces/modelos.interface";
-import {ColoresI} from "../../../../interfaces/colores.interface";
+import {VehiculosC, VehiculosI} from "../../../../interfaces/catalogo-vehiculos/vehiculos.interface";
+import {MarcasVehiculosI} from "../../../../interfaces/catalogo-vehiculos/marcas-vehiculos.interface";
+import {CategoriasVehiculosI} from "../../../../interfaces/catalogo-vehiculos/categorias-vehiculos.interface";
 import {VehiculosService} from "../../../../services/vehiculos.service";
-import {MarcasService} from "../../../../services/marcas.service";
-import {ModelosService} from "../../../../services/modelos.service";
-import {ColoresService} from "../../../../services/colores.service";
+import {MarcasVehiculosService} from "../../../../services/marcas-vehiculos.service";
+import {CategoriaVehiculosService} from "../../../../services/categoria-vehiculos.service";
+import {DateConv} from "../../../../helpers/date-conv";
 
 @Component({
   selector: 'app-vehiculo-form',
@@ -34,9 +25,15 @@ export class VehiculoFormComponent implements OnInit {
   public vehiculoForm: FormGroup;
   public vehiculoData: VehiculosI;
 
-  public marcasV: MarcasI[];
-  public modeloV: ModelosI[];
-  public coloresV: ColoresI[];
+  public marcasV: MarcasVehiculosI[];
+  public newMarcaV = false;
+  @ViewChild('newMarcaI', {static: false}) newMarcaI: ElementRef;
+
+  public categoriasV: CategoriasVehiculosI[];
+  public newCatV = false;
+  @ViewChild('newCatVI', {static: false}) newCatVI: ElementRef;
+
+  vehiculoC = VehiculosC;
 
   constructor(
     public modalCtrl: ModalController,
@@ -45,22 +42,28 @@ export class VehiculoFormComponent implements OnInit {
     private generalServ: GeneralService,
     private sweetMsg: SweetMessagesService,
     private toastServ: ToastMessageService,
-    private modeloServ: ModelosService,
-    private marcasServ: MarcasService,
-    private coloresServ: ColoresService
+    private categoriaVehiculoServ: CategoriaVehiculosService,
+    private marcasServ: MarcasVehiculosService,
   ) {
     this.title = 'Formulario Véhiculo';
     this.vehiculoForm = this.fb.group({
       id: [null],
+      modelo: [null, Validators.required],
+      modelo_ano: [null, Validators.required],
       marca_id: [null, Validators.required],
-      modelo_id: [null, Validators.required],
-      color_id: [null, Validators.required],
-      no_placas: [null, Validators.required],
-      cap_tanque: [null, Validators.required],
-      activo: [null],
-      nombre: [null, Validators.required],
+      placas: [null, Validators.required],
+      num_poliza_seg: [null, Validators.required],
+      km_recorridos: [null, Validators.required],
+      categoria_vehiculo_id: [null, Validators.required],
+      color: [null, Validators.required],
       version: [null, Validators.required],
-      precio_venta: [null, Validators.required]
+
+      prox_servicio: [null],
+      cant_combustible: [null],
+      cap_tanque: [null],
+      precio_renta: [null],
+      activo: [null]
+
     });
   }
 
@@ -70,8 +73,7 @@ export class VehiculoFormComponent implements OnInit {
 
   ngOnInit() {
     this.loadMarcasV();
-    this.loadModelosV();
-    this.loadColoresV();
+    this.loadCategoriasV();
 
     if (this.vehiculo_id) {
       this.loadVehiculosData();
@@ -91,22 +93,12 @@ export class VehiculoFormComponent implements OnInit {
     })
   }
 
-  loadModelosV() {
-    this.modeloServ.getActive().subscribe(res => {
+  loadCategoriasV() {
+    this.categoriaVehiculoServ.getActive().subscribe(res => {
       if (res.ok === true) {
-        this.modeloV = res.modelos;
+        this.categoriasV = res.categorias;
       }
     }, error =>  {
-      console.log(error);
-    })
-  }
-
-  loadColoresV() {
-    this.coloresServ.getActive().subscribe(res => {
-      if (res.ok === true) {
-        this.coloresV = res.colores;
-      }
-    }, error => {
       console.log(error);
     })
   }
@@ -115,15 +107,20 @@ export class VehiculoFormComponent implements OnInit {
     console.log(data);
     this.vehiculoForm.setValue({
       id: (data && data.id) ? data.id : null,
+      modelo: (data && data.modelo) ? data.modelo : null,
+      modelo_ano: (data && data.modelo_ano) ? data.modelo_ano : null,
       marca_id: (data && data.marca_id) ? data.marca_id : null,
-      modelo_id: (data && data.modelo_id) ? data.modelo_id : null,
-      color_id: (data && data.color_id) ? data.color_id : null,
-      no_placas: (data && data.no_placas) ? data.no_placas : null,
-      cap_tanque: (data && data.cap_tanque) ? data.cap_tanque: null,
-      activo: (data && data.activo) ? data.activo : 0,
-      nombre: (data && data.nombre) ? data.nombre : null,
+      placas: (data && data.placas) ? data.placas : null,
+      num_poliza_seg: (data && data.num_poliza_seg) ? data.num_poliza_seg : null,
+      km_recorridos: (data && data.km_recorridos) ? data.km_recorridos : null,
+      categoria_vehiculo_id: (data && data.categoria_vehiculo_id) ? data.categoria_vehiculo_id : null,
+      color: (data && data.color) ? data.color : null,
       version: (data && data.version) ? data.version : null,
-      precio_venta: (data && data.precio_venta) ? data.precio_venta : null
+      prox_servicio: (data && data.prox_servicio) ? data.prox_servicio : null,
+      cant_combustible: (data && data.cant_combustible) ? data.cant_combustible : null,
+      cap_tanque: (data && data.cap_tanque) ? data.cap_tanque : null,
+      precio_renta: (data && data.precio_renta) ? data.precio_renta : null,
+      activo: (data && data.activo) ? data.activo : 0,
     });
     this.vf.activo.disable();
   }
@@ -150,8 +147,12 @@ export class VehiculoFormComponent implements OnInit {
       this.vehiculoForm.markAllAsTouched();
       return;
     }
+    let _payload = this.vehiculoForm.value;
+    if (_payload.prox_servicio) {
+      _payload.prox_servicio = DateConv.transFormDate(_payload.prox_servicio, 'regular');
+    }
     this.generalServ.presentLoading('Guardando cambios ...');
-    this.vehiculosServ.saveUpdate(this.vehiculoForm.value, this.vehiculo_id).subscribe(res => {
+    this.vehiculosServ.saveUpdate(_payload, this.vehiculo_id).subscribe(res => {
       this.generalServ.dismissLoading();
       this.dismiss(true);
       if (res.ok === true) {
@@ -167,6 +168,61 @@ export class VehiculoFormComponent implements OnInit {
     this.modalCtrl.dismiss({
       reload
     });
+  }
+
+  saveNewMarca() {
+    let _data = this.newMarcaI.nativeElement.value;
+    if (_data) {
+      this.generalServ.presentLoading();
+      let payload = {
+        marca: _data,
+        tipo: 1
+      }
+      this.marcasServ.saveUpdate(payload).subscribe(res => {
+        this.generalServ.dismissLoading();
+        if (res.ok == true) {
+          this.toastServ.presentToast('success', res.message, 'top');
+          this.loadMarcasV();
+          this.newMarcaV = false;
+        }
+      }, error => {
+        console.log(error);
+        this.generalServ.dismissLoading();
+        this.toastServ.presentToast('error', error.error.errors[0], 'top');
+        this.newMarcaV = false;
+      });
+    }
+  }
+
+  showNewMarca(show) {
+    this.newMarcaV = show;
+  }
+
+  showNewCatV(show) {
+    this.newCatV = show;
+  }
+
+  saveNewCatV() {
+    let _data = this.newCatVI.nativeElement.value;
+    if (_data) {
+      this.generalServ.presentLoading();
+      let payload = {
+        categoria: _data
+      }
+      this.categoriaVehiculoServ.saveUpdate(payload).subscribe(res => {
+        this.generalServ.dismissLoading();
+        if (res.ok == true) {
+          this.toastServ.presentToast('success', res.message, 'top');
+          this.loadCategoriasV();
+          this.newCatV = false;
+        }
+      }, error => {
+        console.log(error);
+        this.generalServ.dismissLoading();
+        this.toastServ.presentToast('error', error.error.errors[0], 'top');
+        this.newCatV = false;
+      });
+    }
   }
 
 }

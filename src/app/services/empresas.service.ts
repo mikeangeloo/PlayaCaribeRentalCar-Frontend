@@ -32,6 +32,10 @@ export class EmpresasService {
     }));
   }
 
+  public getActive() {
+    return this.httpClient.get<any>(`${this.dashURL}/empresas`).toPromise();
+  }
+
   public getDataById(empresa_id): Observable<any> {
     return this.httpClient.get<any>(`${this.dashURL}/empresas/${empresa_id}`).pipe(map(response => {
       return response;

@@ -1,13 +1,13 @@
 $cols-sm: 3;
 $cols-md: 5;
-$cols-lg: 10;
+$cols-lg: 12;
 
 mat-table {
   overflow: auto;
   width: 100%;
   display: grid;
   text-align: center;
-  @media (min-width: 768px) {
+  @media (min-width: 1320px) {
     display: block;
   }
 }

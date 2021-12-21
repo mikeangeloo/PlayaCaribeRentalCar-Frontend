@@ -5,6 +5,7 @@ import { LoadingController } from '@ionic/angular';
 import { BehaviorSubject } from 'rxjs';
 import { environment } from '../../environments/environment';
 import {SweetMessagesService} from "./sweet-messages.service";
+import * as moment from 'moment';
 
 @Injectable({
   providedIn: 'root',
@@ -34,5 +35,16 @@ export class GeneralService {
     setTimeout(() => {
       this.loadingController.dismiss();
     }, 500);
+  }
+
+  public getYears() {
+    const years = [];
+    const dateStart = moment();
+    const dateEnd = moment().add(10, 'y');
+    while (dateEnd.diff(dateStart, 'years') >= 0) {
+      years.push(dateStart.format('YYYY'));
+      dateStart.add(1, 'year');
+    }
+    return years;
   }
 }

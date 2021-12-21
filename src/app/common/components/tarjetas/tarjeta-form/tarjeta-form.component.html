@@ -1,0 +1,263 @@
+<ion-header translucent *ngIf="asModal">
+  <ion-toolbar>
+    <ion-title>{{ title }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button class="close-btn" (click)="dismiss()">
+        <ion-icon name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content fullscreen>
+  <ion-card class="app-card">
+    <ion-card-content>
+      <ion-row style="height: 100%; align-content: center; justify-content: center">
+        <ion-col size="12" style="height: 90%">
+          <div class="title-container">
+          </div>
+          <ng-container>
+            <form [formGroup]="cardForm">
+              <ion-row>
+                <ion-col size="4">
+                  <mat-form-field appearance="legacy">
+                    <mat-label>Nombre titular tarjeta</mat-label>
+                    <input matInput type="text" formControlName="c_name" autocomplete="off">
+                    <mat-icon matSuffix>account_circle</mat-icon>
+                    <mat-error>Campo requerido</mat-error>
+                  </mat-form-field>
+                </ion-col>
+                <ion-col size="4">
+                  <mat-form-field appearance="legacy">
+                    <mat-label>Tipo de Tarjeta</mat-label>
+                    <mat-select formControlName="c_type" (selectionChange)="changeInputMax($event.value)">
+                      <mat-option *ngFor="let cards of cardConf" value="{{cards.desc}}">{{cards.desc}}</mat-option>
+                    </mat-select>
+                    <mat-icon matSuffix>branding_watermark</mat-icon>
+                    <mat-error *ngIf="cardForm.controls['c_type'].errors?.required">Campo requerido
+                    </mat-error>
+                  </mat-form-field>
+                </ion-col>
+                <ion-col size="4">
+                  <mat-form-field appearance="legacy">
+                    <mat-label>Método de Pago</mat-label>
+                    <mat-select formControlName="c_method">
+                      <mat-option value="DC">Débito</mat-option>
+                      <mat-option value="CC">Crédito</mat-option>
+                    </mat-select>
+                    <mat-icon matSuffix>branding_watermark</mat-icon>
+                    <mat-error *ngIf="cardForm.controls['c_method'].errors?.required">Campo requerido
+                    </mat-error>
+                  </mat-form-field>
+                </ion-col>
+              </ion-row> <!-- c_name, c_type-->
+              <h4 style="margin: 0; padding: 0;">Card Numbers
+                <mat-icon style="vertical-align: bottom">credit_card</mat-icon>
+              </h4>
+              <ion-row class="card-numbers">
+                <ion-col size="3" size-md="3">
+                  <mat-form-field appearance="legacy">
+                    <input matInput formControlName="c_cn1" id="c_cn1" type="numeric" style="-webkit-text-security: disc;" inputmode="numeric" pattern="[0-9]*"
+                           [maxLength]="(cardConfig && cardConfig.l1) ? cardConfig.l1 : 4"
+                           (keyup)="keytab($event, (cardConfig && cardConfig?.l1) ? cardConfig.l1 : 4)" autocomplete="off">
+
+                    <mat-icon matSuffix>card</mat-icon>
+                    <mat-error *ngIf="cardForm.controls['c_cn1'].errors?.required">Campo requerido.
+                    </mat-error>
+                    <mat-error *ngIf="cardForm.controls['c_cn1'].errors?.pattern">Solo
+                      <strong>números</strong> están permitidos.
+                    </mat-error>
+                  </mat-form-field>
+                </ion-col>
+                <ion-col size="3" size-md="3">
+                  <mat-form-field appearance="legacy">
+                    <mat-label></mat-label>
+                    <input matInput formControlName="c_cn2" id="c_cn2" type="numeric" style="-webkit-text-security: disc;" inputmode="numeric" pattern="[0-9]*" autocomplete="off"
+                           [maxLength]="(cardConfig && cardConfig.l2) ? cardConfig.l2 : 4"
+                           (keyup)="keytab($event, cardConfig?.l2)">
+                    <mat-icon matSuffix>card</mat-icon>
+                    <mat-error *ngIf="cardForm.controls['c_cn2'].errors?.required">Campo requerido
+                    </mat-error>
+                    <mat-error *ngIf="cardForm.controls['c_cn2'].errors?.pattern">Solo
+                      <strong>números</strong> están permitidos.
+                    </mat-error>
+                  </mat-form-field>
+                </ion-col>
+                <ion-col size="3" size-md="3">
+                  <mat-form-field appearance="legacy">
+                    <mat-label></mat-label>
+                    <input matInput formControlName="c_cn3" id="c_cn3" type="numeric" style="-webkit-text-security: disc;" inputmode="numeric" pattern="[0-9]*" autocomplete="off"
+                           [maxLength]="(cardConfig && cardConfig.l3) ? cardConfig.l3 : 4"
+                           (keyup)="keytab($event, cardConfig?.l3)">
+                    <mat-icon matSuffix>card</mat-icon>
+                    <mat-error *ngIf="cardForm.controls['c_cn3'].errors?.required">Campo requerido
+                    </mat-error>
+                    <mat-error *ngIf="cardForm.controls['c_cn3'].errors?.pattern">Solo
+                      <strong>números</strong> están permitidos.
+                    </mat-error>
+                  </mat-form-field>
+                </ion-col>
+                <ion-col size="3" size-md="3">
+                  <mat-form-field appearance="legacy">
+                    <mat-label></mat-label>
+                    <input matInput formControlName="c_cn4" id="c_cn4" type="numeric" inputmode="numeric" pattern="[0-9]*" autocomplete="off"
+                           [maxLength]="(cardConfig && cardConfig.l4) ? cardConfig.l4 : 4"
+                           (keyup)="keytab($event, cardConfig?.l4)">
+                    <mat-icon matSuffix>card</mat-icon>
+                    <mat-error *ngIf="cardForm.controls['c_cn4'].errors?.required">Campo requerido.
+                    </mat-error>
+                    <mat-error *ngIf="cardForm.controls['c_cn4'].errors?.pattern">Solo
+                      <strong>números</strong> están permitidos.
+                    </mat-error>
+                  </mat-form-field>
+                </ion-col>
+              </ion-row> <!-- c_cn1, c_cn2, c_cn3, c_cn4 -->
+
+              <ion-row>
+                <ion-col size="4">
+                  <mat-form-field appearance="legacy">
+                    <mat-label>Mes Expiración</mat-label>
+                    <mat-select formControlName="c_month">
+                      <mat-option *ngFor="let month of months" value="{{month.digit}}">{{month.month}}</mat-option>
+                    </mat-select>
+                    <mat-icon matSuffix>date_range</mat-icon>
+                    <mat-error *ngIf="cardForm.controls['c_month'].errors?.required">Campo requerido
+                    </mat-error>
+                    <mat-error *ngIf="cardForm.controls['c_month'].errors?.pattern">Solo
+                      <strong>números</strong> están permitidos.
+                    </mat-error>
+                  </mat-form-field>
+                </ion-col>
+                <ion-col size="4">
+                  <mat-form-field appearance="legacy">
+                    <mat-label>Año expiración</mat-label>
+                    <mat-select formControlName="c_year">
+                      <mat-option *ngFor="let year of validYears" value="{{year}}">{{year}}</mat-option>
+                    </mat-select>
+                    <mat-icon matSuffix>date_range</mat-icon>
+                    <mat-error *ngIf="cardForm.controls['c_year'].errors?.required">Campo requerido.
+                    </mat-error>
+                    <mat-error *ngIf="cardForm.controls['c_year'].errors?.pattern">Solo
+                      <strong>números</strong> están permitidos.
+                    </mat-error>
+                  </mat-form-field>
+                </ion-col>
+                <ion-col size="4">
+                  <mat-form-field appearance="legacy">
+                    <mat-label>Código CCV</mat-label>
+                    <input matInput formControlName="c_code" type="numeric" style="-webkit-text-security: disc;" inputmode="numeric" pattern="[0-9]*" autocomplete="off"
+                           [maxLength]="(cardConfig && cardConfig.lv) ? cardConfig.lv : 4">
+
+                    <mat-icon matSuffix>call_to_action</mat-icon>
+                    <mat-error *ngIf="cardForm.controls['c_code'].errors?.required">Campo requerido.
+                    </mat-error>
+                    <mat-error *ngIf="cardForm.controls['c_code'].errors?.pattern">Solo
+                      <strong>números</strong> están permitidos.
+                    </mat-error>
+
+                  </mat-form-field>
+                </ion-col>
+              </ion-row> <!-- c_month, c_year, c_code-->
+            </form> <!-- cardForm-->
+
+
+            <hr>
+
+            <!--        <mat-accordion>-->
+            <!--          <mat-expansion-panel (opened)="panelOpenState = true" (closed)="panelOpenState = false" #compInfo>-->
+            <!--            <mat-expansion-panel-header>-->
+            <!--              <mat-panel-title>-->
+            <!--                Complement Information (Optional)-->
+            <!--              </mat-panel-title>-->
+            <!--            </mat-expansion-panel-header>-->
+            <!--            <form [formGroup]="cardForm" *ngIf="showCardComplementForm === true">-->
+            <!--              <div class="row">-->
+            <!--                <div class="col-12">-->
+            <!--&lt;!&ndash;                  <h4>Complement Information (Optional)</h4>&ndash;&gt;-->
+            <!--                </div>-->
+            <!--                <div class="col-12">-->
+            <!--                  <mat-form-field appearance="legacy">-->
+            <!--                    <mat-label>Card Address</mat-label>-->
+            <!--                    <textarea matInput cols="30" rows="3" formControlName="c_address"></textarea>-->
+            <!--                    <mat-error *ngIf="cardForm.controls['c_address'].errors?.required">Campo requerido-->
+            <!--                    </mat-error>-->
+            <!--                  </mat-form-field>-->
+            <!--                </div> &lt;!&ndash; c_address &ndash;&gt;-->
+
+            <!--                <div class="col-12 col-md">-->
+            <!--                  <mat-form-field appearance="legacy">-->
+            <!--                    <mat-label>Card Country</mat-label>-->
+            <!--                    <mat-select formControlName="c_country" (selectionChange)="getStates($event.value)">-->
+            <!--                      <mat-option value="">Select...</mat-option>-->
+            <!--                      <mat-option *ngFor="let country of countries; let i = index" value="{{country.name}}"-->
+            <!--                                  [ngClass]="{borderBottom: i === 2}">-->
+            <!--                        {{country.name}}</mat-option>-->
+
+            <!--                    </mat-select>-->
+            <!--                    <mat-error *ngIf="cardForm.controls['c_country'].errors?.required">Campo requerido-->
+            <!--                    </mat-error>-->
+            <!--                    <mat-icon matSuffix>location_on</mat-icon>-->
+            <!--                  </mat-form-field>-->
+            <!--                </div> &lt;!&ndash; c_country &ndash;&gt;-->
+
+            <!--                <div class="col-12 col-md">-->
+            <!--                  <mat-form-field appearance="legacy">-->
+            <!--                    <mat-label>Card State</mat-label>-->
+            <!--                    <mat-select formControlName="c_state" (selectionChange)="getCities($event.value)">-->
+            <!--                      <mat-option value="">Select...</mat-option>-->
+            <!--                      <mat-option *ngFor="let state of states" value="{{state.name}}">{{state.name}}</mat-option>-->
+            <!--                    </mat-select>-->
+            <!--                    <mat-icon matSuffix>location_on</mat-icon>-->
+            <!--                    <mat-error *ngIf="cardForm.controls['c_state'].errors?.required">Campo requerido-->
+            <!--                    </mat-error>-->
+            <!--                  </mat-form-field>-->
+            <!--                </div> &lt;!&ndash; c_state &ndash;&gt;-->
+
+            <!--                <div class="col-12 col-md">-->
+            <!--                  <mat-form-field appearance="legacy">-->
+            <!--                    <mat-label>Card City</mat-label>-->
+            <!--                    <mat-select formControlName="c_city" (closed)="onPanelClose()"-->
+            <!--                                (selectionChange)="enabledOtherCity($event.value)">-->
+
+            <!--                      <div class="search">-->
+            <!--                        <mat-form-field class="full-width-field" style="text-align: center;">-->
+            <!--                          <input matInput [formControl]="filterControl" type="text" name="filter-options"-->
+            <!--                                 id="filter-options" placeholder=" Search" (keyup)="filtrar($event.target.value)"-->
+            <!--                                 autofocus>-->
+            <!--                        </mat-form-field>-->
+            <!--                      </div>-->
+
+            <!--                      <mat-option value="">Select...</mat-option>-->
+            <!--                      <mat-option *ngFor="let city of c_FilterCities" value="{{city.name}}">{{city.name}}-->
+            <!--                      </mat-option>-->
+            <!--                    </mat-select>-->
+            <!--                    <mat-icon matSuffix>location_on</mat-icon>-->
+            <!--                    <mat-error *ngIf="cardForm.controls['c_city'].errors?.required">Campo requerido-->
+            <!--                    </mat-error>-->
+            <!--                  </mat-form-field>-->
+            <!--                </div> &lt;!&ndash; c_city &ndash;&gt;-->
+
+            <!--                <div class="col-12 col-md">-->
+            <!--                  <mat-form-field appearance="legacy">-->
+            <!--                    <mat-label>Card Zip</mat-label>-->
+            <!--                    <input matInput type="text" formControlName="c_zip">-->
+            <!--                    <mat-error *ngIf="cardForm.controls['c_zip'].errors?.required">Campo requerido-->
+            <!--                    </mat-error>-->
+            <!--                  </mat-form-field>-->
+            <!--                </div> &lt;!&ndash; c_zip &ndash;&gt;-->
+
+            <!--              </div> &lt;!&ndash; complement information card &ndash;&gt;-->
+            <!--            </form>-->
+            <!--          </mat-expansion-panel>-->
+            <!--        </mat-accordion>-->
+
+            <br>
+            <ion-button class="btn-shadow" color="secondary" expand="full" (click)="saveUpdate()">
+              Guardar
+            </ion-button>
+
+          </ng-container> <!-- card form and payment form-->
+        </ion-col>
+      </ion-row>
+    </ion-card-content>
+  </ion-card>
+</ion-content>

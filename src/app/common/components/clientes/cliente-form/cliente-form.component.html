@@ -1,0 +1,165 @@
+<ion-header translucent *ngIf="asModal">
+  <ion-toolbar>
+    <ion-title>{{ title }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button class="close-btn" (click)="dismiss()">
+        <ion-icon name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content fullscreen>
+
+  <div class="ion-page"></div>
+  <br>
+  <ion-card class="app-card">
+    <ion-card-content>
+
+      <ion-row style="height: 100%; align-content: center; justify-content: center">
+        <ion-col size="12" style="height: 90%">
+          <div class="title-container">
+          </div>
+
+          <form [formGroup]="clienteForm">
+            <div class="form-content">
+              <ion-row class="ion-no-padding ion-no-margin">
+
+                <ion-col size="6">
+                  <mat-form-field appearance="legacy">
+                    <mat-label>Nombre</mat-label>
+                    <input matInput type="text" formControlName="nombre">
+                    <mat-error *ngIf="cf.nombre.errors?.required">Campo requerido</mat-error>
+                  </mat-form-field>
+                </ion-col>
+
+                <ion-col size="6">
+                  <mat-form-field appearance="legacy">
+                    <mat-label>Apellidos</mat-label>
+                    <input matInput type="text" formControlName="apellidos">
+                    <mat-error *ngIf="cf.apellidos.errors?.required">Campo requerido</mat-error>
+                  </mat-form-field>
+                </ion-col>
+              </ion-row>
+
+              <ion-row class="ion-no-padding ion-no-margin">
+                <ion-col size="6">
+                  <mat-form-field appearance="legacy">
+                    <mat-label>Teléfono</mat-label>
+                    <input matInput formControlName="telefono">
+                    <mat-error *ngIf="cf.telefono.errors?.required">Campo requerido</mat-error>
+                  </mat-form-field>
+                </ion-col>
+                <ion-col size="6">
+                  <mat-form-field appearance="legacy">
+                    <mat-label>Email</mat-label>
+                    <input matInput type="email" formControlName="email">
+                    <mat-error *ngIf="cf.email.errors?.required">Campo requerido</mat-error>
+                  </mat-form-field>
+                </ion-col>
+              </ion-row>
+              <fieldset>
+                <legend>Datos Licencia</legend>
+              <ion-row class="ion-no-padding ion-no-margin">
+
+
+                  <ion-col size="6">
+                    <mat-form-field appearance="legacy">
+                      <mat-label>Num. Licencia</mat-label>
+                      <input matInput type="tel" formControlName="num_licencia">
+                      <mat-error *ngIf="cf.num_licencia.errors?.required">Campo requerido</mat-error>
+                    </mat-form-field>
+                  </ion-col>
+                  <ion-col size="3">
+                    <mat-form-field appearance="legacy">
+                      <mat-label>Mes Expiración</mat-label>
+                      <mat-select formControlName="licencia_mes">
+                        <mat-option *ngFor="let month of months" value="{{month.digit}}">{{month.month}}</mat-option>
+                      </mat-select>
+                      <mat-icon matSuffix>date_range</mat-icon>
+                      <mat-error *ngIf="cf.licencia_mes.errors?.required">Campo requerido</mat-error>
+                    </mat-form-field>
+                  </ion-col>
+                  <ion-col  size="3">
+                    <mat-form-field appearance="legacy">
+                      <mat-label>Año Expiración</mat-label>
+                      <mat-select formControlName="licencia_ano">
+                        <mat-option *ngFor="let year of validYears" value="{{year}}">{{year}}</mat-option>
+                      </mat-select>
+                      <mat-icon matSuffix>date_range</mat-icon>
+                      <mat-error *ngIf="cf.licencia_ano.errors?.required">Campo requerido</mat-error>
+                    </mat-form-field>
+                  </ion-col>
+
+
+              </ion-row>
+              </fieldset>
+              <br />
+              <ion-button class="btn-shadow" color="secondary" expand="full" (click)="saveUpdate()">
+                Guardar
+              </ion-button>
+            </div>
+          </form>
+
+        </ion-col>
+      </ion-row>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-item-divider></ion-item-divider>
+
+  <ion-card>
+    <ion-card-content>
+      <h4 class="title2">Datos Bancarios</h4>
+      <ion-row>
+        <ion-col size="12">
+          <ion-button color="success" size="small" (click)="openTarjetaForm()">
+            <ion-icon name="add"></ion-icon>
+          </ion-button>
+        </ion-col>
+      </ion-row>
+      <ion-row *ngIf="clienteData && (clienteData.tarjetas && clienteData.tarjetas.length > 0)">
+        <ion-col size="12">
+          <table class="complement-table">
+            <thead>
+            <tr>
+              <th>Método Pago</th>
+              <th>Tipo Tarjeta</th>
+              <th>Ultimos 4 digitos</th>
+              <th>Fecha Exp</th>
+              <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let cm of clienteData.tarjetas">
+              <td>{{cm.c_method}}</td>
+              <td>{{cm.c_type}}</td>
+              <td>{{cm.c_cn4}}</td>
+              <td>{{cm.c_month}} / {{cm.c_year}}</td>
+              <td>
+                <ion-button fill="clear" (click)="openTarjetaForm(cm)">
+                  <ion-icon name="create-outline"></ion-icon>
+                </ion-button>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </ion-col>
+      </ion-row>
+      <ion-row *ngIf="clienteData && (clienteData.tarjetas && clienteData.tarjetas.length === 0)">
+        <ion-col size="12">
+          <h4 class="title2">No hay tarjetas registradas</h4>
+        </ion-col>
+      </ion-row>
+    </ion-card-content>
+  </ion-card>
+</ion-content>
+<ion-footer>
+  <ion-toolbar>
+    <ion-buttons slot="end">
+      <ion-button color="medium" (click)="dismiss()">
+        Cerrar Ventana
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-footer>

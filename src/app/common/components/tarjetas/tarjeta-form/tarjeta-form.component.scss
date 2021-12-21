@@ -1,0 +1,28 @@
+.fill-remaining-space {
+  mat-icon {
+    padding-right: 2rem;
+  }
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+.card-numbers {
+  display: flex;
+  margin-top: -15px;
+  mat-form-field {
+    margin: 0;
+    padding: 0;
+  }
+
+  input[type="number"] {
+    -webkit-text-security: disc !important;
+  }
+
+  /* Removes Spin Button */
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button {
+    /* display: none; <- Crashes Chrome on hover */
+    -webkit-appearance: none;
+    margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
+  }
+}
