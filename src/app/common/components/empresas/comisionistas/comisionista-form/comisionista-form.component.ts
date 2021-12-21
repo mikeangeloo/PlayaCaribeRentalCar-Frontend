@@ -24,9 +24,7 @@ export class ComisionistaFormComponent implements OnInit {
   public comisionistaForm: FormGroup;
   public comisionistaData: ComisionistasI;
   public empresasList: EmpresasI[];
-  public listOfComisiones = [
-    10,20,30,40,50,60,70,80,90,100
-  ];
+  public listOfComisiones = [];
   constructor(
     public modalCtrl: ModalController,
     private fb: FormBuilder,
@@ -56,12 +54,12 @@ export class ComisionistaFormComponent implements OnInit {
 
   async ngOnInit() {
     await this.loadEmpresasData();
+    this.prepareComisionesList();
     if (this.comisionista_id) {
       this.loadComisionistasData();
     } else {
       this.initComisionistasForm();
     }
-
   }
 
   initComisionistasForm(data?) {
@@ -81,6 +79,17 @@ export class ComisionistaFormComponent implements OnInit {
       this.setEmpresaNombre(this.empresa_id);
     }
     this.comisionistaForm.controls.activo.disable();
+  }
+
+  prepareComisionesList() {
+    let _limit = 400;
+    let _value = 50;
+    let _interation = (_limit / _value);
+    let _acum = 0;
+    for (let i = 0; i < _interation; i++) {
+      _acum = _acum + _value;
+      this.listOfComisiones.push(_acum)
+    }
   }
 
   loadComisionistasData() {

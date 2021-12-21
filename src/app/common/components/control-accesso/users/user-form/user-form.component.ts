@@ -33,6 +33,9 @@ export class UserFormComponent implements OnInit {
   public areaTrabajo: AreaTrabajoI[];
   public sucursales: SucursalesI[];
 
+  public changePwdForm: FormGroup;
+  public enablePwdForm = false;
+
   constructor(
     public modalCtrl: ModalController,
     private fb: FormBuilder,
@@ -58,6 +61,8 @@ export class UserFormComponent implements OnInit {
       activo: [null],
       password: [null]
     });
+
+
   }
 
   get uf() {
@@ -77,6 +82,11 @@ export class UserFormComponent implements OnInit {
       this.uf.password.setValue(null);
       this.uf.password.enable();
     }
+
+    this.changePwdForm = this.fb.group({
+      user_id: [this.usuario_id, Validators.required],
+      password: [null, Validators.required]
+    })
   }
 
   loadRoles() {
@@ -160,6 +170,31 @@ export class UserFormComponent implements OnInit {
     }, error => {
       console.log(error);
       this.generalServ.dismissLoading();
+    });
+  }
+
+  showChangePwd(value: boolean) {
+    this.enablePwdForm = value;
+    this.changePwdForm.controls.password.reset();
+  }
+
+  savePwdChange() {
+    if (this.changePwdForm.controls.password.invalid) {
+      this.sweetMsg.printStatus('Debe agregar una contraseña valida', 'warning');
+      this.changePwdForm.markAllAsTouched();
+      return;
+    }
+    this.generalServ.presentLoading();
+    this.usuarioServ.changePsw(this.changePwdForm.value).subscribe(res => {
+      if (res.ok) {
+        this.generalServ.dismissLoading();
+        this.sweetMsg.printStatus(res.message, 'success');
+        this.showChangePwd(false);
+      }
+    }, error1 => {
+      this.generalServ.dismissLoading();
+      console.log(error1);
+      this.sweetMsg.printStatusArray(error1.error.errors, 'error');
     });
   }
 

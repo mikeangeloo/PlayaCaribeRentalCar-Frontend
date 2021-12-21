@@ -62,7 +62,8 @@ export class VehiculoFormComponent implements OnInit {
       cant_combustible: [null],
       cap_tanque: [null],
       precio_renta: [null],
-      activo: [null]
+      activo: [null],
+      codigo: [null]
 
     });
   }
@@ -121,6 +122,8 @@ export class VehiculoFormComponent implements OnInit {
       cap_tanque: (data && data.cap_tanque) ? data.cap_tanque : null,
       precio_renta: (data && data.precio_renta) ? data.precio_renta : null,
       activo: (data && data.activo) ? data.activo : 0,
+      codigo: (data && data.codigo) ? data.codigo : null,
+
     });
     this.vf.activo.disable();
   }

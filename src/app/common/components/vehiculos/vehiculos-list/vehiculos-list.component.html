@@ -34,7 +34,19 @@
           <div class="mat-elevation-z8 table-container">
             <mat-table [dataSource]="listVehiculos" matSort>
 
-              <!-- id -->
+             <!-- &lt;!&ndash; id &ndash;&gt;
+              <ng-container matColumnDef="id">
+                <mat-header-cell *matHeaderCellDef mat-sort-header>Id</mat-header-cell>
+                <mat-cell *matCellDef="let row">
+                  <div class="column">
+                    <p>
+                      {{row.id}}
+                    </p>
+                  </div>
+                </mat-cell>
+              </ng-container>-->
+
+              <!-- estatus -->
               <ng-container matColumnDef="estatus">
                 <mat-header-cell *matHeaderCellDef mat-sort-header>Estatus</mat-header-cell>
                 <mat-cell *matCellDef="let row">
@@ -48,13 +60,13 @@
                 </mat-cell>
               </ng-container>
 
-              <!-- id -->
-              <ng-container matColumnDef="id">
-                <mat-header-cell *matHeaderCellDef mat-sort-header>Id</mat-header-cell>
+              <!-- codigo -->
+              <ng-container matColumnDef="codigo">
+                <mat-header-cell *matHeaderCellDef mat-sort-header>Código</mat-header-cell>
                 <mat-cell *matCellDef="let row">
                   <div class="column">
                     <p>
-                      {{row.id}}
+                      {{row.codigo}}
                     </p>
                   </div>
                 </mat-cell>

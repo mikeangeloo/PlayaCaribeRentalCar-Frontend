@@ -28,7 +28,7 @@ export class VehiculosListComponent implements OnInit, OnChanges {
   @Output() emitData = new EventEmitter();
   public vehiculoC = VehiculosC;
   displayedColumns: string[] = [
-    'id',
+    'codigo',
     'estatus',
     'modelo',
     'marca',
