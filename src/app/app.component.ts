@@ -51,7 +51,7 @@ export class AppComponent implements OnDestroy {
           module: 'contratos',
           icon: 'document-outline',
           label: 'Nuevo Contrato',
-          route: '/',
+          route: '/contratos/nuevo',
           level: 1,
           active: false
         },

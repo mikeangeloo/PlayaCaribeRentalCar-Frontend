@@ -1,0 +1,193 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-row style="margin: 1rem;">
+    <ion-col size="6">
+      <h2>Nuevo Contrato</h2>
+    </ion-col>
+    <ion-col size="6" class="ion-text-end">
+      <button mat-raised-button class="button-success">Crear Contrato</button>
+      &nbsp;
+      <button mat-raised-button class="button-cancel">Crear Contrato</button>
+    </ion-col>
+  </ion-row>
+  <ion-row>
+    <ion-col size="12">
+      <mat-accordion>
+        <div class="accordion-margin">
+          <mat-expansion-panel (opened)="setStep(0)" [expanded]="step === 0" hideToggle>
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                Datos Generales
+              </mat-panel-title>
+              <mat-panel-description style="margin: 0; justify-content: flex-end;">
+                <ion-icon name="calendar"></ion-icon>
+              </mat-panel-description>
+            </mat-expansion-panel-header>
+
+            <mat-action-row>
+              <button (click)="prevStep()" mat-flat-button style="font-size: 1.5rem;">
+                <ion-icon name="chevron-back-outline" style="color: var(--ion-color-medium);"></ion-icon>
+              </button> &nbsp; &nbsp;
+
+              <button (click)="nextStep()" mat-flat-button style="font-size: 1.5rem;">
+                <ion-icon name="chevron-forward-outline" style="color: var(--ion-color-medium);"></ion-icon>
+              </button>
+            </mat-action-row>
+          </mat-expansion-panel>
+        </div>
+      </mat-accordion> <!-- Datos Generales -->
+      <mat-accordion>
+        <div class="accordion-margin">
+          <mat-expansion-panel (opened)="setStep(1)" [expanded]="step === 1" hideToggle>
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                Datos del Cliente
+              </mat-panel-title>
+              <mat-panel-description style="margin: 0; justify-content: flex-end;">
+                <ion-icon name="person"></ion-icon>
+              </mat-panel-description>
+            </mat-expansion-panel-header>
+
+            <mat-action-row>
+              <button (click)="prevStep()" mat-flat-button style="font-size: 1.5rem;">
+                <ion-icon name="chevron-back-outline" style="color: var(--ion-color-medium);"></ion-icon>
+              </button> &nbsp; &nbsp;
+
+              <button (click)="nextStep()" mat-flat-button style="font-size: 1.5rem;">
+                <ion-icon name="chevron-forward-outline" style="color: var(--ion-color-medium);"></ion-icon>
+              </button>
+            </mat-action-row>
+          </mat-expansion-panel>
+        </div>
+      </mat-accordion> <!-- Datos Cliente -->
+      <mat-accordion>
+        <div class="accordion-margin">
+          <mat-expansion-panel (opened)="setStep(2)" [expanded]="step === 2" hideToggle>
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                Datos Vehículo
+              </mat-panel-title>
+              <mat-panel-description style="margin: 0; justify-content: flex-end;">
+                <ion-icon name="car"></ion-icon>
+              </mat-panel-description>
+            </mat-expansion-panel-header>
+
+            <mat-action-row>
+              <button (click)="prevStep()" mat-flat-button style="font-size: 1.5rem;">
+                <ion-icon name="chevron-back-outline" style="color: var(--ion-color-medium);"></ion-icon>
+              </button> &nbsp; &nbsp;
+
+              <button (click)="nextStep()" mat-flat-button style="font-size: 1.5rem;">
+                <ion-icon name="chevron-forward-outline" style="color: var(--ion-color-medium);"></ion-icon>
+              </button>
+            </mat-action-row>
+          </mat-expansion-panel>
+        </div>
+      </mat-accordion> <!-- Datos vehiculo -->
+      <mat-accordion>
+        <div class="accordion-margin">
+          <mat-expansion-panel (opened)="setStep(3)" [expanded]="step === 3" hideToggle>
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                Detalle Cobro
+              </mat-panel-title>
+              <mat-panel-description style="margin: 0; justify-content: flex-end;">
+                <ion-icon name="cash"></ion-icon>
+              </mat-panel-description>
+            </mat-expansion-panel-header>
+
+            <mat-action-row>
+              <button (click)="prevStep()" mat-flat-button style="font-size: 1.5rem;">
+                <ion-icon name="chevron-back-outline" style="color: var(--ion-color-medium);"></ion-icon>
+              </button> &nbsp; &nbsp;
+
+              <button (click)="nextStep()" mat-flat-button style="font-size: 1.5rem;">
+                <ion-icon name="chevron-forward-outline" style="color: var(--ion-color-medium);"></ion-icon>
+              </button>
+            </mat-action-row>
+          </mat-expansion-panel>
+        </div>
+      </mat-accordion> <!-- Detalle Cobro -->
+      <mat-accordion>
+        <div class="accordion-margin">
+          <mat-expansion-panel (opened)="setStep(4)" [expanded]="step === 4" hideToggle>
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                Detalle de cargos y pre-autorizaciones
+              </mat-panel-title>
+              <mat-panel-description style="margin: 0; justify-content: flex-end;">
+                <ion-icon name="wallet"></ion-icon>
+              </mat-panel-description>
+            </mat-expansion-panel-header>
+
+            <mat-action-row>
+              <button (click)="prevStep()" mat-flat-button style="font-size: 1.5rem;">
+                <ion-icon name="chevron-back-outline" style="color: var(--ion-color-medium);"></ion-icon>
+              </button> &nbsp; &nbsp;
+
+              <button (click)="nextStep()" mat-flat-button style="font-size: 1.5rem;">
+                <ion-icon name="chevron-forward-outline" style="color: var(--ion-color-medium);"></ion-icon>
+              </button>
+            </mat-action-row>
+          </mat-expansion-panel>
+        </div>
+      </mat-accordion> <!-- Detalle cargos y pre-autorizaciones -->
+      <mat-accordion>
+        <div class="accordion-margin">
+          <mat-expansion-panel (opened)="setStep(5)" [expanded]="step === 5" hideToggle>
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                Revisión de Salida
+              </mat-panel-title>
+              <mat-panel-description style="margin: 0; justify-content: flex-end;">
+                <ion-icon name="checkmark-circle"></ion-icon>
+              </mat-panel-description>
+            </mat-expansion-panel-header>
+
+            <mat-action-row>
+              <button (click)="prevStep()" mat-flat-button style="font-size: 1.5rem;">
+                <ion-icon name="chevron-back-outline" style="color: var(--ion-color-medium);"></ion-icon>
+              </button> &nbsp; &nbsp;
+
+              <button (click)="nextStep()" mat-flat-button style="font-size: 1.5rem;">
+                <ion-icon name="chevron-forward-outline" style="color: var(--ion-color-medium);"></ion-icon>
+              </button>
+            </mat-action-row>
+          </mat-expansion-panel>
+        </div>
+      </mat-accordion> <!-- Revisión Salida -->
+      <mat-accordion>
+        <div class="accordion-margin">
+          <mat-expansion-panel (opened)="setStep(6)" [expanded]="step === 6" hideToggle>
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                Captura de Firma
+              </mat-panel-title>
+              <mat-panel-description style="margin: 0; justify-content: flex-end;">
+                <ion-icon name="pencil"></ion-icon>
+              </mat-panel-description>
+            </mat-expansion-panel-header>
+
+            <mat-action-row>
+              <button (click)="prevStep()" mat-flat-button style="font-size: 1.5rem;">
+                <ion-icon name="chevron-back-outline" style="color: var(--ion-color-medium);"></ion-icon>
+              </button> &nbsp; &nbsp;
+
+              <button (click)="nextStep()" mat-flat-button style="font-size: 1.5rem;">
+                <ion-icon name="chevron-forward-outline" style="color: var(--ion-color-medium);"></ion-icon>
+              </button>
+            </mat-action-row>
+          </mat-expansion-panel>
+        </div>
+      </mat-accordion> <!-- Captura Firma -->
+    </ion-col>
+  </ion-row>
+
+</ion-content>
