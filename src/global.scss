@@ -171,6 +171,7 @@ ion-content {
  --box-shadow: 0px 3px 1px -2px rgb(0 0 0 / 20%), 0px 2px 2px 0px rgb(0 0 0 / 14%), 0px 1px 5px 0px rgb(0 0 0 / 12%);
 }
 .app-card {
+  margin: 7px;
   ion-card-title {
     font-size: 1.2rem;
     text-align: center;
@@ -402,9 +403,9 @@ fieldset {
   color:#008c56
 }
 
-.ion-text-center {
+/*.ion-text-center {
   text-align: left !important;
-}
+}*/
 .label-name {
   color: white !important;
   line-break: normal;

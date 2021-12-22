@@ -8,6 +8,8 @@ import { ContratoPageRoutingModule } from './contrato-routing.module';
 
 import { ContratoPage } from './contrato.page';
 import {MaterialModule} from "../../../material/material.module";
+import {NgxMaterialTimepickerModule} from "ngx-material-timepicker";
+import {AppCommonModule} from "../../../common/common.module";
 
 @NgModule({
     imports: [
@@ -15,7 +17,9 @@ import {MaterialModule} from "../../../material/material.module";
         FormsModule,
         IonicModule,
         ContratoPageRoutingModule,
-        MaterialModule
+        MaterialModule,
+        NgxMaterialTimepickerModule,
+        AppCommonModule
     ],
   declarations: [ContratoPage]
 })

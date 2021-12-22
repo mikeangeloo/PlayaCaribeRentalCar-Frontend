@@ -14,7 +14,7 @@
     <ion-col size="6" class="ion-text-end">
       <button mat-raised-button class="button-success">Crear Contrato</button>
       &nbsp;
-      <button mat-raised-button class="button-cancel">Crear Contrato</button>
+      <button mat-raised-button class="button-cancel">Cancelar Contrato</button>
     </ion-col>
   </ion-row>
   <ion-row>
@@ -30,6 +30,73 @@
                 <ion-icon name="calendar"></ion-icon>
               </mat-panel-description>
             </mat-expansion-panel-header>
+
+            <ion-card>
+              <ion-card-content>
+                <ion-row>
+                  <ion-col>
+                    <mat-form-field>
+                      <mat-label>OFICINA DE RENTA</mat-label>
+                      <input type="text" matInput value="PPC">
+                      <mat-hint>
+                        OFICINA PLAZA PELICANOS
+                        10 AVENIDA NTE. MZA 100 LTE 1. CENTRO
+                        77710
+                      </mat-hint>
+                    </mat-form-field>
+                    <br>
+                    <br>
+                    <mat-form-field>
+                      <mat-label>FECHA DE RENTA</mat-label>
+                      <input matInput [matDatepicker]="fecha_renta" (click)="fecha_renta.open()">
+                      <mat-datepicker-toggle matSuffix [for]="fecha_renta"></mat-datepicker-toggle>
+                      <mat-datepicker #fecha_renta></mat-datepicker>
+                    </mat-form-field>
+                    <br>
+                    <br>
+                    <mat-form-field>
+                      <mat-label>HORA</mat-label>
+                      <div style="display: flex;">
+                        <input matInput [ngxTimepicker]="rentTime" [disableClick]="true" readonly>
+                        <ngx-material-timepicker-toggle [for]="rentTime"></ngx-material-timepicker-toggle>
+                        <ngx-material-timepicker [theme]="apolloThemClock" #rentTime></ngx-material-timepicker>
+                      </div>
+                    </mat-form-field>
+                  </ion-col> <!-- FECHA DE RENTA -->
+
+                  <ion-col>
+                    <mat-form-field>
+                      <mat-label>OFICINA DE RETORNO</mat-label>
+                      <input type="text" matInput value="PPC">
+                      <mat-hint>
+                        OFICINA PLAZA PELICANOS
+                        10 AVENIDA NTE. MZA 100 LTE 1. CENTRO
+                        77710
+                      </mat-hint>
+                    </mat-form-field>
+                    <br>
+                    <br>
+                    <mat-form-field>
+                      <mat-label>FECHA DE RETORNO</mat-label>
+                      <input matInput [matDatepicker]="fecha_retorno" (click)="fecha_retorno.open()">
+                      <mat-datepicker-toggle matSuffix [for]="fecha_retorno"></mat-datepicker-toggle>
+                      <mat-datepicker #fecha_retorno></mat-datepicker>
+                    </mat-form-field>
+                    <br>
+                    <br>
+                    <mat-form-field>
+                      <mat-label>HORA</mat-label>
+                      <div style="display: flex;">
+                        <input matInput [ngxTimepicker]="returnTime" [disableClick]="true" readonly>
+                        <ngx-material-timepicker-toggle [for]="returnTime"></ngx-material-timepicker-toggle>
+                        <ngx-material-timepicker [theme]="apolloThemClock" #returnTime></ngx-material-timepicker>
+                      </div>
+                    </mat-form-field>
+                  </ion-col> <!-- FECHA DE RETORNO -->
+                </ion-row>
+              </ion-card-content>
+            </ion-card>
+
 
             <mat-action-row>
               <button (click)="prevStep()" mat-flat-button style="font-size: 1.5rem;">
@@ -55,6 +122,112 @@
               </mat-panel-description>
             </mat-expansion-panel-header>
 
+            <ion-card>
+              <ion-card-content>
+                <ion-row>
+                  <ion-col>
+                    <mat-form-field appearance="legacy">
+                      <mat-label>NOMBRE(S)</mat-label>
+                      <input type="text" matInput value="LUIS OCTAVIO">
+                    </mat-form-field>
+                  </ion-col>
+                  <ion-col>
+                    <mat-form-field appearance="legacy">
+                      <mat-label>APELLIDO(S)</mat-label>
+                      <input type="text" matInput value="ROCHA HERMOSILLO">
+                    </mat-form-field>
+                  </ion-col>
+                </ion-row>
+
+                <ion-row>
+                  <ion-col>
+                    <mat-form-field appearance="legacy">
+                      <mat-label>TELÉFONO</mat-label>
+                      <input type="tel" matInput value="+529981083816">
+                    </mat-form-field>
+                  </ion-col>
+                  <ion-col>
+                    <mat-form-field appearance="legacy">
+                      <mat-label>E-Mail</mat-label>
+                      <input type="email" matInput value="test@mail.com">
+                    </mat-form-field>
+                  </ion-col>
+                </ion-row>
+
+                <ion-row>
+                  <ion-col>
+                    <mat-form-field appearance="legacy">
+                      <mat-label>DIRECCIÓN</mat-label>
+                      <textarea matInput>MEXICO, LA TOSCANA, PASEO DE SEGOVIA ...</textarea>
+                    </mat-form-field>
+                  </ion-col>
+                </ion-row>
+
+                <ion-row>
+                  <ion-col>
+                    <mat-form-field appearance="legacy">
+                      <mat-label>Número de Licencia</mat-label>
+                      <input type="number" matInput value="S1-94949">
+                    </mat-form-field>
+                  </ion-col>
+                  <ion-col>
+                    <mat-form-field appearance="legacy">
+                      <mat-label>Mes Exp.</mat-label>
+                      <mat-select>
+                        <mat-option *ngFor="let month of months" value="{{month.digit}}">{{month.month}}</mat-option>
+                      </mat-select>
+                      <mat-icon matSuffix>date_range</mat-icon>
+                    </mat-form-field>
+                  </ion-col>
+                  <ion-col>
+                    <mat-form-field appearance="legacy">
+                      <mat-label>Año expiración</mat-label>
+                      <mat-select>
+                        <mat-option *ngFor="let year of validYears" value="{{year}}">{{year}}</mat-option>
+                      </mat-select>
+                      <mat-icon matSuffix>date_range</mat-icon>
+                    </mat-form-field>
+                  </ion-col>
+                </ion-row>
+
+                <fieldset>
+                  <legend>Doc. Cliente</legend>
+                  <ng-container>
+                    <ion-row>
+                      <ion-col size="12" class="ion-text-center">
+                        <app-camera (captureImg)="processDataImage($event)" [justButton]="true"></app-camera>
+                      </ion-col>
+                    </ion-row>
+
+                    <div style="display: flex; justify-content: center; flex-direction: column;" *ngIf="imgDatasTranfer.length > 0">
+                      <!--<ion-button color="primary" expand="round" type="button" (click)="uploadArrayDatasImg()" style="width: 250px; margin: 1rem auto;">SUBIR</ion-button>-->
+                      <ion-row>
+                        <ion-col size="6" size-sm="4" *ngFor="let imgData of imgDatasTranfer; let i = index">
+                          <div class="capture-img-container">
+                            <div class="btn-action-container">
+                              <ion-button size="small" color="danger" (click)="removeImg(i)">
+                                <ion-icon name="trash"></ion-icon>
+                              </ion-button>
+                            </div>
+                            <ion-img [src]="imgData.url"></ion-img>
+                            <div class="loader-upload" *ngIf="imgData.uploading === true || imgData.uploadOk === true">
+                              <ion-spinner name="bubbles" *ngIf="imgData.uploading === true"></ion-spinner>
+                              <ion-icon name="checkmark-sharp" *ngIf="imgData.uploadOk === true" style="color: #0aff05; font-size: 3rem;"></ion-icon>
+                            </div>
+                            <ion-icon class="wrong-upload" name="close-sharp" *ngIf="imgData.uploadOk === false"></ion-icon>
+                          </div>
+                        </ion-col>
+                      </ion-row>
+
+                      <!-- <ion-img [src]="bodyImgURL"></ion-img> -->
+                    </div>
+
+                  </ng-container>
+                </fieldset>
+              </ion-card-content>
+            </ion-card>
+
+
             <mat-action-row>
               <button (click)="prevStep()" mat-flat-button style="font-size: 1.5rem;">
                 <ion-icon name="chevron-back-outline" style="color: var(--ion-color-medium);"></ion-icon>
@@ -78,6 +251,8 @@
                 <ion-icon name="car"></ion-icon>
               </mat-panel-description>
             </mat-expansion-panel-header>
+
+            <app-vehiculo-form [asModal]="false" [vehiculo_id]="1"></app-vehiculo-form>
 
             <mat-action-row>
               <button (click)="prevStep()" mat-flat-button style="font-size: 1.5rem;">
@@ -103,6 +278,200 @@
               </mat-panel-description>
             </mat-expansion-panel-header>
 
+            <ion-card>
+              <ion-card-content>
+                <h4 style="font-weight: 500">TARIFA APOLLO MX</h4>
+
+                <table class="desgloce-table">
+                    <thead>
+                      <tr>
+                        <th>DESCRIPCIÓN DE LOS CARGOS</th>
+                        <th></th>
+                        <th></th>
+                        <th>CARGOS</th>
+                      </tr>
+                      <tr>
+                        <th></th>
+                        <th>PRECIO UNIT.</th>
+                        <th>DIA</th>
+                        <th></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td style="text-underline: var(--ion-color-dark)">TARIFA TIEMPO Y KILOMETRAJE T&K</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                      </tr>
+                      <tr>
+                        <td>HOURS / HORAS</td>
+                        <td></td>
+                        <td></td>
+                        <td>{{'0' | currency}}</td>
+                      </tr>
+                      <tr>
+                        <td>DAYS / DIAS</td>
+                        <td>
+                          <ion-item>
+                            <ion-label class="ion-no-margin ion-no-padding">$</ion-label>
+                            <ion-input type="number" [value]="'780.00'"></ion-input>
+                          </ion-item>
+                        </td>
+                        <td>
+                          <ion-item>
+                            <ion-label class="ion-no-padding ion-no-margin">X</ion-label>
+                            <ion-input type="number" value="1"></ion-input>
+                          </ion-item>
+                        </td>
+                        <td>{{'0' | currency}}</td>
+                      </tr>
+                      <tr>
+                        <td>WEEKS / SEMANAL</td>
+                        <td></td>
+                        <td></td>
+                        <td>{{'0' | currency}}</td>
+                      </tr>
+                      <tr>
+                        <td>MONTHS / MENSUAL</td>
+                        <td></td>
+                        <td></td>
+                        <td>{{'0' | currency}}</td>
+                      </tr>
+                      <tr>
+                        <td>EX DAYS / DIA EXTRA</td>
+                        <td></td>
+                        <td></td>
+                        <td>{{'0' | currency}}</td>
+                      </tr>
+                    </tbody>
+                    <tfoot>
+                      <tr>
+                        <th>SUBTOTAL-1</th>
+                        <th></th>
+                        <th></th>
+                        <th>{{'349' | currency}}</th>
+                      </tr>
+                    </tfoot>
+                  </table>
+
+                <table class="desgloce-table">
+                  <thead>
+                  <tr class="empty-tr">
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                  </tr>
+                  <tr>
+                    <th></th>
+                    <th>PRECIO UNIT.</th>
+                    <th>DIA</th>
+                    <th></th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <tr>
+                    <td style="text-decoration: underline">CARGOS DE PROTECCIONES (OBLIGATORIO)</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                  </tr>
+                  <tr>
+                    <td>DAÑOS MATERIALES 90%</td>
+                    <td></td>
+                    <td></td>
+                    <td>{{'52.35' | currency}}</td>
+                  </tr>
+                  <tr>
+                    <td>DAÑOS TERCEROS</td>
+                    <td></td>
+                    <td></td>
+                    <td>{{'69.80' | currency}}</td>
+                  </tr>
+                  <tr>
+                    <td>GASTOS MEDICOS</td>
+                    <td></td>
+                    <td></td>
+                    <td>{{'34.90' | currency}}</td>
+                  </tr>
+                  <tr>
+                    <td>ASISTENCIA VIAL</td>
+                    <td></td>
+                    <td></td>
+                    <td>{{'17.45' | currency}}</td>
+                  </tr>
+                  <tr class="remarkFont">
+                    <td></td>
+                    <td>PRECIO UNIT.</td>
+                    <td>L</td>
+                    <td></td>
+                  </tr>
+                  <tr class="remarkFont">
+                    <td style="text-decoration: underline">CARGOS DE COMBUSTIBLE</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                  </tr>
+                  </tbody>
+                  <tfoot>
+                  <tr>
+                    <th>SUBTOTAL-2</th>
+                    <th></th>
+                    <th></th>
+                    <th>{{'523.50' | currency}}</th>
+                  </tr>
+                  </tfoot>
+                </table>
+
+                <table class="desgloce-table">
+                  <thead>
+                  <tr class="empty-tr">
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                  </tr>
+                  <tr>
+                    <th></th>
+                    <th>PRECIO UNIT.</th>
+                    <th>DIA</th>
+                    <th></th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <tr class="remarkFont">
+                    <td style="text-decoration: underline">CUOTAS LOCALES E IMPUESTOS FEDERALES</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                  </tr>
+                  <tr class="remarkFont">
+                    <td>I.V.A / TAX @ 16%</td>
+                    <td></td>
+                    <td></td>
+                    <td>{{'83.76' | currency}}</td>
+                  </tr>
+                  </tbody>
+                  <tfoot>
+                  <tr>
+                    <th>
+                      CARGOS ESTIMADOS TOTALES INICIALES X______
+                      <br>
+                      <small>
+                        *TODAS LAS CANTIDADES AQUÍ REFLEJADAS SON EN MONEDA NACIONAL (MNX)
+                      </small>
+                    </th>
+                    <th></th>
+                    <th></th>
+                    <th>{{'607.26' | currency}}</th>
+                  </tr>
+                  </tfoot>
+                </table>
+
+              </ion-card-content>
+            </ion-card>
+
             <mat-action-row>
               <button (click)="prevStep()" mat-flat-button style="font-size: 1.5rem;">
                 <ion-icon name="chevron-back-outline" style="color: var(--ion-color-medium);"></ion-icon>
@@ -126,6 +495,73 @@
                 <ion-icon name="wallet"></ion-icon>
               </mat-panel-description>
             </mat-expansion-panel-header>
+
+            <ion-card>
+              <ion-card-content>
+                <h4 style="font-weight: 500">DESCRIPCION DE LOS CARGOS Y PRE_AUTORIZACIONES</h4>
+                <ion-row>
+                  <ion-col size="6" class="ion-no-padding">
+                    <h4 style="margin: 0; padding: 0;">Balance por saldar: {{'607.26' | currency}}</h4>
+                  </ion-col>
+                  <ion-col size="6" class="ion-text-end ion-no-padding">
+                    <button mat-raised-button class="button-success" (click)="openTarjetaForm()">
+                      <ion-icon name="card"></ion-icon> &nbsp; Agregar Tarjeta
+                    </button>
+                  </ion-col>
+                </ion-row>
+                <br>
+                <mat-divider></mat-divider>
+                <br>
+                <ion-row class="border-ion-row">
+                  <ion-col size="12" size-md="8">
+                    <table class="cards-table">
+                      <tbody>
+                        <tr>
+                          <td>VISA</td>
+                          <td>4521*1234</td>
+                          <td>PRE-AUTH: 12345678</td>
+                          <td>11-NOV-21</td>
+                          <td>{{'3000' | currency}}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </ion-col>
+                  <ion-col size="12" size-md="4" class="ion-no-padding">
+                    <fieldset>
+                      <legend>Img. Tarjeta</legend>
+                      <div style="text-align: center;">
+                        <app-camera [justButton]="true"></app-camera>
+                      </div>
+                    </fieldset>
+                  </ion-col>
+                </ion-row>
+
+                <ion-row class="border-ion-row">
+                  <ion-col size="12" size-md="8">
+                    <table class="cards-table">
+                      <tbody>
+                      <tr>
+                        <td>VISA</td>
+                        <td>4521*1234</td>
+                        <td>PRE-AUTH: 12345678</td>
+                        <td>11-NOV-21</td>
+                        <td>{{'780' | currency}}</td>
+                      </tr>
+                      </tbody>
+                    </table>
+                  </ion-col>
+                  <ion-col size="12" size-md="4" class="ion-no-padding">
+                    <fieldset>
+                      <legend>Img. Tarjeta</legend>
+                      <div style="text-align: center;">
+                        <app-camera [justButton]="true"></app-camera>
+                      </div>
+                    </fieldset>
+                  </ion-col>
+                </ion-row>
+
+              </ion-card-content>
+            </ion-card>
 
             <mat-action-row>
               <button (click)="prevStep()" mat-flat-button style="font-size: 1.5rem;">

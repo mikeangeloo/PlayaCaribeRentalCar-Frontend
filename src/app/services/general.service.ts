@@ -12,7 +12,7 @@ import * as moment from 'moment';
 })
 export class GeneralService {
   //#endregion
-
+  isLoading = false;
   constructor(
     public loadingController: LoadingController,
     public httpClient: HttpClient,
@@ -29,11 +29,13 @@ export class GeneralService {
       message: (message) ? message : 'Cargando datos ...',
     });
     await loading.present();
+    this.isLoading = true;
   }
 
   dismissLoading() {
     setTimeout(() => {
       this.loadingController.dismiss();
+      this.isLoading = false;
     }, 500);
   }
 
