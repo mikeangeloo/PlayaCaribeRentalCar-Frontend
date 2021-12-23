@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {AfterViewInit, Component, OnInit} from '@angular/core';
 import {NgxMaterialTimepickerTheme} from "ngx-material-timepicker";
 import {Months} from "../../../interfaces/shared/months";
 import * as moment from "moment";
@@ -13,7 +13,7 @@ import {ModalController} from "@ionic/angular";
   templateUrl: './contrato.page.html',
   styleUrls: ['./contrato.page.scss'],
 })
-export class ContratoPage implements OnInit {
+export class ContratoPage implements OnInit, AfterViewInit {
 
   step = 0;
   public months = Months;
@@ -46,8 +46,42 @@ export class ContratoPage implements OnInit {
 
   ngOnInit() {
     this.validYears = this.getYears();
+
+
   }
 
+  ngAfterViewInit() {
+    setTimeout(() => {
+      this.initReviewCanva();
+    }, 1000);
+
+  }
+
+  initReviewCanva() {
+    // @ts-ignore
+    let canvas: HTMLCanvasElement = document.getElementById('revisionC');
+    let ctx = canvas.getContext("2d");
+
+    let _width = document.getElementById('revisionRowW').offsetWidth;
+    let _fixHeight = 200;
+    if (window.innerWidth <= 768) {
+      _fixHeight = 500;
+    }
+    let _height = document.body.offsetHeight - _fixHeight;
+
+    console.log('_height', _height);
+
+    canvas.width = _width;
+    canvas.height = _height;
+
+
+    var background = new Image();
+    background.src = 'assets/img/svg/sedan.svg';
+
+    background.onload = function(){
+      ctx.drawImage(background,0,0);
+    }
+  }
 
   private getYears() {
     const years = [];

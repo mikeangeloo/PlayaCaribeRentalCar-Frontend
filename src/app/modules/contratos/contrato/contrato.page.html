@@ -6,7 +6,7 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
+<ion-content id="revisionRowH">
   <ion-row style="margin: 1.2rem;">
     <ion-col size="6">
       <h2 style="color: var(--ion-color-dark-tint)">Nuevo Contrato</h2>
@@ -588,8 +588,14 @@
             </mat-expansion-panel-header>
 
             <ion-card>
-              <ion-card-content>
+              <ion-card-content >
                 <h4 class="ion-text-center">Por diseñar vista ....</h4>
+
+                <ion-row  (loadeddata)="initReviewCanva()">
+                  <ion-col size="12" id="revisionRowW">
+                    <canvas id="revisionC"></canvas>
+                  </ion-col>
+                </ion-row>
               </ion-card-content>
             </ion-card>
             <mat-action-row>
