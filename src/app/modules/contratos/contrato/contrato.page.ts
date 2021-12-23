@@ -20,6 +20,7 @@ export class ContratoPage implements OnInit {
   public validYears: any[];
   fileImg: File;
   fileImgUrl: string;
+  public signature = '';
 
   public imgDatasTranfer: ImgDataTranferI[] = [];
 
@@ -165,6 +166,10 @@ export class ContratoPage implements OnInit {
     if (data.reload && data.reload === true) {
       //this.loadClienteData();
     }
+  }
+
+  captureSignature(e){
+    this.signature = e;
   }
 
 

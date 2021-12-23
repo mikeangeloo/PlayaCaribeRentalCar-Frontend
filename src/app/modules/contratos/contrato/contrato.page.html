@@ -587,6 +587,11 @@
               </mat-panel-description>
             </mat-expansion-panel-header>
 
+            <ion-card>
+              <ion-card-content>
+                <h4 class="ion-text-center">Por diseñar vista ....</h4>
+              </ion-card-content>
+            </ion-card>
             <mat-action-row>
               <button (click)="prevStep()" mat-flat-button style="font-size: 1.5rem;">
                 <ion-icon name="chevron-back-outline" style="color: var(--ion-color-medium);"></ion-icon>
@@ -610,6 +615,20 @@
                 <ion-icon name="pencil"></ion-icon>
               </mat-panel-description>
             </mat-expansion-panel-header>
+
+            <ion-card>
+              <ion-card-content>
+                <ion-row>
+                  <ion-col size="12">
+                    <p>Acepto que se efectué el trabajo Lorem ipsum dolor sit amet, consectetur adipiscing elit.....</p>
+                  </ion-col>
+                </ion-row>
+                <hr style="background: var(--ion-color-secondary)">
+
+                <app-signature-capture (signatureEmit)="captureSignature($event)"
+                                       [instanceType]="'plain'"></app-signature-capture>
+              </ion-card-content>
+            </ion-card>
 
             <mat-action-row>
               <button (click)="prevStep()" mat-flat-button style="font-size: 1.5rem;">
