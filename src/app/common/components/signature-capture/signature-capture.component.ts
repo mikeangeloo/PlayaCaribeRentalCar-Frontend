@@ -47,8 +47,15 @@ export class SignatureCaptureComponent implements OnInit, AfterViewInit, AfterVi
   }
 
   ngOnInit(): void {
-    //console.log(this.instanceType);
-    //this.initSignature(true);
+    if (window.innerWidth <= 1024) {
+      setTimeout(() => {
+        this.initSignature();
+      }, 500);
+    } else {
+      setTimeout(() => {
+        this.initSignature();
+      }, 500);
+    }
   }
 
   ngAfterViewInit(): void {
@@ -64,33 +71,23 @@ export class SignatureCaptureComponent implements OnInit, AfterViewInit, AfterVi
 
   // Función para inicializar firma
   initSignature(firstTime?: boolean) {
-    // this.signaturePad1 = null;
+
     if (!this.signaturePad1) {
-      //let timeOut = (firstTime && firstTime === true) ? 1000 : 0;
-      let timeOut = 0;
-      setTimeout(() => {
-        this.signaturePad1 = new SignaturePad(this.signaturePadElement1.nativeElement);
-        this.signaturePad1.clear();
-        this.signaturePad1.penColor = 'rgb(0,0,0)';
-
-        const canvas: any = document.getElementById('canva-signature1') as HTMLCanvasElement;
-        const modalPadding = 24;
-
-        let _with = document.getElementById('signature-container1').offsetWidth;
-        if (_with === 0) {
-          canvas.width = 300;
-        } else {
-          canvas.width = _with;
-        }
-
-        console.log('clear signature', _with);
-        this.signaturePad1.clear();
-
-        this.signaturePad1.onEnd = () => {
-          this.emitSignature();
-        };
-      }, timeOut);
+      this.signaturePad1 = new SignaturePad(this.signaturePadElement1.nativeElement);
+      this.signaturePad1.penColor = 'rgb(0,0,0)';
     }
+
+
+    setTimeout(() => {
+      const width1 = document.getElementById('signature-container1').offsetWidth;
+
+      // @ts-ignore
+      document.getElementById('canva-signature1').width = String(width1);
+
+      // if (!this.signaturePad1) {
+      //   this.signaturePad1.clear(); // Clear the pad on init
+      // }
+    }, 1000);
   }
 
   isCanvasBlank(): boolean {

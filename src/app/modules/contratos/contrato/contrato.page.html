@@ -7,9 +7,9 @@
 </ion-header>
 
 <ion-content>
-  <ion-row style="margin: 1rem;">
+  <ion-row style="margin: 1.2rem;">
     <ion-col size="6">
-      <h2>Nuevo Contrato</h2>
+      <h2 style="color: var(--ion-color-dark-tint)">Nuevo Contrato</h2>
     </ion-col>
     <ion-col size="6" class="ion-text-end">
       <button mat-raised-button class="button-success">Crear Contrato</button>
@@ -283,77 +283,77 @@
                 <h4 style="font-weight: 500">TARIFA APOLLO MX</h4>
 
                 <table class="desgloce-table">
-                    <thead>
-                      <tr>
-                        <th>DESCRIPCIÓN DE LOS CARGOS</th>
-                        <th></th>
-                        <th></th>
-                        <th>CARGOS</th>
-                      </tr>
-                      <tr>
-                        <th></th>
-                        <th>PRECIO UNIT.</th>
-                        <th>DIA</th>
-                        <th></th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td style="text-underline: var(--ion-color-dark)">TARIFA TIEMPO Y KILOMETRAJE T&K</td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                      </tr>
-                      <tr>
-                        <td>HOURS / HORAS</td>
-                        <td></td>
-                        <td></td>
-                        <td>{{'0' | currency}}</td>
-                      </tr>
-                      <tr>
-                        <td>DAYS / DIAS</td>
-                        <td>
-                          <ion-item>
-                            <ion-label class="ion-no-margin ion-no-padding">$</ion-label>
-                            <ion-input type="number" [value]="'780.00'"></ion-input>
-                          </ion-item>
-                        </td>
-                        <td>
-                          <ion-item>
-                            <ion-label class="ion-no-padding ion-no-margin">X</ion-label>
-                            <ion-input type="number" value="1"></ion-input>
-                          </ion-item>
-                        </td>
-                        <td>{{'0' | currency}}</td>
-                      </tr>
-                      <tr>
-                        <td>WEEKS / SEMANAL</td>
-                        <td></td>
-                        <td></td>
-                        <td>{{'0' | currency}}</td>
-                      </tr>
-                      <tr>
-                        <td>MONTHS / MENSUAL</td>
-                        <td></td>
-                        <td></td>
-                        <td>{{'0' | currency}}</td>
-                      </tr>
-                      <tr>
-                        <td>EX DAYS / DIA EXTRA</td>
-                        <td></td>
-                        <td></td>
-                        <td>{{'0' | currency}}</td>
-                      </tr>
-                    </tbody>
-                    <tfoot>
-                      <tr>
-                        <th>SUBTOTAL-1</th>
-                        <th></th>
-                        <th></th>
-                        <th>{{'349' | currency}}</th>
-                      </tr>
-                    </tfoot>
-                  </table>
+                  <thead>
+                  <tr>
+                    <th>DESCRIPCIÓN DE LOS CARGOS</th>
+                    <th></th>
+                    <th></th>
+                    <th>CARGOS</th>
+                  </tr>
+                  <tr>
+                    <th></th>
+                    <th>PRECIO UNIT.</th>
+                    <th>DIA</th>
+                    <th></th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <tr>
+                    <td style="text-underline: var(--ion-color-dark)">TARIFA TIEMPO Y KILOMETRAJE T&K</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                  </tr>
+                  <tr>
+                    <td>HOURS / HORAS</td>
+                    <td></td>
+                    <td></td>
+                    <td>{{'0' | currency}}</td>
+                  </tr>
+                  <tr>
+                    <td>DAYS / DIAS</td>
+                    <td>
+                      <ion-item>
+                        <ion-label class="ion-no-margin ion-no-padding">$</ion-label>
+                        <ion-input type="number" [value]="'780.00'"></ion-input>
+                      </ion-item>
+                    </td>
+                    <td>
+                      <ion-item>
+                        <ion-label class="ion-no-padding ion-no-margin">X</ion-label>
+                        <ion-input type="number" value="1"></ion-input>
+                      </ion-item>
+                    </td>
+                    <td>{{'0' | currency}}</td>
+                  </tr>
+                  <tr>
+                    <td>WEEKS / SEMANAL</td>
+                    <td></td>
+                    <td></td>
+                    <td>{{'0' | currency}}</td>
+                  </tr>
+                  <tr>
+                    <td>MONTHS / MENSUAL</td>
+                    <td></td>
+                    <td></td>
+                    <td>{{'0' | currency}}</td>
+                  </tr>
+                  <tr>
+                    <td>EX DAYS / DIA EXTRA</td>
+                    <td></td>
+                    <td></td>
+                    <td>{{'0' | currency}}</td>
+                  </tr>
+                  </tbody>
+                  <tfoot>
+                  <tr>
+                    <th>SUBTOTAL-1</th>
+                    <th></th>
+                    <th></th>
+                    <th>{{'349' | currency}}</th>
+                  </tr>
+                  </tfoot>
+                </table>
 
                 <table class="desgloce-table">
                   <thead>
@@ -516,13 +516,13 @@
                   <ion-col size="12" size-md="8">
                     <table class="cards-table">
                       <tbody>
-                        <tr>
-                          <td>VISA</td>
-                          <td>4521*1234</td>
-                          <td>PRE-AUTH: 12345678</td>
-                          <td>11-NOV-21</td>
-                          <td>{{'3000' | currency}}</td>
-                        </tr>
+                      <tr>
+                        <td>VISA</td>
+                        <td>4521*1234</td>
+                        <td>PRE-AUTH: 12345678</td>
+                        <td>11-NOV-21</td>
+                        <td>{{'3000' | currency}}</td>
+                      </tr>
                       </tbody>
                     </table>
                   </ion-col>
@@ -620,7 +620,7 @@
               <ion-card-content>
                 <ion-row>
                   <ion-col size="12">
-                    <p>Acepto que se efectué el trabajo Lorem ipsum dolor sit amet, consectetur adipiscing elit.....</p>
+                    <p>Acepto que texto de aceptación --> Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aperiam autem deserunt dignissimos dolore doloremque ducimus error, eveniet, id magnam minus, odio optio qui quisquam quod repudiandae sequi sint suscipit ullam.</p>
                   </ion-col>
                 </ion-row>
                 <hr style="background: var(--ion-color-secondary)">
@@ -644,5 +644,6 @@
       </mat-accordion> <!-- Captura Firma -->
     </ion-col>
   </ion-row>
+
 
 </ion-content>
