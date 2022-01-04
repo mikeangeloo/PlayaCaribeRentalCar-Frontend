@@ -1,0 +1,140 @@
+.accordion-margin {
+  margin: 1rem;
+
+  ion-icon {
+    font-size: 1.5rem;
+  }
+}
+
+mat-datepicker-toggle {
+  color: black;
+  font-size: 1.5rem;
+}
+ion-card {
+  margin: 7px;
+
+  ion-card-content {
+    margin: 0.7em;
+  }
+}
+
+.desgloce-table {
+  width: 100%;
+  text-align: left;
+  line-height: 1.2;
+  font-size: 0.8em;
+  thead {
+    tr {
+      &:first-of-type {
+        border: 2px solid var(--ion-color-dark);
+        font-size: 1em;
+        font-weight: 500;
+      }
+    }
+    th {
+      padding: 0.5em;
+      &:nth-child(2) {
+        text-align: center;
+        width: 200px;
+        max-width: 200px;
+      }
+      &:nth-child(3) {
+        text-align: center;
+        max-width: 130px;
+        width: 130px;
+      }
+    }
+    th {
+      &:last-of-type {
+        text-align: right;
+      }
+    }
+  }
+
+  tbody {
+    td {
+      padding: 0.5em;
+      &:last-of-type {
+        text-align: right;
+      }
+      &:nth-child(2) {
+        text-align: center;
+        width: 200px;
+        max-width: 200px;
+      }
+      &:nth-child(3) {
+        text-align: center;
+        max-width: 130px;
+        width: 130px;
+      }
+    }
+  }
+  tfoot {
+    tr {
+      border: 2px solid var(--ion-color-dark);
+      font-size: 1em;
+      font-weight: 500;
+    }
+    th {
+      padding: 0.5em;
+    }
+    th {
+      &:last-of-type {
+        text-align: right;
+      }
+    }
+  }
+
+  ion-item {
+    --min-height: 0px;
+  }
+  ion-label {
+    font-size: 0.8em;
+  }
+  ion-input {
+    font-size: 0.8em;
+    text-align: center;
+    --padding-top: 0;
+    --padding-bottom: 0;
+    --padding-left: 0;
+    --padding-right: 0;
+    --padding-inline-end: 0;
+  }
+
+  .empty-tr {
+    border: 0 !important;
+    th, td {
+      border: 0;
+    }
+  }
+
+  .remarkFont {
+    font-weight: 700;
+  }
+}
+
+.cards-table {
+  width: 100%;
+  font-size: 0.8em;
+  td {
+    text-align: center;
+    border-right: gray;
+    border-right-style: solid;
+    border-right-width: 1px;
+    &:first-of-type {
+      text-align: left;
+    }
+    &:last-of-type {
+      text-align: right;
+      font-weight: 700;
+      border: none;
+    }
+  }
+}
+
+.border-ion-row {
+  border: 1px solid darkgray;
+  border-radius: 12px;
+  padding: 12px;
+  margin-bottom: 1.2rem;
+}

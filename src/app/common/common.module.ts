@@ -26,6 +26,8 @@ import {ClientesTableComponent} from "./components/clientes/clientes-table/clien
 import {ClienteFormComponent} from "./components/clientes/cliente-form/cliente-form.component";
 import {TarjetaFormComponent} from "./components/tarjetas/tarjeta-form/tarjeta-form.component";
 import {MatChipsModule} from "@angular/material/chips";
+import {CameraComponent} from "./components/camera/camera.component";
+import {SignatureCaptureComponent} from "./components/signature-capture/signature-capture.component";
 
 
 
@@ -51,7 +53,9 @@ import {MatChipsModule} from "@angular/material/chips";
     ComisionistaFormComponent,
     ClientesTableComponent,
     ClienteFormComponent,
-    TarjetaFormComponent
+    TarjetaFormComponent,
+    CameraComponent,
+    SignatureCaptureComponent
   ],
   exports: [
     EmpresasListComponent,
@@ -74,7 +78,9 @@ import {MatChipsModule} from "@angular/material/chips";
     ComisionistaFormComponent,
     ClientesTableComponent,
     ClienteFormComponent,
-    TarjetaFormComponent
+    TarjetaFormComponent,
+    CameraComponent,
+    SignatureCaptureComponent
   ],
   entryComponents: [
     EmpresasListComponent,
@@ -97,7 +103,9 @@ import {MatChipsModule} from "@angular/material/chips";
     ComisionistaFormComponent,
     ClientesTableComponent,
     ClienteFormComponent,
-    TarjetaFormComponent
+    TarjetaFormComponent,
+    CameraComponent,
+    SignatureCaptureComponent
   ],
     imports: [
         CommonModule,

@@ -9,7 +9,7 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content fullscreen>
+
 
   <ion-card class="app-card">
     <ion-card-content>
@@ -238,9 +238,9 @@
       </ion-row>
     </ion-card-content>
   </ion-card>
-</ion-content>
 
-<ion-footer>
+
+<ion-footer *ngIf="asModal === true">
   <ion-toolbar>
     <ion-buttons slot="end">
       <ion-button color="medium" (click)="dismiss()">

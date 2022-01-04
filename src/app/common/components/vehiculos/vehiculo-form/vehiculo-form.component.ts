@@ -130,8 +130,9 @@ export class VehiculoFormComponent implements OnInit {
 
 
 
-  loadVehiculosData() {
-    this.generalServ.presentLoading();
+  async loadVehiculosData() {
+
+    await this.generalServ.presentLoading();
     this.vehiculosServ.getDataById(this.vehiculo_id).subscribe(res => {
       this.generalServ.dismissLoading();
       if (res.ok === true) {

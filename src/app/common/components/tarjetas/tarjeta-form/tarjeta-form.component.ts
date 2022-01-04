@@ -22,6 +22,7 @@ export class TarjetaFormComponent implements OnInit {
   @Output() submitCard = new EventEmitter();
   @Input() disableLocations: boolean;
   @Input() ownerName: string;
+  @Input() justCapture = false;
   // @ViewChild('compInfo') compInfo :
 
   public cardData: CardI;
@@ -54,7 +55,7 @@ export class TarjetaFormComponent implements OnInit {
     this.initCardForm();
 
     this.validYears = this.getYears();
-    if (this.card_id) {
+    if (this.card_id && this.justCapture === false) {
       this.loadTarjetaData();
     } else {
       this.fillCardForm();
@@ -246,6 +247,10 @@ export class TarjetaFormComponent implements OnInit {
       cliente_id: (this.cliente_id) ? this.cliente_id : null,
     };
 
+    if (this.justCapture === true) {
+      this.submitCard.emit(card);
+      return;
+    }
     if (this.loadLoading) {
       this.generalServ.presentLoading('Guardando cambios ...');
     }

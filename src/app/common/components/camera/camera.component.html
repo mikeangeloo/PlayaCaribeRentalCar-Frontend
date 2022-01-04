@@ -1,0 +1,19 @@
+<ion-fab vertical="bottom" horizontal="center" slot="fixed" *ngIf="!autoLaunchCamera && justButton === false" [ngClass]="{'fixed': single && single === true, 'special-fab': specialFab && specialFab === true, 'mi-cuenta-fab': micuenta && micuenta === true}">
+  <ion-fab-button (click)="takePicture()" color="dark">
+    <ion-icon name="camera"></ion-icon>
+  </ion-fab-button>
+</ion-fab>
+
+ <ion-button class="add-button" style="margin: 0 auto;" (click)="takePicture()" shape="round" color="dark" *ngIf="justButton">
+  <ion-icon name="camera"></ion-icon>
+</ion-button>
+
+<!-- <ion-grid>
+  <ion-row style="justify-content: center;">
+    <ion-col size="auto" *ngIf="captureImg">
+    <ion-thumbnail>
+      <ion-img [src]="captureImg"></ion-img>
+    </ion-thumbnail>
+    </ion-col>
+  </ion-row>
+</ion-grid> -->

@@ -25,6 +25,10 @@ const routes: Routes = [
         path: 'dashboard',
         loadChildren: () => import('./home/home.module').then( m => m.HomePageModule)
       },
+      {
+        path: 'contratos/nuevo',
+        loadChildren: () => import('./modules/contratos/contrato/contrato.module').then( m => m.ContratoPageModule)
+      },
       //region ADMINISTRACION
 
           //region CATALOGO VEHICULOS
@@ -82,6 +86,7 @@ const routes: Routes = [
 
     ]
   },
+
 
 
 
