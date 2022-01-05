@@ -77,12 +77,19 @@ $app-theme: mat.define-light-theme((
   --ion-color-primary-shade: #d38a23;
   --ion-color-primary-tint: #f2a73e;
 
-  --ion-color-secondary: #ee961b;
-  --ion-color-secondary-rgb: 238,150,27;
-  --ion-color-secondary-contrast: #000000;
-  --ion-color-secondary-contrast-rgb: 0,0,0;
-  --ion-color-secondary-shade: #d18418;
-  --ion-color-secondary-tint: #f0a132;
+  //--ion-color-secondary: #ee961b;
+  //--ion-color-secondary-rgb: 238,150,27;
+  //--ion-color-secondary-contrast: #000000;
+  //--ion-color-secondary-contrast-rgb: 0,0,0;
+  //--ion-color-secondary-shade: #d18418;
+  //--ion-color-secondary-tint: #f0a132;
+
+  --ion-color-secondary: #3880ff;
+  --ion-color-secondary-rgb: 56,128,255;
+  --ion-color-secondary-contrast: #ffffff;
+  --ion-color-secondary-contrast-rgb: 255,255,255;
+  --ion-color-secondary-shade: #3171e0;
+  --ion-color-secondary-tint: #4c8dff;
 
   --ion-color-tertiary: #f4be7b;
   --ion-color-tertiary-rgb: 244,190,123;

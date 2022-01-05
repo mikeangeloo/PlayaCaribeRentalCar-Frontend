@@ -28,6 +28,7 @@ import {TarjetaFormComponent} from "./components/tarjetas/tarjeta-form/tarjeta-f
 import {MatChipsModule} from "@angular/material/chips";
 import {CameraComponent} from "./components/camera/camera.component";
 import {SignatureCaptureComponent} from "./components/signature-capture/signature-capture.component";
+import {MultiTableFilterComponent} from "./components/multi-table-filter/multi-table-filter.component";
 
 
 
@@ -55,7 +56,8 @@ import {SignatureCaptureComponent} from "./components/signature-capture/signatur
     ClienteFormComponent,
     TarjetaFormComponent,
     CameraComponent,
-    SignatureCaptureComponent
+    SignatureCaptureComponent,
+    MultiTableFilterComponent
   ],
   exports: [
     EmpresasListComponent,
@@ -80,7 +82,8 @@ import {SignatureCaptureComponent} from "./components/signature-capture/signatur
     ClienteFormComponent,
     TarjetaFormComponent,
     CameraComponent,
-    SignatureCaptureComponent
+    SignatureCaptureComponent,
+    MultiTableFilterComponent
   ],
   entryComponents: [
     EmpresasListComponent,
@@ -105,7 +108,8 @@ import {SignatureCaptureComponent} from "./components/signature-capture/signatur
     ClienteFormComponent,
     TarjetaFormComponent,
     CameraComponent,
-    SignatureCaptureComponent
+    SignatureCaptureComponent,
+    MultiTableFilterComponent
   ],
     imports: [
         CommonModule,

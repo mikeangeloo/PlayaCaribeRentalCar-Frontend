@@ -2,10 +2,11 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { LoadingController } from '@ionic/angular';
-import { BehaviorSubject } from 'rxjs';
+import {BehaviorSubject, map, Observable} from 'rxjs';
 import { environment } from '../../environments/environment';
 import {SweetMessagesService} from "./sweet-messages.service";
 import * as moment from 'moment';
+import {ToastMessageService} from "./toast-message.service";
 
 @Injectable({
   providedIn: 'root',
@@ -13,11 +14,13 @@ import * as moment from 'moment';
 export class GeneralService {
   //#endregion
   isLoading = false;
+  public dashURL = environment.dashUrl;
   constructor(
     public loadingController: LoadingController,
     public httpClient: HttpClient,
     public router: Router,
-    public sweetServ: SweetMessagesService
+    public sweetServ: SweetMessagesService,
+    public toastServ: ToastMessageService,
     ) {}
   //#region Atributos
   public apiUrl = environment.dashUrl;
@@ -48,5 +51,16 @@ export class GeneralService {
       dateStart.add(1, 'year');
     }
     return years;
+  }
+
+  public getList(endpoint): Observable<any> {
+    return this.httpClient.get<any>(`${this.dashURL}/${endpoint}/list`).pipe(map(response => {
+      return response;
+    }));
+  }
+
+  public copyClickBoard(data) {
+    navigator.clipboard.writeText(data);
+    this.toastServ.presentToast('info', 'Copiado al portapapeles', 'middle');
   }
 }

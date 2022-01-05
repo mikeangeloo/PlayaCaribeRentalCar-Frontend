@@ -14,7 +14,7 @@ ion-card {
   margin: 7px;
 
   ion-card-content {
-    margin: 0.7em;
+    //margin: 0.7em;
   }
 }
 
@@ -137,4 +137,26 @@ ion-card {
   border-radius: 12px;
   padding: 12px;
   margin-bottom: 1.2rem;
+}
+
+.fill-col {
+  background: rgb(240 157 40 / 29%);
+  width: 2px !important;
+  margin-bottom: 1rem;
+}
+.card-action-buttons {
+  display: flex;
+  justify-content: flex-end;
+  margin: 1rem;
+}
+.search-row-buttons {
+  display: flex;
+  justify-content: flex-end;
+}
+.status-badge-container {
+  display: flex;
+  font-weight: 700;
+  span {
+    margin-right: 1rem;
+  }
 }

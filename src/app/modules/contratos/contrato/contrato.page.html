@@ -8,9 +8,29 @@
 
 <ion-content id="revisionRowH">
   <ion-row style="margin: 1.2rem;">
+
+
     <ion-col size="6">
       <h2 style="color: var(--ion-color-dark-tint)">Nuevo Contrato</h2>
+
+      <ion-row>
+        <ion-col size="12" size-md="4" class="ion-align-self-center ion-no-padding ion-no-margin">
+          <div class="folio-copy" *ngIf="num_contrato">
+            <ion-label style="font-size: 1.2rem; margin-right: 1rem;">
+              Num. Contrato: {{num_contrato}}
+            </ion-label>
+            <ion-button fill="outline" (click)="generalServ.copyClickBoard(num_contrato)">
+              <ion-icon slot="icon-only" name="copy"></ion-icon>
+            </ion-button>
+          </div>
+          <div *ngIf="!num_contrato" class="status-badge-container">
+            <span>Estatus</span>
+            <ion-badge slot="end" color="warning">Sin guardar</ion-badge>
+          </div>
+        </ion-col>
+      </ion-row>
     </ion-col>
+
     <ion-col size="6" class="ion-text-end">
       <button mat-raised-button class="button-success">Crear Contrato</button>
       &nbsp;
@@ -32,68 +52,82 @@
             </mat-expansion-panel-header>
 
             <ion-card>
+              <ion-card-title>
+                <div class="card-action-buttons">
+                  <ion-button size="small" color="secondary" (click)="saveProcess('general-data')">Guardar Datos Generales</ion-button>
+                </div>
+              </ion-card-title>
               <ion-card-content>
-                <ion-row>
-                  <ion-col>
-                    <mat-form-field>
-                      <mat-label>OFICINA DE RENTA</mat-label>
-                      <input type="text" matInput value="PPC">
-                      <mat-hint>
-                        OFICINA PLAZA PELICANOS
-                        10 AVENIDA NTE. MZA 100 LTE 1. CENTRO
-                        77710
-                      </mat-hint>
-                    </mat-form-field>
-                    <br>
-                    <br>
-                    <mat-form-field>
-                      <mat-label>FECHA DE RENTA</mat-label>
-                      <input matInput [matDatepicker]="fecha_renta" (click)="fecha_renta.open()">
-                      <mat-datepicker-toggle matSuffix [for]="fecha_renta"></mat-datepicker-toggle>
-                      <mat-datepicker #fecha_renta></mat-datepicker>
-                    </mat-form-field>
-                    <br>
-                    <br>
-                    <mat-form-field>
-                      <mat-label>HORA</mat-label>
-                      <div style="display: flex;">
-                        <input matInput [ngxTimepicker]="rentTime" [disableClick]="true" readonly>
-                        <ngx-material-timepicker-toggle [for]="rentTime"></ngx-material-timepicker-toggle>
-                        <ngx-material-timepicker [theme]="apolloThemClock" #rentTime></ngx-material-timepicker>
+                <form [formGroup]="generalDataForm" *ngIf="generalDataForm">
+                  <ion-row>
+                    <ion-col>
+                      <div class="search-row-buttons">
+                        <ion-button size="small" color="secondary" (click)="openModalSearch('sucursales', 'renta_of')">
+                          <ion-icon name="search"></ion-icon>
+                        </ion-button>
                       </div>
-                    </mat-form-field>
-                  </ion-col> <!-- FECHA DE RENTA -->
+                      <mat-form-field>
+                        <mat-label>OFICINA DE RENTA</mat-label>
+                        <input type="text" matInput formControlName="renta_of_codigo">
+                        <mat-hint>
+                         {{gf.renta_of_dir.value}}
+                        </mat-hint>
+                      </mat-form-field>
+                      <br>
+                      <br>
+                      <mat-form-field>
+                        <mat-label>FECHA DE RENTA</mat-label>
+                        <input matInput [matDatepicker]="fecha_renta" (click)="fecha_renta.open()" formControlName="renta_of_fecha" (dateChange)="gf.renta_of_fecha.setValue(dateConv.transFormDate($event.value, 'regular'))">
+                        <mat-datepicker-toggle matSuffix [for]="fecha_renta"></mat-datepicker-toggle>
+                        <mat-datepicker #fecha_renta></mat-datepicker>
+                      </mat-form-field>
+                      <br>
+                      <br>
+                      <mat-form-field>
+                        <mat-label>HORA</mat-label>
+                        <div style="display: flex;">
+                          <input matInput [ngxTimepicker]="rentTime" [disableClick]="true" formControlName="renta_of_hora" [format]="24">
+                          <ngx-material-timepicker-toggle [for]="rentTime"></ngx-material-timepicker-toggle>
+                          <ngx-material-timepicker [theme]="apolloThemClock" #rentTime></ngx-material-timepicker>
+                        </div>
+                      </mat-form-field>
+                    </ion-col> <!-- FECHA DE RENTA -->
+                    <ion-col size="12" size-sm="auto"  class="ion-no-margin ion-no-padding fill-col"></ion-col>
+                    <ion-col >
+                      <div class="search-row-buttons">
+                        <ion-button size="small" color="secondary" (click)="openModalSearch('sucursales', 'retorno_of')">
+                          <ion-icon name="search" slot="icon-only"></ion-icon>
+                        </ion-button>
+                      </div>
+                      <mat-form-field>
+                        <mat-label>OFICINA DE RETORNO</mat-label>
+                        <input type="text" matInput formControlName="retorno_of_codigo">
+                        <mat-hint>
+                         {{gf.retorno_of_dir.value}}
+                        </mat-hint>
+                      </mat-form-field>
+                      <br>
+                      <br>
+                      <mat-form-field>
+                        <mat-label>FECHA DE RETORNO</mat-label>
+                        <input matInput [matDatepicker]="fecha_retorno" (click)="fecha_retorno.open()" formControlName="retorno_of_fecha" (dateChange)="gf.retorno_of_fecha.setValue(dateConv.transFormDate($event.value, 'regular'))">
+                        <mat-datepicker-toggle matSuffix [for]="fecha_retorno"></mat-datepicker-toggle>
+                        <mat-datepicker #fecha_retorno></mat-datepicker>
+                      </mat-form-field>
+                      <br>
+                      <br>
+                      <mat-form-field>
+                        <mat-label>HORA</mat-label>
+                        <div style="display: flex;">
+                          <input matInput [ngxTimepicker]="returnTime" [disableClick]="true" formControlName="retorno_of_hora" [format]="24">
+                          <ngx-material-timepicker-toggle [for]="returnTime"></ngx-material-timepicker-toggle>
+                          <ngx-material-timepicker [theme]="apolloThemClock" #returnTime></ngx-material-timepicker>
+                        </div>
+                      </mat-form-field>
+                    </ion-col> <!-- FECHA DE RETORNO -->
+                  </ion-row>
+                </form>
 
-                  <ion-col>
-                    <mat-form-field>
-                      <mat-label>OFICINA DE RETORNO</mat-label>
-                      <input type="text" matInput value="PPC">
-                      <mat-hint>
-                        OFICINA PLAZA PELICANOS
-                        10 AVENIDA NTE. MZA 100 LTE 1. CENTRO
-                        77710
-                      </mat-hint>
-                    </mat-form-field>
-                    <br>
-                    <br>
-                    <mat-form-field>
-                      <mat-label>FECHA DE RETORNO</mat-label>
-                      <input matInput [matDatepicker]="fecha_retorno" (click)="fecha_retorno.open()">
-                      <mat-datepicker-toggle matSuffix [for]="fecha_retorno"></mat-datepicker-toggle>
-                      <mat-datepicker #fecha_retorno></mat-datepicker>
-                    </mat-form-field>
-                    <br>
-                    <br>
-                    <mat-form-field>
-                      <mat-label>HORA</mat-label>
-                      <div style="display: flex;">
-                        <input matInput [ngxTimepicker]="returnTime" [disableClick]="true" readonly>
-                        <ngx-material-timepicker-toggle [for]="returnTime"></ngx-material-timepicker-toggle>
-                        <ngx-material-timepicker [theme]="apolloThemClock" #returnTime></ngx-material-timepicker>
-                      </div>
-                    </mat-form-field>
-                  </ion-col> <!-- FECHA DE RETORNO -->
-                </ion-row>
               </ion-card-content>
             </ion-card>
 
