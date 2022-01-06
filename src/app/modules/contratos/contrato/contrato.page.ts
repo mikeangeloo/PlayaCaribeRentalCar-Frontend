@@ -15,6 +15,8 @@ import {SucursalesI} from "../../../interfaces/sucursales.interface";
 import {TxtConv} from "../../../helpers/txt-conv";
 import {GeneralService} from "../../../services/general.service";
 import {ContratosService} from "../../../services/contratos.service";
+import {ContratoI} from "../../../interfaces/contratos/contrato.interface";
+import {ContratosStatus} from "../../../enums/contratos-status.enum";
 
 @Component({
   selector: 'app-contrato',
@@ -31,9 +33,14 @@ export class ContratoPage implements OnInit, AfterViewInit {
   generalDataForm: FormGroup;
   userSucursal: SucursalesI;
   num_contrato: string;
-  contract_id: number;
+  contractData: ContratoI;
   public txtConv = TxtConv;
   public dateConv = DateConv;
+  public statusC = ContratosStatus;
+  //#endregion
+
+  //#region DATOS CLIENTE ATTRIBUTES
+  clienteDataForm: FormGroup;
   //#endregion
 
   //#region CLOCK PICKER ATTRIBUTES
@@ -85,8 +92,35 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
   ionViewWillEnter() {
     console.log('view enter');
-    this.initGeneralForm();
 
+
+    // verificamos si tenemos guardado un contract_id en local storage para continuar con la edición
+    if (this.contratosServ.getContractNumber()) {
+      //this.contract_id = this.contratosServ.getContractData().id;
+      this.num_contrato = this.contratosServ.getContractNumber();
+
+      this.contratosServ.getContractData(this.num_contrato).subscribe(res => {
+        if (res.ok) {
+          this.contractData = res.data;
+        }
+      }, error => {
+        console.log(error);
+        this.sweetMsgServ.printStatusArray(error.error.errors, 'error');
+      }).add(() => {
+        if (this.contractData.etapas_guardadas && this.contractData.etapas_guardadas.length > 0) {
+          this.contractData.etapas_guardadas.find(x => {
+            switch (x) {
+              case 'datos_generales':
+                console.log('datos_generales');
+                this.initGeneralForm(this.contractData);
+                break;
+            }
+          });
+        }
+      });
+    } else {
+      this.initGeneralForm();
+    }
   }
 
   ngAfterViewInit() {
@@ -94,6 +128,19 @@ export class ContratoPage implements OnInit, AfterViewInit {
       this.initReviewCanva();
     }, 1000);
   }
+
+  //#region GENERAL FUNCTIONS
+  private getYears() {
+    const years = [];
+    const dateStart = moment();
+    const dateEnd = moment().add(10, 'y');
+    while (dateEnd.diff(dateStart, 'years') >= 0) {
+      years.push(dateStart.format('YYYY'));
+      dateStart.add(1, 'year');
+    }
+    return years;
+  }
+  //#endregion
 
   //#region GENERAL FORM FUNCTIONS
   initGeneralForm(data?) {
@@ -111,6 +158,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
     }
 
     this.generalDataForm = this.fb.group({
+      num_contrato: [(data && data.num_contrato ? data.num_contrato : null)],
       renta_of_id: [(data && data.renta_of_id ? data.renta_of_id : this.userSucursal.id), Validators.required],
       renta_of_codigo: [(data && data.renta_of_codigo ? data.renta_of_codigo : this.userSucursal.codigo), [Validators.required]],
       renta_of_dir: [(data && data.renta_of_dir ? data.renta_of_dir : this.userSucursal.direccion), Validators.required],
@@ -124,8 +172,8 @@ export class ContratoPage implements OnInit, AfterViewInit {
       retorno_of_hora: [(data && data.retorno_of_hora ? data.retorno_of_hora : null), Validators.required],
     });
 
-    this.gf.renta_of_codigo.disable();
-    this.gf.retorno_of_codigo.disable();
+    // this.gf.renta_of_codigo.disable();
+    // this.gf.retorno_of_codigo.disable();
     console.log('init', this.generalDataForm.controls);
   }
 
@@ -162,16 +210,11 @@ export class ContratoPage implements OnInit, AfterViewInit {
   }
   //#endregion
 
-  //#region GENERAL FUNCTIONS
-  private getYears() {
-    const years = [];
-    const dateStart = moment();
-    const dateEnd = moment().add(10, 'y');
-    while (dateEnd.diff(dateStart, 'years') >= 0) {
-      years.push(dateStart.format('YYYY'));
-      dateStart.add(1, 'year');
-    }
-    return years;
+  //#region CLIENT FORM FUNCTIONS
+  initClientForm() {
+    this.clienteDataForm = this.fb.group({
+
+    });
   }
   //#endregion
 
@@ -359,20 +402,29 @@ export class ContratoPage implements OnInit, AfterViewInit {
     let _payload;
     switch (section) {
       case 'general-data':
-        this.gf.renta_of_codigo.enable();
-        this.gf.retorno_of_codigo.enable();
+        if (this.generalDataForm.invalid) {
+          this.sweetMsgServ.printStatus('Verifica que los datos solicitados esten completos', 'warning');
+          this.generalDataForm.markAllAsTouched();
+          return;
+        }
+        // this.gf.renta_of_codigo.enable();
+        // this.gf.retorno_of_codigo.enable();
         _payload = this.generalDataForm.value;
         console.log('generalData --->', _payload);
 
-        this.gf.renta_of_codigo.disable();
-        this.gf.retorno_of_codigo.disable();
+        // this.gf.renta_of_codigo.disable();
+        // this.gf.retorno_of_codigo.disable();
 
         this.contratosServ.saveProgress(_payload).subscribe(res => {
           if (res.ok) {
             this.sweetMsgServ.printStatus(res.message, 'success');
-            this.contract_id = res.id;
+            //this.contract_id = res.id;
             this.num_contrato = res.contract_number;
+            this.contratosServ.setContractData(this.num_contrato);
           }
+        }, error => {
+          console.log(error);
+          this.sweetMsgServ.printStatusArray(error.error.errors, 'error');
         })
         break;
     }

@@ -11,10 +11,10 @@
 
 
     <ion-col size="6">
-      <h2 style="color: var(--ion-color-dark-tint)">Nuevo Contrato</h2>
+      <h2 style="color: var(--ion-color-dark-tint)">ESTATUS: {{(contractData) ? statusC.labelStatus(contractData.estatus) : 'NUEVO CONTRATO'}}</h2>
 
       <ion-row>
-        <ion-col size="12" size-md="4" class="ion-align-self-center ion-no-padding ion-no-margin">
+        <ion-col size="12" class="ion-align-self-center ion-no-padding ion-no-margin">
           <div class="folio-copy" *ngIf="num_contrato">
             <ion-label style="font-size: 1.2rem; margin-right: 1rem;">
               Num. Contrato: {{num_contrato}}
@@ -68,10 +68,11 @@
                       </div>
                       <mat-form-field>
                         <mat-label>OFICINA DE RENTA</mat-label>
-                        <input type="text" matInput formControlName="renta_of_codigo">
+                        <input type="text" matInput formControlName="renta_of_codigo" readonly>
                         <mat-hint>
                          {{gf.renta_of_dir.value}}
                         </mat-hint>
+                        <mat-error *ngIf="gf.renta_of_dir.errors?.required">Campo requerido</mat-error>
                       </mat-form-field>
                       <br>
                       <br>
@@ -80,6 +81,7 @@
                         <input matInput [matDatepicker]="fecha_renta" (click)="fecha_renta.open()" formControlName="renta_of_fecha" (dateChange)="gf.renta_of_fecha.setValue(dateConv.transFormDate($event.value, 'regular'))">
                         <mat-datepicker-toggle matSuffix [for]="fecha_renta"></mat-datepicker-toggle>
                         <mat-datepicker #fecha_renta></mat-datepicker>
+                        <mat-error *ngIf="gf.renta_of_fecha.errors?.required">Campo requerido</mat-error>
                       </mat-form-field>
                       <br>
                       <br>
@@ -90,6 +92,7 @@
                           <ngx-material-timepicker-toggle [for]="rentTime"></ngx-material-timepicker-toggle>
                           <ngx-material-timepicker [theme]="apolloThemClock" #rentTime></ngx-material-timepicker>
                         </div>
+                        <mat-error *ngIf="gf.renta_of_hora.errors?.required">Campo requerido</mat-error>
                       </mat-form-field>
                     </ion-col> <!-- FECHA DE RENTA -->
                     <ion-col size="12" size-sm="auto"  class="ion-no-margin ion-no-padding fill-col"></ion-col>
@@ -101,10 +104,11 @@
                       </div>
                       <mat-form-field>
                         <mat-label>OFICINA DE RETORNO</mat-label>
-                        <input type="text" matInput formControlName="retorno_of_codigo">
+                        <input type="text" matInput formControlName="retorno_of_codigo" readonly>
                         <mat-hint>
                          {{gf.retorno_of_dir.value}}
                         </mat-hint>
+                        <mat-error *ngIf="gf.retorno_of_dir.errors?.required">Campo requerido</mat-error>
                       </mat-form-field>
                       <br>
                       <br>
@@ -113,6 +117,7 @@
                         <input matInput [matDatepicker]="fecha_retorno" (click)="fecha_retorno.open()" formControlName="retorno_of_fecha" (dateChange)="gf.retorno_of_fecha.setValue(dateConv.transFormDate($event.value, 'regular'))">
                         <mat-datepicker-toggle matSuffix [for]="fecha_retorno"></mat-datepicker-toggle>
                         <mat-datepicker #fecha_retorno></mat-datepicker>
+                        <mat-error *ngIf="gf.retorno_of_fecha.errors?.required">Campo requerido</mat-error>
                       </mat-form-field>
                       <br>
                       <br>
@@ -123,6 +128,7 @@
                           <ngx-material-timepicker-toggle [for]="returnTime"></ngx-material-timepicker-toggle>
                           <ngx-material-timepicker [theme]="apolloThemClock" #returnTime></ngx-material-timepicker>
                         </div>
+                        <mat-error *ngIf="gf.retorno_of_hora.errors?.required">Campo requerido</mat-error>
                       </mat-form-field>
                     </ion-col> <!-- FECHA DE RETORNO -->
                   </ion-row>

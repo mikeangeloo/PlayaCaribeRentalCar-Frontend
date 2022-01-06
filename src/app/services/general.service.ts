@@ -7,6 +7,7 @@ import { environment } from '../../environments/environment';
 import {SweetMessagesService} from "./sweet-messages.service";
 import * as moment from 'moment';
 import {ToastMessageService} from "./toast-message.service";
+import {ContratoI} from "../interfaces/contratos/contrato.interface";
 
 @Injectable({
   providedIn: 'root',
@@ -63,4 +64,6 @@ export class GeneralService {
     navigator.clipboard.writeText(data);
     this.toastServ.presentToast('info', 'Copiado al portapapeles', 'middle');
   }
+
+
 }

@@ -153,6 +153,14 @@ ion-card {
   display: flex;
   justify-content: flex-end;
 }
+.folio-copy {
+  display: flex;
+  align-items: center;
+  //justify-content: space-between;
+  ion-button {
+    margin-right: 1rem;
+  }
+}
 .status-badge-container {
   display: flex;
   font-weight: 700;
