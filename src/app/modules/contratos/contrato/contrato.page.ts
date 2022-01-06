@@ -109,17 +109,25 @@ export class ContratoPage implements OnInit, AfterViewInit {
       }).add(() => {
         if (this.contractData.etapas_guardadas && this.contractData.etapas_guardadas.length > 0) {
           this.contractData.etapas_guardadas.find(x => {
-            switch (x) {
-              case 'datos_generales':
-                console.log('datos_generales');
-                this.initGeneralForm(this.contractData);
-                break;
+            if (x === 'datos_generales') {
+              console.log('datos_generales');
+              this.initGeneralForm(this.contractData);
+            } else {
+              this.initGeneralForm();
+            }
+            if (x === 'datos_cliente') {
+                console.log('datos_cliente');
+                let _clientesPayload = this.contractData.cliente;
+                this.initClientForm(_clientesPayload);
+            } else {
+              this.initClientForm();
             }
           });
         }
       });
     } else {
       this.initGeneralForm();
+      this.initClientForm();
     }
   }
 
@@ -211,10 +219,22 @@ export class ContratoPage implements OnInit, AfterViewInit {
   //#endregion
 
   //#region CLIENT FORM FUNCTIONS
-  initClientForm() {
+  initClientForm(data?) {
     this.clienteDataForm = this.fb.group({
-
+      cliente_id: [(data && data.id ? data.id : null)],
+      nombre: [(data && data.nombre ? data.nombre: null), Validators.required],
+      apellidos: [(data && data.apellidos ? data.apellidos: null), Validators.required],
+      telefono: [(data && data.telefono ? data.telefono: null), Validators.required],
+      email: [(data && data.email ? data.email: null), [Validators.required, Validators.email]],
+      direccion: [(data && data.direccion ? data.direccion: null), Validators.required],
+      num_licencia: [(data && data.num_licencia ? data.num_licencia: null), Validators.required],
+      licencia_mes: [(data && data.licencia_mes ? data.licencia_mes: null), Validators.required],
+      licencia_ano: [(data && data.licencia_ano ? data.licencia_ano: null), Validators.required],
     });
+  }
+
+  get cf() {
+    return this.clienteDataForm.controls;
   }
   //#endregion
 
@@ -390,44 +410,55 @@ export class ContratoPage implements OnInit, AfterViewInit {
         case 'retorno_of':
           this.initReturnOfData(data);
           break;
+        case 'cliente':
+          this.initClientForm(data);
+          break;
       }
       //this.loadClienteData();
     }
   }
   //#endregion
 
-  saveProcess(section: 'general-data') {
+  saveProcess(section: 'datos-generales' | 'datos_cliente') {
     //this.sweetMsgServ.printStatus('Acción en desarrollo', 'warning');
     console.log('section', section);
     let _payload;
     switch (section) {
-      case 'general-data':
+      case 'datos-generales':
         if (this.generalDataForm.invalid) {
           this.sweetMsgServ.printStatus('Verifica que los datos solicitados esten completos', 'warning');
           this.generalDataForm.markAllAsTouched();
           return;
         }
-        // this.gf.renta_of_codigo.enable();
-        // this.gf.retorno_of_codigo.enable();
         _payload = this.generalDataForm.value;
-        console.log('generalData --->', _payload);
+        break;
+      case 'datos_cliente':
+        if (this.clienteDataForm.invalid) {
+          this.sweetMsgServ.printStatus('Verifica que los datos solicitados esten completos', 'warning');
+          this.clienteDataForm.markAllAsTouched();
+          return;
+        }
+        _payload = this.clienteDataForm.value;
 
-        // this.gf.renta_of_codigo.disable();
-        // this.gf.retorno_of_codigo.disable();
-
-        this.contratosServ.saveProgress(_payload).subscribe(res => {
-          if (res.ok) {
-            this.sweetMsgServ.printStatus(res.message, 'success');
-            //this.contract_id = res.id;
-            this.num_contrato = res.contract_number;
-            this.contratosServ.setContractData(this.num_contrato);
-          }
-        }, error => {
-          console.log(error);
-          this.sweetMsgServ.printStatusArray(error.error.errors, 'error');
-        })
         break;
     }
+
+    _payload.seccion = section;
+    _payload.num_contrato = this.num_contrato;
+    console.log(section + '--->', _payload);
+    //return;
+
+    this.contratosServ.saveProgress(_payload).subscribe(res => {
+      if (res.ok) {
+        this.sweetMsgServ.printStatus(res.message, 'success');
+        //this.contract_id = res.id;
+        this.num_contrato = res.contract_number;
+        this.contratosServ.setContractData(this.num_contrato);
+      }
+    }, error => {
+      console.log(error);
+      this.sweetMsgServ.printStatusArray(error.error.errors, 'error');
+    })
   }
 
   resetAll() {

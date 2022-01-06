@@ -93,15 +93,18 @@ export class MultiTableFilterComponent implements OnInit {
     console.log('map values --->', _objKeys);
 
     const _newMapping = [];
+    _newMapping.push({entry: 'acciones', label: 'ACCIONES'});
     for (let i = 0; i < _objKeys.length; i++) {
-      _newMapping.push({
-        entry: _objKeys[i],
-        label: TxtConv.txtTransform(_objKeys[i])
-      });
+      if (_objKeys[i] !== 'id') {
+        _newMapping.push({
+          entry: _objKeys[i],
+          label: TxtConv.txtTransform(_objKeys[i])
+        });
+      }
     }
 
     this.columns = _newMapping;
-    this.columns.push({entry: 'acciones', label: 'ACCIONES'});
+
     this.displayedColumns = this.columns.map(c => c.entry);
     console.log(' displayedColumns --->', this.displayedColumns);
 

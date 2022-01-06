@@ -28,7 +28,7 @@
                   <mat-header-cell *matHeaderCellDef mat-sort-header>{{def.label}}</mat-header-cell>
                   <mat-cell *matCellDef="let row">
                     <div class="column" *ngIf="def.entry !== 'acciones'">
-                      <p>
+                      <p class="text-overflow" matTooltip="{{row[def.entry]}}">
                         {{row[def.entry]}}
                       </p>
                     </div>

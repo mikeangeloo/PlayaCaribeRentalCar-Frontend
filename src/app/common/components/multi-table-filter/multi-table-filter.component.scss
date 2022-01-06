@@ -1,15 +1,15 @@
-$cols-sm: 3;
-$cols-md: 5;
-$cols-lg: 8;
+$cols-sm: 5;
+$cols-md: 8;
+$cols-lg: 12;
 
 mat-table {
   overflow: auto;
   width: 100%;
   display: grid;
   text-align: center;
-  @media (min-width: 768px) {
-    display: block;
-  }
+  //@media (min-width: 768px) {
+  //  display: block;
+  //}
 }
 mat-header-row, mat-row {
   justify-content: space-between;

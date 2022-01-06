@@ -54,7 +54,7 @@
             <ion-card>
               <ion-card-title>
                 <div class="card-action-buttons">
-                  <ion-button size="small" color="secondary" (click)="saveProcess('general-data')">Guardar Datos Generales</ion-button>
+                  <ion-button size="small" color="secondary" (click)="saveProcess('datos-generales')">Guardar Datos Generales</ion-button>
                 </div>
               </ion-card-title>
               <ion-card-content>
@@ -163,72 +163,99 @@
             </mat-expansion-panel-header>
 
             <ion-card>
+              <ion-card-title>
+                <div class="card-action-buttons">
+                  <ion-button size="small" color="secondary" (click)="saveProcess('datos_cliente')">Guardar Datos Generales</ion-button>
+                </div>
+              </ion-card-title>
               <ion-card-content>
-                <ion-row>
-                  <ion-col>
-                    <mat-form-field appearance="legacy">
-                      <mat-label>NOMBRE(S)</mat-label>
-                      <input type="text" matInput value="LUIS OCTAVIO">
-                    </mat-form-field>
-                  </ion-col>
-                  <ion-col>
-                    <mat-form-field appearance="legacy">
-                      <mat-label>APELLIDO(S)</mat-label>
-                      <input type="text" matInput value="ROCHA HERMOSILLO">
-                    </mat-form-field>
-                  </ion-col>
-                </ion-row>
+                <form [formGroup]="clienteDataForm" *ngIf="clienteDataForm">
+                  <ion-row>
+                    <ion-col size="12">
+                      <div class="search-row-buttons">
+                        <ion-button size="small" color="secondary" (click)="openModalSearch('clientes', 'cliente')">
+                          <ion-icon name="search"></ion-icon>
+                        </ion-button>
+                      </div>
+                    </ion-col>
+                  </ion-row>
+                  <ion-row>
+                    <ion-col>
+                      <mat-form-field appearance="legacy">
+                        <mat-label>NOMBRE(S)</mat-label>
+                        <input type="text" matInput formControlName="nombre">
+                        <mat-error *ngIf="cf.nombre.errors?.required">Campo requerido</mat-error>
+                      </mat-form-field>
+                    </ion-col>
+                    <ion-col>
+                      <mat-form-field appearance="legacy">
+                        <mat-label>APELLIDO(S)</mat-label>
+                        <input type="text" matInput formControlName="apellidos">
+                        <mat-error *ngIf="cf.apellidos.errors?.required">Campo requerido</mat-error>
+                      </mat-form-field>
+                    </ion-col>
+                  </ion-row>
 
-                <ion-row>
-                  <ion-col>
-                    <mat-form-field appearance="legacy">
-                      <mat-label>TELÉFONO</mat-label>
-                      <input type="tel" matInput value="+529981083816">
-                    </mat-form-field>
-                  </ion-col>
-                  <ion-col>
-                    <mat-form-field appearance="legacy">
-                      <mat-label>E-Mail</mat-label>
-                      <input type="email" matInput value="test@mail.com">
-                    </mat-form-field>
-                  </ion-col>
-                </ion-row>
+                  <ion-row>
+                    <ion-col>
+                      <mat-form-field appearance="legacy">
+                        <mat-label>TELÉFONO</mat-label>
+                        <input type="tel" matInput formControlName="telefono">
+                        <mat-error *ngIf="cf.telefono.errors?.required">Campo requerido</mat-error>
+                      </mat-form-field>
+                    </ion-col>
+                    <ion-col>
+                      <mat-form-field appearance="legacy">
+                        <mat-label>E-Mail</mat-label>
+                        <input type="email" matInput formControlName="email">
+                        <mat-error *ngIf="cf.email.errors?.required">Campo requerido</mat-error>
+                        <mat-error *ngIf="cf.email.errors?.email">Email invalido</mat-error>
+                      </mat-form-field>
+                    </ion-col>
+                  </ion-row>
 
-                <ion-row>
-                  <ion-col>
-                    <mat-form-field appearance="legacy">
-                      <mat-label>DIRECCIÓN</mat-label>
-                      <textarea matInput>MEXICO, LA TOSCANA, PASEO DE SEGOVIA ...</textarea>
-                    </mat-form-field>
-                  </ion-col>
-                </ion-row>
+                  <ion-row>
+                    <ion-col>
+                      <mat-form-field appearance="legacy">
+                        <mat-label>DIRECCIÓN</mat-label>
+                        <textarea matInput formControlName="direccion"></textarea>
+                        <mat-error *ngIf="cf.direccion.errors?.required">Campo requerido</mat-error>
+                      </mat-form-field>
+                    </ion-col>
+                  </ion-row>
 
-                <ion-row>
-                  <ion-col>
-                    <mat-form-field appearance="legacy">
-                      <mat-label>Número de Licencia</mat-label>
-                      <input type="number" matInput value="S1-94949">
-                    </mat-form-field>
-                  </ion-col>
-                  <ion-col>
-                    <mat-form-field appearance="legacy">
-                      <mat-label>Mes Exp.</mat-label>
-                      <mat-select>
-                        <mat-option *ngFor="let month of months" value="{{month.digit}}">{{month.month}}</mat-option>
-                      </mat-select>
-                      <mat-icon matSuffix>date_range</mat-icon>
-                    </mat-form-field>
-                  </ion-col>
-                  <ion-col>
-                    <mat-form-field appearance="legacy">
-                      <mat-label>Año expiración</mat-label>
-                      <mat-select>
-                        <mat-option *ngFor="let year of validYears" value="{{year}}">{{year}}</mat-option>
-                      </mat-select>
-                      <mat-icon matSuffix>date_range</mat-icon>
-                    </mat-form-field>
-                  </ion-col>
-                </ion-row>
+                  <ion-row>
+                    <ion-col>
+                      <mat-form-field appearance="legacy">
+                        <mat-label>Número de Licencia</mat-label>
+                        <input type="number" matInput formControlName="num_licencia">
+                        <mat-error *ngIf="cf.num_licencia.errors?.required">Campo requerido</mat-error>
+                      </mat-form-field>
+                    </ion-col>
+                    <ion-col>
+                      <mat-form-field appearance="legacy">
+                        <mat-label>Mes Exp.</mat-label>
+                        <mat-select formControlName="licencia_mes">
+                          <mat-option *ngFor="let month of months" value="{{month.digit}}">{{month.month}}</mat-option>
+                        </mat-select>
+                        <mat-icon matSuffix>date_range</mat-icon>
+                        <mat-error *ngIf="cf.licencia_mes.errors?.required">Campo requerido</mat-error>
+                      </mat-form-field>
+                    </ion-col>
+                    <ion-col>
+                      <mat-form-field appearance="legacy">
+                        <mat-label>Año expiración</mat-label>
+                        <mat-select formControlName="licencia_ano">
+                          <mat-option *ngFor="let year of validYears" value="{{year}}">{{year}}</mat-option>
+                        </mat-select>
+                        <mat-icon matSuffix>date_range</mat-icon>
+                        <mat-error *ngIf="cf.licencia_ano.errors?.required">Campo requerido</mat-error>
+                      </mat-form-field>
+                    </ion-col>
+                  </ion-row>
+
+                </form>
+
 
                 <fieldset>
                   <legend>Doc. Cliente</legend>

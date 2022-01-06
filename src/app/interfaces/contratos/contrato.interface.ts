@@ -1,3 +1,5 @@
+import {ClientesI} from "../clientes/clientes.interface";
+
 export interface ContratoI
 {
   id: number;
@@ -19,4 +21,5 @@ export interface ContratoI
   etapas_guardadas?: string[];
   etapas_completas?: any;
   estatus?: number;
+  cliente?: ClientesI;
 }
