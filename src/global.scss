@@ -167,6 +167,74 @@ ion-content {
   margin: 0 auto;
 }
 
+.capture-img-container {
+  position: relative;
+  height: 200px;
+  display: flex;
+  justify-content: center;
+  .btn-action-container {
+    display: flex;
+    justify-content: space-between;
+    flex-flow: row-reverse;
+    position: absolute;
+    width: 100%;
+    z-index: 10;
+  }
+
+  ion-img {
+    display: flex;
+    height: 100%;
+  }
+}
+.loader-upload {
+  background-color: #0000004f;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  --color: white;
+  z-index: 5;
+}
+
+.wrong-upload {
+  z-index: 1;
+  position: absolute;
+  top: 0;
+  color: #b11b1b;
+  font-size: 3rem;
+  margin: auto 0;
+  left: 12px;
+}
+
+.file-name {
+  position: absolute;
+  bottom: 0;
+  color: black;
+  background: #d3d1d1c2;
+  padding: 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  text-align: center;
+  width: 90%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 220px;
+}
+
+.special-fab {
+  margin-left: 3rem;
+  margin-bottom: -1.5rem;
+}
+
+.mi-cuenta-fab{
+  margin-left: 5rem;
+  margin-bottom: 4rem;
+}
+
 .btn-shadow {
  --box-shadow: 0px 3px 1px -2px rgb(0 0 0 / 20%), 0px 2px 2px 0px rgb(0 0 0 / 14%), 0px 1px 5px 0px rgb(0 0 0 / 12%);
 }

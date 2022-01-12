@@ -2,7 +2,6 @@ import {AfterViewInit, Component, OnInit} from '@angular/core';
 import {NgxMaterialTimepickerTheme} from "ngx-material-timepicker";
 import {Months} from "../../../interfaces/shared/months";
 import * as moment from "moment";
-import {ImgDataTranferI} from "../../../interfaces/shared/img-data-tranfer.interface";
 import {SweetMessagesService} from "../../../services/sweet-messages.service";
 import {CardI} from "../../../interfaces/cards/card.interface";
 import {TarjetaFormComponent} from "../../../common/components/tarjetas/tarjeta-form/tarjeta-form.component";
@@ -17,6 +16,8 @@ import {GeneralService} from "../../../services/general.service";
 import {ContratosService} from "../../../services/contratos.service";
 import {ContratoI} from "../../../interfaces/contratos/contrato.interface";
 import {ContratosStatus} from "../../../enums/contratos-status.enum";
+import {FilesService} from '../../../services/files.service';
+import {DocDataTransfer} from '../../../interfaces/shared/doc-data-tranfer.interface';
 
 @Component({
   selector: 'app-contrato',
@@ -66,9 +67,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
   //#endregion
 
   //#region IMAGES MANAGEMENT ATTRIBUTES
-  fileImg: File;
-  fileImgUrl: string;
-  public imgDatasTranfer: ImgDataTranferI[] = [];
+  public docDataTransfer: DocDataTransfer[] = [];
   //#endregion
 
   //#region SIGNATURE MANAGEMENT ATTRIBUTES
@@ -81,7 +80,8 @@ export class ContratoPage implements OnInit, AfterViewInit {
     public fb:  FormBuilder,
     public sessionServ: SessionService,
     public generalServ: GeneralService,
-    public contratosServ: ContratosService
+    public contratosServ: ContratosService,
+    public filesServ: FilesService
   ) { }
 
   ngOnInit() {
@@ -281,79 +281,97 @@ export class ContratoPage implements OnInit, AfterViewInit {
   //#endregion
 
   //#region CAPTURE IMG FUNCTIONS
-  processDataImage(event: {imgUrl: string, image: File}) {
-    this.fileImg = event.image;
-    this.fileImgUrl = event.imgUrl;
+  processDataImage(event: {imgUrl: string, image: File, type: string, fileName: string}) {
 
-    this.imgDatasTranfer.push({
+    this.docDataTransfer.push({
       file: event.image,
       url: event.imgUrl,
-      uploading: false
+      uploading: false,
+      uploadOk: null,
+      fileType: event.type,
+      fileName: event.fileName
     });
+
+    console.log('docDataTranfer', this.docDataTransfer);
+
   }
 
-  uploadArrayDatasImg() {
-    if (this.imgDatasTranfer.length === 0) {
+  uploadArrayDatasImg(tipo: 'licencia_conducir', model: 'clientes_docs', model_id: 'cliente_id') {
+    if (this.docDataTransfer.length === 0) {
       this.sweetMsgServ.printStatus('Debe adjuntar una imagen', 'warning');
       return;
     }
 
-    this.sweetMsgServ.printStatus('Función en desarrollo', 'warning');
-    return;
+    //this.sweetMsgServ.printStatus('Función en desarrollo', 'warning');
+    //return;
 
-    /*this.sweetMsgServ.confirmRequest().then(async (data) => {
+    this.sweetMsgServ.confirmRequest().then(async (data) => {
       if (data.value) {
 
         console.log('here');
         let _lastServError = null;
-        for (let i = 0; i< this.bodyImgData.length; i++) {
-          console.log('sending info---->');
-          const formData = new FormData();
-          formData.append('image', this.bodyImgData[i].file, this.bodyImgData[i].file.name);
-          this.bodyImgData[i].uploading = true;
+        let formData = new FormData();
+        for (let i = 0; i< this.docDataTransfer.length; i++) {
+          console.log('prepare formData info---->');
 
-          let res = await this.bodyServ.uploadBodyPost(formData);
-
-          if (res.ok === true) {
-            this.bodyImgData[i].uploadOk = true;
-            this.bodyImgData[i].uploading = false;
-          } else {
-            this.bodyImgData[i].uploadOk = false;
-            this.bodyImgData[i].uploading = false;
-
-            _lastServError = res.data.error.errors;
+          if (this.docDataTransfer[i].uploadOk === false || !this.docDataTransfer[i].uploadOk) {
+            formData.append('files[]', this.docDataTransfer[i].file, this.docDataTransfer[i].file.name);
+            this.docDataTransfer[i].uploading = true;
           }
         }
 
+        formData.set('tipo', tipo);
+        formData.set('model', model);
+        formData.set('model_id', model_id);
+        // TODO: temporal 1
+        formData.set('model_id_value', '1');
+
+        let res = await this.filesServ.storeDocs(formData);
+        let _lastIndex = 0;
+        if (res.ok === true) {
+
+          let _resPayload = res.payload;
+
+          for (let i = 0; i < _resPayload.length; i++) {
+            this.docDataTransfer[_resPayload[i].position].uploadOk = _resPayload[i].success;
+            this.docDataTransfer[_resPayload[i].position].uploading = false;
+            _lastIndex = i;
+          }
+        } else {
+          _lastServError = res.error.errors;
+        }
+
+        console.log('imgDatasTranfer -->', this.docDataTransfer);
+
         let successTotal = 0;
-        for (let j = 0; j < this.bodyImgData.length; j++) {
-          if (this.bodyImgData[j].uploadOk === true) {
+        for (let j = 0; j < this.docDataTransfer.length; j++) {
+          if (this.docDataTransfer[j].uploadOk === true) {
             successTotal ++;
           }
         }
-        if (successTotal === this.bodyImgData.length) {
+        if (successTotal === this.docDataTransfer.length) {
           console.log('all saved');
           this.sweetMsgServ.printStatus('Se han guardado sus imagenes de manera correcta', 'success');
-          this.resetAll();
-          this.navigate.navigateRoot(['/mi-historia']);
         } else {
           console.log('error', _lastServError);
           if (_lastServError) {
             this.sweetMsgServ.printStatusArray(_lastServError, 'error');
-            setTimeout(() => {
-              this.resetAll();
-              this.navigate.navigateRoot(['/mi-historia']);
-            }, 2000);
           } else {
             this.sweetMsgServ.printStatus('Se produjo un error al guardar una de sus imagenes, intentelo nuevamente o eliminela de la cola', 'error');
           }
         }
       }
-    });*/
+    });
   }
 
   removeImg(index) {
-    this.imgDatasTranfer.splice(index, 1);
+    this.docDataTransfer.splice(index, 1);
+  }
+
+  isImage(fileType: string): boolean {
+    let imgTypes = ['image/png', 'image/jpg', 'image/jpeg'];
+    let find = imgTypes.find(x => x === fileType);
+    return find && find !== 'unknown';
   }
   //#endregion
 
@@ -462,9 +480,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
   }
 
   resetAll() {
-    this.fileImg =  null;
-    this.fileImgUrl =  null;
-    this.imgDatasTranfer = [];
+    this.docDataTransfer = [];
   }
 
 }

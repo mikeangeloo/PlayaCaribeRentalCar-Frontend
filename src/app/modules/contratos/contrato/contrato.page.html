@@ -262,26 +262,33 @@
                   <ng-container>
                     <ion-row>
                       <ion-col size="12" class="ion-text-center">
-                        <app-camera (captureImg)="processDataImage($event)" [justButton]="true"></app-camera>
+                        <div style="display: flex; justify-content: space-evenly; align-items: center;">
+                          <app-camera (captureImg)="processDataImage($event)" [justButton]="true"></app-camera>
+                          <ion-button *ngIf="docDataTransfer && docDataTransfer.length > 0" color="secondary" expand="round" type="button" (click)="uploadArrayDatasImg('licencia_conducir', 'clientes_docs', 'cliente_id')" style="width: 250px;">
+                            <ion-icon name="cloud-upload"></ion-icon>&nbsp; SUBIR
+                          </ion-button>
+                        </div>
                       </ion-col>
                     </ion-row>
 
-                    <div style="display: flex; justify-content: center; flex-direction: column;" *ngIf="imgDatasTranfer.length > 0">
-                      <!--<ion-button color="primary" expand="round" type="button" (click)="uploadArrayDatasImg()" style="width: 250px; margin: 1rem auto;">SUBIR</ion-button>-->
+                    <div style="display: flex; justify-content: center; flex-direction: column;" *ngIf="docDataTransfer.length > 0">
+
                       <ion-row>
-                        <ion-col size="6" size-sm="4" *ngFor="let imgData of imgDatasTranfer; let i = index">
+                        <ion-col size="6" size-sm="4" *ngFor="let imgData of docDataTransfer; let i = index">
                           <div class="capture-img-container">
                             <div class="btn-action-container">
                               <ion-button size="small" color="danger" (click)="removeImg(i)">
                                 <ion-icon name="trash"></ion-icon>
                               </ion-button>
                             </div>
-                            <ion-img [src]="imgData.url"></ion-img>
+                            <ion-img [src]="imgData.url" *ngIf="isImage(imgData.fileType) === true"></ion-img>
+                            <ion-img src="assets/img/pdf-icon.png" *ngIf="imgData.fileType == 'application/pdf'"></ion-img>
                             <div class="loader-upload" *ngIf="imgData.uploading === true || imgData.uploadOk === true">
                               <ion-spinner name="bubbles" *ngIf="imgData.uploading === true"></ion-spinner>
-                              <ion-icon name="checkmark-sharp" *ngIf="imgData.uploadOk === true" style="color: #0aff05; font-size: 3rem;"></ion-icon>
+                              <ion-icon name="checkmark-sharp" *ngIf="imgData.uploadOk === true" style="color: #44bd00;font-size: 3rem;background: #f9f9f9;border-radius: 50%;padding: 8px;"></ion-icon>
                             </div>
                             <ion-icon class="wrong-upload" name="close-sharp" *ngIf="imgData.uploadOk === false"></ion-icon>
+                            <small class="file-name">{{imgData.fileName}}</small>
                           </div>
                         </ion-col>
                       </ion-row>

@@ -7,3 +7,13 @@
   margin-left: 5rem;
   margin-bottom: 4rem;
 }
+::ng-deep {
+  .action-sheet-cancel {
+    --background: var(--ion-color-light) !important;
+    color: var(--ion-color-medium) !important;
+  }
+}
+.file-input {
+  display: none;
+}
+
