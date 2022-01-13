@@ -1,9 +1,18 @@
 export interface DocDataTransfer
 {
-    file?: File;
+    position?: number;
+    success?: boolean;
+    file_id?: number;
+    doc_type?: string;
+    model?: string;
+    model_id?: string;
+    model_id_value?: string;
+    mime_type?: string;
+    file?: File | string;
+    etiqueta?: string;
+
     url?: string;
-    uploadOk?: boolean;
     uploading?: boolean;
-    fileType?: string;
     fileName?: string;
+    fileErrors?: string;
 }

@@ -169,7 +169,8 @@ ion-content {
 
 .capture-img-container {
   position: relative;
-  height: 200px;
+  height: 180px;
+  width: 180px;
   display: flex;
   justify-content: center;
   .btn-action-container {
@@ -187,7 +188,7 @@ ion-content {
   }
 }
 .loader-upload {
-  background-color: #0000004f;
+  background-color: #0000000f;
   width: 100%;
   height: 100%;
   position: absolute;
@@ -211,18 +212,39 @@ ion-content {
 
 .file-name {
   position: absolute;
-  bottom: 0;
-  color: black;
-  background: #d3d1d1c2;
-  padding: 12px;
+  bottom: -18px;
+  color: white;
+  background: #2224288f;
+  padding: 8px;
   border-radius: 12px;
   font-size: 12px;
   text-align: center;
-  width: 90%;
+  width: 94%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  max-width: 220px;
+  display: flex;
+  flex-direction: column;
+  font-weight: 500;
+
+  label {
+    text-align: left;
+    margin-bottom: 4px;
+  }
+  input {
+    background: none;
+    border: 1px solid #ffffff8a;
+    padding: 7px;
+    border-radius: 8px;
+    &:disabled {
+      background: #565656;
+    }
+  }
+  .error {
+    background: #5c312b;
+    color: white;
+    font-size: 10px;
+  }
 }
 
 .special-fab {

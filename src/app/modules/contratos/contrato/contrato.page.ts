@@ -68,6 +68,11 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
   //#region IMAGES MANAGEMENT ATTRIBUTES
   public docDataTransfer: DocDataTransfer[] = [];
+  public docPayLoad: {
+    doc_type: 'licencia_conducir',
+    model: 'clientes_docs',
+    model_id: 'cliente_id'
+  }
   //#endregion
 
   //#region SIGNATURE MANAGEMENT ATTRIBUTES
@@ -112,15 +117,12 @@ export class ContratoPage implements OnInit, AfterViewInit {
             if (x === 'datos_generales') {
               console.log('datos_generales');
               this.initGeneralForm(this.contractData);
-            } else {
-              this.initGeneralForm();
             }
             if (x === 'datos_cliente') {
                 console.log('datos_cliente');
                 let _clientesPayload = this.contractData.cliente;
                 this.initClientForm(_clientesPayload);
-            } else {
-              this.initClientForm();
+                this.getDocs('licencia_conducir', 'clientes_docs', 'cliente_id');
             }
           });
         }
@@ -287,8 +289,8 @@ export class ContratoPage implements OnInit, AfterViewInit {
       file: event.image,
       url: event.imgUrl,
       uploading: false,
-      uploadOk: null,
-      fileType: event.type,
+      success: null,
+      mime_type: event.type,
       fileName: event.fileName
     });
 
@@ -296,7 +298,22 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
   }
 
-  uploadArrayDatasImg(tipo: 'licencia_conducir', model: 'clientes_docs', model_id: 'cliente_id') {
+  disableUploadButton(): boolean {
+    if (!this.docDataTransfer) {
+      return true;
+    }
+
+    if (this.docDataTransfer && this.docDataTransfer.length > 0) {
+      for (let i = 0; i < this.docDataTransfer.length; i++) {
+        if (!this.docDataTransfer[i].success || !this.docDataTransfer[i].file_id || this.docDataTransfer[i].success === false) {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
+  uploadArrayDatasImg(doc_type = this.docPayLoad.doc_type, model = this.docPayLoad.model, model_id = this.docPayLoad.model_id) {
     if (this.docDataTransfer.length === 0) {
       this.sweetMsgServ.printStatus('Debe adjuntar una imagen', 'warning');
       return;
@@ -311,20 +328,43 @@ export class ContratoPage implements OnInit, AfterViewInit {
         console.log('here');
         let _lastServError = null;
         let formData = new FormData();
+        let _positions = [];
+        let _etiquetas = [];
         for (let i = 0; i< this.docDataTransfer.length; i++) {
           console.log('prepare formData info---->');
 
-          if (this.docDataTransfer[i].uploadOk === false || !this.docDataTransfer[i].uploadOk) {
+          if (!this.docDataTransfer[i].success || this.docDataTransfer[i].success === false || !this.docDataTransfer[i].file_id || this.docDataTransfer[i].file_id === null) {
+            //this.docDataTransfer[i].uploading = false;
+            if (!this.docDataTransfer[i].etiqueta) {
+              this.docDataTransfer[i].fileErrors = 'Ingrese un valor valido';
+
+            } else {
+              this.docDataTransfer[i].fileErrors = null;
+            }
+
+            if (this.docDataTransfer[i].fileErrors) {
+              this.sweetMsgServ.printStatus('Revise que los elementos esten correctos', 'warning');
+              return;
+            }
+            // @ts-ignore
             formData.append('files[]', this.docDataTransfer[i].file, this.docDataTransfer[i].file.name);
-            this.docDataTransfer[i].uploading = true;
+            //this.docDataTransfer[i].uploading = true;
+            _positions.push(i);
+            _etiquetas.push(this.docDataTransfer[i].etiqueta);
           }
         }
 
-        formData.set('tipo', tipo);
+        formData.set('doc_type', doc_type);
         formData.set('model', model);
         formData.set('model_id', model_id);
         // TODO: temporal 1
         formData.set('model_id_value', '1');
+        formData.set('positions', JSON.stringify(_positions));
+        formData.set('etiquetas', JSON.stringify(_etiquetas));
+
+        if (formData.has('files[]') === false) {
+          return;
+        }
 
         let res = await this.filesServ.storeDocs(formData);
         let _lastIndex = 0;
@@ -333,8 +373,8 @@ export class ContratoPage implements OnInit, AfterViewInit {
           let _resPayload = res.payload;
 
           for (let i = 0; i < _resPayload.length; i++) {
-            this.docDataTransfer[_resPayload[i].position].uploadOk = _resPayload[i].success;
-            this.docDataTransfer[_resPayload[i].position].uploading = false;
+            this.docDataTransfer[_resPayload[i].position].success = _resPayload[i].success;
+            //this.docDataTransfer[_resPayload[i].position].uploading = false;
             _lastIndex = i;
           }
         } else {
@@ -345,7 +385,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
         let successTotal = 0;
         for (let j = 0; j < this.docDataTransfer.length; j++) {
-          if (this.docDataTransfer[j].uploadOk === true) {
+          if (this.docDataTransfer[j].success === true) {
             successTotal ++;
           }
         }
@@ -366,6 +406,59 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
   removeImg(index) {
     this.docDataTransfer.splice(index, 1);
+  }
+
+  async removeFromDisk(fileData: DocDataTransfer, index) {
+    await this.sweetMsgServ.confirmRequest('¿Estás seguro de querer eliminar el archivo?').then(async (data) => {
+      if (data.value) {
+        let _payload = {
+          doc_type: fileData.doc_type,
+          model: fileData.model,
+          model_id: fileData.model_id,
+          model_id_value: fileData.model_id_value,
+          id: fileData.file_id
+        }
+        let query = await this.filesServ.deleteDoc(_payload);
+        if (query.ok) {
+          this.sweetMsgServ.printStatus(query.data.message, 'success');
+          this.removeImg(index);
+        } else {
+          this.sweetMsgServ.printStatusArray(query.error.error.errors, 'error');
+          console.log(query.error);
+        }
+      }
+    });
+  }
+
+  async getDocs(doc_type = this.docPayLoad.doc_type, model = this.docPayLoad.model, model_id = this.docPayLoad.model_id) {
+    let _payload = {
+      doc_type,
+      model,
+      model_id,
+      model_id_value: 1
+    }
+    let res = await this.filesServ.getDocs(_payload);
+
+    if (res.ok) {
+      this.docDataTransfer = [];
+      for (let i = 0; i < res.data.length; i++) {
+        let _docData: DocDataTransfer = {
+          position: res.data[i].position,
+          success: res.data[i].success,
+          file_id: res.data[i].file_id,
+          doc_type: res.data[i].doc_type,
+          model: res.data[i].model,
+          model_id: res.data[i].model_id,
+          mime_type: res.data[i].mime_type,
+          url: res.data[i].file,
+          model_id_value: res.data[i].model_id_value,
+          etiqueta: res.data[i].etiqueta
+        }
+        this.docDataTransfer.push(_docData);
+      }
+    } else {
+      console.log('error --->', res.error);
+    }
   }
 
   isImage(fileType: string): boolean {
