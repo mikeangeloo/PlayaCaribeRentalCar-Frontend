@@ -1,4 +1,5 @@
 import {ClientesI} from "../clientes/clientes.interface";
+import {VehiculosI} from '../catalogo-vehiculos/vehiculos.interface';
 
 export interface ContratoI
 {
@@ -22,4 +23,5 @@ export interface ContratoI
   etapas_completas?: any;
   estatus?: number;
   cliente?: ClientesI;
+  vehiculo?: VehiculosI;
 }

@@ -25,7 +25,7 @@ export class MultiTableFilterComponent implements OnInit {
 
   public spinner = false;
   public editRow: any;
-  @Input() public data: [] = [];
+  @Input() public fullData: [] = [];
   @Input() isModal: boolean;
   @Output() emitData = new EventEmitter();
   displayedColumns: string[] = [];
@@ -76,7 +76,7 @@ export class MultiTableFilterComponent implements OnInit {
         this.listData = new MatTableDataSource(response.data);
         this.listData.sort = this.sort;
         this.listData.paginator = this.paginator3;
-        this.data = response.data;
+        this.fullData = response.fullData;
         this.prepareEntriesMap(response.data[0]);
       }
     }, error => {
@@ -129,7 +129,8 @@ export class MultiTableFilterComponent implements OnInit {
   pickSelectedRow(_data) {
     this.sweetServ.confirmRequest('El dato seleccionado es correcto?').then((data) => {
       if (data.value) {
-        this.editRow = _data;
+        let _findFullData = this.fullData.find(x => x['id'] === _data.id);
+        this.editRow = _findFullData;
         this.dismiss(this.editRow);
       } else {
         this.editRow = null;

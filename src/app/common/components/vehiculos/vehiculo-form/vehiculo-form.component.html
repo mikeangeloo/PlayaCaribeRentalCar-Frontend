@@ -129,6 +129,17 @@
                   </mat-form-field>
                 </ion-col>
 
+                <ion-col size>
+                  <div>
+                    <ion-button fill="clear" size="small"></ion-button>
+                  </div>
+                  <mat-form-field appearance="legacy">
+                    <mat-label>Núm. Serie</mat-label>
+                    <input type="text" matInput formControlName="num_serie">
+                    <mat-error *ngIf="vf.num_serie.errors?.required">Campo requerido</mat-error>
+                  </mat-form-field>
+                </ion-col>
+
               </ion-row>
 
               <ion-row class="ion-no-padding ion-no-margin">

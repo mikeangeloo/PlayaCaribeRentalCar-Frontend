@@ -7,7 +7,7 @@ import {CardI} from "../../../interfaces/cards/card.interface";
 import {TarjetaFormComponent} from "../../../common/components/tarjetas/tarjeta-form/tarjeta-form.component";
 import {ModalController} from "@ionic/angular";
 import {MultiTableFilterComponent} from "../../../common/components/multi-table-filter/multi-table-filter.component";
-import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {Form, FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {DateConv} from "../../../helpers/date-conv";
 import {SessionService} from "../../../services/session.service";
 import {SucursalesI} from "../../../interfaces/sucursales.interface";
@@ -18,6 +18,7 @@ import {ContratoI} from "../../../interfaces/contratos/contrato.interface";
 import {ContratosStatus} from "../../../enums/contratos-status.enum";
 import {FilesService} from '../../../services/files.service';
 import {DocDataTransfer} from '../../../interfaces/shared/doc-data-tranfer.interface';
+import {VehiculosI} from '../../../interfaces/catalogo-vehiculos/vehiculos.interface';
 
 @Component({
   selector: 'app-contrato',
@@ -38,10 +39,17 @@ export class ContratoPage implements OnInit, AfterViewInit {
   public txtConv = TxtConv;
   public dateConv = DateConv;
   public statusC = ContratosStatus;
+
+  contractType: string;
   //#endregion
 
   //#region DATOS CLIENTE ATTRIBUTES
   clienteDataForm: FormGroup;
+  //#endregion
+
+  //#region DATOS VEHICULO
+  vehiculoData: VehiculosI;
+  vehiculoForm: FormGroup;
   //#endregion
 
   //#region CLOCK PICKER ATTRIBUTES
@@ -113,23 +121,40 @@ export class ContratoPage implements OnInit, AfterViewInit {
         this.sweetMsgServ.printStatusArray(error.error.errors, 'error');
       }).add(() => {
         if (this.contractData.etapas_guardadas && this.contractData.etapas_guardadas.length > 0) {
-          this.contractData.etapas_guardadas.find(x => {
-            if (x === 'datos_generales') {
-              console.log('datos_generales');
-              this.initGeneralForm(this.contractData);
-            }
-            if (x === 'datos_cliente') {
-                console.log('datos_cliente');
-                let _clientesPayload = this.contractData.cliente;
-                this.initClientForm(_clientesPayload);
-                this.getDocs('licencia_conducir', 'clientes_docs', 'cliente_id');
-            }
-          });
+          let _datosGeneralesEtapa = this.contractData.etapas_guardadas.find(x => x === 'datos_generales');
+          if (_datosGeneralesEtapa) {
+            console.log('datos_generales');
+            this.initGeneralForm(this.contractData);
+          } else {
+            this.initGeneralForm();
+          }
+
+          let _datosClienteEtapa = this.contractData.etapas_guardadas.find(x => x === 'datos_cliente');
+          if (_datosClienteEtapa) {
+            console.log('datos_cliente');
+            let _clientesPayload = this.contractData.cliente;
+            this.initClientForm(_clientesPayload);
+            this.getDocs('licencia_conducir', 'clientes_docs', 'cliente_id');
+          } else {
+            this.initClientForm();
+          }
+
+          let _datosVehiculoEtapa = this.contractData.etapas_guardadas.find(x => x === 'datos_vehiculo');
+          if (_datosVehiculoEtapa) {
+            console.log('datos_vehiculo');
+            this.vehiculoData = this.contractData.vehiculo;
+            // TODO: cambiar por salida o llegada
+            this.initVehiculoForm('salida', this.contractData.vehiculo);
+          } else {
+            this.initVehiculoForm('salida');
+          }
         }
       });
     } else {
       this.initGeneralForm();
       this.initClientForm();
+      // TODO: cambiar por salida o llegada
+      this.initVehiculoForm('salida');
     }
   }
 
@@ -237,6 +262,35 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
   get cf() {
     return this.clienteDataForm.controls;
+  }
+  //#endregion
+
+  //#region VEHICULO FORM FUNCTIONS
+  initVehiculoForm(tipo: 'salida' | 'llegada', data?) {
+    if (data) {
+      this.vehiculoData = data;
+    }
+    this.vehiculoForm = this.fb.group({
+      vehiculo_id: [(data && data.id ? data.id : null)],
+      km_salida: [(data && data.km_salida ? data.km_salida: null), Validators.required],
+      km_llegada: [(data && data.km_llegada ? data.km_llegada: null), Validators.required],
+      km_recorrido: [(data && data.km_recorrido ? data.km_recorrido: null), Validators.required],
+      gas_salida: [(data && data.gas_salida ? data.gas_salida: null), [Validators.required, Validators.email]],
+      gas_llegada: [(data && data.gas_llegada ? data.gas_llegada: null), Validators.required],
+    });
+    if (tipo === 'salida') {
+      this.vehiculoForm.controls.km_llegada.disable();
+      this.vehiculoForm.controls.km_recorrido.disable();
+      this.vehiculoForm.controls.gas_llegada.disable();
+    }
+    if (tipo === 'llegada') {
+      this.vehiculoForm.controls.km_salida.disable();
+      this.vehiculoForm.controls.gas_salida.disable();
+    }
+  }
+
+  get vf() {
+    return this.vehiculoForm.controls;
   }
   //#endregion
 
@@ -524,13 +578,17 @@ export class ContratoPage implements OnInit, AfterViewInit {
         case 'cliente':
           this.initClientForm(data);
           break;
+        case 'vehiculo':
+          // TODO: arreglar cuando sea tipo salida o llegada
+          this.initVehiculoForm('salida', data);
+          break;
       }
       //this.loadClienteData();
     }
   }
   //#endregion
 
-  saveProcess(section: 'datos-generales' | 'datos_cliente') {
+  saveProcess(section: 'datos-generales' | 'datos_cliente' | 'datos_vehiculo') {
     //this.sweetMsgServ.printStatus('Acción en desarrollo', 'warning');
     console.log('section', section);
     let _payload;
@@ -550,7 +608,14 @@ export class ContratoPage implements OnInit, AfterViewInit {
           return;
         }
         _payload = this.clienteDataForm.value;
-
+        break;
+      case 'datos_vehiculo':
+        if (this.vehiculoForm.invalid) {
+          this.sweetMsgServ.printStatus('Verifica que los datos solicitados esten completos', 'warning');
+          this.vehiculoForm.markAllAsTouched();
+          console.log('invalid form vehiculoForm', this.vehiculoForm);
+          return;
+        }
         break;
     }
 
