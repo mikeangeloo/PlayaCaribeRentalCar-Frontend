@@ -303,7 +303,7 @@
 <!--                            <ion-icon class="wrong-upload" name="close-sharp" *ngIf="imgData.success === false"></ion-icon>-->
                             <div class="file-name">
                               <label for="">Etiqueta</label>
-                              <input type="text" value="{{imgData.etiqueta}}" [(ngModel)]="imgData.etiqueta" [disabled]="imgData.file_id">
+                              <input type="text" value="{{imgData.etiqueta}}" [(ngModel)]="imgData.etiqueta" [disabled]="(imgData.file_id && imgData.file_id > 0 ? true : false)">
                               <small class="error" *ngIf="imgData.fileErrors">{{imgData.fileErrors}}</small>
                             </div>
                           </div>
