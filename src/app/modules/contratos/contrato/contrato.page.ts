@@ -134,7 +134,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
             console.log('datos_cliente');
             let _clientesPayload = this.contractData.cliente;
             this.initClientForm(_clientesPayload);
-            this.getDocs('licencia_conducir', 'clientes_docs', 'cliente_id');
+            this.getDocs('licencia_conducir', 'clientes_docs', 'cliente_id', _clientesPayload.id);
           } else {
             this.initClientForm();
           }
@@ -429,7 +429,12 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
           for (let i = 0; i < _resPayload.length; i++) {
             this.docDataTransfer[_resPayload[i].position].success = _resPayload[i].success;
-            //this.docDataTransfer[_resPayload[i].position].uploading = false;
+            this.docDataTransfer[_resPayload[i].position].file_id = _resPayload[i].file_id;
+            this.docDataTransfer[_resPayload[i].position].model = _resPayload[i].model;
+            this.docDataTransfer[_resPayload[i].position].model_id = _resPayload[i].model_id;
+            this.docDataTransfer[_resPayload[i].position].model_id_value = _resPayload[i].model_id_value;
+            this.docDataTransfer[_resPayload[i].position].position = _resPayload[i].position;
+            this.docDataTransfer[_resPayload[i].position].doc_type = _resPayload[i].doc_type;
             _lastIndex = i;
           }
         } else {
@@ -485,12 +490,12 @@ export class ContratoPage implements OnInit, AfterViewInit {
     });
   }
 
-  async getDocs(doc_type = this.docPayLoad.doc_type, model = this.docPayLoad.model, model_id = this.docPayLoad.model_id) {
+  async getDocs(doc_type = this.docPayLoad.doc_type, model = this.docPayLoad.model, model_id = this.docPayLoad.model_id, model_id_value: number) {
     let _payload = {
       doc_type,
       model,
       model_id,
-      model_id_value: this.clienteDataForm.controls.cliente_id.value
+      model_id_value
     }
     let res = await this.filesServ.getDocs(_payload);
 
@@ -512,6 +517,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
         this.docDataTransfer.push(_docData);
       }
     } else {
+      this.docDataTransfer = [];
       console.log('error --->', res.error);
     }
   }
@@ -578,6 +584,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
           break;
         case 'cliente':
           this.initClientForm(data);
+          this.getDocs('licencia_conducir', 'clientes_docs', 'cliente_id', data.id);
           break;
         case 'vehiculo':
           // TODO: arreglar cuando sea tipo salida o llegada
