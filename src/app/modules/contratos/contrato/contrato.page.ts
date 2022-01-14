@@ -143,8 +143,9 @@ export class ContratoPage implements OnInit, AfterViewInit {
           if (_datosVehiculoEtapa) {
             console.log('datos_vehiculo');
             this.vehiculoData = this.contractData.vehiculo;
+            console.log('vehiculoData', this.vehiculoData);
             // TODO: cambiar por salida o llegada
-            this.initVehiculoForm('salida', this.contractData.vehiculo);
+            this.initVehiculoForm('salida', this.contractData);
           } else {
             this.initVehiculoForm('salida');
           }
@@ -267,15 +268,12 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
   //#region VEHICULO FORM FUNCTIONS
   initVehiculoForm(tipo: 'salida' | 'llegada', data?) {
-    if (data) {
-      this.vehiculoData = data;
-    }
     this.vehiculoForm = this.fb.group({
-      vehiculo_id: [(data && data.id ? data.id : null)],
+      vehiculo_id: [(this.vehiculoData && this.vehiculoData.id ? this.vehiculoData.id : null), Validators.required],
       km_salida: [(data && data.km_salida ? data.km_salida: null), Validators.required],
       km_llegada: [(data && data.km_llegada ? data.km_llegada: null), Validators.required],
       km_recorrido: [(data && data.km_recorrido ? data.km_recorrido: null), Validators.required],
-      gas_salida: [(data && data.gas_salida ? data.gas_salida: null), [Validators.required, Validators.email]],
+      gas_salida: [(data && data.gas_salida ? data.gas_salida: null), [Validators.required]],
       gas_llegada: [(data && data.gas_llegada ? data.gas_llegada: null), Validators.required],
     });
     if (tipo === 'salida') {
@@ -368,7 +366,11 @@ export class ContratoPage implements OnInit, AfterViewInit {
   }
 
   uploadArrayDatasImg(doc_type = this.docPayLoad.doc_type, model = this.docPayLoad.model, model_id = this.docPayLoad.model_id) {
-    if (this.docDataTransfer.length === 0) {
+    if (!this.clienteDataForm.controls.cliente_id.value) {
+      this.sweetMsgServ.printStatus('Debe primero guardar el avance de la información capturada del cliente', 'warning');
+      return;
+    }
+    if (this.docDataTransfer.length === 0 ) {
       this.sweetMsgServ.printStatus('Debe adjuntar una imagen', 'warning');
       return;
     }
@@ -411,8 +413,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
         formData.set('doc_type', doc_type);
         formData.set('model', model);
         formData.set('model_id', model_id);
-        // TODO: temporal 1
-        formData.set('model_id_value', '1');
+        formData.set('model_id_value', String(this.clienteDataForm.controls.cliente_id.value));
         formData.set('positions', JSON.stringify(_positions));
         formData.set('etiquetas', JSON.stringify(_etiquetas));
 
@@ -489,7 +490,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
       doc_type,
       model,
       model_id,
-      model_id_value: 1
+      model_id_value: this.clienteDataForm.controls.cliente_id.value
     }
     let res = await this.filesServ.getDocs(_payload);
 
@@ -580,6 +581,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
           break;
         case 'vehiculo':
           // TODO: arreglar cuando sea tipo salida o llegada
+          this.vehiculoData = data;
           this.initVehiculoForm('salida', data);
           break;
       }
@@ -588,12 +590,12 @@ export class ContratoPage implements OnInit, AfterViewInit {
   }
   //#endregion
 
-  saveProcess(section: 'datos-generales' | 'datos_cliente' | 'datos_vehiculo') {
+  saveProcess(section: 'datos_generales' | 'datos_cliente' | 'datos_vehiculo') {
     //this.sweetMsgServ.printStatus('Acción en desarrollo', 'warning');
     console.log('section', section);
     let _payload;
     switch (section) {
-      case 'datos-generales':
+      case 'datos_generales':
         if (this.generalDataForm.invalid) {
           this.sweetMsgServ.printStatus('Verifica que los datos solicitados esten completos', 'warning');
           this.generalDataForm.markAllAsTouched();
@@ -616,6 +618,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
           console.log('invalid form vehiculoForm', this.vehiculoForm);
           return;
         }
+        _payload = this.vehiculoForm.value;
         break;
     }
 

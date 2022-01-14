@@ -54,7 +54,7 @@
             <ion-card>
               <ion-card-title>
                 <div class="card-action-buttons">
-                  <ion-button size="small" color="secondary" (click)="saveProcess('datos-generales')">Guardar Datos Generales</ion-button>
+                  <ion-button size="small" color="secondary" (click)="saveProcess('datos_generales')">Guardar Datos Generales</ion-button>
                 </div>
               </ion-card-title>
               <ion-card-content>
@@ -88,7 +88,7 @@
                       <mat-form-field>
                         <mat-label>HORA</mat-label>
                         <div style="display: flex;">
-                          <input matInput [ngxTimepicker]="rentTime" [disableClick]="true" formControlName="renta_of_hora" [format]="24">
+                          <input matInput [ngxTimepicker]="rentTime"  formControlName="renta_of_hora" [format]="24">
                           <ngx-material-timepicker-toggle [for]="rentTime"></ngx-material-timepicker-toggle>
                           <ngx-material-timepicker [theme]="apolloThemClock" #rentTime></ngx-material-timepicker>
                         </div>
@@ -124,7 +124,7 @@
                       <mat-form-field>
                         <mat-label>HORA</mat-label>
                         <div style="display: flex;">
-                          <input matInput [ngxTimepicker]="returnTime" [disableClick]="true" formControlName="retorno_of_hora" [format]="24">
+                          <input matInput [ngxTimepicker]="returnTime" formControlName="retorno_of_hora" [format]="24">
                           <ngx-material-timepicker-toggle [for]="returnTime"></ngx-material-timepicker-toggle>
                           <ngx-material-timepicker [theme]="apolloThemClock" #returnTime></ngx-material-timepicker>
                         </div>
@@ -263,9 +263,9 @@
                     <ion-row>
                       <ion-col size="12" class="ion-text-center">
                         <div style="display: flex; justify-content: space-evenly; align-items: center;">
-                          <ion-button class="add-button" style="margin: 0 auto;" (click)="presentActionSheet()" shape="round" color="dark" *ngIf="justButton">
-                            <ion-icon name="camera"></ion-icon>
-                          </ion-button>
+<!--                          <ion-button class="add-button" style="margin: 0 auto;" (click)="presentActionSheet()" shape="round" color="dark" *ngIf="justButton">-->
+<!--                            <ion-icon name="camera"></ion-icon>-->
+<!--                          </ion-button>-->
                           <app-camera (captureImg)="processDataImage($event)" [justButton]="true"></app-camera>
                           <ion-button [disabled]="disableUploadButton()" *ngIf="docDataTransfer && docDataTransfer.length > 0" color="secondary" expand="round" type="button" (click)="uploadArrayDatasImg('licencia_conducir', 'clientes_docs', 'cliente_id')" style="width: 250px;">
                             <ion-icon name="cloud-upload"></ion-icon>&nbsp; SUBIR
@@ -371,7 +371,7 @@
                   <ion-col size>
                     <mat-form-field appearance="legacy">
                       <mat-label>Marca</mat-label>
-                      <input type="text" matInput [disabled]="true" [value]="vehiculoData && vehiculoData.marca.marca ? vehiculoData.marca.marca : null">
+                      <input type="text" matInput [disabled]="true" [value]="vehiculoData && vehiculoData.marca && vehiculoData.marca.marca ? vehiculoData.marca.marca : null">
                       <mat-hint>Solo lectura</mat-hint>
                     </mat-form-field>
                   </ion-col> <!--Marca-->
@@ -422,7 +422,7 @@
                     <ion-col size>
                       <mat-form-field appearance="legacy">
                         <mat-label>Kilometraje Salida</mat-label>
-                        <input type="text" matInput  formControlName="km_salida">
+                        <input type="number" matInput  formControlName="km_salida">
                         <mat-error *ngIf="vf.km_salida.errors?.required">Campo requerido</mat-error>
                         <mat-hint *ngIf="vf.km_salida.disabled">Solo Lectura</mat-hint>
                       </mat-form-field>
@@ -430,7 +430,7 @@
                     <ion-col size>
                       <mat-form-field appearance="legacy">
                         <mat-label>Kilometraje Llegada</mat-label>
-                        <input type="text" matInput  formControlName="km_llegada">
+                        <input type="number" matInput  formControlName="km_llegada">
                         <mat-error *ngIf="vf.km_llegada.errors?.required">Campo requerido</mat-error>
                         <mat-hint *ngIf="vf.km_llegada.disabled">Solo Lectura</mat-hint>
                       </mat-form-field>
@@ -438,7 +438,7 @@
                     <ion-col size>
                       <mat-form-field appearance="legacy">
                         <mat-label>Kilometraje Recorrido</mat-label>
-                        <input type="text" matInput  formControlName="km_recorrido">
+                        <input type="number" matInput  formControlName="km_recorrido">
                         <mat-error *ngIf="vf.km_recorrido.errors?.required">Campo requerido</mat-error>
                         <mat-hint *ngIf="vf.km_recorrido.disabled">Solo Lectura</mat-hint>
                       </mat-form-field>
@@ -448,7 +448,16 @@
                     <ion-col size>
                       <mat-form-field appearance="legacy">
                         <mat-label>Gas Salida</mat-label>
-                        <input type="text" matInput  formControlName="gas_salida">
+                        <mat-select formControlName="gas_salida">
+                          <mat-option value="1/8">1/8</mat-option>
+                          <mat-option value="2/8">2/8</mat-option>
+                          <mat-option value="3/8">3/8</mat-option>
+                          <mat-option value="4/8">4/8</mat-option>
+                          <mat-option value="5/8">5/8</mat-option>
+                          <mat-option value="6/8">6/8</mat-option>
+                          <mat-option value="7/8">7/8</mat-option>
+                          <mat-option value="8/8">8/8</mat-option>
+                        </mat-select>
                         <mat-error *ngIf="vf.gas_salida.errors?.required">Campo requerido</mat-error>
                         <mat-hint *ngIf="vf.gas_salida.disabled">Solo Lectura</mat-hint>
                       </mat-form-field>
@@ -456,7 +465,16 @@
                     <ion-col size>
                       <mat-form-field appearance="legacy">
                         <mat-label>Gas Llegada</mat-label>
-                        <input type="text" matInput  formControlName="gas_llegada">
+                        <mat-select formControlName="gas_llegada">
+                          <mat-option value="1/8">1/8</mat-option>
+                          <mat-option value="2/8">2/8</mat-option>
+                          <mat-option value="3/8">3/8</mat-option>
+                          <mat-option value="4/8">4/8</mat-option>
+                          <mat-option value="5/8">5/8</mat-option>
+                          <mat-option value="6/8">6/8</mat-option>
+                          <mat-option value="7/8">7/8</mat-option>
+                          <mat-option value="8/8">8/8</mat-option>
+                        </mat-select>
                         <mat-error *ngIf="vf.gas_llegada.errors?.required">Campo requerido</mat-error>
                         <mat-hint *ngIf="vf.gas_llegada.disabled">Solo Lectura</mat-hint>
                       </mat-form-field>
