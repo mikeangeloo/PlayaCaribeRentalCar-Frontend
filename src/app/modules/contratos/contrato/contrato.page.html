@@ -19,9 +19,9 @@
             <ion-label style="font-size: 1.2rem; margin-right: 1rem;">
               Num. Contrato: {{num_contrato}}
             </ion-label>
-            <ion-button fill="outline" (click)="generalServ.copyClickBoard(num_contrato)">
-              <ion-icon slot="icon-only" name="copy"></ion-icon>
-            </ion-button>
+<!--            <ion-button fill="outline" (click)="generalServ.copyClickBoard(num_contrato)">-->
+<!--              <ion-icon slot="icon-only" name="copy"></ion-icon>-->
+<!--            </ion-button>-->
           </div>
           <div *ngIf="!num_contrato" class="status-badge-container">
             <span>Estatus</span>
@@ -52,11 +52,6 @@
             </mat-expansion-panel-header>
 
             <ion-card>
-              <ion-card-title>
-                <div class="card-action-buttons">
-                  <ion-button size="small" color="secondary" (click)="saveProcess('datos_generales')">Guardar Datos Generales</ion-button>
-                </div>
-              </ion-card-title>
               <ion-card-content>
                 <form [formGroup]="generalDataForm" *ngIf="generalDataForm">
                   <ion-row>
@@ -135,6 +130,9 @@
                 </form>
 
               </ion-card-content>
+              <div class="card-action-buttons">
+                <ion-button  color="success" (click)="saveProcess('datos_generales')">GUARDAR</ion-button>
+              </div>
             </ion-card>
 
 
@@ -163,11 +161,6 @@
             </mat-expansion-panel-header>
 
             <ion-card>
-              <ion-card-title>
-                <div class="card-action-buttons">
-                  <ion-button size="small" color="secondary" (click)="saveProcess('datos_cliente')">Guardar Datos Generales</ion-button>
-                </div>
-              </ion-card-title>
               <ion-card-content>
                 <form [formGroup]="clienteDataForm" *ngIf="clienteDataForm">
                   <ion-row>
@@ -316,6 +309,11 @@
                   </ng-container>
                 </fieldset>
               </ion-card-content>
+              <ion-card-title>
+                <div class="card-action-buttons">
+                  <ion-button color="success" (click)="saveProcess('datos_cliente')">GUARDAR</ion-button>
+                </div>
+              </ion-card-title>
             </ion-card>
 
 
@@ -345,11 +343,6 @@
 
 <!--            <app-vehiculo-form [asModal]="false" [vehiculo_id]="1"></app-vehiculo-form>-->
             <ion-card>
-              <ion-card-title>
-                <div class="card-action-buttons">
-                  <ion-button size="small" color="secondary" (click)="saveProcess('datos_vehiculo')">Guardar Datos Vehículo</ion-button>
-                </div>
-              </ion-card-title>
               <ion-card-content *ngIf="vehiculoData">
                 <ion-row>
                   <ion-col size="12">
@@ -497,6 +490,10 @@
                   </ion-col>
                 </ion-row> <!-- openModalSearch -->
               </ion-card-content>
+
+              <div class="card-action-buttons">
+                <ion-button color="success" (click)="saveProcess('datos_vehiculo')">GUARDAR</ion-button>
+              </div>
             </ion-card>
 
             <mat-action-row>

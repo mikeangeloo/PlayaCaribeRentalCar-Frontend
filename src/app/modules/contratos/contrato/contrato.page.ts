@@ -83,6 +83,33 @@ export class ContratoPage implements OnInit, AfterViewInit {
   }
   //#endregion
 
+  //#region COBRANZA ATTRIBUTES
+  baseCurrency: 'USD' | 'MXN' = 'USD';
+  baseRentCost = 1500;
+  baseRentFrequency: 'hours' | 'days' | 'weeks' | 'month' = 'days';
+  fuelCharges = 1000;
+  iva = 0.16;
+
+  requiredAddCharges = [
+    {
+      label: 'DAÑOS MATERIALES 90%',
+      cost: 52.35
+    },
+    {
+      label: 'DAÑOS A TERCEROS',
+      cost: 69.80
+    },
+    {
+      label: 'GASTOS MEDICOS',
+      cost: 34.90
+    },
+    {
+      label: 'ASISTENCIA VIAL',
+      cost: 17.45
+    }
+  ];
+  //#endregion
+
   //#region SIGNATURE MANAGEMENT ATTRIBUTES
   public signature = '';
   //#endregion
