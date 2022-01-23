@@ -29,6 +29,8 @@ import {MatChipsModule} from "@angular/material/chips";
 import {CameraComponent} from "./components/camera/camera.component";
 import {SignatureCaptureComponent} from "./components/signature-capture/signature-capture.component";
 import {MultiTableFilterComponent} from "./components/multi-table-filter/multi-table-filter.component";
+import {ClaseVehiculoFormComponent} from './components/clases-vehiculos/clase-vehiculo-form/clase-vehiculo-form.component';
+import {ClasesVehiculosTableComponent} from './components/clases-vehiculos/clases-vehiculos-table/clases-vehiculos-table.component';
 
 
 
@@ -57,7 +59,9 @@ import {MultiTableFilterComponent} from "./components/multi-table-filter/multi-t
     TarjetaFormComponent,
     CameraComponent,
     SignatureCaptureComponent,
-    MultiTableFilterComponent
+    MultiTableFilterComponent,
+    ClaseVehiculoFormComponent,
+    ClasesVehiculosTableComponent
   ],
   exports: [
     EmpresasListComponent,
@@ -83,7 +87,9 @@ import {MultiTableFilterComponent} from "./components/multi-table-filter/multi-t
     TarjetaFormComponent,
     CameraComponent,
     SignatureCaptureComponent,
-    MultiTableFilterComponent
+    MultiTableFilterComponent,
+    ClaseVehiculoFormComponent,
+    ClasesVehiculosTableComponent
   ],
   entryComponents: [
     EmpresasListComponent,
@@ -109,7 +115,9 @@ import {MultiTableFilterComponent} from "./components/multi-table-filter/multi-t
     TarjetaFormComponent,
     CameraComponent,
     SignatureCaptureComponent,
-    MultiTableFilterComponent
+    MultiTableFilterComponent,
+    ClaseVehiculoFormComponent,
+    ClasesVehiculosTableComponent
   ],
     imports: [
         CommonModule,

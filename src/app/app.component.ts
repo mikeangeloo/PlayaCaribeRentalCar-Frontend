@@ -112,6 +112,14 @@ export class AppComponent implements OnDestroy {
               route: '/administracion/catalogo-vehiculos/marcas-vehiculos',
               level: 2,
               active: false,
+            },
+            {
+              module: 'catalogo-vehiculos',
+              icon: 'bookmarks',
+              label: 'Listado de Clases',
+              route: '/administracion/catalogo-vehiculos/clases-vehiculos',
+              level: 2,
+              active: false,
             }
           ]
         },

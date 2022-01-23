@@ -44,6 +44,10 @@ const routes: Routes = [
             path: 'administracion/catalogo-vehiculos/marcas-vehiculos',
             loadChildren: () => import('./modules/catalogo-vehiculos/marcas-vehiculos/marcas-vehiculos.module').then(m => m.MarcasVehiculosPageModule)
           },
+          {
+            path: 'administracion/catalogo-vehiculos/clases-vehiculos',
+            loadChildren: () => import('./modules/catalogo-vehiculos/clases-vehiculos/clases-vehiculos.module').then(m => m.ClasesVehiculosPageModule)
+          },
           //endregion
 
           //region CONTROL ACCESSO
