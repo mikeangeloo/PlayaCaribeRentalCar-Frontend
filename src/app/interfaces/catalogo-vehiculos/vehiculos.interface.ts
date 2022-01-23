@@ -25,6 +25,7 @@ export interface VehiculosI
   categoria?: CategoriasVehiculosI;
   codigo?: string;
   num_serie?: string;
+  precio_renta?: number;
 }
 
 export class VehiculosC

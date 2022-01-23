@@ -19,7 +19,11 @@
           <div class="title-container">
           </div>
           <ion-row *ngIf="vehiculoData && vehiculoData.estatus">
-            <ion-col size="6"></ion-col>
+            <ion-col size="6">
+              <ion-button class="btn-shadow" color="secondary" expand="full" (click)="saveUpdate()">
+                Guardar
+              </ion-button>
+            </ion-col>
             <ion-col size="6">
               <div style="display: flex;justify-content: flex-end;align-items: center;">
                 <ion-label style="margin-right: 1em;font-weight: 500;">Estatus</ion-label>
@@ -123,9 +127,11 @@
                     <ion-button fill="clear" size="small"></ion-button>
                   </div>
                   <mat-form-field appearance="legacy">
-                    <mat-label>Color</mat-label>
-                    <input type="text" matInput formControlName="color">
-                    <mat-error *ngIf="vf.color.errors?.required">Campo requerido</mat-error>
+                    <mat-label>Clase</mat-label>
+                    <mat-select formControlName="clase_id">
+                      <mat-option *ngFor="let clase of clasesV" [value]="clase.id">{{clase.clase}}</mat-option>
+                    </mat-select>
+                    <mat-error *ngIf="vf.clase_id.errors?.required">Campo requerido</mat-error>
                   </mat-form-field>
                 </ion-col>
 
@@ -134,16 +140,25 @@
                     <ion-button fill="clear" size="small"></ion-button>
                   </div>
                   <mat-form-field appearance="legacy">
-                    <mat-label>Núm. Serie</mat-label>
-                    <input type="text" matInput formControlName="num_serie">
-                    <mat-error *ngIf="vf.num_serie.errors?.required">Campo requerido</mat-error>
+                    <mat-label>Color</mat-label>
+                    <input type="text" matInput formControlName="color">
+                    <mat-error *ngIf="vf.color.errors?.required">Campo requerido</mat-error>
                   </mat-form-field>
                 </ion-col>
 
               </ion-row>
 
               <ion-row class="ion-no-padding ion-no-margin">
-                <ion-col size="6">
+
+                <ion-col size>
+                  <mat-form-field appearance="legacy">
+                    <mat-label>Núm. Serie</mat-label>
+                    <input type="text" matInput formControlName="num_serie">
+                    <mat-error *ngIf="vf.num_serie.errors?.required">Campo requerido</mat-error>
+                  </mat-form-field>
+                </ion-col>
+
+                <ion-col size>
                   <mat-form-field appearance="legacy">
                     <mat-label>No. Placas</mat-label>
                     <input matInput type="text" formControlName="placas">
@@ -151,7 +166,7 @@
                   </mat-form-field>
                 </ion-col>
 
-                <ion-col size="6">
+                <ion-col size>
                   <mat-form-field appearance="legacy">
                     <mat-label>No. Poliza Seguro</mat-label>
                     <input matInput type="text" formControlName="num_poliza_seg">
@@ -194,18 +209,6 @@
                       <mat-option value="7/8">7/8</mat-option>
                       <mat-option value="8/8">8/8</mat-option>
                     </mat-select>
-
-<!--                    <input matInput list="combustible" formControlName="cant_combustible" autocomplete="off">-->
-<!--                    <datalist id="combustible">-->
-<!--                      <option value="1/8">-->
-<!--                      <option value="2/8">-->
-<!--                      <option value="3/8">-->
-<!--                      <option value="4/8">-->
-<!--                      <option value="5/8">-->
-<!--                      <option value="6/8">-->
-<!--                      <option value="7/8">-->
-<!--                      <option value="8/8">-->
-<!--                    </datalist>-->
                     <mat-error *ngIf="vf.cant_combustible.errors?.required">Campo requerido</mat-error>
                   </mat-form-field>
                 </ion-col>
@@ -240,11 +243,50 @@
                 </ion-col>
               </ion-row>
               <br />
-              <ion-button class="btn-shadow" color="secondary" expand="full" (click)="saveUpdate()">
-                Guardar
-              </ion-button>
             </div>
           </form>
+        </ion-col>
+      </ion-row>
+
+      <ion-row>
+        <ion-col size="12">
+          <table class="complement-table">
+            <thead>
+              <tr>
+                <th>Frecuencia</th>
+                <th>Ap. Descuento</th>
+                <th>Valor Descuento</th>
+                <th>Descuento</th>
+                <th>P. Final</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let tApollo of tarifaApolloPayload">
+                <td>{{tApollo.frecuencia}}</td>
+                <td>
+                  <mat-form-field appearance="standard">
+                   <input matInput [value]="tApollo.ap_descuento">
+                  </mat-form-field>
+                </td>
+                <td>
+                  <mat-form-field appearance="standard">
+                    <input type="number" autocomplete="off" matInput [(ngModel)]="tApollo.valor_descuento">
+                    <span matSuffix>%</span>
+                  </mat-form-field>
+                </td>
+                <td>
+                  <mat-form-field appearance="standard">
+                    <input type="text" autocomplete="off" matInput readonly [value]="tApollo.descuento">
+                  </mat-form-field>
+                </td>
+                <td>
+                  <mat-form-field appearance="standard">
+                    <input type="text" autocomplete="off" matInput [(ngModel)]="tApollo.precio_final" [readonly]="tApollo.precio_final_editable === false">
+                  </mat-form-field>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </ion-col>
       </ion-row>
     </ion-card-content>

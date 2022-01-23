@@ -11,6 +11,9 @@ import {VehiculosService} from "../../../../services/vehiculos.service";
 import {MarcasVehiculosService} from "../../../../services/marcas-vehiculos.service";
 import {CategoriaVehiculosService} from "../../../../services/categoria-vehiculos.service";
 import {DateConv} from "../../../../helpers/date-conv";
+import {ClasesVehiculosI} from '../../../../interfaces/catalogo-vehiculos/clases-vehiculos.interface';
+import {ClasesVehiculosService} from '../../../../services/clases-vehiculos.service';
+import {TarifaApolloI} from '../../../../interfaces/tarifas/tarifa-apollo.interface';
 
 @Component({
   selector: 'app-vehiculo-form',
@@ -33,7 +36,10 @@ export class VehiculoFormComponent implements OnInit {
   public newCatV = false;
   @ViewChild('newCatVI', {static: false}) newCatVI: ElementRef;
 
+  public clasesV: ClasesVehiculosI[];
+
   vehiculoC = VehiculosC;
+  tarifaApolloPayload: TarifaApolloI[];
 
   constructor(
     public modalCtrl: ModalController,
@@ -44,6 +50,7 @@ export class VehiculoFormComponent implements OnInit {
     private toastServ: ToastMessageService,
     private categoriaVehiculoServ: CategoriaVehiculosService,
     private marcasServ: MarcasVehiculosService,
+    private classVehiculosServ: ClasesVehiculosService
   ) {
     this.title = 'Formulario Véhiculo';
     this.vehiculoForm = this.fb.group({
@@ -64,7 +71,8 @@ export class VehiculoFormComponent implements OnInit {
       precio_renta: [null],
       activo: [null],
       codigo: [null],
-      num_serie: [null, Validators.required]
+      num_serie: [null, Validators.required],
+      clase_id: [null, Validators.required],
 
     });
   }
@@ -76,6 +84,7 @@ export class VehiculoFormComponent implements OnInit {
   ngOnInit() {
     this.loadMarcasV();
     this.loadCategoriasV();
+    this.loadClasesV();
 
     if (this.vehiculo_id) {
       this.loadVehiculosData();
@@ -105,6 +114,78 @@ export class VehiculoFormComponent implements OnInit {
     })
   }
 
+  loadClasesV() {
+    this.classVehiculosServ.getActive().subscribe(res => {
+      if (res.ok === true) {
+        this.clasesV = res.datas;
+      }
+    }, error =>  {
+      console.log(error);
+    })
+  }
+
+  initTarifaApolloObj() {
+    // TODO: pasar a una tabla configuración en DB
+    this.tarifaApolloPayload = [
+      {
+        id: null,
+        frecuencia: 'Día(s)',
+        frecuencia_ref: 'days',
+        activo: true,
+        modelo: 'vehiculos',
+        modelo_id: this.vehiculo_id,
+        precio_base: this.vehiculoData.precio_renta,
+        precio_final_editable: false,
+        ap_descuento: false,
+        valor_descuento: null,
+        descuento: null,
+        precio_final: null
+      },
+      {
+        id: null,
+        frecuencia: 'Semana(s)',
+        frecuencia_ref: 'weeks',
+        activo: true,
+        modelo: 'vehiculos',
+        modelo_id: this.vehiculo_id,
+        precio_base: this.vehiculoData.precio_renta,
+        precio_final_editable: false,
+        ap_descuento: true,
+        valor_descuento: null,
+        descuento: null,
+        precio_final: null
+      },
+      {
+        id: null,
+        frecuencia: 'Mes(s)',
+        frecuencia_ref: 'months',
+        activo: true,
+        modelo: 'vehiculos',
+        modelo_id: this.vehiculo_id,
+        precio_base: this.vehiculoData.precio_renta,
+        precio_final_editable: false,
+        ap_descuento: true,
+        valor_descuento: null,
+        descuento: null,
+        precio_final: null
+      },
+      {
+        id: null,
+        frecuencia: 'Hora Extra',
+        frecuencia_ref: 'hours',
+        activo: true,
+        modelo: 'vehiculos',
+        modelo_id: this.vehiculo_id,
+        precio_base: this.vehiculoData.precio_renta,
+        precio_final_editable: true,
+        ap_descuento: false,
+        valor_descuento: null,
+        descuento: null,
+        precio_final: null
+      }
+    ]
+  }
+
   initVehiculoForm(data?) {
     console.log(data);
     this.vehiculoForm.setValue({
@@ -124,7 +205,8 @@ export class VehiculoFormComponent implements OnInit {
       precio_renta: (data && data.precio_renta) ? data.precio_renta : null,
       activo: (data && data.activo) ? data.activo : 0,
       codigo: (data && data.codigo) ? data.codigo : null,
-      num_serie: (data && data.num_serie) ? data.num_serie : null
+      num_serie: (data && data.num_serie) ? data.num_serie : null,
+      clase_id: (data &&  data.clase_id) ? data.clase_id : null
     });
     this.vf.activo.disable();
   }
@@ -139,6 +221,7 @@ export class VehiculoFormComponent implements OnInit {
       if (res.ok === true) {
         this.vehiculoData = res.vehiculo;
         this.initVehiculoForm(res.vehiculo);
+        this.initTarifaApolloObj();
       }
     }, error => {
       this.generalServ.dismissLoading();
