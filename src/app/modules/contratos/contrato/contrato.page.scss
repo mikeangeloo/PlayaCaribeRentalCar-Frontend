@@ -14,7 +14,7 @@ ion-card {
   margin: 7px;
 
   ion-card-content {
-    margin: 0.7em;
+    //margin: 0.7em;
   }
 }
 
@@ -137,4 +137,71 @@ ion-card {
   border-radius: 12px;
   padding: 12px;
   margin-bottom: 1.2rem;
+}
+
+.fill-col {
+  background: rgb(240 157 40 / 29%);
+  width: 2px !important;
+  margin-bottom: 1rem;
+}
+.card-action-buttons {
+  display: flex;
+  justify-content: flex-end;
+  margin: 1rem;
+}
+.search-row-buttons {
+  display: flex;
+  justify-content: flex-end;
+}
+.folio-copy {
+  display: flex;
+  align-items: center;
+  //justify-content: space-between;
+  ion-button {
+    margin-right: 1rem;
+  }
+}
+.status-badge-container {
+  display: flex;
+  font-weight: 700;
+  span {
+    margin-right: 1rem;
+  }
+}
+
+
+.upload-indications {
+  display: flex;
+  position: absolute;
+  left: 10px;
+  margin: 0;
+  top: 2px;
+  .base-indicator {
+    color: white;
+    background: #3772dd;
+    padding: 5px;
+    border-radius: 25%;
+    font-size: 1.4rem;
+    position: relative;
+  }
+  .indicator{
+    color: white;
+
+    padding: 5px;
+    border-radius: 25%;
+    margin-left: 3px;
+    position: absolute;
+    bottom: -6px;
+    right: -12px;
+    font-size: 0.8rem;
+  }
+  .success {
+    background: #3ba301;
+  }
+  .temp {
+    background: #484848;
+  }
+  .error {
+    background: darkred;
+  }
 }

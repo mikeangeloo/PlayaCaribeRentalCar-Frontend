@@ -8,9 +8,29 @@
 
 <ion-content id="revisionRowH">
   <ion-row style="margin: 1.2rem;">
+
+
     <ion-col size="6">
-      <h2 style="color: var(--ion-color-dark-tint)">Nuevo Contrato</h2>
+      <h2 style="color: var(--ion-color-dark-tint)">ESTATUS: {{(contractData) ? statusC.labelStatus(contractData.estatus) : 'NUEVO CONTRATO'}}</h2>
+
+      <ion-row>
+        <ion-col size="12" class="ion-align-self-center ion-no-padding ion-no-margin">
+          <div class="folio-copy" *ngIf="num_contrato">
+            <ion-label style="font-size: 1.2rem; margin-right: 1rem;">
+              Num. Contrato: {{num_contrato}}
+            </ion-label>
+<!--            <ion-button fill="outline" (click)="generalServ.copyClickBoard(num_contrato)">-->
+<!--              <ion-icon slot="icon-only" name="copy"></ion-icon>-->
+<!--            </ion-button>-->
+          </div>
+          <div *ngIf="!num_contrato" class="status-badge-container">
+            <span>Estatus</span>
+            <ion-badge slot="end" color="warning">Sin guardar</ion-badge>
+          </div>
+        </ion-col>
+      </ion-row>
     </ion-col>
+
     <ion-col size="6" class="ion-text-end">
       <button mat-raised-button class="button-success">Crear Contrato</button>
       &nbsp;
@@ -33,68 +53,86 @@
 
             <ion-card>
               <ion-card-content>
-                <ion-row>
-                  <ion-col>
-                    <mat-form-field>
-                      <mat-label>OFICINA DE RENTA</mat-label>
-                      <input type="text" matInput value="PPC">
-                      <mat-hint>
-                        OFICINA PLAZA PELICANOS
-                        10 AVENIDA NTE. MZA 100 LTE 1. CENTRO
-                        77710
-                      </mat-hint>
-                    </mat-form-field>
-                    <br>
-                    <br>
-                    <mat-form-field>
-                      <mat-label>FECHA DE RENTA</mat-label>
-                      <input matInput [matDatepicker]="fecha_renta" (click)="fecha_renta.open()">
-                      <mat-datepicker-toggle matSuffix [for]="fecha_renta"></mat-datepicker-toggle>
-                      <mat-datepicker #fecha_renta></mat-datepicker>
-                    </mat-form-field>
-                    <br>
-                    <br>
-                    <mat-form-field>
-                      <mat-label>HORA</mat-label>
-                      <div style="display: flex;">
-                        <input matInput [ngxTimepicker]="rentTime" [disableClick]="true" readonly>
-                        <ngx-material-timepicker-toggle [for]="rentTime"></ngx-material-timepicker-toggle>
-                        <ngx-material-timepicker [theme]="apolloThemClock" #rentTime></ngx-material-timepicker>
+                <form [formGroup]="generalDataForm" *ngIf="generalDataForm">
+                  <ion-row>
+                    <ion-col>
+                      <div class="search-row-buttons">
+                        <ion-button size="small" color="secondary" (click)="openModalSearch('sucursales', 'renta_of')">
+                          <ion-icon name="search"></ion-icon>
+                        </ion-button>
                       </div>
-                    </mat-form-field>
-                  </ion-col> <!-- FECHA DE RENTA -->
+                      <mat-form-field>
+                        <mat-label>OFICINA DE RENTA</mat-label>
+                        <input type="text" matInput formControlName="renta_of_codigo" readonly>
+                        <mat-hint>
+                         {{gf.renta_of_dir.value}}
+                        </mat-hint>
+                        <mat-error *ngIf="gf.renta_of_dir.errors?.required">Campo requerido</mat-error>
+                      </mat-form-field>
+                      <br>
+                      <br>
+                      <mat-form-field>
+                        <mat-label>FECHA DE RENTA</mat-label>
+                        <input matInput [matDatepicker]="fecha_renta" (click)="fecha_renta.open()" formControlName="renta_of_fecha" (dateChange)="gf.renta_of_fecha.setValue(dateConv.transFormDate($event.value, 'regular'))">
+                        <mat-datepicker-toggle matSuffix [for]="fecha_renta"></mat-datepicker-toggle>
+                        <mat-datepicker #fecha_renta></mat-datepicker>
+                        <mat-error *ngIf="gf.renta_of_fecha.errors?.required">Campo requerido</mat-error>
+                      </mat-form-field>
+                      <br>
+                      <br>
+                      <mat-form-field>
+                        <mat-label>HORA</mat-label>
+                        <div style="display: flex;">
+                          <input matInput [ngxTimepicker]="rentTime"  formControlName="renta_of_hora" [format]="24">
+                          <ngx-material-timepicker-toggle [for]="rentTime"></ngx-material-timepicker-toggle>
+                          <ngx-material-timepicker [theme]="apolloThemClock" #rentTime></ngx-material-timepicker>
+                        </div>
+                        <mat-error *ngIf="gf.renta_of_hora.errors?.required">Campo requerido</mat-error>
+                      </mat-form-field>
+                    </ion-col> <!-- FECHA DE RENTA -->
+                    <ion-col size="12" size-sm="auto"  class="ion-no-margin ion-no-padding fill-col"></ion-col>
+                    <ion-col >
+                      <div class="search-row-buttons">
+                        <ion-button size="small" color="secondary" (click)="openModalSearch('sucursales', 'retorno_of')">
+                          <ion-icon name="search" slot="icon-only"></ion-icon>
+                        </ion-button>
+                      </div>
+                      <mat-form-field>
+                        <mat-label>OFICINA DE RETORNO</mat-label>
+                        <input type="text" matInput formControlName="retorno_of_codigo" readonly>
+                        <mat-hint>
+                         {{gf.retorno_of_dir.value}}
+                        </mat-hint>
+                        <mat-error *ngIf="gf.retorno_of_dir.errors?.required">Campo requerido</mat-error>
+                      </mat-form-field>
+                      <br>
+                      <br>
+                      <mat-form-field>
+                        <mat-label>FECHA DE RETORNO</mat-label>
+                        <input matInput [matDatepicker]="fecha_retorno" (click)="fecha_retorno.open()" formControlName="retorno_of_fecha" (dateChange)="gf.retorno_of_fecha.setValue(dateConv.transFormDate($event.value, 'regular'))">
+                        <mat-datepicker-toggle matSuffix [for]="fecha_retorno"></mat-datepicker-toggle>
+                        <mat-datepicker #fecha_retorno></mat-datepicker>
+                        <mat-error *ngIf="gf.retorno_of_fecha.errors?.required">Campo requerido</mat-error>
+                      </mat-form-field>
+                      <br>
+                      <br>
+                      <mat-form-field>
+                        <mat-label>HORA</mat-label>
+                        <div style="display: flex;">
+                          <input matInput [ngxTimepicker]="returnTime" formControlName="retorno_of_hora" [format]="24">
+                          <ngx-material-timepicker-toggle [for]="returnTime"></ngx-material-timepicker-toggle>
+                          <ngx-material-timepicker [theme]="apolloThemClock" #returnTime></ngx-material-timepicker>
+                        </div>
+                        <mat-error *ngIf="gf.retorno_of_hora.errors?.required">Campo requerido</mat-error>
+                      </mat-form-field>
+                    </ion-col> <!-- FECHA DE RETORNO -->
+                  </ion-row>
+                </form>
 
-                  <ion-col>
-                    <mat-form-field>
-                      <mat-label>OFICINA DE RETORNO</mat-label>
-                      <input type="text" matInput value="PPC">
-                      <mat-hint>
-                        OFICINA PLAZA PELICANOS
-                        10 AVENIDA NTE. MZA 100 LTE 1. CENTRO
-                        77710
-                      </mat-hint>
-                    </mat-form-field>
-                    <br>
-                    <br>
-                    <mat-form-field>
-                      <mat-label>FECHA DE RETORNO</mat-label>
-                      <input matInput [matDatepicker]="fecha_retorno" (click)="fecha_retorno.open()">
-                      <mat-datepicker-toggle matSuffix [for]="fecha_retorno"></mat-datepicker-toggle>
-                      <mat-datepicker #fecha_retorno></mat-datepicker>
-                    </mat-form-field>
-                    <br>
-                    <br>
-                    <mat-form-field>
-                      <mat-label>HORA</mat-label>
-                      <div style="display: flex;">
-                        <input matInput [ngxTimepicker]="returnTime" [disableClick]="true" readonly>
-                        <ngx-material-timepicker-toggle [for]="returnTime"></ngx-material-timepicker-toggle>
-                        <ngx-material-timepicker [theme]="apolloThemClock" #returnTime></ngx-material-timepicker>
-                      </div>
-                    </mat-form-field>
-                  </ion-col> <!-- FECHA DE RETORNO -->
-                </ion-row>
               </ion-card-content>
+              <div class="card-action-buttons">
+                <ion-button  color="success" (click)="saveProcess('datos_generales')">GUARDAR</ion-button>
+              </div>
             </ion-card>
 
 
@@ -124,97 +162,143 @@
 
             <ion-card>
               <ion-card-content>
-                <ion-row>
-                  <ion-col>
-                    <mat-form-field appearance="legacy">
-                      <mat-label>NOMBRE(S)</mat-label>
-                      <input type="text" matInput value="LUIS OCTAVIO">
-                    </mat-form-field>
-                  </ion-col>
-                  <ion-col>
-                    <mat-form-field appearance="legacy">
-                      <mat-label>APELLIDO(S)</mat-label>
-                      <input type="text" matInput value="ROCHA HERMOSILLO">
-                    </mat-form-field>
-                  </ion-col>
-                </ion-row>
+                <form [formGroup]="clienteDataForm" *ngIf="clienteDataForm">
+                  <ion-row>
+                    <ion-col size="12">
+                      <div class="search-row-buttons">
+                        <ion-button size="small" color="secondary" (click)="openModalSearch('clientes', 'cliente')">
+                          <ion-icon name="search"></ion-icon>
+                        </ion-button>
+                      </div>
+                    </ion-col>
+                  </ion-row>
+                  <ion-row>
+                    <ion-col>
+                      <mat-form-field appearance="legacy">
+                        <mat-label>NOMBRE(S)</mat-label>
+                        <input type="text" matInput formControlName="nombre">
+                        <mat-error *ngIf="cf.nombre.errors?.required">Campo requerido</mat-error>
+                      </mat-form-field>
+                    </ion-col>
+                    <ion-col>
+                      <mat-form-field appearance="legacy">
+                        <mat-label>APELLIDO(S)</mat-label>
+                        <input type="text" matInput formControlName="apellidos">
+                        <mat-error *ngIf="cf.apellidos.errors?.required">Campo requerido</mat-error>
+                      </mat-form-field>
+                    </ion-col>
+                  </ion-row>
 
-                <ion-row>
-                  <ion-col>
-                    <mat-form-field appearance="legacy">
-                      <mat-label>TELÉFONO</mat-label>
-                      <input type="tel" matInput value="+529981083816">
-                    </mat-form-field>
-                  </ion-col>
-                  <ion-col>
-                    <mat-form-field appearance="legacy">
-                      <mat-label>E-Mail</mat-label>
-                      <input type="email" matInput value="test@mail.com">
-                    </mat-form-field>
-                  </ion-col>
-                </ion-row>
+                  <ion-row>
+                    <ion-col>
+                      <mat-form-field appearance="legacy">
+                        <mat-label>TELÉFONO</mat-label>
+                        <input type="tel" matInput formControlName="telefono">
+                        <mat-error *ngIf="cf.telefono.errors?.required">Campo requerido</mat-error>
+                      </mat-form-field>
+                    </ion-col>
+                    <ion-col>
+                      <mat-form-field appearance="legacy">
+                        <mat-label>E-Mail</mat-label>
+                        <input type="email" matInput formControlName="email">
+                        <mat-error *ngIf="cf.email.errors?.required">Campo requerido</mat-error>
+                        <mat-error *ngIf="cf.email.errors?.email">Email invalido</mat-error>
+                      </mat-form-field>
+                    </ion-col>
+                  </ion-row>
 
-                <ion-row>
-                  <ion-col>
-                    <mat-form-field appearance="legacy">
-                      <mat-label>DIRECCIÓN</mat-label>
-                      <textarea matInput>MEXICO, LA TOSCANA, PASEO DE SEGOVIA ...</textarea>
-                    </mat-form-field>
-                  </ion-col>
-                </ion-row>
+                  <ion-row>
+                    <ion-col>
+                      <mat-form-field appearance="legacy">
+                        <mat-label>DIRECCIÓN</mat-label>
+                        <textarea matInput formControlName="direccion"></textarea>
+                        <mat-error *ngIf="cf.direccion.errors?.required">Campo requerido</mat-error>
+                      </mat-form-field>
+                    </ion-col>
+                  </ion-row>
 
-                <ion-row>
-                  <ion-col>
-                    <mat-form-field appearance="legacy">
-                      <mat-label>Número de Licencia</mat-label>
-                      <input type="number" matInput value="S1-94949">
-                    </mat-form-field>
-                  </ion-col>
-                  <ion-col>
-                    <mat-form-field appearance="legacy">
-                      <mat-label>Mes Exp.</mat-label>
-                      <mat-select>
-                        <mat-option *ngFor="let month of months" value="{{month.digit}}">{{month.month}}</mat-option>
-                      </mat-select>
-                      <mat-icon matSuffix>date_range</mat-icon>
-                    </mat-form-field>
-                  </ion-col>
-                  <ion-col>
-                    <mat-form-field appearance="legacy">
-                      <mat-label>Año expiración</mat-label>
-                      <mat-select>
-                        <mat-option *ngFor="let year of validYears" value="{{year}}">{{year}}</mat-option>
-                      </mat-select>
-                      <mat-icon matSuffix>date_range</mat-icon>
-                    </mat-form-field>
-                  </ion-col>
-                </ion-row>
+                  <ion-row>
+                    <ion-col>
+                      <mat-form-field appearance="legacy">
+                        <mat-label>Número de Licencia</mat-label>
+                        <input type="number" matInput formControlName="num_licencia">
+                        <mat-error *ngIf="cf.num_licencia.errors?.required">Campo requerido</mat-error>
+                      </mat-form-field>
+                    </ion-col>
+                    <ion-col>
+                      <mat-form-field appearance="legacy">
+                        <mat-label>Mes Exp.</mat-label>
+                        <mat-select formControlName="licencia_mes">
+                          <mat-option *ngFor="let month of months" value="{{month.digit}}">{{month.month}}</mat-option>
+                        </mat-select>
+                        <mat-icon matSuffix>date_range</mat-icon>
+                        <mat-error *ngIf="cf.licencia_mes.errors?.required">Campo requerido</mat-error>
+                      </mat-form-field>
+                    </ion-col>
+                    <ion-col>
+                      <mat-form-field appearance="legacy">
+                        <mat-label>Año expiración</mat-label>
+                        <mat-select formControlName="licencia_ano">
+                          <mat-option *ngFor="let year of validYears" value="{{year}}">{{year}}</mat-option>
+                        </mat-select>
+                        <mat-icon matSuffix>date_range</mat-icon>
+                        <mat-error *ngIf="cf.licencia_ano.errors?.required">Campo requerido</mat-error>
+                      </mat-form-field>
+                    </ion-col>
+                  </ion-row>
 
-                <fieldset>
+                </form>
+
+
+                <fieldset style="padding-bottom: 2rem;">
                   <legend>Doc. Cliente</legend>
                   <ng-container>
                     <ion-row>
                       <ion-col size="12" class="ion-text-center">
-                        <app-camera (captureImg)="processDataImage($event)" [justButton]="true"></app-camera>
+                        <div style="display: flex; justify-content: space-evenly; align-items: center;">
+<!--                          <ion-button class="add-button" style="margin: 0 auto;" (click)="presentActionSheet()" shape="round" color="dark" *ngIf="justButton">-->
+<!--                            <ion-icon name="camera"></ion-icon>-->
+<!--                          </ion-button>-->
+                          <app-camera (captureImg)="processDataImage($event)" [justButton]="true"></app-camera>
+                          <ion-button [disabled]="disableUploadButton()" *ngIf="docDataTransfer && docDataTransfer.length > 0" color="secondary" expand="round" type="button" (click)="uploadArrayDatasImg('licencia_conducir', 'clientes_docs', 'cliente_id')" style="width: 250px;">
+                            <ion-icon name="cloud-upload"></ion-icon>&nbsp; SUBIR
+                          </ion-button>
+                        </div>
                       </ion-col>
                     </ion-row>
 
-                    <div style="display: flex; justify-content: center; flex-direction: column;" *ngIf="imgDatasTranfer.length > 0">
-                      <!--<ion-button color="primary" expand="round" type="button" (click)="uploadArrayDatasImg()" style="width: 250px; margin: 1rem auto;">SUBIR</ion-button>-->
-                      <ion-row>
-                        <ion-col size="6" size-sm="4" *ngFor="let imgData of imgDatasTranfer; let i = index">
+                    <div style="display: flex; justify-content: center; flex-direction: column;" *ngIf="docDataTransfer.length > 0">
+
+                      <ion-row >
+                        <ion-col size="6" size-sm="auto" *ngFor="let imgData of docDataTransfer; let i = index" style="margin-bottom: 1rem;">
                           <div class="capture-img-container">
                             <div class="btn-action-container">
-                              <ion-button size="small" color="danger" (click)="removeImg(i)">
+                              <ion-button size="small" color="danger" (click)="removeImg(i)" *ngIf="!imgData.file_id">
+                                <ion-icon name="trash"></ion-icon>
+                              </ion-button>
+
+                              <ion-button size="small" color="danger" (click)="removeFromDisk(imgData, i)" *ngIf="imgData.file_id">
                                 <ion-icon name="trash"></ion-icon>
                               </ion-button>
                             </div>
-                            <ion-img [src]="imgData.url"></ion-img>
-                            <div class="loader-upload" *ngIf="imgData.uploading === true || imgData.uploadOk === true">
-                              <ion-spinner name="bubbles" *ngIf="imgData.uploading === true"></ion-spinner>
-                              <ion-icon name="checkmark-sharp" *ngIf="imgData.uploadOk === true" style="color: #0aff05; font-size: 3rem;"></ion-icon>
+                            <div class="upload-indications" *ngIf="imgData.success || !imgData.file_id">
+                              <ion-icon name="cloud-upload" class="base-indicator"></ion-icon>
+                              <ion-icon name="checkmark-sharp" class="indicator success" *ngIf="imgData.success === true"></ion-icon>
+                              <ion-icon name="close-sharp" class="indicator success" *ngIf="imgData.success === false"></ion-icon>
+                              <ion-icon name="hourglass-outline" class="indicator temp" *ngIf="!imgData.file_id"></ion-icon>
                             </div>
-                            <ion-icon class="wrong-upload" name="close-sharp" *ngIf="imgData.uploadOk === false"></ion-icon>
+                            <ion-img [src]="imgData.url" *ngIf="isImage(imgData.mime_type) === true"></ion-img>
+                            <ion-img src="assets/img/pdf-icon.png" *ngIf="imgData.mime_type === 'application/pdf'" style="width: 60%;margin: auto 0;"></ion-img>
+                            <div class="loader-upload" *ngIf="imgData.uploading === true">
+                              <ion-spinner name="bubbles" *ngIf="imgData.uploading === true"></ion-spinner>
+                              <!--<ion-icon name="checkmark-sharp" *ngIf="imgData.success === true" style="color: #44bd00;font-size: 3rem;background: #f9f9f9;border-radius: 50%;padding: 8px;"></ion-icon>-->
+                            </div>
+<!--                            <ion-icon class="wrong-upload" name="close-sharp" *ngIf="imgData.success === false"></ion-icon>-->
+                            <div class="file-name">
+                              <label for="">Etiqueta</label>
+                              <input type="text" value="{{imgData.etiqueta}}" [(ngModel)]="imgData.etiqueta" [disabled]="(imgData.file_id && imgData.file_id > 0 ? true : false)">
+                              <small class="error" *ngIf="imgData.fileErrors">{{imgData.fileErrors}}</small>
+                            </div>
                           </div>
                         </ion-col>
                       </ion-row>
@@ -225,6 +309,11 @@
                   </ng-container>
                 </fieldset>
               </ion-card-content>
+              <ion-card-title>
+                <div class="card-action-buttons">
+                  <ion-button color="success" (click)="saveProcess('datos_cliente')">GUARDAR</ion-button>
+                </div>
+              </ion-card-title>
             </ion-card>
 
 
@@ -252,7 +341,160 @@
               </mat-panel-description>
             </mat-expansion-panel-header>
 
-            <app-vehiculo-form [asModal]="false" [vehiculo_id]="1"></app-vehiculo-form>
+<!--            <app-vehiculo-form [asModal]="false" [vehiculo_id]="1"></app-vehiculo-form>-->
+            <ion-card>
+              <ion-card-content *ngIf="vehiculoData">
+                <ion-row>
+                  <ion-col size="12">
+                    <div class="search-row-buttons">
+                      <ion-button size="small" color="secondary" (click)="openModalSearch('vehiculos', 'vehiculo')">
+                        <ion-icon name="search"></ion-icon>
+                      </ion-button>
+                    </div>
+                  </ion-col>
+                </ion-row> <!-- openModalSearch -->
+                <ion-row class="ion-no-padding ion-no-margin">
+                  <ion-col size>
+                    <mat-form-field appearance="legacy">
+                      <mat-label>Código Vehículo</mat-label>
+                      <input type="text" matInput [disabled]="true" [value]="vehiculoData && vehiculoData.codigo ? vehiculoData.codigo : null">
+                      <mat-hint>Solo lectura</mat-hint>
+                    </mat-form-field>
+                  </ion-col> <!--Código Vehículo-->
+                  <ion-col size>
+                    <mat-form-field appearance="legacy">
+                      <mat-label>Marca</mat-label>
+                      <input type="text" matInput [disabled]="true" [value]="vehiculoData && vehiculoData.marca && vehiculoData.marca.marca ? vehiculoData.marca.marca : null">
+                      <mat-hint>Solo lectura</mat-hint>
+                    </mat-form-field>
+                  </ion-col> <!--Marca-->
+                  <ion-col size>
+                    <mat-form-field appearance="legacy">
+                      <mat-label>Modelo</mat-label>
+                      <input type="text" matInput [disabled]="true" [value]="vehiculoData && vehiculoData.modelo ? vehiculoData.modelo : null">
+                      <mat-hint>Solo lectura</mat-hint>
+                    </mat-form-field>
+                  </ion-col> <!--Modelo-->
+                  <ion-col size>
+                    <mat-form-field appearance="legacy">
+                      <mat-label>Color</mat-label>
+                      <input type="text" matInput [disabled]="true" [value]="vehiculoData && vehiculoData.color ? vehiculoData.color : null">
+                      <mat-hint>Solo lectura</mat-hint>
+                    </mat-form-field>
+                  </ion-col> <!--Color-->
+                </ion-row> <!-- Código Vehículo  Marca  Modelo  Color -->
+                <ion-row class="ion-no-padding ion-no-margin">
+                  <ion-col size>
+                    <mat-form-field appearance="legacy">
+                      <mat-label>No. Placas</mat-label>
+                      <input type="text" matInput [disabled]="true" [value]="vehiculoData && vehiculoData.placas ? vehiculoData.placas : null">
+                      <mat-hint>Solo lectura</mat-hint>
+                    </mat-form-field>
+                  </ion-col> <!--No. Placas-->
+                  <ion-col size>
+                    <mat-form-field appearance="legacy">
+                      <mat-label>No. Serie</mat-label>
+                      <input type="text" matInput [disabled]="true" [value]="vehiculoData && vehiculoData.num_serie ? vehiculoData.num_serie : null">
+                      <mat-hint>Solo lectura</mat-hint>
+                    </mat-form-field>
+                  </ion-col> <!--No. Serie-->
+                  <ion-col size>
+                    <mat-form-field appearance="legacy">
+                      <mat-label>Capacidad Tanque</mat-label>
+                      <input type="number" matInput [disabled]="true" [value]="vehiculoData && vehiculoData.cap_tanque ? vehiculoData.cap_tanque : null" style="text-align: right;">
+                      <span matSuffix>LT</span>
+                      <mat-hint>Solo lectura</mat-hint>
+                    </mat-form-field>
+                  </ion-col> <!--Capacidad Tanque-->
+                </ion-row> <!-- No. Placas  No.Serie  Capacidad Tanque  -->
+                <br>
+                <mat-divider></mat-divider>
+                <br>
+                <form [formGroup]="vehiculoForm" *ngIf="vehiculoForm">
+                  <ion-row class="ion-no-padding ion-no-margin">
+                    <ion-col size>
+                      <mat-form-field appearance="legacy">
+                        <mat-label>Kilometraje Salida</mat-label>
+                        <input type="number" matInput  formControlName="km_salida">
+                        <mat-error *ngIf="vf.km_salida.errors?.required">Campo requerido</mat-error>
+                        <mat-hint *ngIf="vf.km_salida.disabled">Solo Lectura</mat-hint>
+                      </mat-form-field>
+                    </ion-col> <!-- Kilometraje Salida  -->
+                    <ion-col size>
+                      <mat-form-field appearance="legacy">
+                        <mat-label>Kilometraje Llegada</mat-label>
+                        <input type="number" matInput  formControlName="km_llegada">
+                        <mat-error *ngIf="vf.km_llegada.errors?.required">Campo requerido</mat-error>
+                        <mat-hint *ngIf="vf.km_llegada.disabled">Solo Lectura</mat-hint>
+                      </mat-form-field>
+                    </ion-col> <!-- Kilometraje Llegada  -->
+                    <ion-col size>
+                      <mat-form-field appearance="legacy">
+                        <mat-label>Kilometraje Recorrido</mat-label>
+                        <input type="number" matInput  formControlName="km_recorrido">
+                        <mat-error *ngIf="vf.km_recorrido.errors?.required">Campo requerido</mat-error>
+                        <mat-hint *ngIf="vf.km_recorrido.disabled">Solo Lectura</mat-hint>
+                      </mat-form-field>
+                    </ion-col> <!-- Kilometraje Recorrido -->
+                  </ion-row> <!-- Kilometraje Salida  Kilometraje LLegada  Kilometraja Recorrido  -->
+                  <ion-row  class="ion-no-padding ion-no-margin">
+                    <ion-col size>
+                      <mat-form-field appearance="legacy">
+                        <mat-label>Gas Salida</mat-label>
+                        <mat-select formControlName="gas_salida">
+                          <mat-option value="1/8">1/8</mat-option>
+                          <mat-option value="2/8">2/8</mat-option>
+                          <mat-option value="3/8">3/8</mat-option>
+                          <mat-option value="4/8">4/8</mat-option>
+                          <mat-option value="5/8">5/8</mat-option>
+                          <mat-option value="6/8">6/8</mat-option>
+                          <mat-option value="7/8">7/8</mat-option>
+                          <mat-option value="8/8">8/8</mat-option>
+                        </mat-select>
+                        <mat-error *ngIf="vf.gas_salida.errors?.required">Campo requerido</mat-error>
+                        <mat-hint *ngIf="vf.gas_salida.disabled">Solo Lectura</mat-hint>
+                      </mat-form-field>
+                    </ion-col> <!-- Gas Salida  -->
+                    <ion-col size>
+                      <mat-form-field appearance="legacy">
+                        <mat-label>Gas Llegada</mat-label>
+                        <mat-select formControlName="gas_llegada">
+                          <mat-option value="1/8">1/8</mat-option>
+                          <mat-option value="2/8">2/8</mat-option>
+                          <mat-option value="3/8">3/8</mat-option>
+                          <mat-option value="4/8">4/8</mat-option>
+                          <mat-option value="5/8">5/8</mat-option>
+                          <mat-option value="6/8">6/8</mat-option>
+                          <mat-option value="7/8">7/8</mat-option>
+                          <mat-option value="8/8">8/8</mat-option>
+                        </mat-select>
+                        <mat-error *ngIf="vf.gas_llegada.errors?.required">Campo requerido</mat-error>
+                        <mat-hint *ngIf="vf.gas_llegada.disabled">Solo Lectura</mat-hint>
+                      </mat-form-field>
+                    </ion-col> <!-- Gas Llegada  -->
+                  </ion-row> <!-- Gas Salida  Gas Llegada -->
+                </form>
+
+              </ion-card-content>
+
+              <ion-card-content *ngIf="!vehiculoData">
+                <ion-row>
+                  <ion-col size="12">
+                    <div class="ion-text-center">
+                      Seleccione un vehículo
+                      &nbsp;
+                      <ion-button size="small" color="secondary" (click)="openModalSearch('vehiculos', 'vehiculo')">
+                        <ion-icon name="search"></ion-icon>
+                      </ion-button>
+                    </div>
+                  </ion-col>
+                </ion-row> <!-- openModalSearch -->
+              </ion-card-content>
+
+              <div class="card-action-buttons">
+                <ion-button color="success" (click)="saveProcess('datos_vehiculo')">GUARDAR</ion-button>
+              </div>
+            </ion-card>
 
             <mat-action-row>
               <button (click)="prevStep()" mat-flat-button style="font-size: 1.5rem;">

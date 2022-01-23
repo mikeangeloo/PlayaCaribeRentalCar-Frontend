@@ -1,5 +1,6 @@
 import {RoleI} from "./role.interface";
 import {AreaTrabajoI} from "./area-trabajo.interface";
+import {SucursalesI} from "../sucursales.interface";
 
 export interface ProfileDataI
 {
@@ -10,4 +11,5 @@ export interface ProfileDataI
   activo: number;
   rol: RoleI;
   area_trabajo: AreaTrabajoI;
+  sucursal?: SucursalesI;
 }

@@ -4,10 +4,12 @@
   </ion-fab-button>
 </ion-fab>
 
- <ion-button class="add-button" style="margin: 0 auto;" (click)="takePicture()" shape="round" color="dark" *ngIf="justButton">
+ <ion-button class="add-button" style="margin: 0 auto;" (click)="presentActionSheet()" shape="round" color="dark" *ngIf="justButton">
   <ion-icon name="camera"></ion-icon>
 </ion-button>
 
+<input type="file" class="file-input"
+       (change)="onFileSelected($event)" #fileUpload accept="application/pdf,image/png,image/jpg,image/jpeg">
 <!-- <ion-grid>
   <ion-row style="justify-content: center;">
     <ion-col size="auto" *ngIf="captureImg">

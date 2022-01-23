@@ -23,6 +23,8 @@ export interface VehiculosI
   activo?: number;
   marca?: MarcasVehiculosI;
   categoria?: CategoriasVehiculosI;
+  codigo?: string;
+  num_serie?: string;
 }
 
 export class VehiculosC
