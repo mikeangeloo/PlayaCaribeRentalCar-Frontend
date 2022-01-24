@@ -262,6 +262,7 @@ ion-content {
 }
 .app-card {
   margin: 7px;
+  overflow: scroll;
   ion-card-title {
     font-size: 1.2rem;
     text-align: center;
@@ -632,7 +633,44 @@ mat-header-row {
   td {
     text-align: center;
     border: 1px solid gray;
+    padding: 10px;
+  }
 
+  .table-input {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    position: relative;
+    width: 80%;
+    margin: 0 auto;
+    flex-direction: column;
+
+    input {
+      background: #f7ce9936;
+      color: #464646;
+      padding-left: 12px;
+      border: none;
+      min-height: 35px;
+      border-radius: 8px;
+      text-align: center;
+      width: 100%;
+      &:read-only {
+        background: #d9d9d945;
+      }
+    }
+
+    .input-prefix {
+      position: absolute;
+      right: 8%;
+    }
+
+    .input-hint {
+      font-size: 10px;
+      color: var(--ion-color-medium);
+      text-align: left;
+      width: 100%;
+      margin: 0;
+    }
   }
 
 }

@@ -313,4 +313,13 @@ export class VehiculoFormComponent implements OnInit {
     }
   }
 
+  recalTarifaRow(tarifaApollo: TarifaApolloI) {
+    let _valorDes = (tarifaApollo.valor_descuento / 100);
+    let _descuento = (tarifaApollo.precio_base * _valorDes);
+    let _total = (tarifaApollo.precio_base - _descuento);
+
+    tarifaApollo.descuento = _descuento;
+    tarifaApollo.precio_final = _total;
+  }
+
 }

@@ -264,25 +264,29 @@
               <tr *ngFor="let tApollo of tarifaApolloPayload">
                 <td>{{tApollo.frecuencia}}</td>
                 <td>
-                  <mat-form-field appearance="standard">
-                   <input matInput [value]="tApollo.ap_descuento">
-                  </mat-form-field>
+                  <div class="table-input">
+                    <input type="text" [value]="tApollo.ap_descuento === true ? 'Si' : 'No'">
+                  </div>
                 </td>
                 <td>
-                  <mat-form-field appearance="standard">
-                    <input type="number" autocomplete="off" matInput [(ngModel)]="tApollo.valor_descuento">
-                    <span matSuffix>%</span>
-                  </mat-form-field>
+                  <div class="table-input">
+                    <input type="number" autocomplete="off" [(ngModel)]="tApollo.valor_descuento" (ngModelChange)="recalTarifaRow(tApollo)">
+                    <div class="input-prefix">
+                      <span>%</span>
+                    </div>
+                  </div>
                 </td>
                 <td>
-                  <mat-form-field appearance="standard">
-                    <input type="text" autocomplete="off" matInput readonly [value]="tApollo.descuento">
-                  </mat-form-field>
+                  <div class="table-input">
+                    <input type="text" autocomplete="off" readonly [value]="tApollo.descuento">
+                    <p class="input-hint">Solo Lectura</p>
+                  </div>
                 </td>
                 <td>
-                  <mat-form-field appearance="standard">
-                    <input type="text" autocomplete="off" matInput [(ngModel)]="tApollo.precio_final" [readonly]="tApollo.precio_final_editable === false">
-                  </mat-form-field>
+                  <div class="table-input">
+                    <input type="text" autocomplete="off" [(ngModel)]="tApollo.precio_final" [readonly]="tApollo.precio_final_editable === false">
+                    <p class="input-hint" *ngIf="tApollo.precio_final_editable === false">Solo Lectura</p>
+                  </div>
                 </td>
               </tr>
             </tbody>
