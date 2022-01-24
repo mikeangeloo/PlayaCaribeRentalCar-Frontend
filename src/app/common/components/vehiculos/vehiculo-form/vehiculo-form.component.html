@@ -249,6 +249,12 @@
       </ion-row>
 
       <ion-row>
+        <ion-col size="6">
+          <h2>Tarifas</h2>
+        </ion-col>
+        <ion-col size="6" class="ion-text-end">
+          <button mat-raised-button class="button-success" (click)="saveTarifas()">Guardar</button>
+        </ion-col>
         <ion-col size="12">
           <table class="complement-table">
             <thead>
@@ -265,26 +271,29 @@
                 <td>{{tApollo.frecuencia}}</td>
                 <td>
                   <div class="table-input">
-                    <input type="text" [value]="tApollo.ap_descuento === true ? 'Si' : 'No'">
-                  </div>
-                </td>
-                <td>
-                  <div class="table-input">
-                    <input type="number" autocomplete="off" [(ngModel)]="tApollo.valor_descuento" (ngModelChange)="recalTarifaRow(tApollo)">
-                    <div class="input-prefix">
-                      <span>%</span>
-                    </div>
-                  </div>
-                </td>
-                <td>
-                  <div class="table-input">
-                    <input type="text" autocomplete="off" readonly [value]="tApollo.descuento">
+                    <input type="text" [value]="tApollo.ap_descuento === true ? 'Si' : 'No'" [readOnly]="true">
                     <p class="input-hint">Solo Lectura</p>
                   </div>
                 </td>
                 <td>
                   <div class="table-input">
-                    <input type="text" autocomplete="off" [(ngModel)]="tApollo.precio_final" [readonly]="tApollo.precio_final_editable === false">
+                    <input type="number" autocomplete="off" [(ngModel)]="tApollo.valor_descuento" (ngModelChange)="recalTarifaRow(tApollo)" [readonly]="tApollo.ap_descuento === false">
+                    <div class="input-prefix">
+                      <span>%</span>
+                    </div>
+                    <p class="input-hint" *ngIf="tApollo.ap_descuento === false">Solo Lectura</p>
+                  </div>
+                </td>
+                <td>
+                  <div class="table-input">
+                    <input type="number" autocomplete="off" readonly [value]="tApollo.descuento">
+                    <p class="input-hint">Solo Lectura</p>
+                  </div>
+                </td>
+                <td>
+                  <div class="table-input">
+                    <input type="text" autocomplete="off" [ngModel]="tApollo.precio_final | currency"  [ngModelOptions]="{updateOn:'blur'}"
+                           (ngModelChange)="test(tApollo, $event)"  [readonly]="tApollo.precio_final_editable === false">
                     <p class="input-hint" *ngIf="tApollo.precio_final_editable === false">Solo Lectura</p>
                   </div>
                 </td>

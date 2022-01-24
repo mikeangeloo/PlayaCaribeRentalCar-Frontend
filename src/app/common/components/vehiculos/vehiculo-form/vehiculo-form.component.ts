@@ -14,6 +14,7 @@ import {DateConv} from "../../../../helpers/date-conv";
 import {ClasesVehiculosI} from '../../../../interfaces/catalogo-vehiculos/clases-vehiculos.interface';
 import {ClasesVehiculosService} from '../../../../services/clases-vehiculos.service';
 import {TarifaApolloI} from '../../../../interfaces/tarifas/tarifa-apollo.interface';
+import {CurrencyPipe} from '@angular/common';
 
 @Component({
   selector: 'app-vehiculo-form',
@@ -50,7 +51,8 @@ export class VehiculoFormComponent implements OnInit {
     private toastServ: ToastMessageService,
     private categoriaVehiculoServ: CategoriaVehiculosService,
     private marcasServ: MarcasVehiculosService,
-    private classVehiculosServ: ClasesVehiculosService
+    private classVehiculosServ: ClasesVehiculosService,
+    private currencyPipe: CurrencyPipe
   ) {
     this.title = 'Formulario Véhiculo';
     this.vehiculoForm = this.fb.group({
@@ -139,7 +141,7 @@ export class VehiculoFormComponent implements OnInit {
         ap_descuento: false,
         valor_descuento: null,
         descuento: null,
-        precio_final: null
+        precio_final: this.vehiculoData.precio_renta
       },
       {
         id: null,
@@ -314,12 +316,22 @@ export class VehiculoFormComponent implements OnInit {
   }
 
   recalTarifaRow(tarifaApollo: TarifaApolloI) {
-    let _valorDes = (tarifaApollo.valor_descuento / 100);
-    let _descuento = (tarifaApollo.precio_base * _valorDes);
-    let _total = (tarifaApollo.precio_base - _descuento);
+    let _valorDes = parseFloat(Number(tarifaApollo.valor_descuento / 100).toFixed(4));
+    let _descuento = parseFloat(Number(tarifaApollo.precio_base * _valorDes).toFixed(4));
+    let _total = parseFloat(Number(tarifaApollo.precio_base - _descuento).toFixed(4));
 
     tarifaApollo.descuento = _descuento;
     tarifaApollo.precio_final = _total;
+  }
+
+  test(tarifaApollo, event) {
+    tarifaApollo.precio_final =  event.replace(/[$,]/g, "");
+    console.log('typeof', typeof event);
+    console.log(event);
+  }
+
+  saveTarifas() {
+    console.log('saveTarifas -->', this.tarifaApolloPayload);
   }
 
 }
