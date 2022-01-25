@@ -14,4 +14,7 @@ export interface TarifaApolloI
     activo?: boolean;
     created_at?: string;
     updated_at?: string;
+
+    required?: boolean;
+    errors?: string[];
 }

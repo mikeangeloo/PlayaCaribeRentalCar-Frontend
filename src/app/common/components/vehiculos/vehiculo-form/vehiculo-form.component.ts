@@ -15,6 +15,7 @@ import {ClasesVehiculosI} from '../../../../interfaces/catalogo-vehiculos/clases
 import {ClasesVehiculosService} from '../../../../services/clases-vehiculos.service';
 import {TarifaApolloI} from '../../../../interfaces/tarifas/tarifa-apollo.interface';
 import {CurrencyPipe} from '@angular/common';
+import {error} from 'protractor';
 
 @Component({
   selector: 'app-vehiculo-form',
@@ -141,7 +142,9 @@ export class VehiculoFormComponent implements OnInit {
         ap_descuento: false,
         valor_descuento: null,
         descuento: null,
-        precio_final: this.vehiculoData.precio_renta
+        precio_final: this.vehiculoData.precio_renta,
+        required: true,
+        errors: []
       },
       {
         id: null,
@@ -155,7 +158,9 @@ export class VehiculoFormComponent implements OnInit {
         ap_descuento: true,
         valor_descuento: null,
         descuento: null,
-        precio_final: null
+        precio_final: null,
+        required: true,
+        errors: []
       },
       {
         id: null,
@@ -169,7 +174,9 @@ export class VehiculoFormComponent implements OnInit {
         ap_descuento: true,
         valor_descuento: null,
         descuento: null,
-        precio_final: null
+        precio_final: null,
+        required: true,
+        errors: []
       },
       {
         id: null,
@@ -183,9 +190,85 @@ export class VehiculoFormComponent implements OnInit {
         ap_descuento: false,
         valor_descuento: null,
         descuento: null,
-        precio_final: null
+        precio_final: null,
+        required: true,
+        errors: []
       }
     ]
+  }
+
+  reviewTarifaCapture(): boolean {
+    let _haveErrors;
+    for (let i = 0; i < this.tarifaApolloPayload.length; i++) {
+      if (this.tarifaApolloPayload[i].required) {
+        if (!this.tarifaApolloPayload[i].frecuencia || this.tarifaApolloPayload[i].frecuencia === '' || this.tarifaApolloPayload[i].frecuencia === 'undefined') {
+          if (!this.tarifaApolloPayload[i].errors.find(x => x === 'Debe indicar una frecuencia valída')) {
+            this.tarifaApolloPayload[i].errors.push('Debe indicar una frecuencia valída');
+          }
+        } else {
+          this.tarifaApolloPayload[i].errors = [];
+        }
+
+
+        if (!this.tarifaApolloPayload[i].frecuencia_ref || this.tarifaApolloPayload[i].frecuencia_ref === '' || this.tarifaApolloPayload[i].frecuencia_ref === 'undefined') {
+          if (!this.tarifaApolloPayload[i].errors.find(x => x === 'Debe indicar una referencia de frecuencia valída')) {
+            this.tarifaApolloPayload[i].errors.push('Debe indicar una referencia de frecuencia valída');
+          }
+        } else {
+          this.tarifaApolloPayload[i].errors = [];
+        }
+
+        if (!this.tarifaApolloPayload[i].modelo || this.tarifaApolloPayload[i].modelo === '' || this.tarifaApolloPayload[i].modelo === 'undefined') {
+          if (!this.tarifaApolloPayload[i].errors.find(x => x === 'Debe indicar un modelo de datos correcto')) {
+            this.tarifaApolloPayload[i].errors.push('Debe indicar un modelo de datos correcto');
+          }
+        } else {
+          this.tarifaApolloPayload[i].errors = [];
+        }
+
+        if (!this.tarifaApolloPayload[i].modelo_id || this.tarifaApolloPayload[i].modelo_id == 0) {
+          if (!this.tarifaApolloPayload[i].errors.find(x => x === 'Debe primero guardar la información del vehículo para proceder')) {
+            this.tarifaApolloPayload[i].errors.push('Debe primero guardar la información del vehículo para proceder');
+          }
+        } else {
+          this.tarifaApolloPayload[i].errors = [];
+        }
+
+        if (!this.tarifaApolloPayload[i].precio_base || this.tarifaApolloPayload[i].precio_base == 0) {
+          if (!this.tarifaApolloPayload[i].errors.find(x => x === 'Debe indicar un precio base valído')) {
+            this.tarifaApolloPayload[i].errors.push('Debe indicar un precio base valído');
+          }
+        } else {
+          this.tarifaApolloPayload[i].errors = [];
+        }
+
+        if (this.tarifaApolloPayload[i].ap_descuento === true && !this.tarifaApolloPayload[i].valor_descuento || this.tarifaApolloPayload[i].valor_descuento == 0) {
+          if (!this.tarifaApolloPayload[i].errors.find(x => x === 'Debe indicar un valor de descuento valído')) {
+            this.tarifaApolloPayload[i].errors.push('Debe indicar un valor de descuento valído');
+          }
+        } else {
+          this.tarifaApolloPayload[i].errors = [];
+        }
+
+        if (!this.tarifaApolloPayload[i].precio_final || this.tarifaApolloPayload[i].precio_final == 0) {
+          if (!this.tarifaApolloPayload[i].errors.find(x => x === 'Debe indicar el precio final')) {
+            this.tarifaApolloPayload[i].errors.push('Debe indicar el precio final');
+          }
+        } else {
+          this.tarifaApolloPayload[i].errors = [];
+        }
+
+        if (this.tarifaApolloPayload[i].errors.length > 0) {
+          _haveErrors = true;
+        }
+      }
+
+    }
+    if (_haveErrors === true) {
+      return false;
+    } else {
+      return true
+    }
   }
 
   initVehiculoForm(data?) {
@@ -322,15 +405,23 @@ export class VehiculoFormComponent implements OnInit {
 
     tarifaApollo.descuento = _descuento;
     tarifaApollo.precio_final = _total;
+
+    this.reviewTarifaCapture();
   }
 
-  test(tarifaApollo, event) {
+  captureFinalPrice(tarifaApollo, event) {
     tarifaApollo.precio_final =  event.replace(/[$,]/g, "");
     console.log('typeof', typeof event);
     console.log(event);
+
+    this.reviewTarifaCapture();
   }
 
   saveTarifas() {
+    if (this.reviewTarifaCapture() === false) {
+      this.sweetMsg.printStatus('Se encontro información por verificar, revise las leyendas marcadas en rojo', 'warning');
+      return;
+    }
     console.log('saveTarifas -->', this.tarifaApolloPayload);
   }
 
