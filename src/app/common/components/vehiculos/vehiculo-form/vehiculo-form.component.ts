@@ -94,6 +94,7 @@ export class VehiculoFormComponent implements OnInit {
     } else {
       this.vehiculoData = null;
       this.initVehiculoForm();
+      this.initTarifaApolloObj();
     }
   }
 
@@ -127,8 +128,13 @@ export class VehiculoFormComponent implements OnInit {
     })
   }
 
-  initTarifaApolloObj() {
+  initTarifaApolloObj(data?) {
     // TODO: pasar a una tabla configuración en DB
+    if (data) {
+      this.tarifaApolloPayload = null;
+      this.tarifaApolloPayload = data;
+      return;
+    }
     this.tarifaApolloPayload = [
       {
         id: null,
@@ -136,13 +142,13 @@ export class VehiculoFormComponent implements OnInit {
         frecuencia_ref: 'days',
         activo: true,
         modelo: 'vehiculos',
-        modelo_id: this.vehiculo_id,
-        precio_base: this.vehiculoData.precio_renta,
+        modelo_id: this.vehiculo_id ? this.vehiculo_id : null,
+        precio_base: this.vf.precio_renta.value,
         precio_final_editable: false,
         ap_descuento: false,
         valor_descuento: null,
         descuento: null,
-        precio_final: this.vehiculoData.precio_renta,
+        precio_final: this.vf.precio_renta.value,
         required: true,
         errors: []
       },
@@ -152,13 +158,13 @@ export class VehiculoFormComponent implements OnInit {
         frecuencia_ref: 'weeks',
         activo: true,
         modelo: 'vehiculos',
-        modelo_id: this.vehiculo_id,
-        precio_base: this.vehiculoData.precio_renta,
+        modelo_id: this.vehiculo_id ? this.vehiculo_id : null,
+        precio_base:  this.vf.precio_renta.value,
         precio_final_editable: false,
         ap_descuento: true,
         valor_descuento: null,
         descuento: null,
-        precio_final: null,
+        precio_final: this.vf.precio_renta.value,
         required: true,
         errors: []
       },
@@ -168,13 +174,13 @@ export class VehiculoFormComponent implements OnInit {
         frecuencia_ref: 'months',
         activo: true,
         modelo: 'vehiculos',
-        modelo_id: this.vehiculo_id,
-        precio_base: this.vehiculoData.precio_renta,
+        modelo_id: this.vehiculo_id ? this.vehiculo_id : null,
+        precio_base: this.vf.precio_renta.value,
         precio_final_editable: false,
         ap_descuento: true,
         valor_descuento: null,
         descuento: null,
-        precio_final: null,
+        precio_final: this.vf.precio_renta.value,
         required: true,
         errors: []
       },
@@ -184,8 +190,8 @@ export class VehiculoFormComponent implements OnInit {
         frecuencia_ref: 'hours',
         activo: true,
         modelo: 'vehiculos',
-        modelo_id: this.vehiculo_id,
-        precio_base: this.vehiculoData.precio_renta,
+        modelo_id: this.vehiculo_id ? this.vehiculo_id : null,
+        precio_base: this.vf.precio_renta.value,
         precio_final_editable: true,
         ap_descuento: false,
         valor_descuento: null,
@@ -195,80 +201,6 @@ export class VehiculoFormComponent implements OnInit {
         errors: []
       }
     ]
-  }
-
-  reviewTarifaCapture(): boolean {
-    let _haveErrors;
-    for (let i = 0; i < this.tarifaApolloPayload.length; i++) {
-      if (this.tarifaApolloPayload[i].required) {
-        if (!this.tarifaApolloPayload[i].frecuencia || this.tarifaApolloPayload[i].frecuencia === '' || this.tarifaApolloPayload[i].frecuencia === 'undefined') {
-          if (!this.tarifaApolloPayload[i].errors.find(x => x === 'Debe indicar una frecuencia valída')) {
-            this.tarifaApolloPayload[i].errors.push('Debe indicar una frecuencia valída');
-          }
-        } else {
-          this.tarifaApolloPayload[i].errors = [];
-        }
-
-
-        if (!this.tarifaApolloPayload[i].frecuencia_ref || this.tarifaApolloPayload[i].frecuencia_ref === '' || this.tarifaApolloPayload[i].frecuencia_ref === 'undefined') {
-          if (!this.tarifaApolloPayload[i].errors.find(x => x === 'Debe indicar una referencia de frecuencia valída')) {
-            this.tarifaApolloPayload[i].errors.push('Debe indicar una referencia de frecuencia valída');
-          }
-        } else {
-          this.tarifaApolloPayload[i].errors = [];
-        }
-
-        if (!this.tarifaApolloPayload[i].modelo || this.tarifaApolloPayload[i].modelo === '' || this.tarifaApolloPayload[i].modelo === 'undefined') {
-          if (!this.tarifaApolloPayload[i].errors.find(x => x === 'Debe indicar un modelo de datos correcto')) {
-            this.tarifaApolloPayload[i].errors.push('Debe indicar un modelo de datos correcto');
-          }
-        } else {
-          this.tarifaApolloPayload[i].errors = [];
-        }
-
-        if (!this.tarifaApolloPayload[i].modelo_id || this.tarifaApolloPayload[i].modelo_id == 0) {
-          if (!this.tarifaApolloPayload[i].errors.find(x => x === 'Debe primero guardar la información del vehículo para proceder')) {
-            this.tarifaApolloPayload[i].errors.push('Debe primero guardar la información del vehículo para proceder');
-          }
-        } else {
-          this.tarifaApolloPayload[i].errors = [];
-        }
-
-        if (!this.tarifaApolloPayload[i].precio_base || this.tarifaApolloPayload[i].precio_base == 0) {
-          if (!this.tarifaApolloPayload[i].errors.find(x => x === 'Debe indicar un precio base valído')) {
-            this.tarifaApolloPayload[i].errors.push('Debe indicar un precio base valído');
-          }
-        } else {
-          this.tarifaApolloPayload[i].errors = [];
-        }
-
-        if (this.tarifaApolloPayload[i].ap_descuento === true && !this.tarifaApolloPayload[i].valor_descuento || this.tarifaApolloPayload[i].valor_descuento == 0) {
-          if (!this.tarifaApolloPayload[i].errors.find(x => x === 'Debe indicar un valor de descuento valído')) {
-            this.tarifaApolloPayload[i].errors.push('Debe indicar un valor de descuento valído');
-          }
-        } else {
-          this.tarifaApolloPayload[i].errors = [];
-        }
-
-        if (!this.tarifaApolloPayload[i].precio_final || this.tarifaApolloPayload[i].precio_final == 0) {
-          if (!this.tarifaApolloPayload[i].errors.find(x => x === 'Debe indicar el precio final')) {
-            this.tarifaApolloPayload[i].errors.push('Debe indicar el precio final');
-          }
-        } else {
-          this.tarifaApolloPayload[i].errors = [];
-        }
-
-        if (this.tarifaApolloPayload[i].errors.length > 0) {
-          _haveErrors = true;
-        }
-      }
-
-    }
-    if (_haveErrors === true) {
-      return false;
-    } else {
-      return true
-    }
   }
 
   initVehiculoForm(data?) {
@@ -296,8 +228,6 @@ export class VehiculoFormComponent implements OnInit {
     this.vf.activo.disable();
   }
 
-
-
   async loadVehiculosData() {
 
     await this.generalServ.presentLoading();
@@ -306,7 +236,9 @@ export class VehiculoFormComponent implements OnInit {
       if (res.ok === true) {
         this.vehiculoData = res.vehiculo;
         this.initVehiculoForm(res.vehiculo);
-        this.initTarifaApolloObj();
+        // TODO: agregar data para initTarifaApolloObj
+        let _tarifas = res.vehiculo.tarifas;
+        this.initTarifaApolloObj(_tarifas);
       }
     }, error => {
       this.generalServ.dismissLoading();
@@ -320,10 +252,18 @@ export class VehiculoFormComponent implements OnInit {
       this.vehiculoForm.markAllAsTouched();
       return;
     }
+    if (this.reviewTarifaCapture() === false) {
+      this.sweetMsg.printStatus('Se encontro información por verificar, revise las leyendas marcadas en rojo', 'warning');
+      return;
+    }
+
     let _payload = this.vehiculoForm.value;
     if (_payload.prox_servicio) {
       _payload.prox_servicio = DateConv.transFormDate(_payload.prox_servicio, 'regular');
     }
+    _payload.tarifas_apollo = this.tarifaApolloPayload;
+    console.log('payload --->', _payload);
+    //return;
     this.generalServ.presentLoading('Guardando cambios ...');
     this.vehiculosServ.saveUpdate(_payload, this.vehiculo_id).subscribe(res => {
       this.generalServ.dismissLoading();
@@ -398,14 +338,30 @@ export class VehiculoFormComponent implements OnInit {
     }
   }
 
-  recalTarifaRow(tarifaApollo: TarifaApolloI) {
-    let _valorDes = parseFloat(Number(tarifaApollo.valor_descuento / 100).toFixed(4));
-    let _descuento = parseFloat(Number(tarifaApollo.precio_base * _valorDes).toFixed(4));
-    let _total = parseFloat(Number(tarifaApollo.precio_base - _descuento).toFixed(4));
+  recalTarifaRow(tarifaApollo?: TarifaApolloI) {
+    console.log('recalTarifaRow');
+    if (tarifaApollo) {
+      let _valorDes = parseFloat(Number(tarifaApollo.valor_descuento / 100).toFixed(4));
+      let _descuento = parseFloat(Number(tarifaApollo.precio_base * _valorDes).toFixed(4));
+      let _total = parseFloat(Number(tarifaApollo.precio_base - _descuento).toFixed(4));
 
-    tarifaApollo.descuento = _descuento;
-    tarifaApollo.precio_final = _total;
+      tarifaApollo.descuento = _descuento;
+      tarifaApollo.precio_final = _total;
+    } else {
+      if (this.tarifaApolloPayload && this.tarifaApolloPayload.length > 0) {
+        for (let i = 0; i < this.tarifaApolloPayload.length; i++) {
+          this.tarifaApolloPayload[i].precio_base = this.vf.precio_renta.value;
+          if (this.tarifaApolloPayload[i].frecuencia_ref !== 'hours') {
+            let _valorDes = parseFloat(Number(this.tarifaApolloPayload[i].valor_descuento / 100).toFixed(4));
+            let _descuento = parseFloat(Number(this.tarifaApolloPayload[i].precio_base * _valorDes).toFixed(4));
+            let _total = parseFloat(Number(this.tarifaApolloPayload[i].precio_base - _descuento).toFixed(4));
 
+            this.tarifaApolloPayload[i].descuento = _descuento;
+            this.tarifaApolloPayload[i].precio_final = _total;
+          }
+        }
+      }
+    }
     this.reviewTarifaCapture();
   }
 
@@ -417,12 +373,79 @@ export class VehiculoFormComponent implements OnInit {
     this.reviewTarifaCapture();
   }
 
-  saveTarifas() {
-    if (this.reviewTarifaCapture() === false) {
-      this.sweetMsg.printStatus('Se encontro información por verificar, revise las leyendas marcadas en rojo', 'warning');
-      return;
-    }
-    console.log('saveTarifas -->', this.tarifaApolloPayload);
-  }
+  reviewTarifaCapture(): boolean {
+    let _haveErrors;
+    if (this.tarifaApolloPayload && this.tarifaApolloPayload.length > 0) {
+      for (let i = 0; i < this.tarifaApolloPayload.length; i++) {
+        if (this.tarifaApolloPayload[i].required) {
+          if (!this.tarifaApolloPayload[i].frecuencia || this.tarifaApolloPayload[i].frecuencia === '' || this.tarifaApolloPayload[i].frecuencia === 'undefined') {
+            if (!this.tarifaApolloPayload[i].errors.find(x => x === 'Debe indicar una frecuencia valída')) {
+              this.tarifaApolloPayload[i].errors.push('Debe indicar una frecuencia valída');
+            }
+          } else {
+            this.tarifaApolloPayload[i].errors = [];
+          }
 
+
+          if (!this.tarifaApolloPayload[i].frecuencia_ref || this.tarifaApolloPayload[i].frecuencia_ref === '' || this.tarifaApolloPayload[i].frecuencia_ref === 'undefined') {
+            if (!this.tarifaApolloPayload[i].errors.find(x => x === 'Debe indicar una referencia de frecuencia valída')) {
+              this.tarifaApolloPayload[i].errors.push('Debe indicar una referencia de frecuencia valída');
+            }
+          } else {
+            this.tarifaApolloPayload[i].errors = [];
+          }
+
+          if (!this.tarifaApolloPayload[i].modelo || this.tarifaApolloPayload[i].modelo === '' || this.tarifaApolloPayload[i].modelo === 'undefined') {
+            if (!this.tarifaApolloPayload[i].errors.find(x => x === 'Debe indicar un modelo de datos correcto')) {
+              this.tarifaApolloPayload[i].errors.push('Debe indicar un modelo de datos correcto');
+            }
+          } else {
+            this.tarifaApolloPayload[i].errors = [];
+          }
+
+          if (!this.tarifaApolloPayload[i].modelo_id || this.tarifaApolloPayload[i].modelo_id == 0) {
+            if (!this.tarifaApolloPayload[i].errors.find(x => x === 'Debe primero guardar la información del vehículo para proceder')) {
+              this.tarifaApolloPayload[i].errors.push('Debe primero guardar la información del vehículo para proceder');
+            }
+          } else {
+            this.tarifaApolloPayload[i].errors = [];
+          }
+
+          if (!this.tarifaApolloPayload[i].precio_base || this.tarifaApolloPayload[i].precio_base == 0) {
+            if (!this.tarifaApolloPayload[i].errors.find(x => x === 'Debe indicar un precio base valído')) {
+              this.tarifaApolloPayload[i].errors.push('Debe indicar un precio base valído');
+            }
+          } else {
+            this.tarifaApolloPayload[i].errors = [];
+          }
+
+          if (this.tarifaApolloPayload[i].ap_descuento === true && !this.tarifaApolloPayload[i].valor_descuento || this.tarifaApolloPayload[i].valor_descuento == 0) {
+            if (!this.tarifaApolloPayload[i].errors.find(x => x === 'Debe indicar un valor de descuento valído')) {
+              this.tarifaApolloPayload[i].errors.push('Debe indicar un valor de descuento valído');
+            }
+          } else {
+            this.tarifaApolloPayload[i].errors = [];
+          }
+
+          if (!this.tarifaApolloPayload[i].precio_final || this.tarifaApolloPayload[i].precio_final == 0) {
+            if (!this.tarifaApolloPayload[i].errors.find(x => x === 'Debe indicar el precio final')) {
+              this.tarifaApolloPayload[i].errors.push('Debe indicar el precio final');
+            }
+          } else {
+            this.tarifaApolloPayload[i].errors = [];
+          }
+
+          if (this.tarifaApolloPayload[i].errors.length > 0) {
+            _haveErrors = true;
+          }
+        }
+
+      }
+      if (_haveErrors === true) {
+        return false;
+      } else {
+        return true
+      }
+    }
+  }
 }

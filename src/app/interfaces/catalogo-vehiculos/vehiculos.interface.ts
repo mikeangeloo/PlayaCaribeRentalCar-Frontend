@@ -44,7 +44,7 @@ export class VehiculosC
       case VehiculosStatusE.RESERVADO:
         return 'Reservado';
       default:
-        return 'No especificado';
+        return '--';
     }
   }
 }
