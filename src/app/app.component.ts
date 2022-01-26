@@ -208,6 +208,34 @@ export class AppComponent implements OnDestroy {
               active: false,
             }
           ]
+        },
+        {
+          module: 'configuracion',
+          icon: 'settings',
+          label: 'Configuración',
+          route: null,
+          level: 1,
+          active: false,
+          children: [
+            {
+              module: 'configuracion',
+              icon: 'cash',
+              label: 'Precios',
+              route: null,
+              level: 2,
+              active: false,
+              children: [
+                {
+                  module: 'configuracion',
+                  icon: 'pricetags',
+                  label: 'Tarifas Extras',
+                  route: '/administracion/configuracion/precios/tarifas-extras',
+                  level: 3,
+                  active: false,
+                }
+              ]
+            }
+          ]
         }
       ]
     },

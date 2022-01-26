@@ -19,6 +19,9 @@ import {ContratosStatus} from "../../../enums/contratos-status.enum";
 import {FilesService} from '../../../services/files.service';
 import {DocDataTransfer} from '../../../interfaces/shared/doc-data-tranfer.interface';
 import {VehiculosI} from '../../../interfaces/catalogo-vehiculos/vehiculos.interface';
+import {TiposTarifasI} from '../../../interfaces/configuracion/tipos-tarifas.interface';
+import {TiposTarifasService} from '../../../services/tipos-tarifas.service';
+import {BehaviorSubject} from 'rxjs';
 
 @Component({
   selector: 'app-contrato',
@@ -39,6 +42,9 @@ export class ContratoPage implements OnInit, AfterViewInit {
   public txtConv = TxtConv;
   public dateConv = DateConv;
   public statusC = ContratosStatus;
+
+  public tiposTarifas: TiposTarifasI[];
+  public $selectedTarifa = new BehaviorSubject(null);
 
   contractType: string;
   //#endregion
@@ -89,6 +95,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
   baseRentFrequency: 'hours' | 'days' | 'weeks' | 'month' = 'days';
   fuelCharges = 1000;
   iva = 0.16;
+  aplicarIva: boolean;
 
   requiredAddCharges = [
     {
@@ -121,7 +128,8 @@ export class ContratoPage implements OnInit, AfterViewInit {
     public sessionServ: SessionService,
     public generalServ: GeneralService,
     public contratosServ: ContratosService,
-    public filesServ: FilesService
+    public filesServ: FilesService,
+    public tiposTarifasServ: TiposTarifasService
   ) { }
 
   ngOnInit() {
@@ -132,7 +140,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
   ionViewWillEnter() {
     console.log('view enter');
-
+    this.loadTiposTarifas();
 
     // verificamos si tenemos guardado un contract_id en local storage para continuar con la edición
     if (this.contratosServ.getContractNumber()) {
@@ -266,6 +274,16 @@ export class ContratoPage implements OnInit, AfterViewInit {
     if (!this.generalDataForm.controls.retorno_of_hora.value) {
       this.generalDataForm.controls.retorno_of_hora.setValue((data && data.retorno_of_hora ? data.retorno_of_hora : null));
     }
+  }
+
+  loadTiposTarifas() {
+    this.tiposTarifasServ.getActive().subscribe(res => {
+      if (res.ok) {
+        this.tiposTarifas = res.data;
+      }
+    }, error =>  {
+      console.log('tipos tarifas err -->', error);
+    })
   }
 
   get gf() {

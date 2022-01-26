@@ -31,6 +31,8 @@ import {SignatureCaptureComponent} from "./components/signature-capture/signatur
 import {MultiTableFilterComponent} from "./components/multi-table-filter/multi-table-filter.component";
 import {ClaseVehiculoFormComponent} from './components/clases-vehiculos/clase-vehiculo-form/clase-vehiculo-form.component';
 import {ClasesVehiculosTableComponent} from './components/clases-vehiculos/clases-vehiculos-table/clases-vehiculos-table.component';
+import {TarifasExtrasFormComponent} from './components/configuracion/precios/tarifas-extras-form/tarifas-extras-form.component';
+import {TarifasExtrasTableComponent} from './components/configuracion/precios/tarifas-extras-table/tarifas-extras-table.component';
 
 
 
@@ -61,7 +63,9 @@ import {ClasesVehiculosTableComponent} from './components/clases-vehiculos/clase
     SignatureCaptureComponent,
     MultiTableFilterComponent,
     ClaseVehiculoFormComponent,
-    ClasesVehiculosTableComponent
+    ClasesVehiculosTableComponent,
+    TarifasExtrasFormComponent,
+    TarifasExtrasTableComponent
   ],
   exports: [
     EmpresasListComponent,
@@ -89,7 +93,9 @@ import {ClasesVehiculosTableComponent} from './components/clases-vehiculos/clase
     SignatureCaptureComponent,
     MultiTableFilterComponent,
     ClaseVehiculoFormComponent,
-    ClasesVehiculosTableComponent
+    ClasesVehiculosTableComponent,
+    TarifasExtrasFormComponent,
+    TarifasExtrasTableComponent
   ],
   entryComponents: [
     EmpresasListComponent,
@@ -117,7 +123,9 @@ import {ClasesVehiculosTableComponent} from './components/clases-vehiculos/clase
     SignatureCaptureComponent,
     MultiTableFilterComponent,
     ClaseVehiculoFormComponent,
-    ClasesVehiculosTableComponent
+    ClasesVehiculosTableComponent,
+    TarifasExtrasFormComponent,
+    TarifasExtrasTableComponent
   ],
     imports: [
         CommonModule,

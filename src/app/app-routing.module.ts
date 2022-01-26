@@ -86,14 +86,17 @@ const routes: Routes = [
             loadChildren: () => import('./modules/clientes/listado-clientes/listado-clientes.module').then( m => m.ListadoClientesPageModule)
           },
           //endregion
+
+          //region CONFIGURACION
+        {
+            path: 'administracion/configuracion',
+            loadChildren: () => import('./modules/configuracion/configuracion.module').then( m => m.ConfiguracionModule)
+        },
+        //endregion
       //endregion
 
     ]
-  },
-
-
-
-
+  }
 ];
 
 @NgModule({
