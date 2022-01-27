@@ -22,6 +22,8 @@ import {VehiculosI} from '../../../interfaces/catalogo-vehiculos/vehiculos.inter
 import {TiposTarifasI} from '../../../interfaces/configuracion/tipos-tarifas.interface';
 import {TiposTarifasService} from '../../../services/tipos-tarifas.service';
 import {BehaviorSubject} from 'rxjs';
+import {TarifasExtrasI} from '../../../interfaces/configuracion/tarifas-extras.interface';
+import {TarifasExtrasService} from '../../../services/tarifas-extras.service';
 
 @Component({
   selector: 'app-contrato',
@@ -115,6 +117,8 @@ export class ContratoPage implements OnInit, AfterViewInit {
       cost: 17.45
     }
   ];
+
+  tarifasExtras: TarifasExtrasI[];
   //#endregion
 
   //#region SIGNATURE MANAGEMENT ATTRIBUTES
@@ -129,7 +133,8 @@ export class ContratoPage implements OnInit, AfterViewInit {
     public generalServ: GeneralService,
     public contratosServ: ContratosService,
     public filesServ: FilesService,
-    public tiposTarifasServ: TiposTarifasService
+    public tiposTarifasServ: TiposTarifasService,
+    public tarifasExtrasServ: TarifasExtrasService
   ) { }
 
   ngOnInit() {
@@ -141,6 +146,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
   ionViewWillEnter() {
     console.log('view enter');
     this.loadTiposTarifas();
+    this.loadTarifasExtras();
 
     // verificamos si tenemos guardado un contract_id en local storage para continuar con la edición
     if (this.contratosServ.getContractNumber()) {
@@ -283,6 +289,16 @@ export class ContratoPage implements OnInit, AfterViewInit {
       }
     }, error =>  {
       console.log('tipos tarifas err -->', error);
+    })
+  }
+
+  loadTarifasExtras() {
+    this.tarifasExtrasServ.getActive().subscribe(res => {
+      if (res.ok) {
+        this.tarifasExtras = res.datas;
+      }
+    }, error =>  {
+      console.log('tipos tarifas extras err -->', error);
     })
   }
 
