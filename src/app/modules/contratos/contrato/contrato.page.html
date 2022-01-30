@@ -137,13 +137,13 @@
                   <ion-col size="12" size-md="3">
                     <div class="datos-generales-precioU">
                       <h2>Valor unitario x día</h2>
-                      <p>{{(vehiculoData && vehiculoData.precio_renta ? (vehiculoData.precio_renta | currency) : '--')}}</p>
+                      <p>{{(gf.precio_unitario_final && gf.precio_unitario_final.value ? (gf.precio_unitario_final.value | currency) : '--')}}</p>
                     </div>
                   </ion-col> <!-- precio unitario -->
                   <ion-col size="12" size-md="2">
                     <mat-form-field appearance="outline">
                       <mat-label>Tipo Tarifa</mat-label>
-                      <mat-select #tipoTarifaS (selectionChange)="$selectedTarifa.next(tipoTarifaS.value)">
+                      <mat-select #tipoTarifaS (selectionChange)="_selectedTarifa = tipoTarifaS.value">
                         <mat-option *ngFor="let tarifa of tiposTarifas" [value]="tarifa.tarifa">{{tarifa.tarifa}}</mat-option>
                       </mat-select>
                     </mat-form-field>
@@ -156,9 +156,9 @@
                       <ion-col size="12" size-md="6">
                         <mat-form-field appearance="legacy">
                           <mat-label>Fecha salida - retorno</mat-label>
-                          <mat-date-range-input [rangePicker]="fechaRetornoRegreso">
-                            <input matStartDate formControlName="renta_of_fecha" placeholder="Start date">
-                            <input matEndDate formControlName="retorno_of_fecha" placeholder="End date">
+                          <mat-date-range-input [rangePicker]="fechaRetornoRegreso" [formGroup]="gf.rango_fechas" [min]="_today">
+                            <input matStartDate formControlName="fecha_salida" placeholder="Start date" readonly autocomplete="off" (dateChange)="startDateChange()">
+                            <input matEndDate formControlName="fecha_retorno" placeholder="End date" (dateChange)="makeCalc()" readonly autocomplete="off">
                           </mat-date-range-input>
                           <mat-datepicker-toggle matSuffix [for]="fechaRetornoRegreso"></mat-datepicker-toggle>
                           <mat-date-range-picker #fechaRetornoRegreso></mat-date-range-picker>
@@ -186,7 +186,25 @@
                     </ion-row>
                   </ion-col>
                   <ion-col size="12" size-md="6">
-
+                    <div><span>Desgloce Cobro</span></div>
+                    <table class="complement-table" *ngIf="cobranzaI && cobranzaI.length > 0">
+                      <thead>
+                        <tr>
+                          <th></th>
+                          <th>Monto</th>
+                          <th>Cantidad</th>
+                          <th>Costo MXN</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr *ngFor="let cobranza of cobranzaI">
+                          <td>{{cobranza.element}}</td>
+                          <td>{{cobranza.price | currency}}</td>
+                          <td>{{cobranza.quantity}} {{cobranza.quantity_label}}</td>
+                          <td>{{cobranza.amount | currency}}</td>
+                        </tr>
+                      </tbody>
+                    </table>
                   </ion-col> <!-- desbloce de cobro -->
 
                 </ion-row>

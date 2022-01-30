@@ -24,7 +24,7 @@ export class DateConv {
           let year = moment(date).format('YYYY');
           let month = moment(date).format('MM');
           let day = moment(date).format('DD');
-          convertDate = [year, month, day];
+          convertDate = [year, '0', day];
           break;
           case 'localTime':
             convertDate = moment.utc(date).tz(moment.tz.guess()).format('DD/MM/YYYY h:mm:ss a');

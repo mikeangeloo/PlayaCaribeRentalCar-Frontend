@@ -7,7 +7,7 @@ import {CardI} from "../../../interfaces/cards/card.interface";
 import {TarjetaFormComponent} from "../../../common/components/tarjetas/tarjeta-form/tarjeta-form.component";
 import {ModalController} from "@ionic/angular";
 import {MultiTableFilterComponent} from "../../../common/components/multi-table-filter/multi-table-filter.component";
-import {Form, FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {Form, FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {DateConv} from "../../../helpers/date-conv";
 import {SessionService} from "../../../services/session.service";
 import {SucursalesI} from "../../../interfaces/sucursales.interface";
@@ -24,12 +24,26 @@ import {TiposTarifasService} from '../../../services/tipos-tarifas.service';
 import {BehaviorSubject} from 'rxjs';
 import {TarifasExtrasI} from '../../../interfaces/configuracion/tarifas-extras.interface';
 import {TarifasExtrasService} from '../../../services/tarifas-extras.service';
+import {DateTransform} from '../../../helpers/date-trans';
+
+export interface CobranzaI
+{
+  element: string;
+  price: number;
+  quantity: number;
+  quantity_type: 'days' | 'percentage';
+  quantity_label: string;
+  number_sign: 'positive' | 'negative';
+  amount: number;
+  currency: string;
+}
 
 @Component({
   selector: 'app-contrato',
   templateUrl: './contrato.page.html',
   styleUrls: ['./contrato.page.scss'],
 })
+
 export class ContratoPage implements OnInit, AfterViewInit {
 
   //#region STEP CONTROLLER ATTRIBUTES
@@ -45,8 +59,6 @@ export class ContratoPage implements OnInit, AfterViewInit {
   public dateConv = DateConv;
   public statusC = ContratosStatus;
 
-  public tiposTarifas: TiposTarifasI[];
-  public $selectedTarifa = new BehaviorSubject(null);
 
   contractType: string;
   //#endregion
@@ -80,6 +92,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
   //#region MONTHS, YEARS ATTRIBUTES
   public months = Months;
   public validYears: any[];
+  public _today = DateConv.transFormDate(moment.now(), 'regular');
   //#endregion
 
   //#region IMAGES MANAGEMENT ATTRIBUTES
@@ -119,6 +132,11 @@ export class ContratoPage implements OnInit, AfterViewInit {
   ];
 
   tarifasExtras: TarifasExtrasI[];
+
+  public tiposTarifas: TiposTarifasI[];
+  public _selectedTarifa: string;
+  public cobranzaI: CobranzaI[] = [];
+
   //#endregion
 
   //#region SIGNATURE MANAGEMENT ATTRIBUTES
@@ -221,7 +239,6 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
   //#region GENERAL FORM FUNCTIONS
   initGeneralForm(data?) {
-    let _today = DateConv.transFormDate(moment.now(), 'regular');
     let _todayHour = DateConv.transFormDate(moment.now(), 'time');
     let _usrProfile = this.sessionServ.getProfile();
     if (_usrProfile && _usrProfile.sucursal) {
@@ -236,10 +253,22 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
     this.generalDataForm = this.fb.group({
       num_contrato: [(data && data.num_contrato ? data.num_contrato : null)],
+      vehiculo_id: [(this.vehiculoData && this.vehiculoData.id ? this.vehiculoData.id : null), Validators.required],
+      precio_unitario_inicial: [(data && data.precio_unitario_inicial ? data.precio_unitario_inicial : null)],
+      precio_unitario_final: [(data && data.precio_unitario_final) ? data.precio_unitario_final : null],
+
+      rango_fechas: this.fb.group({
+        fecha_salida: [(data && data.fecha_salida ? data.fecha_salida : this._today), Validators.required],
+        fecha_retorno: [(data && data.fecha_retorno ? data.fecha_retorno : null), Validators.required],
+      }),
+
+      /**
+       * @deprecated
+      * */
       renta_of_id: [(data && data.renta_of_id ? data.renta_of_id : this.userSucursal.id), Validators.required],
       renta_of_codigo: [(data && data.renta_of_codigo ? data.renta_of_codigo : this.userSucursal.codigo), [Validators.required]],
       renta_of_dir: [(data && data.renta_of_dir ? data.renta_of_dir : this.userSucursal.direccion), Validators.required],
-      renta_of_fecha: [(data && data.renta_of_fecha ? data.renta_of_fecha : _today), Validators.required],
+      renta_of_fecha: [(data && data.renta_of_fecha ? data.renta_of_fecha : this._today), Validators.required],
       renta_of_hora: [(data && data.renta_of_hora ? data.renta_of_hora : _todayHour), Validators.required],
 
       retorno_of_id: [(data && data.retorno_of_id ? data.retorno_of_id : null), Validators.required],
@@ -251,7 +280,12 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
     // this.gf.renta_of_codigo.disable();
     // this.gf.retorno_of_codigo.disable();
+
     console.log('init', this.generalDataForm.controls);
+    setTimeout(() => {
+      this.generalDataForm.controls.rango_fechas['controls']['fecha_salida'].disable();
+    }, 1000);
+
   }
 
   initRentOfData(data) {
@@ -305,6 +339,9 @@ export class ContratoPage implements OnInit, AfterViewInit {
   get gf() {
     return this.generalDataForm.controls;
   }
+  get rangoFechas() {
+    return this.gf.rango_fechas['controls'];
+  }
   //#endregion
 
   //#region CLIENT FORM FUNCTIONS
@@ -325,6 +362,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
   get cf() {
     return this.clienteDataForm.controls;
   }
+
   //#endregion
 
   //#region VEHICULO FORM FUNCTIONS
@@ -655,6 +693,24 @@ export class ContratoPage implements OnInit, AfterViewInit {
       }
       //this.loadClienteData();
     }
+  }
+  //#endregion
+
+  //#region CALCULATION
+  startDateChange() {
+    console.log('startDateChange');
+    this.rangoFechas.fecha_salida.patchValue(this._today);
+  }
+  makeCalc() {
+    let _fechaSalida = DateConv.transFormDate(this.rangoFechas.fecha_salida.value, 'regular');
+
+    let _fechaRetorno = DateConv.transFormDate(this.rangoFechas.fecha_retorno.value, 'regular');
+    let _diff = Math.abs(
+        moment(_fechaSalida, 'YYYY-MM-DD')
+            .startOf('days')
+            .diff(moment(_fechaRetorno, 'YYYY-MM-DD').startOf('days'), 'days')
+    ) + 1;
+    console.log('days diff', _diff);
   }
   //#endregion
 
