@@ -29,10 +29,10 @@ import {DateTransform} from '../../../helpers/date-trans';
 export interface CobranzaI
 {
   element: string;
-  price: number;
+  element_label: string;
+  value: number;
   quantity: number;
-  quantity_type: 'days' | 'percentage';
-  quantity_label: string;
+  quantity_type: 'dias' | '%';
   number_sign: 'positive' | 'negative';
   amount: number;
   currency: string;
@@ -105,9 +105,9 @@ export class ContratoPage implements OnInit, AfterViewInit {
   //#endregion
 
   //#region COBRANZA ATTRIBUTES
-  baseCurrency: 'USD' | 'MXN' = 'USD';
+  baseCurrency: 'USD' | 'MXN' = 'MXN';
   baseRentCost = 1500;
-  baseRentFrequency: 'hours' | 'days' | 'weeks' | 'month' = 'days';
+  baseRentFrequency: 'hours' | 'days' | 'weeks' | 'months' = 'days';
   fuelCharges = 1000;
   iva = 0.16;
   aplicarIva: boolean;
@@ -254,6 +254,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
     this.generalDataForm = this.fb.group({
       num_contrato: [(data && data.num_contrato ? data.num_contrato : null)],
       vehiculo_id: [(this.vehiculoData && this.vehiculoData.id ? this.vehiculoData.id : null), Validators.required],
+      tipo_tarifa: [(data && data.tipo_tarifa) ? data.tipo_tarifa : null, Validators.required],
       precio_unitario_inicial: [(data && data.precio_unitario_inicial ? data.precio_unitario_inicial : null)],
       precio_unitario_final: [(data && data.precio_unitario_final) ? data.precio_unitario_final : null],
 
@@ -261,7 +262,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
         fecha_salida: [(data && data.fecha_salida ? data.fecha_salida : this._today), Validators.required],
         fecha_retorno: [(data && data.fecha_retorno ? data.fecha_retorno : null), Validators.required],
       }),
-
+      total_dias: [(data && data.total_dias) ? data.total_dias : null, Validators.required],
       /**
        * @deprecated
       * */
@@ -696,21 +697,145 @@ export class ContratoPage implements OnInit, AfterViewInit {
   }
   //#endregion
 
-  //#region CALCULATION
+  //#region CALCULATION BUSINESS RULES
+
+  changeTipoTarifa() {
+    console.log('test');
+    this.startDateChange();
+    this.setReturnDateChange();
+  }
+
   startDateChange() {
     console.log('startDateChange');
     this.rangoFechas.fecha_salida.patchValue(this._today);
   }
-  makeCalc() {
-    let _fechaSalida = DateConv.transFormDate(this.rangoFechas.fecha_salida.value, 'regular');
 
-    let _fechaRetorno = DateConv.transFormDate(this.rangoFechas.fecha_retorno.value, 'regular');
-    let _diff = Math.abs(
-        moment(_fechaSalida, 'YYYY-MM-DD')
-            .startOf('days')
-            .diff(moment(_fechaRetorno, 'YYYY-MM-DD').startOf('days'), 'days')
-    ) + 1;
-    console.log('days diff', _diff);
+  setReturnDateChange() {
+    console.log('setReturnDateChange');
+    if (this.rangoFechas.fecha_retorno.invalid) {
+      this.rangoFechas.fecha_retorno.markAllAsTouched();
+      return;
+    }
+    this.gf.total_dias.patchValue(DateConv.diffDays(this.rangoFechas.fecha_salida.value, this.rangoFechas.fecha_retorno.value));
+    let _totalDias = this.gf.total_dias.value;
+    if (_totalDias < 7) {
+      this.baseRentFrequency = 'days';
+    } else if (_totalDias >= 7 && _totalDias < 30) {
+      this.baseRentFrequency = 'weeks';
+    } else if (_totalDias >= 30) {
+      this.baseRentFrequency = 'months';
+    }
+    this.makeCalc();
+  }
+
+  makeCalc() {
+    if (this.gf.tipo_tarifa.invalid) {
+      this.sweetMsgServ.printStatus('Selecciona el tipo de tarífa', 'warning');
+      this.gf.tipo_tarifa.markAllAsTouched();
+      return;
+    }
+    this.cobranzaI = [];
+    switch (TxtConv.txtCon(this.gf.tipo_tarifa.value, 'uppercase')) {
+      case 'APOLLO':
+        console.log('tipo de tarifa apollo');
+        if (!this.vehiculoData.tarifas) {
+          this.sweetMsgServ.printStatus('El vehículo seleccionado no cuenta con un plan tarifario, comuniquese con el administrador', 'error');
+          return;
+        }
+        let _tarifas = this.vehiculoData.tarifas;
+        let _totalDias = this.gf.total_dias.value;
+        this.gf.precio_unitario_inicial.patchValue(this.vehiculoData.precio_renta);
+        this.gf.precio_unitario_final.patchValue(this.vehiculoData.precio_renta);
+
+        let _tarifa = _tarifas.find(x => x.frecuencia_ref === this.baseRentFrequency);
+        console.log('tarifa select -->', _tarifa);
+
+        this.cobranzaI.push({
+          element: 'renta',
+          value: _tarifa.precio_base,
+          quantity: _totalDias,
+          quantity_type: 'dias',
+          element_label: 'Renta',
+          number_sign: 'positive',
+          amount: parseFloat(Number(_tarifa.precio_base * _totalDias).toFixed(2)),
+          currency: this.baseCurrency
+        });
+
+        // Verificamos si tenemos extras
+
+        // Verificamos si tenemos descuento
+        if (_tarifa.ap_descuento == true) {
+          this.cobranzaI.push({
+            element: 'descuento',
+            value: null,
+            quantity: _tarifa.valor_descuento,
+            quantity_type: '%',
+            element_label: 'Descuento',
+            number_sign: 'negative',
+            amount: parseFloat(Number(_tarifa.precio_base * (_tarifa.valor_descuento / 100) * _totalDias).toFixed(2)),
+            currency: this.baseCurrency
+          })
+        }
+
+        break;
+      default:
+        this.gf.tipo_tarifa.markAllAsTouched();
+      return
+    }
+
+    // sacamos subtotal, iva y total final
+    let _subtotal = 0;
+    let _iva = 0;
+    let _total = 0;
+    for (let i = 0; i < this.cobranzaI.length; i ++) {
+      _subtotal = _subtotal + ((this.cobranzaI[i].amount * (this.cobranzaI[i].number_sign === 'positive' ? 1 : -1)));
+    }
+    if (this.aplicarIva) {
+      _iva = parseFloat(Number(_subtotal * this.iva).toFixed(2));
+      _total = (_subtotal + _iva);
+    } else {
+      _total = (_subtotal);
+    }
+
+
+    // subtotal
+    this.cobranzaI.push({
+      element: 'subtotal',
+      value: null,
+      quantity: null,
+      quantity_type: null,
+      element_label: 'Subtotal',
+      number_sign: 'positive',
+      amount: _subtotal,
+      currency: this.baseCurrency
+    });
+
+    // iva
+    if (this.aplicarIva) {
+      this.cobranzaI.push({
+        element: 'iva',
+        value: null,
+        quantity: this.iva * 100,
+        quantity_type: '%',
+        element_label: 'IVA',
+        number_sign: 'positive',
+        amount: _iva,
+        currency: this.baseCurrency
+      });
+    }
+
+    // total
+    this.cobranzaI.push({
+      element: 'total',
+      value: null,
+      quantity: null,
+      quantity_type: null,
+      element_label: 'Total',
+      number_sign: 'positive',
+      amount: _total,
+      currency: this.baseCurrency
+    });
+
   }
   //#endregion
 

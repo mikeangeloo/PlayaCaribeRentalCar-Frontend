@@ -1,5 +1,6 @@
 
 import * as moment from "moment-timezone";
+import {Moment} from 'moment';
 
 export class DateConv {
     public static transFormDate(date, format: 'military' | 'regular' | 'matrix' | 'slash' | 'time' | 'localTime' | 'localTimeMoment') {
@@ -34,5 +35,17 @@ export class DateConv {
             break;
         }
         return convertDate;
+      }
+
+      public static diffDays(startDate: Moment, finishDate: Moment): number {
+          let _startDate = DateConv.transFormDate(startDate, 'regular');
+          let _finishDate = DateConv.transFormDate(finishDate, 'regular');
+
+          let _diff = Math.abs(
+              moment(_startDate, 'YYYY-MM-DD')
+                  .startOf('days')
+                  .diff(moment(_finishDate, 'YYYY-MM-DD').startOf('days'), 'days')
+          ) + 1;
+         return _diff;
       }
 }
