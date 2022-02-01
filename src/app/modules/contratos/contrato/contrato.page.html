@@ -170,10 +170,9 @@
                         <ion-col size="12" size-md="6" class="ion-text-center ion-align-self-center">
                           <mat-checkbox
                                   class="example-margin"
-                                  [(ngModel)]="aplicarIva"
                                   [labelPosition]="'after'"
-                                  [ngModelOptions]="{standalone: true}"
                                   (change)="makeCalc()"
+                                  formControlName="con_iva"
                           >
                             Aplicar IVA ?
                           </mat-checkbox>
@@ -181,8 +180,8 @@
                         <ion-col size="12" size-md="6">
                           <mat-form-field appearance="legacy">
                             <mat-label>Extras</mat-label>
-                            <mat-select [multiple]="true" (selectionChange)="selectedExtras = $event.value; makeCalc();">
-                              <mat-option *ngFor="let extras of tarifasExtras" [value]="extras">{{extras.nombre}}</mat-option>
+                            <mat-select [multiple]="true" (selectionChange)="selectedExtras = $event.value; makeCalc();" formControlName="cobros_extras">
+                              <mat-option *ngFor="let extras of tarifasExtras" [value]="extras" >{{extras.nombre}}</mat-option>
                             </mat-select>
                           </mat-form-field>
                         </ion-col> <!-- Extras -->
@@ -195,15 +194,15 @@
                         <ion-col size="12" size-md="6">
                           <mat-form-field appearance="legacy">
                             <mat-label>Salida</mat-label>
-                            <input matInput formControlName="ub_salida" autocomplete="off" readonly>
-                            <mat-error *ngIf="gf.ub_salida.errors?.required">Campo requerido</mat-error>
+                            <input matInput formControlName="ub_salida_id" autocomplete="off" readonly>
+                            <mat-error *ngIf="gf.ub_salida_id.errors?.required">Campo requerido</mat-error>
                           </mat-form-field>
                         </ion-col>
                         <ion-col size="12" size-md="6">
                           <mat-form-field appearance="legacy">
                             <mat-label>Retorno</mat-label>
-                            <input matInput formControlName="ub_retorno" autocomplete="off" readonly>
-                            <mat-error *ngIf="gf.ub_retorno.errors?.required">Campo requerido</mat-error>
+                            <input matInput formControlName="ub_retorno_id" autocomplete="off" readonly>
+                            <mat-error *ngIf="gf.ub_retorno_id.errors?.required">Campo requerido</mat-error>
                           </mat-form-field>
                         </ion-col>
                       </ion-row>

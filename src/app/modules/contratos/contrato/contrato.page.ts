@@ -110,7 +110,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
   baseRentFrequency: 'hours' | 'days' | 'weeks' | 'months' = 'days';
   fuelCharges = 1000;
   iva = 0.16;
-  aplicarIva: boolean;
+  //aplicarIva: boolean;
 
   requiredAddCharges = [
     {
@@ -190,7 +190,11 @@ export class ContratoPage implements OnInit, AfterViewInit {
           let _datosGeneralesEtapa = this.contractData.etapas_guardadas.find(x => x === 'datos_generales');
           if (_datosGeneralesEtapa) {
             console.log('datos_generales');
+            if (this.contractData.vehiculo) {
+              this.vehiculoData = this.contractData.vehiculo;
+            }
             this.initGeneralForm(this.contractData);
+            this.makeCalc();
           } else {
             this.initGeneralForm();
           }
@@ -205,7 +209,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
             this.initClientForm();
           }
 
-          let _datosVehiculoEtapa = this.contractData.etapas_guardadas.find(x => x === 'datos_vehiculo');
+          /*let _datosVehiculoEtapa = this.contractData.etapas_guardadas.find(x => x === 'datos_vehiculo');
           if (_datosVehiculoEtapa) {
             console.log('datos_vehiculo');
             this.vehiculoData = this.contractData.vehiculo;
@@ -214,7 +218,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
             this.initVehiculoForm('salida', this.contractData);
           } else {
             this.initVehiculoForm('salida');
-          }
+          }*/
         }
       });
     } else {
@@ -270,9 +274,20 @@ export class ContratoPage implements OnInit, AfterViewInit {
         fecha_salida: [(data && data.fecha_salida ? data.fecha_salida : this._today), Validators.required],
         fecha_retorno: [(data && data.fecha_retorno ? data.fecha_retorno : null), Validators.required],
       }),
+
+      cobros_extras: [(data && data.cobros_extras ? data.cobros_extras : null), Validators.required],
+      subtotal: [(data && data.subtotal ? data.subtotal : null), Validators.required],
+      descuento: [(data && data.descuento ? data.descuento : null), Validators.required],
+      con_iva: [(data && data.con_iva ? data.con_iva : null), Validators.required],
+      iva: [(data && data.iva ? data.iva : null), Validators.required],
+      iva_monto: [(data && data.iva_monto ? data.iva_monto : null), Validators.required],
+      total: [(data && data.total ? data.total : null), Validators.required],
+
+      cobranza_calc: [(data && data.cobranza_calc ? data.cobranza_calc : null), Validators.required],
+
       total_dias: [(data && data.total_dias) ? data.total_dias : null, Validators.required],
-      ub_salida: [(data && data.ub_salida) ? data.ub_salida : 1, Validators.required],
-      ub_retorno: [(data && data.ub_retorno) ? data.ub_retorno : 1, Validators.required],
+      ub_salida_id: [(data && data.ub_salida_id) ? data.ub_salida_id : 1, Validators.required],
+      ub_retorno_id: [(data && data.ub_retorno_id) ? data.ub_retorno_id : 1, Validators.required],
     });
 
     // this.gf.renta_of_codigo.disable();
@@ -714,14 +729,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
       return;
     }
     this.gf.total_dias.patchValue(DateConv.diffDays(this.rangoFechas.fecha_salida.value, this.rangoFechas.fecha_retorno.value));
-    let _totalDias = this.gf.total_dias.value;
-    if (_totalDias < 7) {
-      this.baseRentFrequency = 'days';
-    } else if (_totalDias >= 7 && _totalDias < 30) {
-      this.baseRentFrequency = 'weeks';
-    } else if (_totalDias >= 30) {
-      this.baseRentFrequency = 'months';
-    }
+
     this.makeCalc();
   }
 
@@ -736,13 +744,23 @@ export class ContratoPage implements OnInit, AfterViewInit {
       case 'APOLLO':
         console.log('tipo de tarifa apollo');
         if (!this.vehiculoData.tarifas) {
+          console.log('El vehículo seleccionado no cuenta con un plan tarifario, comuniquese con el administrador');
           this.sweetMsgServ.printStatus('El vehículo seleccionado no cuenta con un plan tarifario, comuniquese con el administrador', 'error');
           return;
         }
         let _tarifas = this.vehiculoData.tarifas;
-        let _totalDias = this.gf.total_dias.value;
+
         this.gf.precio_unitario_inicial.patchValue(this.vehiculoData.precio_renta);
         this.gf.precio_unitario_final.patchValue(this.vehiculoData.precio_renta);
+
+        let _totalDias = this.gf.total_dias.value;
+        if (_totalDias < 7) {
+          this.baseRentFrequency = 'days';
+        } else if (_totalDias >= 7 && _totalDias < 30) {
+          this.baseRentFrequency = 'weeks';
+        } else if (_totalDias >= 30) {
+          this.baseRentFrequency = 'months';
+        }
 
         let _tarifa = _tarifas.find(x => x.frecuencia_ref == this.baseRentFrequency);
         console.log('tarifa baseRentFrequency -->', this.baseRentFrequency);
@@ -801,7 +819,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
     for (let i = 0; i < this.cobranzaI.length; i ++) {
       _subtotal = _subtotal + ((this.cobranzaI[i].amount * (this.cobranzaI[i].number_sign === 'positive' ? 1 : -1)));
     }
-    if (this.aplicarIva) {
+    if (this.gf.con_iva.value) {
       _iva = parseFloat(Number(_subtotal * this.iva).toFixed(2));
       _total = (_subtotal + _iva);
     } else {
@@ -820,9 +838,20 @@ export class ContratoPage implements OnInit, AfterViewInit {
       amount: _subtotal,
       currency: this.baseCurrency
     });
+    this.gf.subtotal.patchValue(_subtotal);
+
+    // revisamos descuento
+    let _des = this.cobranzaI.filter(x => x.element === 'descuento');
+    let _desTotal = 0;
+    if (_des) {
+      for (let i = 0; i < _des.length; i++) {
+        _desTotal = (_desTotal + _des[i].amount);
+      }
+      this.gf.descuento.patchValue(_desTotal);
+    }
 
     // iva
-    if (this.aplicarIva) {
+    if (this.gf.con_iva.value) {
       this.cobranzaI.push({
         element: 'iva',
         value: null,
@@ -833,6 +862,9 @@ export class ContratoPage implements OnInit, AfterViewInit {
         amount: _iva,
         currency: this.baseCurrency
       });
+      //this.gf.con_iva.patchValue(true);
+      this.gf.iva.patchValue(this.iva);
+      this.gf.iva_monto.patchValue(_iva);
     }
 
     // total
@@ -846,7 +878,8 @@ export class ContratoPage implements OnInit, AfterViewInit {
       amount: _total,
       currency: this.baseCurrency
     });
-
+    this.gf.total.patchValue(_total);
+    this.gf.cobranza_calc.patchValue(this.cobranzaI);
   }
   //#endregion
 
@@ -863,7 +896,13 @@ export class ContratoPage implements OnInit, AfterViewInit {
           return;
         }
         _payload = this.generalDataForm.value;
-        _payload.hora = DateConv.transFormDate(moment.now(), 'time');
+        if (moment.isMoment(_payload.rango_fechas.fecha_salida)) {
+          _payload.rango_fechas.fecha_salida = DateConv.transFormDate(_payload.rango_fechas.fecha_salida, 'regular');
+        }
+        if (moment.isMoment(_payload.rango_fechas.fecha_retorno)) {
+          _payload.rango_fechas.fecha_retorno = DateConv.transFormDate(_payload.rango_fechas.fecha_retorno, 'regular');
+        }
+        _payload.hora_elaboracion = DateConv.transFormDate(moment.now(), 'time');
         break;
       case 'datos_cliente':
         if (this.clienteDataForm.invalid) {
@@ -887,9 +926,9 @@ export class ContratoPage implements OnInit, AfterViewInit {
     _payload.seccion = section;
     _payload.num_contrato = this.num_contrato;
     console.log(section + '--->', _payload);
-    //return;
-    console.log('payload --->', _payload);
+
     return;
+
     this.contratosServ.saveProgress(_payload).subscribe(res => {
       if (res.ok) {
         this.sweetMsgServ.printStatus(res.message, 'success');
