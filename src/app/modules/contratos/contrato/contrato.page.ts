@@ -272,10 +272,6 @@ export class ContratoPage implements OnInit, AfterViewInit {
     // this.gf.retorno_of_codigo.disable();
 
     console.log('init', this.generalDataForm.controls);
-    setTimeout(() => {
-      this.generalDataForm.controls.rango_fechas['controls']['fecha_salida'].disable();
-    }, 1000);
-
   }
 
   initRentOfData(data) {
@@ -356,7 +352,9 @@ export class ContratoPage implements OnInit, AfterViewInit {
   //#endregion
 
   //#region VEHICULO FORM FUNCTIONS
-  //
+  /**
+   * @deprecated
+   * */
   initVehiculoForm(tipo: 'salida' | 'llegada', data?) {
     this.vehiculoForm = this.fb.group({
       vehiculo_id: [(this.vehiculoData && this.vehiculoData.id ? this.vehiculoData.id : null), Validators.required],
