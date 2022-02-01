@@ -32,7 +32,6 @@ export class TarifasExtrasFormComponent implements OnInit {
       id: [null],
       nombre: [null, Validators.required],
       precio: [null, Validators.required],
-      iva: [16.00, Validators.required],
       activo: [null]
     });
   }
@@ -54,7 +53,6 @@ export class TarifasExtrasFormComponent implements OnInit {
       id: (data && data.id) ? data.id : null,
       nombre: (data && data.nombre) ? data.nombre : null,
       precio: (data && data.precio) ? data.precio : null,
-      iva: (data && data.iva) ? data.iva : 16.00,
       activo: (data && data.activo) ? data.activo : 0,
     });
     this.tf.activo.disable();

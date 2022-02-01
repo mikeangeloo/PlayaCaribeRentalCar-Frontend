@@ -32,7 +32,7 @@ export interface CobranzaI
   element_label: string;
   value: number;
   quantity: number;
-  quantity_type: 'dias' | '%';
+  quantity_type: 'dias' | '%' | '';
   number_sign: 'positive' | 'negative';
   amount: number;
   currency: string;
@@ -132,6 +132,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
   ];
 
   tarifasExtras: TarifasExtrasI[];
+  selectedExtras: TarifasExtrasI[];
 
   public tiposTarifas: TiposTarifasI[];
   public _selectedTarifa: string;
@@ -253,7 +254,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
     this.generalDataForm = this.fb.group({
       num_contrato: [(data && data.num_contrato ? data.num_contrato : null)],
-      vehiculo_id: [(this.vehiculoData && this.vehiculoData.id ? this.vehiculoData.id : null), Validators.required],
+      vehiculo_id: [(data && data.vehiculo && data.vehiculo.id ? data.vehiculo.id : this.vehiculoData.id), Validators.required],
       tipo_tarifa: [(data && data.tipo_tarifa) ? data.tipo_tarifa : null, Validators.required],
       precio_unitario_inicial: [(data && data.precio_unitario_inicial ? data.precio_unitario_inicial : null)],
       precio_unitario_final: [(data && data.precio_unitario_final) ? data.precio_unitario_final : null],
@@ -263,20 +264,8 @@ export class ContratoPage implements OnInit, AfterViewInit {
         fecha_retorno: [(data && data.fecha_retorno ? data.fecha_retorno : null), Validators.required],
       }),
       total_dias: [(data && data.total_dias) ? data.total_dias : null, Validators.required],
-      /**
-       * @deprecated
-      * */
-      renta_of_id: [(data && data.renta_of_id ? data.renta_of_id : this.userSucursal.id), Validators.required],
-      renta_of_codigo: [(data && data.renta_of_codigo ? data.renta_of_codigo : this.userSucursal.codigo), [Validators.required]],
-      renta_of_dir: [(data && data.renta_of_dir ? data.renta_of_dir : this.userSucursal.direccion), Validators.required],
-      renta_of_fecha: [(data && data.renta_of_fecha ? data.renta_of_fecha : this._today), Validators.required],
-      renta_of_hora: [(data && data.renta_of_hora ? data.renta_of_hora : _todayHour), Validators.required],
-
-      retorno_of_id: [(data && data.retorno_of_id ? data.retorno_of_id : null), Validators.required],
-      retorno_of_codigo: [(data && data.retorno_of_codigo ? data.retorno_of_codigo : null), Validators.required],
-      retorno_of_dir: [(data && data.retorno_of_dir ? data.retorno_of_dir : null), Validators.required],
-      retorno_of_fecha: [(data && data.retorno_of_fecha ? data.retorno_of_fecha : null), Validators.required],
-      retorno_of_hora: [(data && data.retorno_of_hora ? data.retorno_of_hora : null), Validators.required],
+      ub_salida: [(data && data.ub_salida) ? data.ub_salida : 1, Validators.required],
+      ub_retorno: [(data && data.ub_retorno) ? data.ub_retorno : 1, Validators.required],
     });
 
     // this.gf.renta_of_codigo.disable();
@@ -367,6 +356,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
   //#endregion
 
   //#region VEHICULO FORM FUNCTIONS
+  //
   initVehiculoForm(tipo: 'salida' | 'llegada', data?) {
     this.vehiculoForm = this.fb.group({
       vehiculo_id: [(this.vehiculoData && this.vehiculoData.id ? this.vehiculoData.id : null), Validators.required],
@@ -728,7 +718,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
     this.makeCalc();
   }
 
-  makeCalc() {
+  makeCalc(elementType?: string, cobro?: CobranzaI) {
     if (this.gf.tipo_tarifa.invalid) {
       this.sweetMsgServ.printStatus('Selecciona el tipo de tarífa', 'warning');
       this.gf.tipo_tarifa.markAllAsTouched();
@@ -761,8 +751,6 @@ export class ContratoPage implements OnInit, AfterViewInit {
           currency: this.baseCurrency
         });
 
-        // Verificamos si tenemos extras
-
         // Verificamos si tenemos descuento
         if (_tarifa.ap_descuento == true) {
           this.cobranzaI.push({
@@ -776,11 +764,26 @@ export class ContratoPage implements OnInit, AfterViewInit {
             currency: this.baseCurrency
           })
         }
-
         break;
       default:
         this.gf.tipo_tarifa.markAllAsTouched();
       return
+    }
+
+    // Verificamos si tenemos extras
+    if (this.selectedExtras && this.selectedExtras.length > 0) {
+      for (let i = 0; i < this.selectedExtras.length; i++) {
+        this.cobranzaI.push({
+          element: (elementType && elementType === 'extra' && cobro) ? cobro.element : 'extra',
+          value: (elementType && elementType === 'extra' && cobro) ? cobro.value : this.selectedExtras[i].precio,
+          quantity: (elementType && elementType === 'extra' && cobro) ? cobro.quantity : 1,
+          quantity_type: (elementType && elementType === 'extra' && cobro) ? cobro.quantity_type : '',
+          element_label: (elementType && elementType === 'extra' && cobro) ? cobro.element_label : 'Renta',
+          number_sign: (elementType && elementType === 'extra' && cobro) ? cobro.number_sign : 'positive',
+          amount: (elementType && elementType === 'extra' && cobro) ? parseFloat(Number(this.selectedExtras[i].precio * cobro.quantity).toFixed(2)) : parseFloat(Number(this.selectedExtras[i].precio * 1).toFixed(2)),
+          currency: this.baseCurrency
+        })
+      }
     }
 
     // sacamos subtotal, iva y total final
@@ -848,6 +851,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
         if (this.generalDataForm.invalid) {
           this.sweetMsgServ.printStatus('Verifica que los datos solicitados esten completos', 'warning');
           this.generalDataForm.markAllAsTouched();
+          console.log(this.generalDataForm);
           return;
         }
         _payload = this.generalDataForm.value;
@@ -875,7 +879,8 @@ export class ContratoPage implements OnInit, AfterViewInit {
     _payload.num_contrato = this.num_contrato;
     console.log(section + '--->', _payload);
     //return;
-
+    console.log('payload --->', _payload);
+    return;
     this.contratosServ.saveProgress(_payload).subscribe(res => {
       if (res.ok) {
         this.sweetMsgServ.printStatus(res.message, 'success');

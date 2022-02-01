@@ -164,7 +164,7 @@
                             <mat-date-range-picker #fechaRetornoRegreso></mat-date-range-picker>
                             <mat-hint>{{gf.total_dias.value}} {{(gf.total_dias.value > 1) ? 'días' : 'dia'}}</mat-hint>
                             <mat-error *ngIf="rangoFechas.fecha_salida.errors?.required">La fecha de salida es obligatoria</mat-error>
-                            <mat-error *ngIf="rangoFechas.fecha_retorno.errors?.required">La fecha de retorno es obligatoria<</mat-error>
+                            <mat-error *ngIf="rangoFechas.fecha_retorno.errors?.required">La fecha de retorno es obligatoria</mat-error>
                           </mat-form-field>
                         </ion-col> <!-- Fecha salida - retorno -->
                         <ion-col size="12" size-md="6" class="ion-text-center ion-align-self-center">
@@ -181,16 +181,40 @@
                         <ion-col size="12" size-md="6">
                           <mat-form-field appearance="legacy">
                             <mat-label>Extras</mat-label>
-                            <mat-select [multiple]="true">
-                              <mat-option *ngFor="let extras of tarifasExtras" [value]="extras.id">{{extras.nombre}}</mat-option>
+                            <mat-select [multiple]="true" (selectionChange)="selectedExtras = $event.value; makeCalc();">
+                              <mat-option *ngFor="let extras of tarifasExtras" [value]="extras">{{extras.nombre}}</mat-option>
                             </mat-select>
                           </mat-form-field>
                         </ion-col> <!-- Extras -->
                       </ion-row>
+                      <mat-divider></mat-divider>
+                      <ion-row>
+                        <ion-col size="12">
+                          <h4>Ubicaciones</h4>
+                        </ion-col>
+                        <ion-col size="12" size-md="6">
+                          <mat-form-field appearance="legacy">
+                            <mat-label>Salida</mat-label>
+                            <input matInput formControlName="ub_salida" autocomplete="off" readonly>
+                            <mat-error *ngIf="gf.ub_salida.errors?.required">Campo requerido</mat-error>
+                          </mat-form-field>
+                        </ion-col>
+                        <ion-col size="12" size-md="6">
+                          <mat-form-field appearance="legacy">
+                            <mat-label>Retorno</mat-label>
+                            <input matInput formControlName="ub_retorno" autocomplete="off" readonly>
+                            <mat-error *ngIf="gf.ub_retorno.errors?.required">Campo requerido</mat-error>
+                          </mat-form-field>
+                        </ion-col>
+                      </ion-row>
                     </ion-col>
+
                     <ion-col size="12" size-md="6">
-                      <div><span>Desgloce Cobro</span></div>
-                      <table class="complement-table" *ngIf="cobranzaI && cobranzaI.length > 0">
+                      <div style="text-align: center">
+                        <p style="margin: 0; padding: 1rem;">Desgloce Cobro</p>
+                        <small *ngIf="cobranzaI && cobranzaI.length === 0">En espera para iniciar calculo ....</small>
+                      </div>
+                      <table class="desgloce-cobro-table" *ngIf="cobranzaI && cobranzaI.length > 0">
                         <thead>
                         <tr>
                           <th></th>
@@ -200,12 +224,31 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <tr *ngFor="let cobranza of cobranzaI">
-                          <td>{{cobranza.element_label}}</td>
-                          <td>{{cobranza.value | currency}}</td>
-                          <td>{{cobranza.quantity}} {{cobranza.quantity_type}}</td>
-                          <td>{{(cobranza.number_sign === 'negative' ? '-' : '')}} {{cobranza.amount | currency}}</td>
-                        </tr>
+                        <ng-container *ngFor="let cobranza of cobranzaI">
+                          <tr *ngIf=" cobranza.element !== 'extra'" [ngClass]="{'total-row': cobranza.element === 'total'}">
+                            <td>{{cobranza.element_label}}</td>
+                            <td>{{cobranza.value | currency}}</td>
+                            <td>{{cobranza.quantity}} {{cobranza.quantity_type}}</td>
+                            <td>{{(cobranza.number_sign === 'negative' ? '-' : '')}} {{cobranza.amount | currency}}</td>
+                          </tr>
+                          <ng-container *ngIf=" cobranza.element == 'extra'">
+                            <tr class="extra-row">
+                              <td>Extras</td>
+                              <td colspan="3"></td>
+                            </tr>
+                            <tr>
+                              <td>{{cobranza.element_label}}</td>
+                              <td>{{cobranza.value | currency}}</td>
+                              <td>
+                                <div class="table-input">
+                                  <input type="number" autocomplete="off" [(ngModel)]="cobranza.quantity" (ngModelChange)="makeCalc('extra', cobranza)" [ngModelOptions]="{standalone: true}">
+                                </div>
+                              </td>
+                              <td>{{(cobranza.number_sign === 'negative' ? '-' : '')}} {{cobranza.amount | currency}}</td>
+                            </tr>
+                          </ng-container>
+                        </ng-container>
+
                         </tbody>
                       </table>
                     </ion-col> <!-- desbloce de cobro -->
@@ -233,7 +276,7 @@
         </div>
       </mat-accordion> <!-- Datos Generales -->
 
-      <mat-accordion>
+    <!--  <mat-accordion>
         <div class="accordion-margin">
           <mat-expansion-panel (opened)="setStep(0)" [expanded]="step === 0" hideToggle>
             <mat-expansion-panel-header>
@@ -283,7 +326,7 @@
                         </div>
                         <mat-error *ngIf="gf.renta_of_hora.errors?.required">Campo requerido</mat-error>
                       </mat-form-field>
-                    </ion-col> <!-- FECHA DE RENTA -->
+                    </ion-col> &lt;!&ndash; FECHA DE RENTA &ndash;&gt;
                     <ion-col size="12" size-sm="auto"  class="ion-no-margin ion-no-padding fill-col"></ion-col>
                     <ion-col >
                       <div class="search-row-buttons">
@@ -319,7 +362,7 @@
                         </div>
                         <mat-error *ngIf="gf.retorno_of_hora.errors?.required">Campo requerido</mat-error>
                       </mat-form-field>
-                    </ion-col> <!-- FECHA DE RETORNO -->
+                    </ion-col> &lt;!&ndash; FECHA DE RETORNO &ndash;&gt;
                   </ion-row>
                 </form>
 
@@ -332,16 +375,16 @@
 
             <mat-action-row>
               <button (click)="prevStep()" mat-flat-button style="font-size: 1.5rem;">
-                <ion-icon name="chevron-back-outline" style="color: var(--ion-color-medium);"></ion-icon>
+                <ion-icon name="chevron-back-outline" style="color: var(&#45;&#45;ion-color-medium);"></ion-icon>
               </button> &nbsp; &nbsp;
 
               <button (click)="nextStep()" mat-flat-button style="font-size: 1.5rem;">
-                <ion-icon name="chevron-forward-outline" style="color: var(--ion-color-medium);"></ion-icon>
+                <ion-icon name="chevron-forward-outline" style="color: var(&#45;&#45;ion-color-medium);"></ion-icon>
               </button>
             </mat-action-row>
           </mat-expansion-panel>
         </div>
-      </mat-accordion> <!-- Datos Generales -->
+      </mat-accordion> &lt;!&ndash; Datos Generales &ndash;&gt;-->
 
       <mat-accordion>
         <div class="accordion-margin">
@@ -524,7 +567,7 @@
           </mat-expansion-panel>
         </div>
       </mat-accordion> <!-- Datos Cliente -->
-      <mat-accordion>
+<!--      <mat-accordion>
         <div class="accordion-margin">
           <mat-expansion-panel (opened)="setStep(2)" [expanded]="step === 2" hideToggle>
             <mat-expansion-panel-header>
@@ -547,7 +590,7 @@
                       </ion-button>
                     </div>
                   </ion-col>
-                </ion-row> <!-- openModalSearch -->
+                </ion-row> &lt;!&ndash; openModalSearch &ndash;&gt;
                 <ion-row class="ion-no-padding ion-no-margin">
                   <ion-col size>
                     <mat-form-field appearance="legacy">
@@ -555,29 +598,29 @@
                       <input type="text" matInput [disabled]="true" [value]="vehiculoData && vehiculoData.codigo ? vehiculoData.codigo : null">
                       <mat-hint>Solo lectura</mat-hint>
                     </mat-form-field>
-                  </ion-col> <!--Código Vehículo-->
+                  </ion-col> &lt;!&ndash;Código Vehículo&ndash;&gt;
                   <ion-col size>
                     <mat-form-field appearance="legacy">
                       <mat-label>Marca</mat-label>
                       <input type="text" matInput [disabled]="true" [value]="vehiculoData && vehiculoData.marca && vehiculoData.marca.marca ? vehiculoData.marca.marca : null">
                       <mat-hint>Solo lectura</mat-hint>
                     </mat-form-field>
-                  </ion-col> <!--Marca-->
+                  </ion-col> &lt;!&ndash;Marca&ndash;&gt;
                   <ion-col size>
                     <mat-form-field appearance="legacy">
                       <mat-label>Modelo</mat-label>
                       <input type="text" matInput [disabled]="true" [value]="vehiculoData && vehiculoData.modelo ? vehiculoData.modelo : null">
                       <mat-hint>Solo lectura</mat-hint>
                     </mat-form-field>
-                  </ion-col> <!--Modelo-->
+                  </ion-col> &lt;!&ndash;Modelo&ndash;&gt;
                   <ion-col size>
                     <mat-form-field appearance="legacy">
                       <mat-label>Color</mat-label>
                       <input type="text" matInput [disabled]="true" [value]="vehiculoData && vehiculoData.color ? vehiculoData.color : null">
                       <mat-hint>Solo lectura</mat-hint>
                     </mat-form-field>
-                  </ion-col> <!--Color-->
-                </ion-row> <!-- Código Vehículo  Marca  Modelo  Color -->
+                  </ion-col> &lt;!&ndash;Color&ndash;&gt;
+                </ion-row> &lt;!&ndash; Código Vehículo  Marca  Modelo  Color &ndash;&gt;
                 <ion-row class="ion-no-padding ion-no-margin">
                   <ion-col size>
                     <mat-form-field appearance="legacy">
@@ -585,14 +628,14 @@
                       <input type="text" matInput [disabled]="true" [value]="vehiculoData && vehiculoData.placas ? vehiculoData.placas : null">
                       <mat-hint>Solo lectura</mat-hint>
                     </mat-form-field>
-                  </ion-col> <!--No. Placas-->
+                  </ion-col> &lt;!&ndash;No. Placas&ndash;&gt;
                   <ion-col size>
                     <mat-form-field appearance="legacy">
                       <mat-label>No. Serie</mat-label>
                       <input type="text" matInput [disabled]="true" [value]="vehiculoData && vehiculoData.num_serie ? vehiculoData.num_serie : null">
                       <mat-hint>Solo lectura</mat-hint>
                     </mat-form-field>
-                  </ion-col> <!--No. Serie-->
+                  </ion-col> &lt;!&ndash;No. Serie&ndash;&gt;
                   <ion-col size>
                     <mat-form-field appearance="legacy">
                       <mat-label>Capacidad Tanque</mat-label>
@@ -600,8 +643,8 @@
                       <span matSuffix>LT</span>
                       <mat-hint>Solo lectura</mat-hint>
                     </mat-form-field>
-                  </ion-col> <!--Capacidad Tanque-->
-                </ion-row> <!-- No. Placas  No.Serie  Capacidad Tanque  -->
+                  </ion-col> &lt;!&ndash;Capacidad Tanque&ndash;&gt;
+                </ion-row> &lt;!&ndash; No. Placas  No.Serie  Capacidad Tanque  &ndash;&gt;
                 <br>
                 <mat-divider></mat-divider>
                 <br>
@@ -614,7 +657,7 @@
                         <mat-error *ngIf="vf.km_salida.errors?.required">Campo requerido</mat-error>
                         <mat-hint *ngIf="vf.km_salida.disabled">Solo Lectura</mat-hint>
                       </mat-form-field>
-                    </ion-col> <!-- Kilometraje Salida  -->
+                    </ion-col> &lt;!&ndash; Kilometraje Salida  &ndash;&gt;
                     <ion-col size>
                       <mat-form-field appearance="legacy">
                         <mat-label>Kilometraje Llegada</mat-label>
@@ -622,7 +665,7 @@
                         <mat-error *ngIf="vf.km_llegada.errors?.required">Campo requerido</mat-error>
                         <mat-hint *ngIf="vf.km_llegada.disabled">Solo Lectura</mat-hint>
                       </mat-form-field>
-                    </ion-col> <!-- Kilometraje Llegada  -->
+                    </ion-col> &lt;!&ndash; Kilometraje Llegada  &ndash;&gt;
                     <ion-col size>
                       <mat-form-field appearance="legacy">
                         <mat-label>Kilometraje Recorrido</mat-label>
@@ -630,8 +673,8 @@
                         <mat-error *ngIf="vf.km_recorrido.errors?.required">Campo requerido</mat-error>
                         <mat-hint *ngIf="vf.km_recorrido.disabled">Solo Lectura</mat-hint>
                       </mat-form-field>
-                    </ion-col> <!-- Kilometraje Recorrido -->
-                  </ion-row> <!-- Kilometraje Salida  Kilometraje LLegada  Kilometraja Recorrido  -->
+                    </ion-col> &lt;!&ndash; Kilometraje Recorrido &ndash;&gt;
+                  </ion-row> &lt;!&ndash; Kilometraje Salida  Kilometraje LLegada  Kilometraja Recorrido  &ndash;&gt;
                   <ion-row  class="ion-no-padding ion-no-margin">
                     <ion-col size>
                       <mat-form-field appearance="legacy">
@@ -649,7 +692,7 @@
                         <mat-error *ngIf="vf.gas_salida.errors?.required">Campo requerido</mat-error>
                         <mat-hint *ngIf="vf.gas_salida.disabled">Solo Lectura</mat-hint>
                       </mat-form-field>
-                    </ion-col> <!-- Gas Salida  -->
+                    </ion-col> &lt;!&ndash; Gas Salida  &ndash;&gt;
                     <ion-col size>
                       <mat-form-field appearance="legacy">
                         <mat-label>Gas Llegada</mat-label>
@@ -666,8 +709,8 @@
                         <mat-error *ngIf="vf.gas_llegada.errors?.required">Campo requerido</mat-error>
                         <mat-hint *ngIf="vf.gas_llegada.disabled">Solo Lectura</mat-hint>
                       </mat-form-field>
-                    </ion-col> <!-- Gas Llegada  -->
-                  </ion-row> <!-- Gas Salida  Gas Llegada -->
+                    </ion-col> &lt;!&ndash; Gas Llegada  &ndash;&gt;
+                  </ion-row> &lt;!&ndash; Gas Salida  Gas Llegada &ndash;&gt;
                 </form>
 
               </ion-card-content>
@@ -683,7 +726,7 @@
                       </ion-button>
                     </div>
                   </ion-col>
-                </ion-row> <!-- openModalSearch -->
+                </ion-row> &lt;!&ndash; openModalSearch &ndash;&gt;
               </ion-card-content>
 
               <div class="card-action-buttons">
@@ -693,16 +736,16 @@
 
             <mat-action-row>
               <button (click)="prevStep()" mat-flat-button style="font-size: 1.5rem;">
-                <ion-icon name="chevron-back-outline" style="color: var(--ion-color-medium);"></ion-icon>
+                <ion-icon name="chevron-back-outline" style="color: var(&#45;&#45;ion-color-medium);"></ion-icon>
               </button> &nbsp; &nbsp;
 
               <button (click)="nextStep()" mat-flat-button style="font-size: 1.5rem;">
-                <ion-icon name="chevron-forward-outline" style="color: var(--ion-color-medium);"></ion-icon>
+                <ion-icon name="chevron-forward-outline" style="color: var(&#45;&#45;ion-color-medium);"></ion-icon>
               </button>
             </mat-action-row>
           </mat-expansion-panel>
         </div>
-      </mat-accordion> <!-- Datos vehiculo -->
+      </mat-accordion> &lt;!&ndash; Datos vehiculo &ndash;&gt;
       <mat-accordion>
         <div class="accordion-margin">
           <mat-expansion-panel (opened)="setStep(3)" [expanded]="step === 3" hideToggle>
@@ -736,7 +779,7 @@
                   </thead>
                   <tbody>
                   <tr>
-                    <td style="text-underline: var(--ion-color-dark)">TARIFA TIEMPO Y KILOMETRAJE T&K</td>
+                    <td style="text-underline: var(&#45;&#45;ion-color-dark)">TARIFA TIEMPO Y KILOMETRAJE T&K</td>
                     <td></td>
                     <td></td>
                     <td></td>
@@ -911,22 +954,22 @@
 
             <mat-action-row>
               <button (click)="prevStep()" mat-flat-button style="font-size: 1.5rem;">
-                <ion-icon name="chevron-back-outline" style="color: var(--ion-color-medium);"></ion-icon>
+                <ion-icon name="chevron-back-outline" style="color: var(&#45;&#45;ion-color-medium);"></ion-icon>
               </button> &nbsp; &nbsp;
 
               <button (click)="nextStep()" mat-flat-button style="font-size: 1.5rem;">
-                <ion-icon name="chevron-forward-outline" style="color: var(--ion-color-medium);"></ion-icon>
+                <ion-icon name="chevron-forward-outline" style="color: var(&#45;&#45;ion-color-medium);"></ion-icon>
               </button>
             </mat-action-row>
           </mat-expansion-panel>
         </div>
-      </mat-accordion> <!-- Detalle Cobro -->
+      </mat-accordion> &lt;!&ndash; Detalle Cobro &ndash;&gt;-->
       <mat-accordion>
         <div class="accordion-margin">
           <mat-expansion-panel (opened)="setStep(4)" [expanded]="step === 4" hideToggle>
             <mat-expansion-panel-header>
               <mat-panel-title>
-                Detalle de cargos y pre-autorizaciones
+                Cobranza
               </mat-panel-title>
               <mat-panel-description style="margin: 0; justify-content: flex-end;">
                 <ion-icon name="wallet"></ion-icon>
@@ -1011,13 +1054,13 @@
             </mat-action-row>
           </mat-expansion-panel>
         </div>
-      </mat-accordion> <!-- Detalle cargos y pre-autorizaciones -->
+      </mat-accordion> <!-- COBRANZA Detalle cargos y pre-autorizaciones -->
       <mat-accordion>
         <div class="accordion-margin">
           <mat-expansion-panel (opened)="setStep(5)" [expanded]="step === 5" hideToggle>
             <mat-expansion-panel-header>
               <mat-panel-title>
-                Revisión de Salida
+                Check List - Salida
               </mat-panel-title>
               <mat-panel-description style="margin: 0; justify-content: flex-end;">
                 <ion-icon name="checkmark-circle"></ion-icon>
@@ -1046,13 +1089,13 @@
             </mat-action-row>
           </mat-expansion-panel>
         </div>
-      </mat-accordion> <!-- Revisión Salida -->
+      </mat-accordion> <!--   Check List - Salida -->
       <mat-accordion>
         <div class="accordion-margin">
           <mat-expansion-panel (opened)="setStep(6)" [expanded]="step === 6" hideToggle>
             <mat-expansion-panel-header>
               <mat-panel-title>
-                Captura de Firma
+                Firma
               </mat-panel-title>
               <mat-panel-description style="margin: 0; justify-content: flex-end;">
                 <ion-icon name="pencil"></ion-icon>

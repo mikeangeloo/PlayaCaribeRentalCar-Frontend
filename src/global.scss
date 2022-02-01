@@ -679,4 +679,79 @@ mat-header-row {
     color: darkred;
   }
 }
+
+.desgloce-cobro-table {
+
+  width: 100%;
+  border-left: 2px solid white;
+  border-right: 2px solid white;
+  border-top: 2px solid white;
+
+  th {
+    background: var(--ion-color-secondary);
+    color: white;
+    text-align: center;
+    font-weight: 500;
+    border: 1px solid white;
+  }
+
+  td {
+    text-align: center;
+    //border-bottom: 1px solid gray;
+    padding: 5px;
+  }
+
+
+  .table-input {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    position: relative;
+    width: 80%;
+    margin: 0 auto;
+    flex-direction: column;
+
+    input {
+      background: #bcd4ff52;
+      color: #464646;
+      padding-left: 12px;
+      border: none;
+      min-height: 35px;
+      text-align: center;
+      max-width: 80px;
+      width: 100%;
+      &:read-only {
+        background: #d9d9d945;
+      }
+    }
+
+    .input-prefix {
+      position: absolute;
+      right: 8%;
+      top: 7px;
+    }
+
+    .input-hint {
+      font-size: 10px;
+      color: var(--ion-color-medium);
+      text-align: left;
+      width: 100%;
+      margin: 0;
+    }
+  }
+
+  .error-feed {
+    text-align: left !important;
+    color: darkred;
+  }
+
+  .extra-row {
+    border-bottom: 1px solid gray;
+  }
+
+  .total-row {
+    border-top: 1.5px solid black;
+    font-weight: bold;
+  }
+}
 //#endregion

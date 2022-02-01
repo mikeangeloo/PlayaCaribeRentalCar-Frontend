@@ -30,7 +30,6 @@ export class TarifasExtrasTableComponent implements OnInit, OnChanges {
     'id',
     'nombre',
     'precio',
-    'iva',
     'activo',
     'created_at',
     'acciones'

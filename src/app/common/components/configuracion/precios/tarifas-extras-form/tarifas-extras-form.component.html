@@ -23,25 +23,18 @@
             <div class="form-content">
               <ion-row class="ion-no-padding ion-no-margin">
 
-                <ion-col size="12" size-md="4">
+                <ion-col size="12" size-md="6">
                   <mat-form-field appearance="legacy">
                     <mat-label>Nombre</mat-label>
                     <input matInput type="text" formControlName="nombre">
                     <mat-error *ngIf="tf.nombre.errors?.required">Campo requerido</mat-error>
                   </mat-form-field>
                 </ion-col>
-                <ion-col size="12" size-md="4">
+                <ion-col size="12" size-md="6">
                   <mat-form-field appearance="legacy">
                     <mat-label>Precio</mat-label>
                     <input matInput type="number" formControlName="precio">
                     <mat-error *ngIf="tf.precio.errors?.required">Campo requerido</mat-error>
-                  </mat-form-field>
-                </ion-col>
-                <ion-col size="12" size-md="4">
-                  <mat-form-field appearance="legacy">
-                    <mat-label>IVA</mat-label>
-                    <input matInput type="text" formControlName="iva">
-                    <mat-error *ngIf="tf.iva.errors?.required">Campo requerido</mat-error>
                   </mat-form-field>
                 </ion-col>
               </ion-row>
