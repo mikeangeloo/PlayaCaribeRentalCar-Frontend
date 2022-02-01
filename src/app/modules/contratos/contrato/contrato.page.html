@@ -143,7 +143,7 @@
                     <ion-col size="12" size-md="2">
                       <mat-form-field appearance="outline">
                         <mat-label>Tipo Tarifa</mat-label>
-                        <mat-select (selectionChange)="changeTipoTarifa();" formControlName="tipo_tarifa">
+                        <mat-select #tipoTarifa (selectionChange)="changeTipoTarifa();" formControlName="tipo_tarifa">
                           <mat-option *ngFor="let tarifa of tiposTarifas" [value]="tarifa.tarifa">{{tarifa.tarifa}}</mat-option>
                         </mat-select>
                       </mat-form-field>

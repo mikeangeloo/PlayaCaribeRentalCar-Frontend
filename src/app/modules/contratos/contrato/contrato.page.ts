@@ -179,6 +179,12 @@ export class ContratoPage implements OnInit, AfterViewInit {
       }, error => {
         console.log(error);
         this.sweetMsgServ.printStatusArray(error.error.errors, 'error');
+        this.contratosServ.flushContractData();
+
+        this.initGeneralForm();
+        this.initClientForm();
+        // TODO: cambiar por salida o llegada
+        this.initVehiculoForm('salida');
       }).add(() => {
         if (this.contractData.etapas_guardadas && this.contractData.etapas_guardadas.length > 0) {
           let _datosGeneralesEtapa = this.contractData.etapas_guardadas.find(x => x === 'datos_generales');
@@ -254,7 +260,8 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
     this.generalDataForm = this.fb.group({
       num_contrato: [(data && data.num_contrato ? data.num_contrato : null)],
-      vehiculo_id: [(data && data.vehiculo && data.vehiculo.id ? data.vehiculo.id : this.vehiculoData.id), Validators.required],
+      vehiculo_id: [(data && data.vehiculo && data.vehiculo.id ? data.vehiculo.id : (this.vehiculoData && this.vehiculoData.id) ? this.vehiculoData.id : null), Validators.required],
+      tipo_tarifa_id: [(data && data.tipo_tarifa_id) ? data.tipo_tarifa_id : null, Validators.required],
       tipo_tarifa: [(data && data.tipo_tarifa) ? data.tipo_tarifa : null, Validators.required],
       precio_unitario_inicial: [(data && data.precio_unitario_inicial ? data.precio_unitario_inicial : null)],
       precio_unitario_final: [(data && data.precio_unitario_final) ? data.precio_unitario_final : null],
@@ -677,6 +684,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
         case 'vehiculo':
           // TODO: arreglar cuando sea tipo salida o llegada
           this.vehiculoData = data;
+          this.gf.vehiculo_id.patchValue(this.vehiculoData.id);
           this.initVehiculoForm('salida', data);
           break;
       }
@@ -688,7 +696,8 @@ export class ContratoPage implements OnInit, AfterViewInit {
   //#region CALCULATION BUSINESS RULES
 
   changeTipoTarifa() {
-    console.log('test');
+    let _tipoTarifa = this.tiposTarifas.find(x => x.tarifa === this.gf.tipo_tarifa.value);
+    this.gf.tipo_tarifa_id.patchValue(_tipoTarifa.id);
     this.startDateChange();
     this.setReturnDateChange();
   }
@@ -735,7 +744,8 @@ export class ContratoPage implements OnInit, AfterViewInit {
         this.gf.precio_unitario_inicial.patchValue(this.vehiculoData.precio_renta);
         this.gf.precio_unitario_final.patchValue(this.vehiculoData.precio_renta);
 
-        let _tarifa = _tarifas.find(x => x.frecuencia_ref === this.baseRentFrequency);
+        let _tarifa = _tarifas.find(x => x.frecuencia_ref == this.baseRentFrequency);
+        console.log('tarifa baseRentFrequency -->', this.baseRentFrequency);
         console.log('tarifa select -->', _tarifa);
 
         this.cobranzaI.push({
@@ -853,6 +863,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
           return;
         }
         _payload = this.generalDataForm.value;
+        _payload.hora = DateConv.transFormDate(moment.now(), 'time');
         break;
       case 'datos_cliente':
         if (this.clienteDataForm.invalid) {
