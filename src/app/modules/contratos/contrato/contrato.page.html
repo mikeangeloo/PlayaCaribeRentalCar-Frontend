@@ -143,7 +143,7 @@
                     <ion-col size="12" size-md="2">
                       <mat-form-field appearance="outline">
                         <mat-label>Tipo Tarifa</mat-label>
-                        <mat-select #tipoTarifa (selectionChange)="changeTipoTarifa();" formControlName="tipo_tarifa">
+                        <mat-select #tipoTarifa (selectionChange)="initTipoTarifaRule();" formControlName="tipo_tarifa">
                           <mat-option *ngFor="let tarifa of tiposTarifas" [value]="tarifa.tarifa">{{tarifa.tarifa}}</mat-option>
                         </mat-select>
                       </mat-form-field>
@@ -152,7 +152,47 @@
                   <mat-divider></mat-divider>
                   <ion-row>
                     <ion-col size="12" size-md="6"> <!-- Fecha salida - retorno, aplicar iva, extras -->
+
+                      <ion-row *ngIf="gf.tipo_tarifa.value == 'Hotel'">
+                        <ion-col size="12" size-md="6">
+                          <mat-form-field appearance="legacy">
+                            <mat-label>Hotel</mat-label>
+                            <mat-select formControlName="tarifa_modelo_id" (selectionChange)="loadHotelTarifas()">
+                              <mat-option *ngFor="let hotel of hoteles" [value]="hotel.id">{{hotel.nombre}}</mat-option>
+                            </mat-select>
+                            <mat-error *ngIf="gf.tarifa_modelo_id.errors?.required">Campo requerido</mat-error>
+                          </mat-form-field>
+                        </ion-col>
+
+                        <ion-col size="12" size-md="6">
+                          <mat-form-field appearance="legacy">
+                            <mat-label>Vehículo Clase</mat-label>
+                            <mat-select formControlName="vehiculo_clase_id" (selectionChange)="setVehiculoClaseData()">
+                              <mat-option *ngFor="let clase of tarifasHotel" [value]="clase.clase_id">{{clase.clase}}</mat-option>
+                            </mat-select>
+                            <mat-error></mat-error>
+                          </mat-form-field>
+                        </ion-col>
+
+                        <ion-col size="12" size-md="6">
+                          <mat-form-field appearance="legacy">
+                            <mat-label>Folio Cupón</mat-label>
+                            <input matInput type="text" autocomplete="off" formControlName="folio_cupon">
+                            <mat-error></mat-error>
+                          </mat-form-field>
+                        </ion-col>
+
+                        <ion-col size="12" size-md="6">
+                          <mat-form-field appearance="legacy">
+                            <mat-label>Valor Cupón</mat-label>
+                            <input type="text" autocomplete="off" matInput formControlName="valor_cupon">
+                            <mat-error></mat-error>
+                          </mat-form-field>
+                        </ion-col>
+                      </ion-row>
+
                       <ion-row>
+
                         <ion-col size="12" size-md="6">
                           <mat-form-field appearance="legacy">
                             <mat-label>Fecha salida - retorno</mat-label>
@@ -167,6 +207,7 @@
                             <mat-error *ngIf="rangoFechas.fecha_retorno.errors?.required">La fecha de retorno es obligatoria</mat-error>
                           </mat-form-field>
                         </ion-col> <!-- Fecha salida - retorno -->
+
                         <ion-col size="12" size-md="6" class="ion-text-center ion-align-self-center">
                           <mat-checkbox
                                   class="example-margin"
@@ -177,6 +218,7 @@
                             Aplicar IVA ?
                           </mat-checkbox>
                         </ion-col> <!-- aplicar IVA -->
+
                         <ion-col size="12" size-md="6">
                           <mat-form-field appearance="legacy">
                             <mat-label>Extras</mat-label>
@@ -185,6 +227,7 @@
                             </mat-select>
                           </mat-form-field>
                         </ion-col> <!-- Extras -->
+
                       </ion-row>
                       <mat-divider></mat-divider>
                       <ion-row>

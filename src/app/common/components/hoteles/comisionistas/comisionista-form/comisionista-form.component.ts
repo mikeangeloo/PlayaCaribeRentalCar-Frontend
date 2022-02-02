@@ -117,7 +117,7 @@ export class ComisionistaFormComponent implements OnInit {
     try {
       let _reponse = await this.empresasServ.getActive();
       if (_reponse.ok) {
-        this.empresasList = _reponse.empresas
+        this.empresasList = _reponse.hoteles
       }
     } catch (e) {
       console.log(e);

@@ -2,6 +2,7 @@ import {CategoriasVehiculosI} from "./categorias-vehiculos.interface";
 import {MarcasVehiculosI} from "./marcas-vehiculos.interface";
 import {VehiculosStatusE} from "../../enums/vehiculos-status.enum";
 import {TarifaApolloI} from '../tarifas/tarifa-apollo.interface';
+import {ClasesVehiculosI} from './clases-vehiculos.interface';
 
 export interface VehiculosI
 {
@@ -29,6 +30,8 @@ export interface VehiculosI
   precio_renta?: number;
 
   tarifas?: TarifaApolloI[];
+  clase_id?: number;
+  clase?: ClasesVehiculosI;
 }
 
 export class VehiculosC

@@ -26,6 +26,11 @@ import {TarifasExtrasI} from '../../../interfaces/configuracion/tarifas-extras.i
 import {TarifasExtrasService} from '../../../services/tarifas-extras.service';
 import {DateTransform} from '../../../helpers/date-trans';
 import {CobranzaI} from '../../../interfaces/contratos/cobranza-calc.interface';
+import {HotelesI} from '../../../interfaces/hoteles/hoteles.interface';
+import {HotelesService} from '../../../services/hoteles.service';
+import {TarifaHotelesI} from '../../../interfaces/tarifas/tarifa-hoteles.interface';
+import {ClasesVehiculosI} from '../../../interfaces/catalogo-vehiculos/clases-vehiculos.interface';
+import {TarifaApolloI} from '../../../interfaces/tarifas/tarifa-apollo.interface';
 
 @Component({
   selector: 'app-contrato',
@@ -47,6 +52,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
   public txtConv = TxtConv;
   public dateConv = DateConv;
   public statusC = ContratosStatus;
+
 
 
   contractType: string;
@@ -121,12 +127,11 @@ export class ContratoPage implements OnInit, AfterViewInit {
   ];
 
   tarifasExtras: TarifasExtrasI[];
-  //selectedExtras: TarifasExtrasI[];
-  //selectedExtrasIds: number[];
-
   public tiposTarifas: TiposTarifasI[];
-  public _selectedTarifa: string;
   public cobranzaI: CobranzaI[] = [];
+
+  public hoteles: HotelesI[];
+  public tarifasHotel: TarifaHotelesI[];
 
   //#endregion
 
@@ -143,7 +148,8 @@ export class ContratoPage implements OnInit, AfterViewInit {
     public contratosServ: ContratosService,
     public filesServ: FilesService,
     public tiposTarifasServ: TiposTarifasService,
-    public tarifasExtrasServ: TarifasExtrasService
+    public tarifasExtrasServ: TarifasExtrasService,
+    public hotelesServ: HotelesService
   ) { }
 
   ngOnInit() {
@@ -152,17 +158,17 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
   }
 
-  ionViewWillEnter() {
+  async ionViewWillEnter() {
     console.log('view enter');
     this.loadTiposTarifas();
     this.loadTarifasExtras();
+    await this.loadHoteles();
     this.reloadAll();
   }
 
   reloadAll() {
     // verificamos si tenemos guardado un contract_id en local storage para continuar con la edición
     if (this.contratosServ.getContractNumber()) {
-      //this.contract_id = this.contratosServ.getContractData().id;
       this.num_contrato = this.contratosServ.getContractNumber();
 
       this.contratosServ.getContractData(this.num_contrato).subscribe(res => {
@@ -259,6 +265,14 @@ export class ContratoPage implements OnInit, AfterViewInit {
       vehiculo_id: [(data && data.vehiculo && data.vehiculo.id ? data.vehiculo.id : (this.vehiculoData && this.vehiculoData.id) ? this.vehiculoData.id : null), Validators.required],
       tipo_tarifa_id: [(data && data.tipo_tarifa_id) ? data.tipo_tarifa_id : null, Validators.required],
       tipo_tarifa: [(data && data.tipo_tarifa) ? data.tipo_tarifa : null, Validators.required],
+
+      tarifa_modelo_id: [(data && data.tarifa_modelo_id) ? data.tarifa_modelo_id : null],
+      tarifa_modelo: [(data && data.tarifa_modelo) ? data.tarifa_modelo : null],
+      vehiculo_clase_id: [(data && data.vehiculo_clase_id) ? data.vehiculo_clase_id : null],
+      vehiculo_clase: [(data && data.vehiculo_clase) ? data.vehiculo_clase : null],
+      vehiculo_clase_precio: [(data && data.vehiculo_clase_precio) ? data.vehiculo_clase_precio : null],
+      comision: [(data && data.comision) ? data.comision : null],
+
       precio_unitario_inicial: [(data && data.precio_unitario_inicial ? data.precio_unitario_inicial : null)],
       precio_unitario_final: [(data && data.precio_unitario_final) ? data.precio_unitario_final : null],
 
@@ -275,6 +289,9 @@ export class ContratoPage implements OnInit, AfterViewInit {
       iva: [(data && data.iva ? data.iva : null)],
       iva_monto: [(data && data.iva_monto ? data.iva_monto : null)],
       total: [(data && data.total ? data.total : null), Validators.required],
+
+      folio_cupon: [(data && data.folio_cupon ? data.folio_cupon : null)],
+      valor_cupon: [(data && data.valor_cupon ? data.valor_cupon : null)],
 
       cobranza_calc: [(data && data.cobranza_calc ? data.cobranza_calc : null), Validators.required],
 
@@ -294,6 +311,9 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
     if (data && data.cobranza_calc && data.cobranza_calc.length) {
       this.cobranzaI = data.cobranza_calc;
+    }
+    if (data && data.fecha_salida) {
+      this._today = data.fecha_salida;
     }
   }
 
@@ -400,6 +420,19 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
   get vf() {
     return this.vehiculoForm.controls;
+  }
+
+  //#endregion
+
+  //#region HOTELES FUNCTIONS
+  async loadHoteles() {
+    let res = await this.hotelesServ.getActive();
+    if (res.ok) {
+      this.hoteles = res.hoteles;
+    } else {
+      this.sweetMsgServ.printStatus('No hay hoteles dados de alta', 'warning');
+      return;
+    }
   }
   //#endregion
 
@@ -701,6 +734,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
           // TODO: arreglar cuando sea tipo salida o llegada
           this.vehiculoData = data;
           this.gf.vehiculo_id.patchValue(this.vehiculoData.id);
+          this.initTipoTarifaRule();
           this.initVehiculoForm('salida', data);
           break;
       }
@@ -711,16 +745,80 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
   //#region CALCULATION BUSINESS RULES
 
-  changeTipoTarifa() {
+  resetVehiculoTarifas() {
+    this.gf.tarifa_modelo_id.patchValue(null);
+    this.gf.tarifa_modelo.patchValue(null);
+    this.gf.vehiculo_clase_id.patchValue(null);
+    this.gf.vehiculo_clase.patchValue(null);
+    this.gf.vehiculo_clase_precio.patchValue(null);
+    this.gf.comision.patchValue(null);
+
+    if (this.vehiculoData) {
+      this.gf.vehiculo_clase_id.patchValue(this.vehiculoData.clase_id);
+      this.gf.vehiculo_clase.patchValue(this.vehiculoData.clase.clase);
+      this.gf.vehiculo_clase_precio.patchValue(this.vehiculoData.precio_renta);
+    }
+    let _tipoTarifa = this.tiposTarifas.find(x => x.tarifa === this.gf.tipo_tarifa.value);
+    switch (TxtConv.txtCon(_tipoTarifa.tarifa, 'uppercase')) {
+      case 'APOLLO':
+        this.gf.tarifa_modelo_id.patchValue(null);
+        this.gf.tarifa_modelo.patchValue('apollo');
+        break;
+      case 'HOTEL':
+        this.gf.tarifa_modelo.patchValue('hoteles');
+        break;
+    }
+  }
+
+  async initTipoTarifaRule() {
     let _tipoTarifa = this.tiposTarifas.find(x => x.tarifa === this.gf.tipo_tarifa.value);
     this.gf.tipo_tarifa_id.patchValue(_tipoTarifa.id);
+
+    this.resetVehiculoTarifas();
+    // this.gf.comision.patchValue(0);
+    //
+    // if (!this.gf.vehiculo_clase_id.value) {
+    //   if (this.vehiculoData && this.vehiculoData.clase_id) {
+    //     this.gf.vehiculo_clase_id.patchValue(this.vehiculoData.clase_id);
+    //   }
+    // }
+
+
     this.startDateChange();
     this.setReturnDateChange();
   }
 
+  loadHotelTarifas() {
+    let _hotelTarifas = this.hoteles.find(x => x.id === this.gf.tarifa_modelo_id.value);
+    if (_hotelTarifas) {
+      this.tarifasHotel = _hotelTarifas.tarifas;
+    }
+    if (this.tarifasHotel && this.tarifasHotel.length === 0) {
+      this.sweetMsgServ.printStatus('Este hotel no tiene un plan tarifario configurado, comunicate con el administrador', 'warning');
+      this.gf.tarifa_modelo_id.patchValue(null);
+      return;
+    }
+    if (this.gf.vehiculo_clase_id.value) {
+      this.setVehiculoClaseData();
+    }
+  }
+
+  setVehiculoClaseData() {
+    let _clases = this.tarifasHotel.find(x => x.clase_id === this.gf.vehiculo_clase_id.value);
+    if (_clases) {
+      this.gf.vehiculo_clase.patchValue(_clases.clase);
+      this.gf.vehiculo_clase_precio.patchValue(_clases.precio);
+      this.gf.precio_unitario_final.patchValue(_clases.precio);
+
+      this.initTipoTarifaRule();
+    }
+  }
+
   startDateChange() {
     console.log('startDateChange');
-    this.rangoFechas.fecha_salida.patchValue(this._today);
+    if (!this.rangoFechas.fecha_salida.value) {
+      this.rangoFechas.fecha_salida.patchValue(this._today);
+    }
   }
 
   setReturnDateChange() {
@@ -734,29 +832,21 @@ export class ContratoPage implements OnInit, AfterViewInit {
     this.makeCalc();
   }
 
-  pushSelectedExtras() {
-    let _ids = this.gf.cobros_extras_ids.value;
-    this.gf.cobros_extras.setValue(null);
-    let _extrasObj = []
-    for (let i = 0; i < _ids.length; i ++) {
-      let _extra = this.tarifasExtras.find(x => x.id == _ids[i]);
-      if (_extra) {
-       _extrasObj.push(_extra);
-      }
-    }
-    if (_extrasObj && _extrasObj.length > 0) {
-      this.gf.cobros_extras.setValue(_extrasObj);
-    }
-    this.makeCalc();
-  }
-
   makeCalc(elementType?: string, cobro?: CobranzaI) {
     if (this.gf.tipo_tarifa.invalid) {
       this.sweetMsgServ.printStatus('Selecciona el tipo de tarífa', 'warning');
       this.gf.tipo_tarifa.markAllAsTouched();
       return;
     }
+    if (this.gf.vehiculo_id.invalid) {
+      this.sweetMsgServ.printStatus('Selecciona un vehículo primero', 'warning');
+      this.gf.vehiculo_id.markAllAsTouched();
+      return;
+    }
+
     this.cobranzaI = [];
+    let _totalDias = this.gf.total_dias.value;
+
     switch (TxtConv.txtCon(this.gf.tipo_tarifa.value, 'uppercase')) {
       case 'APOLLO':
         console.log('tipo de tarifa apollo');
@@ -770,7 +860,6 @@ export class ContratoPage implements OnInit, AfterViewInit {
         this.gf.precio_unitario_inicial.patchValue(this.vehiculoData.precio_renta);
         this.gf.precio_unitario_final.patchValue(this.vehiculoData.precio_renta);
 
-        let _totalDias = this.gf.total_dias.value;
         if (_totalDias < 7) {
           this.baseRentFrequency = 'days';
         } else if (_totalDias >= 7 && _totalDias < 30) {
@@ -807,6 +896,25 @@ export class ContratoPage implements OnInit, AfterViewInit {
             currency: this.baseCurrency
           })
         }
+        break;
+      case 'HOTEL':
+        if (this.gf.tarifa_modelo_id.invalid) {
+          this.sweetMsgServ.printStatus('Seccione un hotel de la lista', 'warning');
+          this.gf.tarifa_modelo_id.markAllAsTouched();
+          return;
+        }
+        let _precioUnitario = this.gf.precio_unitario_final.value;
+
+        this.cobranzaI.push({
+          element: 'renta',
+          value: _precioUnitario,
+          quantity: _totalDias,
+          quantity_type: 'dias',
+          element_label: 'Renta',
+          number_sign: 'positive',
+          amount: parseFloat(Number(_precioUnitario * _totalDias).toFixed(2)),
+          currency: this.baseCurrency
+        });
         break;
       default:
         this.gf.tipo_tarifa.markAllAsTouched();
@@ -898,6 +1006,22 @@ export class ContratoPage implements OnInit, AfterViewInit {
     this.gf.total.patchValue(_total);
     this.gf.cobranza_calc.patchValue(this.cobranzaI);
   }
+
+  pushSelectedExtras() {
+    let _ids = this.gf.cobros_extras_ids.value;
+    this.gf.cobros_extras.setValue(null);
+    let _extrasObj = []
+    for (let i = 0; i < _ids.length; i ++) {
+      let _extra = this.tarifasExtras.find(x => x.id == _ids[i]);
+      if (_extra) {
+        _extrasObj.push(_extra);
+      }
+    }
+    if (_extrasObj && _extrasObj.length > 0) {
+      this.gf.cobros_extras.setValue(_extrasObj);
+    }
+    this.makeCalc();
+  }
   //#endregion
 
   saveProcess(section: 'datos_generales' | 'datos_cliente' | 'datos_vehiculo') {
@@ -943,7 +1067,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
     _payload.seccion = section;
     _payload.num_contrato = this.num_contrato;
     console.log(section + '--->', _payload);
-
+    return;
     this.contratosServ.saveProgress(_payload).subscribe(res => {
       if (res.ok) {
         this.sweetMsgServ.printStatus(res.message, 'success');
