@@ -157,7 +157,7 @@
                         <ion-col size="12" size-md="6">
                           <mat-form-field appearance="legacy">
                             <mat-label>Hotel</mat-label>
-                            <mat-select formControlName="tarifa_modelo_id" (selectionChange)="loadHotelTarifas()">
+                            <mat-select formControlName="tarifa_modelo_id" (selectionChange)="loadHotelTarifas(true)">
                               <mat-option *ngFor="let hotel of hoteles" [value]="hotel.id">{{hotel.nombre}}</mat-option>
                             </mat-select>
                             <mat-error *ngIf="gf.tarifa_modelo_id.errors?.required">Campo requerido</mat-error>
@@ -167,7 +167,7 @@
                         <ion-col size="12" size-md="6">
                           <mat-form-field appearance="legacy">
                             <mat-label>Vehículo Clase</mat-label>
-                            <mat-select formControlName="vehiculo_clase_id" (selectionChange)="setVehiculoClaseData()">
+                            <mat-select formControlName="vehiculo_clase_id" (selectionChange)="setVehiculoClaseData(true)">
                               <mat-option *ngFor="let clase of tarifasHotel" [value]="clase.clase_id">{{clase.clase}}</mat-option>
                             </mat-select>
                             <mat-error></mat-error>
