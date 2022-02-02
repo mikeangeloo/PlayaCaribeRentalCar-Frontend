@@ -413,14 +413,14 @@
                     <ion-col>
                       <mat-form-field appearance="legacy">
                         <mat-label>NOMBRE(S)</mat-label>
-                        <input type="text" matInput formControlName="nombre">
+                        <input type="text" matInput formControlName="nombre" autocomplete="off">
                         <mat-error *ngIf="cf.nombre.errors?.required">Campo requerido</mat-error>
                       </mat-form-field>
                     </ion-col>
                     <ion-col>
                       <mat-form-field appearance="legacy">
                         <mat-label>APELLIDO(S)</mat-label>
-                        <input type="text" matInput formControlName="apellidos">
+                        <input type="text" matInput formControlName="apellidos" autocomplete="off">
                         <mat-error *ngIf="cf.apellidos.errors?.required">Campo requerido</mat-error>
                       </mat-form-field>
                     </ion-col>
@@ -430,14 +430,14 @@
                     <ion-col>
                       <mat-form-field appearance="legacy">
                         <mat-label>TELÉFONO</mat-label>
-                        <input type="tel" matInput formControlName="telefono">
+                        <input type="tel" matInput formControlName="telefono" autocomplete="off">
                         <mat-error *ngIf="cf.telefono.errors?.required">Campo requerido</mat-error>
                       </mat-form-field>
                     </ion-col>
                     <ion-col>
                       <mat-form-field appearance="legacy">
                         <mat-label>E-Mail</mat-label>
-                        <input type="email" matInput formControlName="email">
+                        <input type="email" matInput formControlName="email" autocomplete="off">
                         <mat-error *ngIf="cf.email.errors?.required">Campo requerido</mat-error>
                         <mat-error *ngIf="cf.email.errors?.email">Email invalido</mat-error>
                       </mat-form-field>
@@ -448,7 +448,7 @@
                     <ion-col>
                       <mat-form-field appearance="legacy">
                         <mat-label>DIRECCIÓN</mat-label>
-                        <textarea matInput formControlName="direccion"></textarea>
+                        <textarea matInput formControlName="direccion" autocomplete="off"></textarea>
                         <mat-error *ngIf="cf.direccion.errors?.required">Campo requerido</mat-error>
                       </mat-form-field>
                     </ion-col>
@@ -458,14 +458,14 @@
                     <ion-col>
                       <mat-form-field appearance="legacy">
                         <mat-label>Número de Licencia</mat-label>
-                        <input type="number" matInput formControlName="num_licencia">
+                        <input type="text" matInput formControlName="num_licencia" autocomplete="off">
                         <mat-error *ngIf="cf.num_licencia.errors?.required">Campo requerido</mat-error>
                       </mat-form-field>
                     </ion-col>
                     <ion-col>
                       <mat-form-field appearance="legacy">
                         <mat-label>Mes Exp.</mat-label>
-                        <mat-select formControlName="licencia_mes">
+                        <mat-select formControlName="licencia_mes" autocomplete="off">
                           <mat-option *ngFor="let month of months" value="{{month.digit}}">{{month.month}}</mat-option>
                         </mat-select>
                         <mat-icon matSuffix>date_range</mat-icon>
@@ -475,7 +475,7 @@
                     <ion-col>
                       <mat-form-field appearance="legacy">
                         <mat-label>Año expiración</mat-label>
-                        <mat-select formControlName="licencia_ano">
+                        <mat-select formControlName="licencia_ano" autocomplete="off">
                           <mat-option *ngFor="let year of validYears" value="{{year}}">{{year}}</mat-option>
                         </mat-select>
                         <mat-icon matSuffix>date_range</mat-icon>
@@ -533,7 +533,7 @@
 <!--                            <ion-icon class="wrong-upload" name="close-sharp" *ngIf="imgData.success === false"></ion-icon>-->
                             <div class="file-name">
                               <label for="">Etiqueta</label>
-                              <input type="text" value="{{imgData.etiqueta}}" [(ngModel)]="imgData.etiqueta" [disabled]="(imgData.file_id && imgData.file_id > 0 ? true : false)">
+                              <input type="text" autocomplete="off" value="{{imgData.etiqueta}}" [(ngModel)]="imgData.etiqueta" [disabled]="(imgData.file_id && imgData.file_id > 0 ? true : false)">
                               <small class="error" *ngIf="imgData.fileErrors">{{imgData.fileErrors}}</small>
                             </div>
                           </div>

@@ -156,7 +156,10 @@ export class ContratoPage implements OnInit, AfterViewInit {
     console.log('view enter');
     this.loadTiposTarifas();
     this.loadTarifasExtras();
+    this.reloadAll();
+  }
 
+  reloadAll() {
     // verificamos si tenemos guardado un contract_id en local storage para continuar con la edición
     if (this.contratosServ.getContractNumber()) {
       //this.contract_id = this.contratosServ.getContractData().id;
@@ -218,7 +221,6 @@ export class ContratoPage implements OnInit, AfterViewInit {
       this.initVehiculoForm('salida');
     }
   }
-
   ngAfterViewInit() {
     setTimeout(() => {
       this.initReviewCanva();
@@ -948,6 +950,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
         //this.contract_id = res.id;
         this.num_contrato = res.contract_number;
         this.contratosServ.setContractData(this.num_contrato);
+        this.reloadAll();
       }
     }, error => {
       console.log(error);
