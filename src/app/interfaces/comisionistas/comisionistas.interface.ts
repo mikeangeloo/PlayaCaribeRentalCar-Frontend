@@ -1,4 +1,4 @@
-import {EmpresasI} from "../empresas/empresas.interface";
+import {HotelesI} from "../hoteles/hoteles.interface";
 
 export interface ComisionistasI
 {
@@ -13,5 +13,5 @@ export interface ComisionistasI
   activo?: number;
   created_at?: Date;
   updated_at?: Date;
-  empresa?: EmpresasI;
+  empresa?: HotelesI;
 }

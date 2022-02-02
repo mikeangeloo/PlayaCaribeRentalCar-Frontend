@@ -1,16 +1,16 @@
 import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild} from '@angular/core';
-import {EmpresasI} from "../../../../../interfaces/empresas/empresas.interface";
+import {HotelesI} from "../../../../../interfaces/hoteles/hoteles.interface";
 import {MatTableDataSource} from "@angular/material/table";
 import {MatPaginator} from "@angular/material/paginator";
 import {MatSort} from "@angular/material/sort";
 import {GeneralService} from "../../../../../services/general.service";
-import {EmpresasService} from "../../../../../services/empresas.service";
+import {HotelesService} from "../../../../../services/hoteles.service";
 import {ActionSheetController, ModalController, NavController} from "@ionic/angular";
 import {SweetMessagesService} from "../../../../../services/sweet-messages.service";
 import {ToastMessageService} from "../../../../../services/toast-message.service";
 import * as moment from "moment";
 import {TxtConv} from "../../../../../helpers/txt-conv";
-import {EmpresaFormComponent} from "../../../empresas/listado-empresas/empresa-form/empresa-form.component";
+import {HotelFormComponent} from "../../../hoteles/listado-hoteles/hotel-form/hotel-form.component";
 import {SucursalesI} from "../../../../../interfaces/sucursales.interface";
 import {SucursalesService} from "../../../../../services/sucursales.service";
 import {SucursalFormComponent} from "../sucursal-form/sucursal-form.component";
@@ -81,7 +81,7 @@ export class SucursalesListComponent implements OnInit, OnChanges {
 
   // Método para cargar datos de los campus
   loadSucursalesTable(_sucursales?: SucursalesI[]) {
-    //this.listado-empresas = null;
+    //this.listado-hoteles = null;
     this.listSucursales = null;
     this.initSucursales();
     this.spinner = true;

@@ -79,7 +79,7 @@ export class ClientesTableComponent implements OnInit {
 
   // Método para cargar datos de los campus
   loadClientesTable(_data?: ClientesI[]) {
-    //this.listado-empresas = null;
+    //this.listado-hoteles = null;
     this.listClientes = null;
     this.initClientes();
     this.spinner = true;

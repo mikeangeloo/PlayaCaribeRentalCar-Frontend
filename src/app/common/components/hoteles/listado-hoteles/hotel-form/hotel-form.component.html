@@ -21,7 +21,13 @@
           <div class="title-container">
           </div>
 
-          <form [formGroup]="empresaForm">
+          <ion-row>
+            <ion-col size="12" class="ion-text-end">
+              <button mat-raised-button class="button-success" (click)="saveUpdate()">Guardar</button>
+            </ion-col>
+          </ion-row>
+
+          <form [formGroup]="hotelForm">
             <div class="form-content">
               <ion-row class="ion-no-padding ion-no-margin">
 
@@ -73,57 +79,62 @@
                   </mat-form-field>
                 </ion-col>
               </ion-row>
+              <ion-row  class="ion-no-padding ion-no-margin">
+                <ion-col size="12">
+                  <mat-checkbox
+                          class="example-margin"
+                          [labelPosition]="'after'"
+                          formControlName="paga_cupon"
+                  > ¿Puede aplicar cupón?
+                  </mat-checkbox>
+                </ion-col>
+              </ion-row>
               <br />
-              <ion-button class="btn-shadow" color="secondary" expand="full" (click)="saveUpdate()">
-               Guardar
-              </ion-button>
+<!--              <ion-button class="btn-shadow" color="secondary" expand="full" (click)="saveUpdate()">-->
+<!--               Guardar-->
+<!--              </ion-button>-->
             </div>
           </form>
 
         </ion-col>
       </ion-row>
-    </ion-card-content>
-  </ion-card>
 
-  <ion-item-divider></ion-item-divider>
-
-  <ion-card>
-    <ion-card-content>
-      <h4 class="title2">Listado de comisionistas</h4>
       <ion-row>
-        <ion-col size="12">
-          <ion-button color="success" size="small" (click)="openComisionistaForm()">
-            <ion-icon name="add"></ion-icon>
-          </ion-button>
+        <ion-col size="6">
+          <h2>Tarifas</h2>
         </ion-col>
-      </ion-row>
-      <ion-row *ngIf="empresaData && (empresaData.comisionistas && empresaData.comisionistas.length > 0)">
         <ion-col size="12">
           <table class="complement-table">
             <thead>
             <tr>
-              <th>Nombre</th>
-              <th>Comisiones</th>
-              <th></th>
+              <th>Clase Vehículo</th>
+              <th>Precio</th>
             </tr>
             </thead>
             <tbody>
-            <tr *ngFor="let cm of empresaData.comisionistas">
-              <td>{{cm.nombre}} {{cm.apellidos}}</td>
-              <td>{{cm.comisiones_pactadas}}</td>
-              <td>
-                <ion-button fill="clear" (click)="openComisionistaForm(cm)">
-                  <ion-icon name="create-outline"></ion-icon>
-                </ion-button>
-              </td>
-            </tr>
+            <ng-container *ngFor="let tHotel of tarifasHotelPayload">
+              <tr>
+                <td>{{tHotel.clase}}</td>
+                <td>
+                  <div class="table-input">
+                    <input type="text" autocomplete="off" [ngModel]="tHotel.precio | currency" [ngModelOptions]="{updateOn:'blur'}"
+                           (ngModelChange)="captureFinalPrice(tHotel, $event)">
+                  </div>
+                </td>
+              </tr>
+              <tr *ngIf="tHotel.errors && tHotel.errors.length > 0" class="error-feed">
+                <td colspan="5">
+                  <ul style="text-align: left">
+                    <li *ngFor="let error of tHotel.errors">
+                      {{error}}
+                    </li>
+                  </ul>
+                </td>
+              </tr>
+            </ng-container>
+
             </tbody>
           </table>
-        </ion-col>
-      </ion-row>
-      <ion-row *ngIf="empresaData && (empresaData.comisionistas && empresaData.comisionistas.length === 0)">
-        <ion-col size="12">
-          <h4 class="title2">No hay comisionistas registrados</h4>
         </ion-col>
       </ion-row>
     </ion-card-content>

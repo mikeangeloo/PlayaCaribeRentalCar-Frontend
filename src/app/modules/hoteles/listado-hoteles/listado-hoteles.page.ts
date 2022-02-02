@@ -3,10 +3,10 @@ import {ModalController} from "@ionic/angular";
 
 @Component({
   selector: 'app-empresas',
-  templateUrl: './listado-empresas.page.html',
-  styleUrls: ['./listado-empresas.page.scss'],
+  templateUrl: './listado-hoteles.page.html',
+  styleUrls: ['./listado-hoteles.page.scss'],
 })
-export class ListadoEmpresasPage implements OnInit {
+export class ListadoHotelesPage implements OnInit {
 
   constructor(
     public modalCtrl: ModalController,

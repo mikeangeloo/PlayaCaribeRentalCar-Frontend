@@ -79,7 +79,7 @@ export class TarifasExtrasTableComponent implements OnInit, OnChanges {
   // Método para cargar datos de los campus
   loadTarifasExtrasTable(_data?: TarifasExtrasI[]) {
     console.log('ready');
-    //this.listado-empresas = null;
+    //this.listado-hoteles = null;
     this.listTarifasExtras = null;
     this.initTarifasExtras();
     this.spinner = true;

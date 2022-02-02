@@ -75,7 +75,7 @@ export class ClasesVehiculosTableComponent implements OnInit {
 
   // Método para cargar datos de los campus
   loadClasesVehiculosTable(_data?: ClasesVehiculosI[]) {
-    //this.listado-empresas = null;
+    //this.listado-hoteles = null;
     this.listClasVehiculos = null;
     this.initClassVehiculos();
     this.spinner = true;

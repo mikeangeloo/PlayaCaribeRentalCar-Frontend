@@ -166,26 +166,26 @@ export class AppComponent implements OnDestroy {
           ]
         },
         {
-          module: 'empresas',
+          module: 'hoteles',
           icon: 'business',
-          label: 'Empresas',
+          label: 'Hoteles',
           route: null,
           level: 1,
           active: false,
           children: [
             {
-              module: 'empresas',
+              module: 'hoteles',
               icon: 'business',
-              label: 'Listado de Empresas',
-              route: 'administracion/empresas/listado-empresas',
+              label: 'Listado de Hoteles',
+              route: 'administracion/hoteles/listado-hoteles',
               level: 2,
               active: false,
             },
             {
-              module: 'empresas',
+              module: 'hoteles',
               icon: 'wallet-outline',
               label: 'Listado de Comisionistas',
-              route: 'administracion/empresas/listado-comisionistas',
+              route: 'administracion/hoteles/listado-comisionistas',
               level: 2,
               active: false,
             }

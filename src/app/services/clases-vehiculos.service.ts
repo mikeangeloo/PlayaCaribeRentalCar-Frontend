@@ -39,6 +39,18 @@ export class ClasesVehiculosService {
     }));
   }
 
+  public async _getActive() {
+    try {
+      let res = await this.httpClient.get<any>(`${this.dashURL}/clases-vehiculos`).toPromise();
+      if (res.ok) {
+        return {ok: true, datas: res.datas}
+      }
+    } catch (e) {
+      return {ok: false, error: e}
+    }
+
+  }
+
   public getDataById(id): Observable<any> {
     return this.httpClient.get<any>(`${this.dashURL}/clases-vehiculos/${id}`).pipe(map(response => {
       return response;

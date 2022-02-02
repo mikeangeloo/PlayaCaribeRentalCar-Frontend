@@ -1,11 +1,11 @@
 import { NgModule } from '@angular/core';
 import {CommonModule, CurrencyPipe} from '@angular/common';
-import {EmpresasListComponent} from "./components/empresas/listado-empresas/empresas-list/empresas-list.component";
+import {HotelesListComponent} from "./components/hoteles/listado-hoteles/hoteles-list/hoteles-list.component";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {MaterialModule} from "../material/material.module";
 import {IonicModule} from "@ionic/angular";
 import {RouterModule} from "@angular/router";
-import {EmpresaFormComponent} from "./components/empresas/listado-empresas/empresa-form/empresa-form.component";
+import {HotelFormComponent} from "./components/hoteles/listado-hoteles/hotel-form/hotel-form.component";
 import {SucursalesListComponent} from "./components/control-accesso/sucursales/sucursales-list/sucursales-list.component";
 import {SucursalFormComponent} from "./components/control-accesso/sucursales/sucursal-form/sucursal-form.component";
 import {MarcasVehiculosListComponent} from "./components/marcas-vehiculos/marcas-vehiculos-list/marcas-vehiculos-list.component";
@@ -20,8 +20,8 @@ import {RolesListComponent} from "./components/control-accesso/roles/roles-list/
 import {RolFormComponent} from "./components/control-accesso/roles/rol-form/rol-form.component";
 import {VehiculosListComponent} from "./components/vehiculos/vehiculos-list/vehiculos-list.component";
 import {VehiculoFormComponent} from "./components/vehiculos/vehiculo-form/vehiculo-form.component";
-import {ComisionistasTableComponent} from "./components/empresas/comisionistas/comisionistas-table/comisionistas-table.component";
-import {ComisionistaFormComponent} from "./components/empresas/comisionistas/comisionista-form/comisionista-form.component";
+import {ComisionistasTableComponent} from "./components/hoteles/comisionistas/comisionistas-table/comisionistas-table.component";
+import {ComisionistaFormComponent} from "./components/hoteles/comisionistas/comisionista-form/comisionista-form.component";
 import {ClientesTableComponent} from "./components/clientes/clientes-table/clientes-table.component";
 import {ClienteFormComponent} from "./components/clientes/cliente-form/cliente-form.component";
 import {TarjetaFormComponent} from "./components/tarjetas/tarjeta-form/tarjeta-form.component";
@@ -38,8 +38,8 @@ import {TarifasExtrasTableComponent} from './components/configuracion/precios/ta
 
 @NgModule({
   declarations: [
-    EmpresasListComponent,
-    EmpresaFormComponent,
+    HotelesListComponent,
+    HotelFormComponent,
     SucursalesListComponent,
     SucursalFormComponent,
     MarcasVehiculosListComponent,
@@ -68,8 +68,8 @@ import {TarifasExtrasTableComponent} from './components/configuracion/precios/ta
     TarifasExtrasTableComponent
   ],
   exports: [
-    EmpresasListComponent,
-    EmpresaFormComponent,
+    HotelesListComponent,
+    HotelFormComponent,
     SucursalesListComponent,
     SucursalFormComponent,
     MarcasVehiculosListComponent,
@@ -98,8 +98,8 @@ import {TarifasExtrasTableComponent} from './components/configuracion/precios/ta
     TarifasExtrasTableComponent
   ],
   entryComponents: [
-    EmpresasListComponent,
-    EmpresaFormComponent,
+    HotelesListComponent,
+    HotelFormComponent,
     SucursalesListComponent,
     SucursalFormComponent,
     MarcasVehiculosListComponent,

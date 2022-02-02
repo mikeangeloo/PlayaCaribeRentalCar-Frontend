@@ -69,14 +69,14 @@ const routes: Routes = [
           },
           //endregion
 
-          //region EMPRESAS
+          //region HOTELES
           {
-            path: 'administracion/empresas/listado-empresas',
-            loadChildren: () => import('./modules/empresas/listado-empresas/listado-empresas.module').then(m => m.ListadoEmpresasPageModule)
+            path: 'administracion/hoteles/listado-hoteles',
+            loadChildren: () => import('./modules/hoteles/listado-hoteles/listado-hoteles.module').then(m => m.ListadoHotelesPageModule)
           },
           {
-            path: 'administracion/empresas/listado-comisionistas',
-            loadChildren: () => import('./modules/empresas/comisionistas/comisionistas.module').then(m => m.ComisionistasPageModule)
+            path: 'administracion/hoteles/listado-comisionistas',
+            loadChildren: () => import('./modules/hoteles/comisionistas/comisionistas.module').then(m => m.ComisionistasPageModule)
           },
           //endregion
 

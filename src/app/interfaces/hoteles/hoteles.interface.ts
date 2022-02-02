@@ -1,6 +1,7 @@
-import {ComisionistasI} from "../comisionistas/comisionistas.interface";
+import {TarifaHotelesI} from '../tarifas/tarifa-hoteles.interface';
 
-export interface EmpresasI
+
+export interface HotelesI
 {
   id: number;
   nombre?: string;
@@ -11,5 +12,6 @@ export interface EmpresasI
   created_at?: string;
   updated_at?: string;
   paga_cupon?: boolean;
-  comisionistas?: ComisionistasI[]
+
+  tarifas?: TarifaHotelesI[];
 }

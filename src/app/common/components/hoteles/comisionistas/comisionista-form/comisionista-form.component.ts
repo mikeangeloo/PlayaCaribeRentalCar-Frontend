@@ -1,8 +1,8 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
-import {EmpresasI} from "../../../../../interfaces/empresas/empresas.interface";
+import {HotelesI} from "../../../../../interfaces/hoteles/hoteles.interface";
 import {ModalController} from "@ionic/angular";
-import {EmpresasService} from "../../../../../services/empresas.service";
+import {HotelesService} from "../../../../../services/hoteles.service";
 import {GeneralService} from "../../../../../services/general.service";
 import {SweetMessagesService} from "../../../../../services/sweet-messages.service";
 import {ToastMessageService} from "../../../../../services/toast-message.service";
@@ -23,13 +23,13 @@ export class ComisionistaFormComponent implements OnInit {
   public title: string;
   public comisionistaForm: FormGroup;
   public comisionistaData: ComisionistasI;
-  public empresasList: EmpresasI[];
+  public empresasList: HotelesI[];
   public listOfComisiones = [];
   constructor(
     public modalCtrl: ModalController,
     private fb: FormBuilder,
     private comisionistasServ: ComisionistasService,
-    private empresasServ: EmpresasService,
+    private empresasServ: HotelesService,
     private generalServ: GeneralService,
     private sweetMsg: SweetMessagesService,
     private toastServ: ToastMessageService

@@ -1,13 +1,13 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
-import {EmpresasI} from "../../../../interfaces/empresas/empresas.interface";
+import {HotelesI} from "../../../../interfaces/hoteles/hoteles.interface";
 import {ModalController} from "@ionic/angular";
-import {EmpresasService} from "../../../../services/empresas.service";
+import {HotelesService} from "../../../../services/hoteles.service";
 import {GeneralService} from "../../../../services/general.service";
 import {SweetMessagesService} from "../../../../services/sweet-messages.service";
 import {ToastMessageService} from "../../../../services/toast-message.service";
 import {ComisionistasI} from "../../../../interfaces/comisionistas/comisionistas.interface";
-import {ComisionistaFormComponent} from "../../empresas/comisionistas/comisionista-form/comisionista-form.component";
+import {ComisionistaFormComponent} from "../../hoteles/comisionistas/comisionista-form/comisionista-form.component";
 import {ClientesI} from "../../../../interfaces/clientes/clientes.interface";
 import {ClientesService} from "../../../../services/clientes.service";
 import {Months} from "../../../../interfaces/shared/months";

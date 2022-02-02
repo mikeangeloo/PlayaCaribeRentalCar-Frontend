@@ -85,7 +85,7 @@ export class VehiculosListComponent implements OnInit, OnChanges {
 
   // Método para cargar datos de los campus
   loadVehiculosTable(_data?: VehiculosI[]) {
-    //this.listado-empresas = null;
+    //this.listado-hoteles = null;
     this.listVehiculos = null;
     this.initVehiculo();
     this.spinner = true;

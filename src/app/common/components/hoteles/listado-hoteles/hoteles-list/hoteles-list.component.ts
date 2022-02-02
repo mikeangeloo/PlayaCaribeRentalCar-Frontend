@@ -1,40 +1,41 @@
-import {Component, EventEmitter, Input, OnInit, Output, SimpleChanges, ViewChild} from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild} from '@angular/core';
+import {HotelesI} from "../../../../../interfaces/hoteles/hoteles.interface";
 import {MatTableDataSource} from "@angular/material/table";
 import {MatPaginator} from "@angular/material/paginator";
 import {MatSort} from "@angular/material/sort";
 import {GeneralService} from "../../../../../services/general.service";
+import {HotelesService} from "../../../../../services/hoteles.service";
 import {ActionSheetController, ModalController, NavController} from "@ionic/angular";
+import * as moment from 'moment';
+import {TxtConv} from "../../../../../helpers/txt-conv";
+import {HotelFormComponent} from "../hotel-form/hotel-form.component";
 import {SweetMessagesService} from "../../../../../services/sweet-messages.service";
 import {ToastMessageService} from "../../../../../services/toast-message.service";
-import * as moment from "moment";
-import {TxtConv} from "../../../../../helpers/txt-conv";
-import {ComisionistasI} from "../../../../../interfaces/comisionistas/comisionistas.interface";
-import {ComisionistasService} from "../../../../../services/comisionistas.service";
-import {ComisionistaFormComponent} from "../comisionista-form/comisionista-form.component";
+
 
 @Component({
-  selector: 'app-comisionistas-table',
-  templateUrl: './comisionistas-table.component.html',
-  styleUrls: ['./comisionistas-table.component.scss'],
+  selector: 'app-hoteles-list',
+  templateUrl: './hoteles-list.component.html',
+  styleUrls: ['./hoteles-list.component.scss'],
 })
-export class ComisionistasTableComponent implements OnInit {
+export class HotelesListComponent implements OnInit, OnChanges {
 
   public spinner = false;
-  public editComisionista: ComisionistasI;
-  @Input() public comisionistas: ComisionistasI[] = [];
+  public editHotel: HotelesI;
+  @Input() public hoteles: HotelesI[] = [];
   @Input() isModal: boolean;
   @Output() emitData = new EventEmitter();
   displayedColumns: string[] = [
     'id',
-    'nombre_empresa',
+    'nombre',
+    'rfc',
+    'direccion',
     'tel_contacto',
-    'email_contacto',
-    'comisiones_pactadas',
     'activo',
     'created_at',
     'acciones'
   ];
-  listComisionistas: MatTableDataSource<any>;
+  listHoteles: MatTableDataSource<any>;
   public searchKey: string;
   @ViewChild(MatPaginator, {static: false}) paginator3: MatPaginator;
   @ViewChild(MatSort, {static: true}) sort: MatSort;
@@ -43,15 +44,14 @@ export class ComisionistasTableComponent implements OnInit {
 
   constructor(
     public generalService: GeneralService,
-    public comisionistasServ: ComisionistasService,
+    public hotelesService: HotelesService,
     public modalCtr: ModalController,
     public navigateCtrl: NavController,
     public actionSheetController: ActionSheetController,
     public sweetServ: SweetMessagesService,
     public toastServ: ToastMessageService
   ) {
-    //this.loadSurveysTable();
-    this.initComisionistas();
+    this.initHoteles();
   }
 
   ngOnInit() {
@@ -59,44 +59,45 @@ export class ComisionistasTableComponent implements OnInit {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    const comisionistasChange = changes.comisionistas;
-    if (comisionistasChange.isFirstChange() === true || comisionistasChange.firstChange === false) {
-      if (this.comisionistas) {
-        this.loadComisionistasTable(this.comisionistas);
+    const hotelesChange = changes.hoteles;
+    if (hotelesChange.isFirstChange() === true || hotelesChange.firstChange === false) {
+      if (this.hoteles) {
+        console.log('array');
+        this.loadHotelesTable(this.hoteles);
       } else {
-        this.loadComisionistasTable();
+        this.loadHotelesTable();
       }
     }
   }
 
-  initComisionistas() {
+  initHoteles() {
     const currDate = moment().format('YYYY-MM-DD');
-    this.editComisionista = {
+    this.editHotel = {
       id: 0,
     };
   }
 
   // Método para cargar datos de los campus
-  loadComisionistasTable(_data?: ComisionistasI[]) {
-    //this.listado-empresas = null;
-    this.listComisionistas = null;
-    this.initComisionistas();
+  loadHotelesTable(_data?: HotelesI[]) {
+    //this.listado-hoteles = null;
+    this.listHoteles = null;
+    this.initHoteles();
     this.spinner = true;
 
     if (_data) {
-      this.comisionistas = _data;
+      this.hoteles = _data;
       this.spinner = false;
-      this.listComisionistas = new MatTableDataSource(_data);
-      this.listComisionistas.sort = this.sort;
-      this.listComisionistas.paginator = this.paginator3;
+      this.listHoteles = new MatTableDataSource(_data);
+      this.listHoteles.sort = this.sort;
+      this.listHoteles.paginator = this.paginator3;
     } else {
-      this.comisionistasServ.getAll().subscribe(response => {
+      this.hotelesService.getAll().subscribe(response => {
         if (response.ok === true) {
           this.spinner = false;
-          this.listComisionistas = new MatTableDataSource(response.comisionistas);
-          this.listComisionistas.sort = this.sort;
-          this.listComisionistas.paginator = this.paginator3;
-          this.comisionistas = response.comisionistas;
+          this.listHoteles = new MatTableDataSource(response.hoteles);
+          this.listHoteles.sort = this.sort;
+          this.listHoteles.paginator = this.paginator3;
+          this.hoteles = response.hoteles;
         }
       }, error => {
         this.spinner = false;
@@ -108,7 +109,7 @@ export class ComisionistasTableComponent implements OnInit {
   // Method to filter mat-table according to the value enter at input search filter
   applyFilter(event?) {
     const searchValue = event.target.value;
-    this.listComisionistas.filter = TxtConv.txtCon(searchValue, 'lowercase');
+    this.listHoteles.filter = TxtConv.txtCon(searchValue, 'lowercase');
     // this.listSurveys.filter = this.searchKey.trim().toLocaleLowerCase();
     // if (this.dataSource.paginator) {
     //   this.dataSource.paginator.firstPage();
@@ -121,22 +122,22 @@ export class ComisionistasTableComponent implements OnInit {
     this.applyFilter();
   }
 
-  catchSelectedRow(_data: ComisionistasI) {
-    this.editComisionista = _data;
+  catchSelectedRow(_data: HotelesI) {
+    this.editHotel = _data;
   }
   // Método para editar survey
-  async openComisionistaForm(_data?: ComisionistasI) {
+  async openEmpresaForm(_data?: HotelesI) {
     if (_data) {
-      this.editComisionista = _data;
+      this.editHotel = _data;
     } else {
-      this.initComisionistas();
+      this.initHoteles();
     }
     //this.generalService.presentLoading();
     const modal = await this.modalCtr.create({
-      component: ComisionistaFormComponent,
+      component: HotelFormComponent,
       componentProps: {
         'asModal': true,
-        'comisionista_id': (_data && _data.id) ? _data.id : null
+        'hotel_id': (_data && _data.id) ? _data.id : null
       },
       swipeToClose: true,
       cssClass: 'edit-form'
@@ -144,17 +145,17 @@ export class ComisionistasTableComponent implements OnInit {
     await modal.present();
     const {data} = await modal.onWillDismiss();
     if (data.reload && data.reload === true) {
-      this.loadComisionistasTable();
+      this.loadHotelesTable();
     }
   }
 
-  inactiveComisionista(_data: ComisionistasI) {
+  inactiveHotel(_data: HotelesI) {
     this.sweetServ.confirmRequest('¿Estás seguro de querer deshabilitar este registro ?').then((data) => {
       if (data.value) {
-        this.comisionistasServ.setInactive(_data.id).subscribe(res => {
+        this.hotelesService.setInactive(_data.id).subscribe(res => {
           if (res.ok === true) {
             this.toastServ.presentToast('success', res.message, 'top');
-            this.loadComisionistasTable();
+            this.loadHotelesTable();
           }
         }, error => {
           console.log(error);
@@ -164,13 +165,13 @@ export class ComisionistasTableComponent implements OnInit {
     });
   }
 
-  activeComisionista(_data: ComisionistasI) {
+  activeHotel(_data: HotelesI) {
     this.sweetServ.confirmRequest('¿Estás seguro de querer habilitar este registro ?').then((data) => {
       if (data.value) {
-        this.comisionistasServ.setEnable(_data.id).subscribe(res => {
+        this.hotelesService.setEnable(_data.id).subscribe(res => {
           if (res.ok === true) {
             this.toastServ.presentToast('success', res.message, 'top');
-            this.loadComisionistasTable();
+            this.loadHotelesTable();
           }
         }, error => {
           console.log(error);

@@ -4,9 +4,9 @@ import { FormsModule } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
 
-import { ListadoEmpresasPageRoutingModule } from './listado-empresas-routing.module';
+import { ListadoHotelesPageRoutingModule } from './listado-hoteles-routing.module';
 
-import { ListadoEmpresasPage } from './listado-empresas.page';
+import { ListadoHotelesPage } from './listado-hoteles.page';
 import {AppCommonModule} from "../../../common/common.module";
 
 @NgModule({
@@ -14,9 +14,9 @@ import {AppCommonModule} from "../../../common/common.module";
         CommonModule,
         FormsModule,
         IonicModule,
-        ListadoEmpresasPageRoutingModule,
+        ListadoHotelesPageRoutingModule,
         AppCommonModule
     ],
-  declarations: [ListadoEmpresasPage]
+  declarations: [ListadoHotelesPage]
 })
-export class ListadoEmpresasPageModule {}
+export class ListadoHotelesPageModule {}
