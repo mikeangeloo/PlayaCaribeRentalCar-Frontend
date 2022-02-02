@@ -25,18 +25,7 @@ import {BehaviorSubject} from 'rxjs';
 import {TarifasExtrasI} from '../../../interfaces/configuracion/tarifas-extras.interface';
 import {TarifasExtrasService} from '../../../services/tarifas-extras.service';
 import {DateTransform} from '../../../helpers/date-trans';
-
-export interface CobranzaI
-{
-  element: string;
-  element_label: string;
-  value: number;
-  quantity: number;
-  quantity_type: 'dias' | '%' | '';
-  number_sign: 'positive' | 'negative';
-  amount: number;
-  currency: string;
-}
+import {CobranzaI} from '../../../interfaces/contratos/cobranza-calc.interface';
 
 @Component({
   selector: 'app-contrato',
@@ -132,7 +121,8 @@ export class ContratoPage implements OnInit, AfterViewInit {
   ];
 
   tarifasExtras: TarifasExtrasI[];
-  selectedExtras: TarifasExtrasI[];
+  //selectedExtras: TarifasExtrasI[];
+  //selectedExtrasIds: number[];
 
   public tiposTarifas: TiposTarifasI[];
   public _selectedTarifa: string;
@@ -194,7 +184,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
               this.vehiculoData = this.contractData.vehiculo;
             }
             this.initGeneralForm(this.contractData);
-            this.makeCalc();
+
           } else {
             this.initGeneralForm();
           }
@@ -249,7 +239,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
   //#endregion
 
   //#region GENERAL FORM FUNCTIONS
-  initGeneralForm(data?) {
+  initGeneralForm(data?: ContratoI) {
     let _todayHour = DateConv.transFormDate(moment.now(), 'time');
     let _usrProfile = this.sessionServ.getProfile();
     if (_usrProfile && _usrProfile.sucursal) {
@@ -275,12 +265,13 @@ export class ContratoPage implements OnInit, AfterViewInit {
         fecha_retorno: [(data && data.fecha_retorno ? data.fecha_retorno : null), Validators.required],
       }),
 
-      cobros_extras: [(data && data.cobros_extras ? data.cobros_extras : null), Validators.required],
+      cobros_extras_ids: [(data && data.cobros_extras_ids ? data.cobros_extras_ids : null)],
+      cobros_extras: [(data && data.cobros_extras ? data.cobros_extras : null)],
       subtotal: [(data && data.subtotal ? data.subtotal : null), Validators.required],
-      descuento: [(data && data.descuento ? data.descuento : null), Validators.required],
-      con_iva: [(data && data.con_iva ? data.con_iva : null), Validators.required],
-      iva: [(data && data.iva ? data.iva : null), Validators.required],
-      iva_monto: [(data && data.iva_monto ? data.iva_monto : null), Validators.required],
+      descuento: [(data && data.descuento ? data.descuento : null)],
+      con_iva: [(data && data.con_iva ? data.con_iva : null)],
+      iva: [(data && data.iva ? data.iva : null)],
+      iva_monto: [(data && data.iva_monto ? data.iva_monto : null)],
       total: [(data && data.total ? data.total : null), Validators.required],
 
       cobranza_calc: [(data && data.cobranza_calc ? data.cobranza_calc : null), Validators.required],
@@ -290,10 +281,18 @@ export class ContratoPage implements OnInit, AfterViewInit {
       ub_retorno_id: [(data && data.ub_retorno_id) ? data.ub_retorno_id : 1, Validators.required],
     });
 
+    // if (data && data.cobros_extras && data.cobros_extras.length > 0) {
+    //   this.selectedExtras = data.cobros_extras;
+    //   console.log('selectedExtras --->', this.selectedExtras);
+    // }
     // this.gf.renta_of_codigo.disable();
     // this.gf.retorno_of_codigo.disable();
 
     console.log('init', this.generalDataForm.controls);
+
+    if (data && data.cobranza_calc && data.cobranza_calc.length) {
+      this.cobranzaI = data.cobranza_calc;
+    }
   }
 
   initRentOfData(data) {
@@ -339,7 +338,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
       if (res.ok) {
         this.tarifasExtras = res.datas;
       }
-    }, error =>  {
+    }, error => {
       console.log('tipos tarifas extras err -->', error);
     })
   }
@@ -733,6 +732,22 @@ export class ContratoPage implements OnInit, AfterViewInit {
     this.makeCalc();
   }
 
+  pushSelectedExtras() {
+    let _ids = this.gf.cobros_extras_ids.value;
+    this.gf.cobros_extras.setValue(null);
+    let _extrasObj = []
+    for (let i = 0; i < _ids.length; i ++) {
+      let _extra = this.tarifasExtras.find(x => x.id == _ids[i]);
+      if (_extra) {
+       _extrasObj.push(_extra);
+      }
+    }
+    if (_extrasObj && _extrasObj.length > 0) {
+      this.gf.cobros_extras.setValue(_extrasObj);
+    }
+    this.makeCalc();
+  }
+
   makeCalc(elementType?: string, cobro?: CobranzaI) {
     if (this.gf.tipo_tarifa.invalid) {
       this.sweetMsgServ.printStatus('Selecciona el tipo de tarífa', 'warning');
@@ -797,16 +812,16 @@ export class ContratoPage implements OnInit, AfterViewInit {
     }
 
     // Verificamos si tenemos extras
-    if (this.selectedExtras && this.selectedExtras.length > 0) {
-      for (let i = 0; i < this.selectedExtras.length; i++) {
+    if (this.gf.cobros_extras.value && this.gf.cobros_extras.value.length > 0) {
+      for (let i = 0; i < this.gf.cobros_extras.value.length; i++) {
         this.cobranzaI.push({
           element: (elementType && elementType === 'extra' && cobro) ? cobro.element : 'extra',
-          value: (elementType && elementType === 'extra' && cobro) ? cobro.value : this.selectedExtras[i].precio,
+          value: (elementType && elementType === 'extra' && cobro) ? cobro.value : this.gf.cobros_extras.value[i].precio,
           quantity: (elementType && elementType === 'extra' && cobro) ? cobro.quantity : 1,
           quantity_type: (elementType && elementType === 'extra' && cobro) ? cobro.quantity_type : '',
-          element_label: (elementType && elementType === 'extra' && cobro) ? cobro.element_label : 'Renta',
+          element_label: (elementType && elementType === 'extra' && cobro) ? cobro.element_label : this.gf.cobros_extras.value[i].nombre,
           number_sign: (elementType && elementType === 'extra' && cobro) ? cobro.number_sign : 'positive',
-          amount: (elementType && elementType === 'extra' && cobro) ? parseFloat(Number(this.selectedExtras[i].precio * cobro.quantity).toFixed(2)) : parseFloat(Number(this.selectedExtras[i].precio * 1).toFixed(2)),
+          amount: (elementType && elementType === 'extra' && cobro) ? parseFloat(Number(this.gf.cobros_extras.value[i].precio * cobro.quantity).toFixed(2)) : parseFloat(Number(this.gf.cobros_extras.value[i].precio * 1).toFixed(2)),
           currency: this.baseCurrency
         })
       }
@@ -926,8 +941,6 @@ export class ContratoPage implements OnInit, AfterViewInit {
     _payload.seccion = section;
     _payload.num_contrato = this.num_contrato;
     console.log(section + '--->', _payload);
-
-    return;
 
     this.contratosServ.saveProgress(_payload).subscribe(res => {
       if (res.ok) {

@@ -180,8 +180,8 @@
                         <ion-col size="12" size-md="6">
                           <mat-form-field appearance="legacy">
                             <mat-label>Extras</mat-label>
-                            <mat-select [multiple]="true" (selectionChange)="selectedExtras = $event.value; makeCalc();" formControlName="cobros_extras">
-                              <mat-option *ngFor="let extras of tarifasExtras" [value]="extras" >{{extras.nombre}}</mat-option>
+                            <mat-select  [multiple]="true" (selectionChange)="pushSelectedExtras()" formControlName="cobros_extras_ids">
+                              <mat-option *ngFor="let extras of tarifasExtras" [value]="extras.id">{{extras.nombre}}</mat-option>
                             </mat-select>
                           </mat-form-field>
                         </ion-col> <!-- Extras -->

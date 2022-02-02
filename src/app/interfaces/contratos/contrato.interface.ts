@@ -1,27 +1,39 @@
 import {ClientesI} from "../clientes/clientes.interface";
 import {VehiculosI} from '../catalogo-vehiculos/vehiculos.interface';
+import {TarifasExtrasI} from '../configuracion/tarifas-extras.interface';
+import {CobranzaI} from './cobranza-calc.interface';
 
 export interface ContratoI
 {
   id: number;
-  renta_of_id?: number;
-  renta_of_codigo?: string;
-  renta_of_dir?: string;
-  renta_of_fecha?: string;
-  renta_of_hora?: string;
-  retorno_of_id?: number;
-  retorno_of_codigo?: string;
-  retorno_of_dir?: string;
-  retorno_of_fecha?: string;
-  retorno_of_hora?: string;
-  num_contrato?: string;
-  vehiculo_id?: any;
-  user_create_id?: number;
-  created_at?: Date;
-  updated_at?: Date;
-  etapas_guardadas?: string[];
+  num_contrato: string;
+  vehiculo_id: number;
+  tipo_tarifa_id: number;
+  tipo_tarifa: string;
+  precio_unitario_inicial: string;
+  precio_unitario_final: string;
+  fecha_salida: string;
+  fecha_retorno: string;
+  total_dias: number;
+  ub_salida_id: number;
+  ub_retorno_id: number;
+  cobros_extras_ids?: number[];
+  cobros_extras: TarifasExtrasI[];
+  subtotal: number
+  descuento: number;
+  con_iva: number;
+  iva: number;
+  iva_monto: number;
+  total: number;
+  cobranza_calc: CobranzaI[];
+  hora_elaboracion: string;
+  etapas_guardadas: string[];
   etapas_completas?: any;
-  estatus?: number;
-  cliente?: ClientesI;
-  vehiculo?: VehiculosI;
+  estatus: number;
+  cliente_id?: number;
+  user_create_id: number;
+  created_at: Date;
+  updated_at: Date;
+  cliente?: any;
+  vehiculo: VehiculosI;
 }
