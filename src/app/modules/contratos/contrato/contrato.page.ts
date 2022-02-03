@@ -33,6 +33,7 @@ import {ClasesVehiculosI} from '../../../interfaces/catalogo-vehiculos/clases-ve
 import {TarifaApolloI} from '../../../interfaces/tarifas/tarifa-apollo.interface';
 import {ComisionistasI} from '../../../interfaces/comisionistas/comisionistas.interface';
 import {ComisionistasService} from '../../../services/comisionistas.service';
+import {ModelsEnum} from '../../../enums/models.enum';
 
 @Component({
   selector: 'app-contrato',
@@ -54,8 +55,6 @@ export class ContratoPage implements OnInit, AfterViewInit {
   public txtConv = TxtConv;
   public dateConv = DateConv;
   public statusC = ContratosStatus;
-
-
 
   contractType: string;
   //#endregion
@@ -90,6 +89,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
   public months = Months;
   public validYears: any[];
   public _today = DateConv.transFormDate(moment.now(), 'regular');
+  public contractFechaSalida = DateConv.transFormDate(moment.now(), 'regular');
   //#endregion
 
   //#region IMAGES MANAGEMENT ATTRIBUTES
@@ -309,14 +309,19 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
     if (data && data.fecha_salida) {
       this._today = data.fecha_salida;
+      this.contractFechaSalida = data.fecha_salida;
       console.log('new min date --->', this._today);
     }
 
     if (data && data.cobranza_calc && data.cobranza_calc.length) {
       this.cobranzaI = data.cobranza_calc;
     }
-    if (data && data.vehiculo_clase_id) {
+    if (data && data.tarifa_modelo == ModelsEnum.HOTELES && data.vehiculo_clase_id) {
       this.loadHotelTarifas(false);
+    }
+
+    if (data && data.tarifa_modelo == ModelsEnum.COMISIONISTAS && data.comision) {
+      this.setComisiones(false);
     }
 
 
@@ -780,7 +785,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
   }
 
-  initTipoTarifaRule() {
+  initTipoTarifaRule(withInitRules?: boolean) {
     let _tipoTarifa = this.tiposTarifas.find(x => x.tarifa === this.gf.tipo_tarifa.value);
     this.gf.tipo_tarifa_id.patchValue(_tipoTarifa.id);
 
@@ -793,21 +798,24 @@ export class ContratoPage implements OnInit, AfterViewInit {
     switch (TxtConv.txtCon(_tipoTarifa.tarifa, 'uppercase')) {
       case 'APOLLO':
         this.gf.tarifa_modelo_id.patchValue(null);
-        this.gf.tarifa_modelo.patchValue('apollo');
+        this.gf.tarifa_modelo.patchValue(ModelsEnum.APOLLO);
         this.gf.folio_cupon.patchValue(null);
         this.gf.valor_cupon.patchValue(null);
         this.gf.comision.patchValue(null);
         this.resetVehiculoTarifas();
         break;
       case 'HOTEL':
-        //this.gf.tarifa_modelo_id.patchValue(null);
-        this.gf.tarifa_modelo.patchValue('hoteles');
+        if (!withInitRules) {
+          this.gf.tarifa_modelo_id.patchValue(null);
+        }
+
+        this.gf.tarifa_modelo.patchValue(ModelsEnum.HOTELES);
         this.gf.precio_unitario_final.patchValue(null);
         break;
       case 'COMISIONISTA':
         this.gf.precio_unitario_final.patchValue(null);
         this.gf.tarifa_modelo_id.patchValue(null);
-        this.gf.tarifa_modelo.patchValue('comisionistas');
+        this.gf.tarifa_modelo.patchValue(ModelsEnum.COMISIONISTAS);
         this.gf.folio_cupon.patchValue(null);
         this.gf.valor_cupon.patchValue(null);
         this.gf.comision.patchValue(null);
@@ -845,20 +853,25 @@ export class ContratoPage implements OnInit, AfterViewInit {
       this.gf.precio_unitario_final.patchValue(_clases.precio);
 
       if (withInitRules === true) {
-        this.initTipoTarifaRule();
+        this.initTipoTarifaRule(withInitRules);
       }
     }
   }
 
-  setComisiones() {
+  setComisiones(clear: boolean) {
     this.comisiones = null;
     let _comisionesValues = this.comisionistas.find(x => x.id === this.gf.tarifa_modelo_id.value);
     if (_comisionesValues) {
       this.comisiones = _comisionesValues.comisiones_pactadas;
     }
-    this.gf.comision.setValue(null);
-    this.gf.precio_unitario_final.patchValue(null);
-    this.initCalcComisionista();
+    if (clear === true) {
+      this.gf.comision.setValue(null);
+      this.gf.precio_unitario_final.patchValue(null);
+      this.initCalcComisionista();
+    }
+
+    console.log('comision', this.gf.comision.value);
+
   }
 
   initCalcComisionista() {
@@ -868,9 +881,12 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
   startDateChange() {
     console.log('startDateChange');
-    if (!this.rangoFechas.fecha_salida.value) {
-      this.rangoFechas.fecha_salida.patchValue(this._today);
+    if (this.contractFechaSalida) {
+      this.rangoFechas.fecha_salida.patchValue(this.contractFechaSalida);
     }
+    // if (!this.rangoFechas.fecha_salida.value) {
+    //   this.rangoFechas.fecha_salida.patchValue(this._today);
+    // }
   }
 
   setReturnDateChange() {

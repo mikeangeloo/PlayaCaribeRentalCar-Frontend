@@ -195,7 +195,7 @@
                         <ion-col size="12" size-md="6">
                           <mat-form-field appearance="legacy">
                             <mat-label>Comisionista</mat-label>
-                            <mat-select formControlName="tarifa_modelo_id" (selectionChange)="setComisiones()">
+                            <mat-select formControlName="tarifa_modelo_id" (selectionChange)="setComisiones(true)">
                               <mat-option *ngFor="let comisionista of comisionistas" [value]="comisionista.id">{{comisionista.nombre}} {{comisionista.apellidos}}</mat-option>
                             </mat-select>
                             <mat-error *ngIf="gf.tarifa_modelo_id.errors?.required">Campo requerido</mat-error>
