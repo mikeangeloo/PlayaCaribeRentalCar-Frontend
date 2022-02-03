@@ -34,6 +34,7 @@ import {TarifaApolloI} from '../../../interfaces/tarifas/tarifa-apollo.interface
 import {ComisionistasI} from '../../../interfaces/comisionistas/comisionistas.interface';
 import {ComisionistasService} from '../../../services/comisionistas.service';
 import {ModelsEnum} from '../../../enums/models.enum';
+import {ToastMessageService} from '../../../services/toast-message.service';
 
 @Component({
   selector: 'app-contrato',
@@ -155,7 +156,8 @@ export class ContratoPage implements OnInit, AfterViewInit {
     public tiposTarifasServ: TiposTarifasService,
     public tarifasExtrasServ: TarifasExtrasService,
     public hotelesServ: HotelesService,
-    public comisionistasServ: ComisionistasService
+    public comisionistasServ: ComisionistasService,
+    public toastServ: ToastMessageService
   ) { }
 
   ngOnInit() {
@@ -174,6 +176,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
   }
 
   reloadAll() {
+    console.log('execute reloadAll');
     // verificamos si tenemos guardado un contract_id en local storage para continuar con la edición
     if (this.contratosServ.getContractNumber()) {
       this.num_contrato = this.contratosServ.getContractNumber();
@@ -900,7 +903,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
     this.makeCalc();
   }
 
-  makeCalc(elementType?: string, cobro?: CobranzaI) {
+  async makeCalc(elementType?: string, cobro?: CobranzaI) {
     if (this.gf.tipo_tarifa.invalid) {
       this.sweetMsgServ.printStatus('Selecciona el tipo de tarífa', 'warning');
       this.gf.tipo_tarifa.markAllAsTouched();
@@ -921,7 +924,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
     switch (TxtConv.txtCon(this.gf.tipo_tarifa.value, 'uppercase')) {
       case 'APOLLO':
-        console.log('tipo de tarifa apollo');
+        console.log('makeCalc tarifa apollo');
         if (!this.vehiculoData.tarifas) {
           console.log('El vehículo seleccionado no cuenta con un plan tarifario, comuniquese con el administrador');
           this.sweetMsgServ.printStatus('El vehículo seleccionado no cuenta con un plan tarifario, comuniquese con el administrador', 'error');
@@ -1025,11 +1028,12 @@ export class ContratoPage implements OnInit, AfterViewInit {
         break;
       default:
         this.gf.tipo_tarifa.markAllAsTouched();
-      return
+        return
     }
 
     // Verificamos si tenemos extras
     if (this.gf.cobros_extras.value && this.gf.cobros_extras.value.length > 0) {
+      await this.toastServ.presentToastWithOptions('Revise la información de los cargos extra en especial la cantidad unitaria');
       for (let i = 0; i < this.gf.cobros_extras.value.length; i++) {
         this.cobranzaI.push({
           element: (elementType && elementType === 'extra' && cobro) ? cobro.element : 'extra',
@@ -1048,7 +1052,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
     let _subtotal = 0;
     let _iva = 0;
     let _total = 0;
-    for (let i = 0; i < this.cobranzaI.length; i ++) {
+    for (let i = 0; i < this.cobranzaI.length; i++) {
       _subtotal = _subtotal + ((this.cobranzaI[i].amount * (this.cobranzaI[i].number_sign === 'positive' ? 1 : -1)));
     }
     if (this.gf.con_iva.value) {
@@ -1114,11 +1118,11 @@ export class ContratoPage implements OnInit, AfterViewInit {
     this.gf.cobranza_calc.patchValue(this.cobranzaI);
   }
 
-  pushSelectedExtras() {
+  async pushSelectedExtras() {
     let _ids = this.gf.cobros_extras_ids.value;
     this.gf.cobros_extras.setValue(null);
     let _extrasObj = []
-    for (let i = 0; i < _ids.length; i ++) {
+    for (let i = 0; i < _ids.length; i++) {
       let _extra = this.tarifasExtras.find(x => x.id == _ids[i]);
       if (_extra) {
         _extrasObj.push(_extra);
@@ -1127,7 +1131,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
     if (_extrasObj && _extrasObj.length > 0) {
       this.gf.cobros_extras.setValue(_extrasObj);
     }
-    this.makeCalc();
+    await this.makeCalc();
   }
   //#endregion
 
@@ -1174,7 +1178,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
     _payload.seccion = section;
     _payload.num_contrato = this.num_contrato;
     console.log(section + '--->', _payload);
-   return;
+   //return;
     this.contratosServ.saveProgress(_payload).subscribe(res => {
       if (res.ok) {
         this.sweetMsgServ.printStatus(res.message, 'success');

@@ -364,6 +364,20 @@ fieldset {
     overflow-wrap: initial;
   }
 }
+
+.info-toast {
+  --background: #3880ff;
+  --color: white;
+  font-weight: 500;
+  --button-color: white;
+
+  ::shadow {
+    .toast-button {
+      text-decoration: underline !important;
+    }
+  }
+
+}
 //#endregion
 
 //#region OTP styles
