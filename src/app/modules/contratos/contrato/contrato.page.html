@@ -338,117 +338,6 @@
           </mat-expansion-panel>
         </div>
       </mat-accordion> <!-- Datos Generales -->
-
-    <!--  <mat-accordion>
-        <div class="accordion-margin">
-          <mat-expansion-panel (opened)="setStep(0)" [expanded]="step === 0" hideToggle>
-            <mat-expansion-panel-header>
-              <mat-panel-title>
-                Datos Generales
-              </mat-panel-title>
-              <mat-panel-description style="margin: 0; justify-content: flex-end;">
-                <ion-icon name="calendar"></ion-icon>
-              </mat-panel-description>
-            </mat-expansion-panel-header>
-
-            <ion-card>
-              <ion-card-content>
-                <form [formGroup]="generalDataForm" *ngIf="generalDataForm">
-                  <ion-row>
-                    <ion-col>
-                      <div class="search-row-buttons">
-                        <ion-button size="small" color="secondary" (click)="openModalSearch('sucursales', 'renta_of')">
-                          <ion-icon name="search"></ion-icon>
-                        </ion-button>
-                      </div>
-                      <mat-form-field>
-                        <mat-label>OFICINA DE RENTA</mat-label>
-                        <input type="text" matInput formControlName="renta_of_codigo" readonly>
-                        <mat-hint>
-                         {{gf.renta_of_dir.value}}
-                        </mat-hint>
-                        <mat-error *ngIf="gf.renta_of_dir.errors?.required">Campo requerido</mat-error>
-                      </mat-form-field>
-                      <br>
-                      <br>
-                      <mat-form-field>
-                        <mat-label>FECHA DE RENTA</mat-label>
-                        <input matInput [matDatepicker]="fecha_renta" (click)="fecha_renta.open()" formControlName="renta_of_fecha" (dateChange)="gf.renta_of_fecha.setValue(dateConv.transFormDate($event.value, 'regular'))">
-                        <mat-datepicker-toggle matSuffix [for]="fecha_renta"></mat-datepicker-toggle>
-                        <mat-datepicker #fecha_renta></mat-datepicker>
-                        <mat-error *ngIf="gf.renta_of_fecha.errors?.required">Campo requerido</mat-error>
-                      </mat-form-field>
-                      <br>
-                      <br>
-                      <mat-form-field>
-                        <mat-label>HORA</mat-label>
-                        <div style="display: flex;">
-                          <input matInput [ngxTimepicker]="rentTime"  formControlName="renta_of_hora" [format]="24">
-                          <ngx-material-timepicker-toggle [for]="rentTime"></ngx-material-timepicker-toggle>
-                          <ngx-material-timepicker [theme]="apolloThemClock" #rentTime></ngx-material-timepicker>
-                        </div>
-                        <mat-error *ngIf="gf.renta_of_hora.errors?.required">Campo requerido</mat-error>
-                      </mat-form-field>
-                    </ion-col> &lt;!&ndash; FECHA DE RENTA &ndash;&gt;
-                    <ion-col size="12" size-sm="auto"  class="ion-no-margin ion-no-padding fill-col"></ion-col>
-                    <ion-col >
-                      <div class="search-row-buttons">
-                        <ion-button size="small" color="secondary" (click)="openModalSearch('sucursales', 'retorno_of')">
-                          <ion-icon name="search" slot="icon-only"></ion-icon>
-                        </ion-button>
-                      </div>
-                      <mat-form-field>
-                        <mat-label>OFICINA DE RETORNO</mat-label>
-                        <input type="text" matInput formControlName="retorno_of_codigo" readonly>
-                        <mat-hint>
-                         {{gf.retorno_of_dir.value}}
-                        </mat-hint>
-                        <mat-error *ngIf="gf.retorno_of_dir.errors?.required">Campo requerido</mat-error>
-                      </mat-form-field>
-                      <br>
-                      <br>
-                      <mat-form-field>
-                        <mat-label>FECHA DE RETORNO</mat-label>
-                        <input matInput [matDatepicker]="fecha_retorno" (click)="fecha_retorno.open()" formControlName="retorno_of_fecha" (dateChange)="gf.retorno_of_fecha.setValue(dateConv.transFormDate($event.value, 'regular'))">
-                        <mat-datepicker-toggle matSuffix [for]="fecha_retorno"></mat-datepicker-toggle>
-                        <mat-datepicker #fecha_retorno></mat-datepicker>
-                        <mat-error *ngIf="gf.retorno_of_fecha.errors?.required">Campo requerido</mat-error>
-                      </mat-form-field>
-                      <br>
-                      <br>
-                      <mat-form-field>
-                        <mat-label>HORA</mat-label>
-                        <div style="display: flex;">
-                          <input matInput [ngxTimepicker]="returnTime" formControlName="retorno_of_hora" [format]="24">
-                          <ngx-material-timepicker-toggle [for]="returnTime"></ngx-material-timepicker-toggle>
-                          <ngx-material-timepicker [theme]="apolloThemClock" #returnTime></ngx-material-timepicker>
-                        </div>
-                        <mat-error *ngIf="gf.retorno_of_hora.errors?.required">Campo requerido</mat-error>
-                      </mat-form-field>
-                    </ion-col> &lt;!&ndash; FECHA DE RETORNO &ndash;&gt;
-                  </ion-row>
-                </form>
-
-              </ion-card-content>
-              <div class="card-action-buttons">
-                <ion-button  color="success" (click)="saveProcess('datos_generales')">GUARDAR</ion-button>
-              </div>
-            </ion-card>
-
-
-            <mat-action-row>
-              <button (click)="prevStep()" mat-flat-button style="font-size: 1.5rem;">
-                <ion-icon name="chevron-back-outline" style="color: var(&#45;&#45;ion-color-medium);"></ion-icon>
-              </button> &nbsp; &nbsp;
-
-              <button (click)="nextStep()" mat-flat-button style="font-size: 1.5rem;">
-                <ion-icon name="chevron-forward-outline" style="color: var(&#45;&#45;ion-color-medium);"></ion-icon>
-              </button>
-            </mat-action-row>
-          </mat-expansion-panel>
-        </div>
-      </mat-accordion> &lt;!&ndash; Datos Generales &ndash;&gt;-->
-
       <mat-accordion>
         <div class="accordion-margin">
           <mat-expansion-panel (opened)="setStep(1)" [expanded]="step === 1" hideToggle>
@@ -630,186 +519,8 @@
           </mat-expansion-panel>
         </div>
       </mat-accordion> <!-- Datos Cliente -->
+
 <!--      <mat-accordion>
-        <div class="accordion-margin">
-          <mat-expansion-panel (opened)="setStep(2)" [expanded]="step === 2" hideToggle>
-            <mat-expansion-panel-header>
-              <mat-panel-title>
-                Datos Vehículo
-              </mat-panel-title>
-              <mat-panel-description style="margin: 0; justify-content: flex-end;">
-                <ion-icon name="car"></ion-icon>
-              </mat-panel-description>
-            </mat-expansion-panel-header>
-
-
-            <ion-card>
-              <ion-card-content *ngIf="vehiculoData">
-                <ion-row>
-                  <ion-col size="12">
-                    <div class="search-row-buttons">
-                      <ion-button size="small" color="secondary" (click)="openModalSearch('vehiculos', 'vehiculo')">
-                        <ion-icon name="search"></ion-icon>
-                      </ion-button>
-                    </div>
-                  </ion-col>
-                </ion-row> &lt;!&ndash; openModalSearch &ndash;&gt;
-                <ion-row class="ion-no-padding ion-no-margin">
-                  <ion-col size>
-                    <mat-form-field appearance="legacy">
-                      <mat-label>Código Vehículo</mat-label>
-                      <input type="text" matInput [disabled]="true" [value]="vehiculoData && vehiculoData.codigo ? vehiculoData.codigo : null">
-                      <mat-hint>Solo lectura</mat-hint>
-                    </mat-form-field>
-                  </ion-col> &lt;!&ndash;Código Vehículo&ndash;&gt;
-                  <ion-col size>
-                    <mat-form-field appearance="legacy">
-                      <mat-label>Marca</mat-label>
-                      <input type="text" matInput [disabled]="true" [value]="vehiculoData && vehiculoData.marca && vehiculoData.marca.marca ? vehiculoData.marca.marca : null">
-                      <mat-hint>Solo lectura</mat-hint>
-                    </mat-form-field>
-                  </ion-col> &lt;!&ndash;Marca&ndash;&gt;
-                  <ion-col size>
-                    <mat-form-field appearance="legacy">
-                      <mat-label>Modelo</mat-label>
-                      <input type="text" matInput [disabled]="true" [value]="vehiculoData && vehiculoData.modelo ? vehiculoData.modelo : null">
-                      <mat-hint>Solo lectura</mat-hint>
-                    </mat-form-field>
-                  </ion-col> &lt;!&ndash;Modelo&ndash;&gt;
-                  <ion-col size>
-                    <mat-form-field appearance="legacy">
-                      <mat-label>Color</mat-label>
-                      <input type="text" matInput [disabled]="true" [value]="vehiculoData && vehiculoData.color ? vehiculoData.color : null">
-                      <mat-hint>Solo lectura</mat-hint>
-                    </mat-form-field>
-                  </ion-col> &lt;!&ndash;Color&ndash;&gt;
-                </ion-row> &lt;!&ndash; Código Vehículo  Marca  Modelo  Color &ndash;&gt;
-                <ion-row class="ion-no-padding ion-no-margin">
-                  <ion-col size>
-                    <mat-form-field appearance="legacy">
-                      <mat-label>No. Placas</mat-label>
-                      <input type="text" matInput [disabled]="true" [value]="vehiculoData && vehiculoData.placas ? vehiculoData.placas : null">
-                      <mat-hint>Solo lectura</mat-hint>
-                    </mat-form-field>
-                  </ion-col> &lt;!&ndash;No. Placas&ndash;&gt;
-                  <ion-col size>
-                    <mat-form-field appearance="legacy">
-                      <mat-label>No. Serie</mat-label>
-                      <input type="text" matInput [disabled]="true" [value]="vehiculoData && vehiculoData.num_serie ? vehiculoData.num_serie : null">
-                      <mat-hint>Solo lectura</mat-hint>
-                    </mat-form-field>
-                  </ion-col> &lt;!&ndash;No. Serie&ndash;&gt;
-                  <ion-col size>
-                    <mat-form-field appearance="legacy">
-                      <mat-label>Capacidad Tanque</mat-label>
-                      <input type="number" matInput [disabled]="true" [value]="vehiculoData && vehiculoData.cap_tanque ? vehiculoData.cap_tanque : null" style="text-align: right;">
-                      <span matSuffix>LT</span>
-                      <mat-hint>Solo lectura</mat-hint>
-                    </mat-form-field>
-                  </ion-col> &lt;!&ndash;Capacidad Tanque&ndash;&gt;
-                </ion-row> &lt;!&ndash; No. Placas  No.Serie  Capacidad Tanque  &ndash;&gt;
-                <br>
-                <mat-divider></mat-divider>
-                <br>
-                <form [formGroup]="vehiculoForm" *ngIf="vehiculoForm">
-                  <ion-row class="ion-no-padding ion-no-margin">
-                    <ion-col size>
-                      <mat-form-field appearance="legacy">
-                        <mat-label>Kilometraje Salida</mat-label>
-                        <input type="number" matInput  formControlName="km_salida">
-                        <mat-error *ngIf="vf.km_salida.errors?.required">Campo requerido</mat-error>
-                        <mat-hint *ngIf="vf.km_salida.disabled">Solo Lectura</mat-hint>
-                      </mat-form-field>
-                    </ion-col> &lt;!&ndash; Kilometraje Salida  &ndash;&gt;
-                    <ion-col size>
-                      <mat-form-field appearance="legacy">
-                        <mat-label>Kilometraje Llegada</mat-label>
-                        <input type="number" matInput  formControlName="km_llegada">
-                        <mat-error *ngIf="vf.km_llegada.errors?.required">Campo requerido</mat-error>
-                        <mat-hint *ngIf="vf.km_llegada.disabled">Solo Lectura</mat-hint>
-                      </mat-form-field>
-                    </ion-col> &lt;!&ndash; Kilometraje Llegada  &ndash;&gt;
-                    <ion-col size>
-                      <mat-form-field appearance="legacy">
-                        <mat-label>Kilometraje Recorrido</mat-label>
-                        <input type="number" matInput  formControlName="km_recorrido">
-                        <mat-error *ngIf="vf.km_recorrido.errors?.required">Campo requerido</mat-error>
-                        <mat-hint *ngIf="vf.km_recorrido.disabled">Solo Lectura</mat-hint>
-                      </mat-form-field>
-                    </ion-col> &lt;!&ndash; Kilometraje Recorrido &ndash;&gt;
-                  </ion-row> &lt;!&ndash; Kilometraje Salida  Kilometraje LLegada  Kilometraja Recorrido  &ndash;&gt;
-                  <ion-row  class="ion-no-padding ion-no-margin">
-                    <ion-col size>
-                      <mat-form-field appearance="legacy">
-                        <mat-label>Gas Salida</mat-label>
-                        <mat-select formControlName="gas_salida">
-                          <mat-option value="1/8">1/8</mat-option>
-                          <mat-option value="2/8">2/8</mat-option>
-                          <mat-option value="3/8">3/8</mat-option>
-                          <mat-option value="4/8">4/8</mat-option>
-                          <mat-option value="5/8">5/8</mat-option>
-                          <mat-option value="6/8">6/8</mat-option>
-                          <mat-option value="7/8">7/8</mat-option>
-                          <mat-option value="8/8">8/8</mat-option>
-                        </mat-select>
-                        <mat-error *ngIf="vf.gas_salida.errors?.required">Campo requerido</mat-error>
-                        <mat-hint *ngIf="vf.gas_salida.disabled">Solo Lectura</mat-hint>
-                      </mat-form-field>
-                    </ion-col> &lt;!&ndash; Gas Salida  &ndash;&gt;
-                    <ion-col size>
-                      <mat-form-field appearance="legacy">
-                        <mat-label>Gas Llegada</mat-label>
-                        <mat-select formControlName="gas_llegada">
-                          <mat-option value="1/8">1/8</mat-option>
-                          <mat-option value="2/8">2/8</mat-option>
-                          <mat-option value="3/8">3/8</mat-option>
-                          <mat-option value="4/8">4/8</mat-option>
-                          <mat-option value="5/8">5/8</mat-option>
-                          <mat-option value="6/8">6/8</mat-option>
-                          <mat-option value="7/8">7/8</mat-option>
-                          <mat-option value="8/8">8/8</mat-option>
-                        </mat-select>
-                        <mat-error *ngIf="vf.gas_llegada.errors?.required">Campo requerido</mat-error>
-                        <mat-hint *ngIf="vf.gas_llegada.disabled">Solo Lectura</mat-hint>
-                      </mat-form-field>
-                    </ion-col> &lt;!&ndash; Gas Llegada  &ndash;&gt;
-                  </ion-row> &lt;!&ndash; Gas Salida  Gas Llegada &ndash;&gt;
-                </form>
-
-              </ion-card-content>
-
-              <ion-card-content *ngIf="!vehiculoData">
-                <ion-row>
-                  <ion-col size="12">
-                    <div class="ion-text-center">
-                      Seleccione un vehículo
-                      &nbsp;
-                      <ion-button size="small" color="secondary" (click)="openModalSearch('vehiculos', 'vehiculo')">
-                        <ion-icon name="search"></ion-icon>
-                      </ion-button>
-                    </div>
-                  </ion-col>
-                </ion-row> &lt;!&ndash; openModalSearch &ndash;&gt;
-              </ion-card-content>
-
-              <div class="card-action-buttons">
-                <ion-button color="success" (click)="saveProcess('datos_vehiculo')">GUARDAR</ion-button>
-              </div>
-            </ion-card>
-
-            <mat-action-row>
-              <button (click)="prevStep()" mat-flat-button style="font-size: 1.5rem;">
-                <ion-icon name="chevron-back-outline" style="color: var(&#45;&#45;ion-color-medium);"></ion-icon>
-              </button> &nbsp; &nbsp;
-
-              <button (click)="nextStep()" mat-flat-button style="font-size: 1.5rem;">
-                <ion-icon name="chevron-forward-outline" style="color: var(&#45;&#45;ion-color-medium);"></ion-icon>
-              </button>
-            </mat-action-row>
-          </mat-expansion-panel>
-        </div>
-      </mat-accordion> &lt;!&ndash; Datos vehiculo &ndash;&gt;
-      <mat-accordion>
         <div class="accordion-margin">
           <mat-expansion-panel (opened)="setStep(3)" [expanded]="step === 3" hideToggle>
             <mat-expansion-panel-header>
@@ -1027,12 +738,13 @@
           </mat-expansion-panel>
         </div>
       </mat-accordion> &lt;!&ndash; Detalle Cobro &ndash;&gt;-->
+
       <mat-accordion>
         <div class="accordion-margin">
           <mat-expansion-panel (opened)="setStep(4)" [expanded]="step === 4" hideToggle>
             <mat-expansion-panel-header>
               <mat-panel-title>
-                Cobranza
+                Cobranza (En desarrollo)
               </mat-panel-title>
               <mat-panel-description style="margin: 0; justify-content: flex-end;">
                 <ion-icon name="wallet"></ion-icon>
@@ -1123,7 +835,7 @@
           <mat-expansion-panel (opened)="setStep(5)" [expanded]="step === 5" hideToggle>
             <mat-expansion-panel-header>
               <mat-panel-title>
-                Check List - Salida
+                Check List - Salida (Por desarrollar)
               </mat-panel-title>
               <mat-panel-description style="margin: 0; justify-content: flex-end;">
                 <ion-icon name="checkmark-circle"></ion-icon>
@@ -1158,7 +870,7 @@
           <mat-expansion-panel (opened)="setStep(6)" [expanded]="step === 6" hideToggle>
             <mat-expansion-panel-header>
               <mat-panel-title>
-                Firma
+                Firma (Por desarrollar)
               </mat-panel-title>
               <mat-panel-description style="margin: 0; justify-content: flex-end;">
                 <ion-icon name="pencil"></ion-icon>

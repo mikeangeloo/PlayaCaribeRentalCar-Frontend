@@ -21,16 +21,12 @@ import {DocDataTransfer} from '../../../interfaces/shared/doc-data-tranfer.inter
 import {VehiculosI} from '../../../interfaces/catalogo-vehiculos/vehiculos.interface';
 import {TiposTarifasI} from '../../../interfaces/configuracion/tipos-tarifas.interface';
 import {TiposTarifasService} from '../../../services/tipos-tarifas.service';
-import {BehaviorSubject} from 'rxjs';
 import {TarifasExtrasI} from '../../../interfaces/configuracion/tarifas-extras.interface';
 import {TarifasExtrasService} from '../../../services/tarifas-extras.service';
-import {DateTransform} from '../../../helpers/date-trans';
 import {CobranzaI} from '../../../interfaces/contratos/cobranza-calc.interface';
 import {HotelesI} from '../../../interfaces/hoteles/hoteles.interface';
 import {HotelesService} from '../../../services/hoteles.service';
 import {TarifaHotelesI} from '../../../interfaces/tarifas/tarifa-hoteles.interface';
-import {ClasesVehiculosI} from '../../../interfaces/catalogo-vehiculos/clases-vehiculos.interface';
-import {TarifaApolloI} from '../../../interfaces/tarifas/tarifa-apollo.interface';
 import {ComisionistasI} from '../../../interfaces/comisionistas/comisionistas.interface';
 import {ComisionistasService} from '../../../services/comisionistas.service';
 import {ModelsEnum} from '../../../enums/models.enum';
@@ -50,14 +46,12 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
   //#region DATOS GENERALES ATTRIBUTES
   generalDataForm: FormGroup;
-  userSucursal: SucursalesI;
+  userSucursal: SucursalesI; //todo: evaluar
   num_contrato: string;
   contractData: ContratoI;
   public txtConv = TxtConv;
   public dateConv = DateConv;
   public statusC = ContratosStatus;
-
-  contractType: string;
   //#endregion
 
   //#region DATOS CLIENTE ATTRIBUTES
@@ -66,7 +60,6 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
   //#region DATOS VEHICULO
   vehiculoData: VehiculosI;
-  vehiculoForm: FormGroup;
   //#endregion
 
   //#region CLOCK PICKER ATTRIBUTES
@@ -192,8 +185,6 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
         this.initGeneralForm();
         this.initClientForm();
-        // TODO: cambiar por salida o llegada
-        this.initVehiculoForm('salida');
       }).add(() => {
         if (this.contractData.etapas_guardadas && this.contractData.etapas_guardadas.length > 0) {
           let _datosGeneralesEtapa = this.contractData.etapas_guardadas.find(x => x === 'datos_generales');
@@ -217,24 +208,11 @@ export class ContratoPage implements OnInit, AfterViewInit {
           } else {
             this.initClientForm();
           }
-
-          /*let _datosVehiculoEtapa = this.contractData.etapas_guardadas.find(x => x === 'datos_vehiculo');
-          if (_datosVehiculoEtapa) {
-            console.log('datos_vehiculo');
-            this.vehiculoData = this.contractData.vehiculo;
-            console.log('vehiculoData', this.vehiculoData);
-            // TODO: cambiar por salida o llegada
-            this.initVehiculoForm('salida', this.contractData);
-          } else {
-            this.initVehiculoForm('salida');
-          }*/
         }
       });
     } else {
       this.initGeneralForm();
       this.initClientForm();
-      // TODO: cambiar por salida o llegada
-      this.initVehiculoForm('salida');
     }
   }
   ngAfterViewInit() {
@@ -407,36 +385,6 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
   //#endregion
 
-  //#region VEHICULO FORM FUNCTIONS
-  /**
-   * @deprecated
-   * */
-  initVehiculoForm(tipo: 'salida' | 'llegada', data?) {
-    this.vehiculoForm = this.fb.group({
-      vehiculo_id: [(this.vehiculoData && this.vehiculoData.id ? this.vehiculoData.id : null), Validators.required],
-      km_salida: [(data && data.km_salida ? data.km_salida: null), Validators.required],
-      km_llegada: [(data && data.km_llegada ? data.km_llegada: null), Validators.required],
-      km_recorrido: [(data && data.km_recorrido ? data.km_recorrido: null), Validators.required],
-      gas_salida: [(data && data.gas_salida ? data.gas_salida: null), [Validators.required]],
-      gas_llegada: [(data && data.gas_llegada ? data.gas_llegada: null), Validators.required],
-    });
-    if (tipo === 'salida') {
-      this.vehiculoForm.controls.km_llegada.disable();
-      this.vehiculoForm.controls.km_recorrido.disable();
-      this.vehiculoForm.controls.gas_llegada.disable();
-    }
-    if (tipo === 'llegada') {
-      this.vehiculoForm.controls.km_salida.disable();
-      this.vehiculoForm.controls.gas_salida.disable();
-    }
-  }
-
-  get vf() {
-    return this.vehiculoForm.controls;
-  }
-
-  //#endregion
-
   //#region HOTELES FUNCTIONS
   async loadHoteles() {
     let res = await this.hotelesServ.getActive();
@@ -545,9 +493,6 @@ export class ContratoPage implements OnInit, AfterViewInit {
       return;
     }
 
-    //this.sweetMsgServ.printStatus('Función en desarrollo', 'warning');
-    //return;
-
     this.sweetMsgServ.confirmRequest().then(async (data) => {
       if (data.value) {
 
@@ -560,7 +505,6 @@ export class ContratoPage implements OnInit, AfterViewInit {
           console.log('prepare formData info---->');
 
           if (!this.docDataTransfer[i].success || this.docDataTransfer[i].success === false || !this.docDataTransfer[i].file_id || this.docDataTransfer[i].file_id === null) {
-            //this.docDataTransfer[i].uploading = false;
             if (!this.docDataTransfer[i].etiqueta) {
               this.docDataTransfer[i].fileErrors = 'Ingrese un valor valido';
 
@@ -762,10 +706,8 @@ export class ContratoPage implements OnInit, AfterViewInit {
           this.gf.vehiculo_id.patchValue(this.vehiculoData.id);
           this.gf.vehiculo_clase_id.patchValue(this.vehiculoData.clase_id);
           this.setVehiculoClaseData(true);
-          this.initVehiculoForm('salida', data);
           break;
       }
-      //this.loadClienteData();
     }
   }
   //#endregion
@@ -773,8 +715,6 @@ export class ContratoPage implements OnInit, AfterViewInit {
   //#region CALCULATION BUSINESS RULES
 
   resetVehiculoTarifas() {
-    //this.gf.tarifa_modelo_id.patchValue(null);
-    //this.gf.tarifa_modelo.patchValue(null);
     this.gf.vehiculo_clase_id.patchValue(null);
     this.gf.vehiculo_clase.patchValue(null);
     this.gf.vehiculo_clase_precio.patchValue(null);
@@ -795,8 +735,6 @@ export class ContratoPage implements OnInit, AfterViewInit {
     if (this.vehiculoData && this.vehiculoData.precio_renta) {
       this.gf.precio_unitario_inicial.patchValue(this.vehiculoData.precio_renta);
     }
-
-
 
     switch (TxtConv.txtCon(_tipoTarifa.tarifa, 'uppercase')) {
       case 'APOLLO':
@@ -887,9 +825,6 @@ export class ContratoPage implements OnInit, AfterViewInit {
     if (this.contractFechaSalida) {
       this.rangoFechas.fecha_salida.patchValue(this.contractFechaSalida);
     }
-    // if (!this.rangoFechas.fecha_salida.value) {
-    //   this.rangoFechas.fecha_salida.patchValue(this._today);
-    // }
   }
 
   setReturnDateChange() {
@@ -1163,15 +1098,6 @@ export class ContratoPage implements OnInit, AfterViewInit {
           return;
         }
         _payload = this.clienteDataForm.value;
-        break;
-      case 'datos_vehiculo':
-        if (this.vehiculoForm.invalid) {
-          this.sweetMsgServ.printStatus('Verifica que los datos solicitados esten completos', 'warning');
-          this.vehiculoForm.markAllAsTouched();
-          console.log('invalid form vehiculoForm', this.vehiculoForm);
-          return;
-        }
-        _payload = this.vehiculoForm.value;
         break;
     }
 
