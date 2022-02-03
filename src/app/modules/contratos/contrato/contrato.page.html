@@ -189,7 +189,28 @@
                             <mat-error></mat-error>
                           </mat-form-field>
                         </ion-col>
-                      </ion-row>
+                      </ion-row> <!-- Tipo de tarifa = Hotel -->
+
+                      <ion-row *ngIf="gf.tipo_tarifa.value == 'Comisionista'">
+                        <ion-col size="12" size-md="6">
+                          <mat-form-field appearance="legacy">
+                            <mat-label>Comisionista</mat-label>
+                            <mat-select formControlName="tarifa_modelo_id" (selectionChange)="setComisiones()">
+                              <mat-option *ngFor="let comisionista of comisionistas" [value]="comisionista.id">{{comisionista.nombre}} {{comisionista.apellidos}}</mat-option>
+                            </mat-select>
+                            <mat-error *ngIf="gf.tarifa_modelo_id.errors?.required">Campo requerido</mat-error>
+                          </mat-form-field>
+                        </ion-col>
+                        <ion-col size="12" size-md="6">
+                          <mat-form-field appearance="legacy">
+                            <mat-label>Cantidad Comisión</mat-label>
+                            <mat-select formControlName="comision" (selectionChange)="initCalcComisionista();">
+                              <mat-option *ngFor="let comision of comisiones" [value]="comision">{{comision}}</mat-option>
+                            </mat-select>
+                            <mat-error *ngIf="gf.comision.errors?.required">Campo requerido</mat-error>
+                          </mat-form-field>
+                        </ion-col>
+                      </ion-row>  <!-- Tipo de tarifa = Comisionista -->
 
                       <ion-row>
 

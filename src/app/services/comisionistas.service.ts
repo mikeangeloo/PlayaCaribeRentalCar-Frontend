@@ -38,6 +38,17 @@ export class ComisionistasService {
     }));
   }
 
+  public async _getActive() {
+    try {
+      let res = await this.httpClient.get<any>(`${this.dashURL}/comisionistas`).toPromise();
+      if (res.ok) {
+        return {ok: true, data: res.comisionistas}
+      }
+    } catch (e) {
+      return {ok: false, errors: e}
+    }
+  }
+
   public getDataById(id): Observable<any> {
     return this.httpClient.get<any>(`${this.dashURL}/comisionistas/${id}`).pipe(map(response => {
       return response;

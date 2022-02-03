@@ -31,6 +31,8 @@ import {HotelesService} from '../../../services/hoteles.service';
 import {TarifaHotelesI} from '../../../interfaces/tarifas/tarifa-hoteles.interface';
 import {ClasesVehiculosI} from '../../../interfaces/catalogo-vehiculos/clases-vehiculos.interface';
 import {TarifaApolloI} from '../../../interfaces/tarifas/tarifa-apollo.interface';
+import {ComisionistasI} from '../../../interfaces/comisionistas/comisionistas.interface';
+import {ComisionistasService} from '../../../services/comisionistas.service';
 
 @Component({
   selector: 'app-contrato',
@@ -133,6 +135,9 @@ export class ContratoPage implements OnInit, AfterViewInit {
   public hoteles: HotelesI[];
   public tarifasHotel: TarifaHotelesI[];
 
+  public comisionistas: ComisionistasI[];
+  public comisiones: number[];
+
   //#endregion
 
   //#region SIGNATURE MANAGEMENT ATTRIBUTES
@@ -149,7 +154,8 @@ export class ContratoPage implements OnInit, AfterViewInit {
     public filesServ: FilesService,
     public tiposTarifasServ: TiposTarifasService,
     public tarifasExtrasServ: TarifasExtrasService,
-    public hotelesServ: HotelesService
+    public hotelesServ: HotelesService,
+    public comisionistasServ: ComisionistasService
   ) { }
 
   ngOnInit() {
@@ -163,6 +169,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
     this.loadTiposTarifas();
     this.loadTarifasExtras();
     await this.loadHoteles();
+    await this.loadComisionistas();
     this.reloadAll();
   }
 
@@ -429,6 +436,19 @@ export class ContratoPage implements OnInit, AfterViewInit {
       this.hoteles = res.hoteles;
     } else {
       this.sweetMsgServ.printStatus('No hay hoteles dados de alta', 'warning');
+      return;
+    }
+  }
+  //#endregion
+
+  //#region COMISIONISTAS FUNCTIONS
+
+  async loadComisionistas() {
+    let res = await this.comisionistasServ._getActive();
+    if (res.ok) {
+      this.comisionistas = res.data;
+    } else {
+      this.sweetMsgServ.printStatus('No hay comisionistas dados de alta', 'warning');
       return;
     }
   }
@@ -764,6 +784,12 @@ export class ContratoPage implements OnInit, AfterViewInit {
     let _tipoTarifa = this.tiposTarifas.find(x => x.tarifa === this.gf.tipo_tarifa.value);
     this.gf.tipo_tarifa_id.patchValue(_tipoTarifa.id);
 
+    if (this.vehiculoData && this.vehiculoData.precio_renta) {
+      this.gf.precio_unitario_inicial.patchValue(this.vehiculoData.precio_renta);
+    }
+
+
+
     switch (TxtConv.txtCon(_tipoTarifa.tarifa, 'uppercase')) {
       case 'APOLLO':
         this.gf.tarifa_modelo_id.patchValue(null);
@@ -774,7 +800,18 @@ export class ContratoPage implements OnInit, AfterViewInit {
         this.resetVehiculoTarifas();
         break;
       case 'HOTEL':
+        //this.gf.tarifa_modelo_id.patchValue(null);
         this.gf.tarifa_modelo.patchValue('hoteles');
+        this.gf.precio_unitario_final.patchValue(null);
+        break;
+      case 'COMISIONISTA':
+        this.gf.precio_unitario_final.patchValue(null);
+        this.gf.tarifa_modelo_id.patchValue(null);
+        this.gf.tarifa_modelo.patchValue('comisionistas');
+        this.gf.folio_cupon.patchValue(null);
+        this.gf.valor_cupon.patchValue(null);
+        this.gf.comision.patchValue(null);
+        this.resetVehiculoTarifas();
         break;
     }
     this.startDateChange();
@@ -813,6 +850,22 @@ export class ContratoPage implements OnInit, AfterViewInit {
     }
   }
 
+  setComisiones() {
+    this.comisiones = null;
+    let _comisionesValues = this.comisionistas.find(x => x.id === this.gf.tarifa_modelo_id.value);
+    if (_comisionesValues) {
+      this.comisiones = _comisionesValues.comisiones_pactadas;
+    }
+    this.gf.comision.setValue(null);
+    this.gf.precio_unitario_final.patchValue(null);
+    this.initCalcComisionista();
+  }
+
+  initCalcComisionista() {
+    this.startDateChange();
+    this.setReturnDateChange();
+  }
+
   startDateChange() {
     console.log('startDateChange');
     if (!this.rangoFechas.fecha_salida.value) {
@@ -843,9 +896,13 @@ export class ContratoPage implements OnInit, AfterViewInit {
       return;
     }
 
+    console.log('precio inicial vehiculo --->', this.vehiculoData.precio_renta);
+
     this.cobranzaI = [];
     let _totalDias = this.gf.total_dias.value;
     this.gf.tarifa_modelo_id.removeValidators(Validators.required);
+    this.gf.comision.removeValidators(Validators.required);
+
     switch (TxtConv.txtCon(this.gf.tipo_tarifa.value, 'uppercase')) {
       case 'APOLLO':
         console.log('tipo de tarifa apollo');
@@ -904,6 +961,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
           this.gf.tarifa_modelo_id.markAllAsTouched();
           return;
         }
+        this.setVehiculoClaseData(false);
         let _precioUnitario = this.gf.precio_unitario_final.value;
 
         this.cobranzaI.push({
@@ -916,6 +974,38 @@ export class ContratoPage implements OnInit, AfterViewInit {
           amount: parseFloat(Number(_precioUnitario * _totalDias).toFixed(2)),
           currency: this.baseCurrency
         });
+        break;
+      case 'COMISIONISTA':
+        console.log('makeCalc form comisionistas');
+        if (!this.gf.tarifa_modelo_id.value) {
+          this.sweetMsgServ.printStatus('Seccione un comisionista de la lista', 'warning');
+          this.gf.tarifa_modelo_id.setValidators(Validators.required);
+          this.gf.tarifa_modelo_id.markAllAsTouched();
+          return;
+        }
+        if (!this.gf.comision.value) {
+          //this.sweetMsgServ.printStatus('Seccione un comisionista de la lista', 'warning');
+          this.gf.comision.setValidators(Validators.required);
+          this.gf.comision.markAllAsTouched();
+          return;
+        }
+        this.gf.precio_unitario_inicial.patchValue(this.vehiculoData.precio_renta);
+        let _nuevoPrecioUnitario = Number(this.gf.precio_unitario_inicial.value) + Number(this.gf.comision.value);
+        this.gf.precio_unitario_final.patchValue(_nuevoPrecioUnitario);
+
+        console.log('makeCalc form comisionistas precio --->', this.gf.precio_unitario_final.value);
+
+        this.cobranzaI.push({
+          element: 'renta',
+          value: _nuevoPrecioUnitario,
+          quantity: _totalDias,
+          quantity_type: 'dias',
+          element_label: 'Renta',
+          number_sign: 'positive',
+          amount: parseFloat(Number(_nuevoPrecioUnitario * _totalDias).toFixed(2)),
+          currency: this.baseCurrency
+        });
+
         break;
       default:
         this.gf.tipo_tarifa.markAllAsTouched();
@@ -1068,7 +1158,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
     _payload.seccion = section;
     _payload.num_contrato = this.num_contrato;
     console.log(section + '--->', _payload);
-   // return;
+   return;
     this.contratosServ.saveProgress(_payload).subscribe(res => {
       if (res.ok) {
         this.sweetMsgServ.printStatus(res.message, 'success');

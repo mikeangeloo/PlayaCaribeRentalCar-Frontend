@@ -7,7 +7,7 @@ import {GeneralService} from "../../../../services/general.service";
 import {SweetMessagesService} from "../../../../services/sweet-messages.service";
 import {ToastMessageService} from "../../../../services/toast-message.service";
 import {ComisionistasI} from "../../../../interfaces/comisionistas/comisionistas.interface";
-import {ComisionistaFormComponent} from "../../hoteles/comisionistas/comisionista-form/comisionista-form.component";
+import {ComisionistaFormComponent} from "../../comisionistas/comisionista-form/comisionista-form.component";
 import {ClientesI} from "../../../../interfaces/clientes/clientes.interface";
 import {ClientesService} from "../../../../services/clientes.service";
 import {Months} from "../../../../interfaces/shared/months";

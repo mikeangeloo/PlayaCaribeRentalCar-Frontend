@@ -74,11 +74,14 @@ const routes: Routes = [
             path: 'administracion/hoteles/listado-hoteles',
             loadChildren: () => import('./modules/hoteles/listado-hoteles/listado-hoteles.module').then(m => m.ListadoHotelesPageModule)
           },
-          {
-            path: 'administracion/hoteles/listado-comisionistas',
-            loadChildren: () => import('./modules/hoteles/comisionistas/comisionistas.module').then(m => m.ComisionistasPageModule)
-          },
           //endregion
+
+          //#region COMISIONISTAS
+          {
+            path: 'administracion/comisionistas/listado-comisionistas',
+            loadChildren: () => import('./modules/comisionistas/comisionistas.module').then(m => m.ComisionistasPageModule)
+          },
+          //#endregion
 
           //region CLIENTES
           {

@@ -30,13 +30,13 @@
                 </mat-cell>
               </ng-container>
 
-              <!-- nombre_empresa -->
-              <ng-container matColumnDef="nombre_empresa">
-                <mat-header-cell *matHeaderCellDef mat-sort-header>Empresa</mat-header-cell>
+              <!-- nombre -->
+              <ng-container matColumnDef="nombre">
+                <mat-header-cell *matHeaderCellDef mat-sort-header>Nombre</mat-header-cell>
                 <mat-cell *matCellDef="let row">
                   <div class="column">
                     <p>
-                      {{row.empresa.nombre}}
+                      {{row.nombre}}
                     </p>
                   </div>
                 </mat-cell>

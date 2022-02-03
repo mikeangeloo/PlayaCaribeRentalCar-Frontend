@@ -20,8 +20,8 @@ import {RolesListComponent} from "./components/control-accesso/roles/roles-list/
 import {RolFormComponent} from "./components/control-accesso/roles/rol-form/rol-form.component";
 import {VehiculosListComponent} from "./components/vehiculos/vehiculos-list/vehiculos-list.component";
 import {VehiculoFormComponent} from "./components/vehiculos/vehiculo-form/vehiculo-form.component";
-import {ComisionistasTableComponent} from "./components/hoteles/comisionistas/comisionistas-table/comisionistas-table.component";
-import {ComisionistaFormComponent} from "./components/hoteles/comisionistas/comisionista-form/comisionista-form.component";
+import {ComisionistasTableComponent} from "./components/comisionistas/comisionistas-table/comisionistas-table.component";
+import {ComisionistaFormComponent} from "./components/comisionistas/comisionista-form/comisionista-form.component";
 import {ClientesTableComponent} from "./components/clientes/clientes-table/clientes-table.component";
 import {ClienteFormComponent} from "./components/clientes/cliente-form/cliente-form.component";
 import {TarjetaFormComponent} from "./components/tarjetas/tarjeta-form/tarjeta-form.component";

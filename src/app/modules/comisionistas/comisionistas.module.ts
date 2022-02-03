@@ -7,7 +7,7 @@ import { IonicModule } from '@ionic/angular';
 import { ComisionistasPageRoutingModule } from './comisionistas-routing.module';
 
 import { ComisionistasPage } from './comisionistas.page';
-import {AppCommonModule} from "../../../common/common.module";
+import {AppCommonModule} from "../../common/common.module";
 
 @NgModule({
     imports: [

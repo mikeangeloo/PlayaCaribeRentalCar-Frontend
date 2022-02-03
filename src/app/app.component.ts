@@ -181,11 +181,21 @@ export class AppComponent implements OnDestroy {
               level: 2,
               active: false,
             },
+          ]
+        },
+        {
+          module: 'comisionistas',
+          icon: 'people',
+          label: 'Comisionistas',
+          route: null,
+          level: 1,
+          active: false,
+          children: [
             {
-              module: 'hoteles',
-              icon: 'wallet-outline',
+              module: 'comisionistas',
+              icon: 'people',
               label: 'Listado de Comisionistas',
-              route: 'administracion/hoteles/listado-comisionistas',
+              route: 'administracion/comisionistas/listado-comisionistas',
               level: 2,
               active: false,
             }

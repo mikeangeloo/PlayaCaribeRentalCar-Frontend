@@ -7,7 +7,7 @@ import {GeneralService} from "../../../../../services/general.service";
 import {SweetMessagesService} from "../../../../../services/sweet-messages.service";
 import {ToastMessageService} from "../../../../../services/toast-message.service";
 import {ComisionistasI} from "../../../../../interfaces/comisionistas/comisionistas.interface";
-import {ComisionistaFormComponent} from "../../comisionistas/comisionista-form/comisionista-form.component";
+import {ComisionistaFormComponent} from "../../../comisionistas/comisionista-form/comisionista-form.component";
 import {TarifaHotelesI} from '../../../../../interfaces/tarifas/tarifa-hoteles.interface';
 import {ClasesVehiculosI} from '../../../../../interfaces/catalogo-vehiculos/clases-vehiculos.interface';
 import {ClasesVehiculosService} from '../../../../../services/clases-vehiculos.service';

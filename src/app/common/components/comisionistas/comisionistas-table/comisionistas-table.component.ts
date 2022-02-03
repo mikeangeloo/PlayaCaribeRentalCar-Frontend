@@ -2,14 +2,14 @@ import {Component, EventEmitter, Input, OnInit, Output, SimpleChanges, ViewChild
 import {MatTableDataSource} from "@angular/material/table";
 import {MatPaginator} from "@angular/material/paginator";
 import {MatSort} from "@angular/material/sort";
-import {GeneralService} from "../../../../../services/general.service";
+import {GeneralService} from "../../../../services/general.service";
 import {ActionSheetController, ModalController, NavController} from "@ionic/angular";
-import {SweetMessagesService} from "../../../../../services/sweet-messages.service";
-import {ToastMessageService} from "../../../../../services/toast-message.service";
+import {SweetMessagesService} from "../../../../services/sweet-messages.service";
+import {ToastMessageService} from "../../../../services/toast-message.service";
 import * as moment from "moment";
-import {TxtConv} from "../../../../../helpers/txt-conv";
-import {ComisionistasI} from "../../../../../interfaces/comisionistas/comisionistas.interface";
-import {ComisionistasService} from "../../../../../services/comisionistas.service";
+import {TxtConv} from "../../../../helpers/txt-conv";
+import {ComisionistasI} from "../../../../interfaces/comisionistas/comisionistas.interface";
+import {ComisionistasService} from "../../../../services/comisionistas.service";
 import {ComisionistaFormComponent} from "../comisionista-form/comisionista-form.component";
 
 @Component({
@@ -26,7 +26,7 @@ export class ComisionistasTableComponent implements OnInit {
   @Output() emitData = new EventEmitter();
   displayedColumns: string[] = [
     'id',
-    'nombre_empresa',
+    'nombre',
     'tel_contacto',
     'email_contacto',
     'comisiones_pactadas',

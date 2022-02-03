@@ -1,13 +1,11 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
-import {HotelesI} from "../../../../../interfaces/hoteles/hoteles.interface";
 import {ModalController} from "@ionic/angular";
-import {HotelesService} from "../../../../../services/hoteles.service";
-import {GeneralService} from "../../../../../services/general.service";
-import {SweetMessagesService} from "../../../../../services/sweet-messages.service";
-import {ToastMessageService} from "../../../../../services/toast-message.service";
-import {ComisionistasI} from "../../../../../interfaces/comisionistas/comisionistas.interface";
-import {ComisionistasService} from "../../../../../services/comisionistas.service";
+import {GeneralService} from "../../../../services/general.service";
+import {SweetMessagesService} from "../../../../services/sweet-messages.service";
+import {ToastMessageService} from "../../../../services/toast-message.service";
+import {ComisionistasI} from "../../../../interfaces/comisionistas/comisionistas.interface";
+import {ComisionistasService} from "../../../../services/comisionistas.service";
 
 @Component({
   selector: 'app-comisionista-form',
@@ -23,13 +21,11 @@ export class ComisionistaFormComponent implements OnInit {
   public title: string;
   public comisionistaForm: FormGroup;
   public comisionistaData: ComisionistasI;
-  public empresasList: HotelesI[];
   public listOfComisiones = [];
   constructor(
     public modalCtrl: ModalController,
     private fb: FormBuilder,
     private comisionistasServ: ComisionistasService,
-    private empresasServ: HotelesService,
     private generalServ: GeneralService,
     private sweetMsg: SweetMessagesService,
     private toastServ: ToastMessageService
@@ -39,8 +35,6 @@ export class ComisionistaFormComponent implements OnInit {
       id: [null],
       nombre: [null, Validators.required],
       apellidos: [null, Validators.required],
-      empresa_id: [null, Validators.required],
-      nombre_empresa: [null],
       tel_contacto: [null, Validators.required],
       email_contacto: [null, Validators.required],
       comisiones_pactadas: [null, Validators.required],
@@ -53,7 +47,6 @@ export class ComisionistaFormComponent implements OnInit {
   }
 
   async ngOnInit() {
-    await this.loadEmpresasData();
     this.prepareComisionesList();
     if (this.comisionista_id) {
       this.loadComisionistasData();
@@ -67,17 +60,11 @@ export class ComisionistaFormComponent implements OnInit {
       id: (data && data.id) ? data.id : null,
       nombre: (data && data.nombre) ? data.nombre : null,
       apellidos: (data && data.apellidos) ? data.apellidos : null,
-      empresa_id: (data && data.empresa_id) ? data.empresa_id : null,
-      nombre_empresa: (data && data.nombre_empresa) ? data.nombre_empresa : null,
       tel_contacto: (data && data.tel_contacto) ? data.tel_contacto : null,
       email_contacto: (data && data.email_contacto) ? data.email_contacto : null,
       comisiones_pactadas: (data && data.comisiones_pactadas) ? data.comisiones_pactadas : null,
       activo: (data && data.activo) ? data.activo : 0,
     });
-    if (this.empresa_id) {
-      this.comisionistaForm.controls.empresa_id.setValue(this.empresa_id);
-      this.setEmpresaNombre(this.empresa_id);
-    }
     this.comisionistaForm.controls.activo.disable();
   }
 
@@ -112,26 +99,6 @@ export class ComisionistaFormComponent implements OnInit {
       console.log(error);
     });
   }
-
-  async loadEmpresasData() {
-    try {
-      let _reponse = await this.empresasServ.getActive();
-      if (_reponse.ok) {
-        this.empresasList = _reponse.hoteles
-      }
-    } catch (e) {
-      console.log(e);
-    }
-
-  }
-
-  setEmpresaNombre(id) {
-    let _empresa = this.empresasList.find(x => x.id === id);
-    if (_empresa) {
-      this.cf.nombre_empresa.setValue(_empresa.nombre);
-    }
-  }
-
   saveUpdate() {
     // console.log(this.comisionistaForm.value);
     // return;
