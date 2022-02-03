@@ -1,6 +1,8 @@
 import {CategoriasVehiculosI} from "./categorias-vehiculos.interface";
 import {MarcasVehiculosI} from "./marcas-vehiculos.interface";
 import {VehiculosStatusE} from "../../enums/vehiculos-status.enum";
+import {TarifaApolloI} from '../tarifas/tarifa-apollo.interface';
+import {ClasesVehiculosI} from './clases-vehiculos.interface';
 
 export interface VehiculosI
 {
@@ -25,6 +27,11 @@ export interface VehiculosI
   categoria?: CategoriasVehiculosI;
   codigo?: string;
   num_serie?: string;
+  precio_renta?: number;
+
+  tarifas?: TarifaApolloI[];
+  clase_id?: number;
+  clase?: ClasesVehiculosI;
 }
 
 export class VehiculosC
@@ -43,7 +50,7 @@ export class VehiculosC
       case VehiculosStatusE.RESERVADO:
         return 'Reservado';
       default:
-        return 'No especificado';
+        return '--';
     }
   }
 }

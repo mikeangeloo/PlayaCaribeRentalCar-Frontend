@@ -44,6 +44,10 @@ const routes: Routes = [
             path: 'administracion/catalogo-vehiculos/marcas-vehiculos',
             loadChildren: () => import('./modules/catalogo-vehiculos/marcas-vehiculos/marcas-vehiculos.module').then(m => m.MarcasVehiculosPageModule)
           },
+          {
+            path: 'administracion/catalogo-vehiculos/clases-vehiculos',
+            loadChildren: () => import('./modules/catalogo-vehiculos/clases-vehiculos/clases-vehiculos.module').then(m => m.ClasesVehiculosPageModule)
+          },
           //endregion
 
           //region CONTROL ACCESSO
@@ -65,16 +69,19 @@ const routes: Routes = [
           },
           //endregion
 
-          //region EMPRESAS
+          //region HOTELES
           {
-            path: 'administracion/empresas/listado-empresas',
-            loadChildren: () => import('./modules/empresas/listado-empresas/listado-empresas.module').then(m => m.ListadoEmpresasPageModule)
-          },
-          {
-            path: 'administracion/empresas/listado-comisionistas',
-            loadChildren: () => import('./modules/empresas/comisionistas/comisionistas.module').then(m => m.ComisionistasPageModule)
+            path: 'administracion/hoteles/listado-hoteles',
+            loadChildren: () => import('./modules/hoteles/listado-hoteles/listado-hoteles.module').then(m => m.ListadoHotelesPageModule)
           },
           //endregion
+
+          //#region COMISIONISTAS
+          {
+            path: 'administracion/comisionistas/listado-comisionistas',
+            loadChildren: () => import('./modules/comisionistas/comisionistas.module').then(m => m.ComisionistasPageModule)
+          },
+          //#endregion
 
           //region CLIENTES
           {
@@ -82,14 +89,17 @@ const routes: Routes = [
             loadChildren: () => import('./modules/clientes/listado-clientes/listado-clientes.module').then( m => m.ListadoClientesPageModule)
           },
           //endregion
+
+          //region CONFIGURACION
+        {
+            path: 'administracion/configuracion',
+            loadChildren: () => import('./modules/configuracion/configuracion.module').then( m => m.ConfiguracionModule)
+        },
+        //endregion
       //endregion
 
     ]
-  },
-
-
-
-
+  }
 ];
 
 @NgModule({

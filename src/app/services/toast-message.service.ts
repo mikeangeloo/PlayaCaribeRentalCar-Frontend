@@ -21,7 +21,7 @@ export class ToastMessageService {
         color = 'tertiary';
         break;
       case 'info':
-        color = 'light';
+        color = 'secondary';
         break;
     }
     const toast = await this.toastController.create({
@@ -31,5 +31,28 @@ export class ToastMessageService {
       position
     });
     toast.present();
+  }
+
+  async presentToastWithOptions(message) {
+    const toast = await this.toastController.create({
+      header: 'Importante',
+      message: message,
+      keyboardClose: false,
+      cssClass: 'info-toast',
+      position: 'middle',
+      buttons: [
+         {
+          text: 'Entendido',
+          role: 'cancel',
+          handler: () => {
+            console.log('Cancel clicked');
+          }
+        }
+      ]
+    });
+    await toast.present();
+
+    const { role } = await toast.onDidDismiss();
+    console.log('onDidDismiss resolved with role', role);
   }
 }

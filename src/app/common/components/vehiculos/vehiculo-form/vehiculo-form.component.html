@@ -18,15 +18,17 @@
         <ion-col size="12" style="height: 90%">
           <div class="title-container">
           </div>
-          <ion-row *ngIf="vehiculoData && vehiculoData.estatus">
-            <ion-col size="6"></ion-col>
+          <ion-row>
             <ion-col size="6">
-              <div style="display: flex;justify-content: flex-end;align-items: center;">
+              <div style="display: flex;align-items: center;" *ngIf="vehiculoData && vehiculoData.estatus">
                 <ion-label style="margin-right: 1em;font-weight: 500;">Estatus</ion-label>
                 <ion-chip class="{{vehiculoData.estatus}}" title="{{vehiculoC.getLabel(vehiculoData.estatus)}}">
                   <ion-label>{{vehiculoC.getLabel(vehiculoData.estatus)}}</ion-label>
                 </ion-chip>
               </div>
+            </ion-col>
+            <ion-col size="6" class="ion-text-end">
+              <button mat-raised-button class="button-success" (click)="saveUpdate()">Guardar</button>
             </ion-col>
           </ion-row>
           <form [formGroup]="vehiculoForm">
@@ -123,9 +125,11 @@
                     <ion-button fill="clear" size="small"></ion-button>
                   </div>
                   <mat-form-field appearance="legacy">
-                    <mat-label>Color</mat-label>
-                    <input type="text" matInput formControlName="color">
-                    <mat-error *ngIf="vf.color.errors?.required">Campo requerido</mat-error>
+                    <mat-label>Clase</mat-label>
+                    <mat-select formControlName="clase_id">
+                      <mat-option *ngFor="let clase of clasesV" [value]="clase.id">{{clase.clase}}</mat-option>
+                    </mat-select>
+                    <mat-error *ngIf="vf.clase_id.errors?.required">Campo requerido</mat-error>
                   </mat-form-field>
                 </ion-col>
 
@@ -134,16 +138,25 @@
                     <ion-button fill="clear" size="small"></ion-button>
                   </div>
                   <mat-form-field appearance="legacy">
-                    <mat-label>Núm. Serie</mat-label>
-                    <input type="text" matInput formControlName="num_serie">
-                    <mat-error *ngIf="vf.num_serie.errors?.required">Campo requerido</mat-error>
+                    <mat-label>Color</mat-label>
+                    <input type="text" matInput formControlName="color">
+                    <mat-error *ngIf="vf.color.errors?.required">Campo requerido</mat-error>
                   </mat-form-field>
                 </ion-col>
 
               </ion-row>
 
               <ion-row class="ion-no-padding ion-no-margin">
-                <ion-col size="6">
+
+                <ion-col size>
+                  <mat-form-field appearance="legacy">
+                    <mat-label>Núm. Serie</mat-label>
+                    <input type="text" matInput formControlName="num_serie">
+                    <mat-error *ngIf="vf.num_serie.errors?.required">Campo requerido</mat-error>
+                  </mat-form-field>
+                </ion-col>
+
+                <ion-col size>
                   <mat-form-field appearance="legacy">
                     <mat-label>No. Placas</mat-label>
                     <input matInput type="text" formControlName="placas">
@@ -151,7 +164,7 @@
                   </mat-form-field>
                 </ion-col>
 
-                <ion-col size="6">
+                <ion-col size>
                   <mat-form-field appearance="legacy">
                     <mat-label>No. Poliza Seguro</mat-label>
                     <input matInput type="text" formControlName="num_poliza_seg">
@@ -194,18 +207,6 @@
                       <mat-option value="7/8">7/8</mat-option>
                       <mat-option value="8/8">8/8</mat-option>
                     </mat-select>
-
-<!--                    <input matInput list="combustible" formControlName="cant_combustible" autocomplete="off">-->
-<!--                    <datalist id="combustible">-->
-<!--                      <option value="1/8">-->
-<!--                      <option value="2/8">-->
-<!--                      <option value="3/8">-->
-<!--                      <option value="4/8">-->
-<!--                      <option value="5/8">-->
-<!--                      <option value="6/8">-->
-<!--                      <option value="7/8">-->
-<!--                      <option value="8/8">-->
-<!--                    </datalist>-->
                     <mat-error *ngIf="vf.cant_combustible.errors?.required">Campo requerido</mat-error>
                   </mat-form-field>
                 </ion-col>
@@ -224,7 +225,7 @@
                 <ion-col size="6">
                   <mat-form-field appearance="legacy">
                     <mat-label>Precio Renta</mat-label>
-                    <input matInput type="number" formControlName="precio_renta">
+                    <input matInput type="number" formControlName="precio_renta" (ngModelChange)="recalTarifaRow()">
                     <mat-error *ngIf="vf.precio_renta.errors?.required">Campo requerido</mat-error>
                   </mat-form-field>
                 </ion-col>
@@ -240,11 +241,75 @@
                 </ion-col>
               </ion-row>
               <br />
-              <ion-button class="btn-shadow" color="secondary" expand="full" (click)="saveUpdate()">
-                Guardar
-              </ion-button>
             </div>
           </form>
+        </ion-col>
+      </ion-row>
+
+      <ion-row>
+        <ion-col size="6">
+          <h2>Tarifas</h2>
+        </ion-col>
+<!--        <ion-col size="6" class="ion-text-end">-->
+<!--          <button mat-raised-button class="button-success" (click)="saveTarifas()">Guardar</button>-->
+<!--        </ion-col>-->
+        <ion-col size="12">
+          <table class="complement-table">
+            <thead>
+              <tr>
+                <th>Frecuencia</th>
+                <th>Ap. Descuento</th>
+                <th>Valor Descuento</th>
+                <th>Descuento</th>
+                <th>P. Final</th>
+              </tr>
+            </thead>
+            <tbody>
+              <ng-container *ngFor="let tApollo of tarifaApolloPayload">
+                <tr>
+                  <td>{{tApollo.frecuencia}}</td>
+                  <td>
+                    <div class="table-input">
+                      <input type="text" [value]="tApollo.ap_descuento === true || tApollo.ap_descuento == 1 ? 'Si' : 'No'" [readOnly]="true">
+                      <p class="input-hint">Solo Lectura</p>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="table-input">
+                      <input type="number" autocomplete="off" [(ngModel)]="tApollo.valor_descuento" (ngModelChange)="recalTarifaRow(tApollo)" [readonly]="tApollo.ap_descuento === false || tApollo.ap_descuento == 0">
+                      <div class="input-prefix">
+                        <span>%</span>
+                      </div>
+                      <p class="input-hint" *ngIf="tApollo.ap_descuento === false || tApollo.ap_descuento == 0">Solo Lectura</p>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="table-input">
+                      <input type="number" autocomplete="off" readonly [value]="tApollo.descuento">
+                      <p class="input-hint">Solo Lectura</p>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="table-input">
+                      <input type="text" autocomplete="off" [ngModel]="tApollo.precio_final | currency" [ngModelOptions]="{updateOn:'blur'}"
+                             (ngModelChange)="captureFinalPrice(tApollo, $event)" [readonly]="tApollo.precio_final_editable === false || tApollo.precio_final_editable == 0">
+                      <p class="input-hint" *ngIf="tApollo.precio_final_editable === false || tApollo.precio_final_editable == 0">Solo Lectura</p>
+                    </div>
+                  </td>
+                </tr>
+                <tr *ngIf="tApollo.errors && tApollo.errors.length > 0" class="error-feed">
+                  <td colspan="5">
+                    <ul style="text-align: left">
+                      <li *ngFor="let error of tApollo.errors">
+                        {{error}}
+                      </li>
+                    </ul>
+                  </td>
+                </tr>
+              </ng-container>
+
+            </tbody>
+          </table>
         </ion-col>
       </ion-row>
     </ion-card-content>

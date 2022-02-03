@@ -112,6 +112,14 @@ export class AppComponent implements OnDestroy {
               route: '/administracion/catalogo-vehiculos/marcas-vehiculos',
               level: 2,
               active: false,
+            },
+            {
+              module: 'catalogo-vehiculos',
+              icon: 'bookmarks',
+              label: 'Listado de Clases',
+              route: '/administracion/catalogo-vehiculos/clases-vehiculos',
+              level: 2,
+              active: false,
             }
           ]
         },
@@ -158,26 +166,36 @@ export class AppComponent implements OnDestroy {
           ]
         },
         {
-          module: 'empresas',
+          module: 'hoteles',
           icon: 'business',
-          label: 'Empresas',
+          label: 'Hoteles',
           route: null,
           level: 1,
           active: false,
           children: [
             {
-              module: 'empresas',
+              module: 'hoteles',
               icon: 'business',
-              label: 'Listado de Empresas',
-              route: 'administracion/empresas/listado-empresas',
+              label: 'Listado de Hoteles',
+              route: 'administracion/hoteles/listado-hoteles',
               level: 2,
               active: false,
             },
+          ]
+        },
+        {
+          module: 'comisionistas',
+          icon: 'people',
+          label: 'Comisionistas',
+          route: null,
+          level: 1,
+          active: false,
+          children: [
             {
-              module: 'empresas',
-              icon: 'wallet-outline',
+              module: 'comisionistas',
+              icon: 'people',
               label: 'Listado de Comisionistas',
-              route: 'administracion/empresas/listado-comisionistas',
+              route: 'administracion/comisionistas/listado-comisionistas',
               level: 2,
               active: false,
             }
@@ -198,6 +216,34 @@ export class AppComponent implements OnDestroy {
               route: '/administracion/clientes/listado-clientes',
               level: 2,
               active: false,
+            }
+          ]
+        },
+        {
+          module: 'configuracion',
+          icon: 'settings',
+          label: 'Configuración',
+          route: null,
+          level: 1,
+          active: false,
+          children: [
+            {
+              module: 'configuracion',
+              icon: 'cash',
+              label: 'Precios',
+              route: null,
+              level: 2,
+              active: false,
+              children: [
+                {
+                  module: 'configuracion',
+                  icon: 'pricetags',
+                  label: 'Tarifas Extras',
+                  route: '/administracion/configuracion/precios/tarifas-extras',
+                  level: 3,
+                  active: false,
+                }
+              ]
             }
           ]
         }

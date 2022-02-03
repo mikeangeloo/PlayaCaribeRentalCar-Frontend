@@ -75,7 +75,7 @@ export class AreasTrabajoListComponent implements OnInit {
 
   // Método para cargar datos de los campus
   loadAreasTrabajoTable(_data?: AreaTrabajoI[]) {
-    //this.listado-empresas = null;
+    //this.listado-hoteles = null;
     this.listAreasTrabajo = null;
     this.initAreaTrabajo();
     this.spinner = true;

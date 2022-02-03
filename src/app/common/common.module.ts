@@ -1,11 +1,11 @@
 import { NgModule } from '@angular/core';
 import {CommonModule, CurrencyPipe} from '@angular/common';
-import {EmpresasListComponent} from "./components/empresas/listado-empresas/empresas-list/empresas-list.component";
+import {HotelesListComponent} from "./components/hoteles/listado-hoteles/hoteles-list/hoteles-list.component";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {MaterialModule} from "../material/material.module";
 import {IonicModule} from "@ionic/angular";
 import {RouterModule} from "@angular/router";
-import {EmpresaFormComponent} from "./components/empresas/listado-empresas/empresa-form/empresa-form.component";
+import {HotelFormComponent} from "./components/hoteles/listado-hoteles/hotel-form/hotel-form.component";
 import {SucursalesListComponent} from "./components/control-accesso/sucursales/sucursales-list/sucursales-list.component";
 import {SucursalFormComponent} from "./components/control-accesso/sucursales/sucursal-form/sucursal-form.component";
 import {MarcasVehiculosListComponent} from "./components/marcas-vehiculos/marcas-vehiculos-list/marcas-vehiculos-list.component";
@@ -20,8 +20,8 @@ import {RolesListComponent} from "./components/control-accesso/roles/roles-list/
 import {RolFormComponent} from "./components/control-accesso/roles/rol-form/rol-form.component";
 import {VehiculosListComponent} from "./components/vehiculos/vehiculos-list/vehiculos-list.component";
 import {VehiculoFormComponent} from "./components/vehiculos/vehiculo-form/vehiculo-form.component";
-import {ComisionistasTableComponent} from "./components/empresas/comisionistas/comisionistas-table/comisionistas-table.component";
-import {ComisionistaFormComponent} from "./components/empresas/comisionistas/comisionista-form/comisionista-form.component";
+import {ComisionistasTableComponent} from "./components/comisionistas/comisionistas-table/comisionistas-table.component";
+import {ComisionistaFormComponent} from "./components/comisionistas/comisionista-form/comisionista-form.component";
 import {ClientesTableComponent} from "./components/clientes/clientes-table/clientes-table.component";
 import {ClienteFormComponent} from "./components/clientes/cliente-form/cliente-form.component";
 import {TarjetaFormComponent} from "./components/tarjetas/tarjeta-form/tarjeta-form.component";
@@ -29,13 +29,17 @@ import {MatChipsModule} from "@angular/material/chips";
 import {CameraComponent} from "./components/camera/camera.component";
 import {SignatureCaptureComponent} from "./components/signature-capture/signature-capture.component";
 import {MultiTableFilterComponent} from "./components/multi-table-filter/multi-table-filter.component";
+import {ClaseVehiculoFormComponent} from './components/clases-vehiculos/clase-vehiculo-form/clase-vehiculo-form.component';
+import {ClasesVehiculosTableComponent} from './components/clases-vehiculos/clases-vehiculos-table/clases-vehiculos-table.component';
+import {TarifasExtrasFormComponent} from './components/configuracion/precios/tarifas-extras-form/tarifas-extras-form.component';
+import {TarifasExtrasTableComponent} from './components/configuracion/precios/tarifas-extras-table/tarifas-extras-table.component';
 
 
 
 @NgModule({
   declarations: [
-    EmpresasListComponent,
-    EmpresaFormComponent,
+    HotelesListComponent,
+    HotelFormComponent,
     SucursalesListComponent,
     SucursalFormComponent,
     MarcasVehiculosListComponent,
@@ -57,11 +61,15 @@ import {MultiTableFilterComponent} from "./components/multi-table-filter/multi-t
     TarjetaFormComponent,
     CameraComponent,
     SignatureCaptureComponent,
-    MultiTableFilterComponent
+    MultiTableFilterComponent,
+    ClaseVehiculoFormComponent,
+    ClasesVehiculosTableComponent,
+    TarifasExtrasFormComponent,
+    TarifasExtrasTableComponent
   ],
   exports: [
-    EmpresasListComponent,
-    EmpresaFormComponent,
+    HotelesListComponent,
+    HotelFormComponent,
     SucursalesListComponent,
     SucursalFormComponent,
     MarcasVehiculosListComponent,
@@ -83,11 +91,15 @@ import {MultiTableFilterComponent} from "./components/multi-table-filter/multi-t
     TarjetaFormComponent,
     CameraComponent,
     SignatureCaptureComponent,
-    MultiTableFilterComponent
+    MultiTableFilterComponent,
+    ClaseVehiculoFormComponent,
+    ClasesVehiculosTableComponent,
+    TarifasExtrasFormComponent,
+    TarifasExtrasTableComponent
   ],
   entryComponents: [
-    EmpresasListComponent,
-    EmpresaFormComponent,
+    HotelesListComponent,
+    HotelFormComponent,
     SucursalesListComponent,
     SucursalFormComponent,
     MarcasVehiculosListComponent,
@@ -109,7 +121,11 @@ import {MultiTableFilterComponent} from "./components/multi-table-filter/multi-t
     TarjetaFormComponent,
     CameraComponent,
     SignatureCaptureComponent,
-    MultiTableFilterComponent
+    MultiTableFilterComponent,
+    ClaseVehiculoFormComponent,
+    ClasesVehiculosTableComponent,
+    TarifasExtrasFormComponent,
+    TarifasExtrasTableComponent
   ],
     imports: [
         CommonModule,

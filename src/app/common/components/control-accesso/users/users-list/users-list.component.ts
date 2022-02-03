@@ -83,7 +83,7 @@ export class UsersListComponent implements OnInit, OnChanges {
 
   // Método para cargar datos de los campus
   loadUsuariosTable(_usuarios?: UsersI[]) {
-    //this.listado-empresas = null;
+    //this.listado-hoteles = null;
     this.listUsuarios = null;
     this.initUsuario();
     this.spinner = true;

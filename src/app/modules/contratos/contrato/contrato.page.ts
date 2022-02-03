@@ -7,7 +7,7 @@ import {CardI} from "../../../interfaces/cards/card.interface";
 import {TarjetaFormComponent} from "../../../common/components/tarjetas/tarjeta-form/tarjeta-form.component";
 import {ModalController} from "@ionic/angular";
 import {MultiTableFilterComponent} from "../../../common/components/multi-table-filter/multi-table-filter.component";
-import {Form, FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {Form, FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {DateConv} from "../../../helpers/date-conv";
 import {SessionService} from "../../../services/session.service";
 import {SucursalesI} from "../../../interfaces/sucursales.interface";
@@ -19,12 +19,25 @@ import {ContratosStatus} from "../../../enums/contratos-status.enum";
 import {FilesService} from '../../../services/files.service';
 import {DocDataTransfer} from '../../../interfaces/shared/doc-data-tranfer.interface';
 import {VehiculosI} from '../../../interfaces/catalogo-vehiculos/vehiculos.interface';
+import {TiposTarifasI} from '../../../interfaces/configuracion/tipos-tarifas.interface';
+import {TiposTarifasService} from '../../../services/tipos-tarifas.service';
+import {TarifasExtrasI} from '../../../interfaces/configuracion/tarifas-extras.interface';
+import {TarifasExtrasService} from '../../../services/tarifas-extras.service';
+import {CobranzaI} from '../../../interfaces/contratos/cobranza-calc.interface';
+import {HotelesI} from '../../../interfaces/hoteles/hoteles.interface';
+import {HotelesService} from '../../../services/hoteles.service';
+import {TarifaHotelesI} from '../../../interfaces/tarifas/tarifa-hoteles.interface';
+import {ComisionistasI} from '../../../interfaces/comisionistas/comisionistas.interface';
+import {ComisionistasService} from '../../../services/comisionistas.service';
+import {ModelsEnum} from '../../../enums/models.enum';
+import {ToastMessageService} from '../../../services/toast-message.service';
 
 @Component({
   selector: 'app-contrato',
   templateUrl: './contrato.page.html',
   styleUrls: ['./contrato.page.scss'],
 })
+
 export class ContratoPage implements OnInit, AfterViewInit {
 
   //#region STEP CONTROLLER ATTRIBUTES
@@ -33,14 +46,12 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
   //#region DATOS GENERALES ATTRIBUTES
   generalDataForm: FormGroup;
-  userSucursal: SucursalesI;
+  userSucursal: SucursalesI; //todo: evaluar
   num_contrato: string;
   contractData: ContratoI;
   public txtConv = TxtConv;
   public dateConv = DateConv;
   public statusC = ContratosStatus;
-
-  contractType: string;
   //#endregion
 
   //#region DATOS CLIENTE ATTRIBUTES
@@ -49,7 +60,6 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
   //#region DATOS VEHICULO
   vehiculoData: VehiculosI;
-  vehiculoForm: FormGroup;
   //#endregion
 
   //#region CLOCK PICKER ATTRIBUTES
@@ -72,6 +82,8 @@ export class ContratoPage implements OnInit, AfterViewInit {
   //#region MONTHS, YEARS ATTRIBUTES
   public months = Months;
   public validYears: any[];
+  public _today = DateConv.transFormDate(moment.now(), 'regular');
+  public contractFechaSalida = DateConv.transFormDate(moment.now(), 'regular');
   //#endregion
 
   //#region IMAGES MANAGEMENT ATTRIBUTES
@@ -84,11 +96,12 @@ export class ContratoPage implements OnInit, AfterViewInit {
   //#endregion
 
   //#region COBRANZA ATTRIBUTES
-  baseCurrency: 'USD' | 'MXN' = 'USD';
+  baseCurrency: 'USD' | 'MXN' = 'MXN';
   baseRentCost = 1500;
-  baseRentFrequency: 'hours' | 'days' | 'weeks' | 'month' = 'days';
+  baseRentFrequency: 'hours' | 'days' | 'weeks' | 'months' = 'days';
   fuelCharges = 1000;
   iva = 0.16;
+  //aplicarIva: boolean;
 
   requiredAddCharges = [
     {
@@ -108,6 +121,17 @@ export class ContratoPage implements OnInit, AfterViewInit {
       cost: 17.45
     }
   ];
+
+  tarifasExtras: TarifasExtrasI[];
+  public tiposTarifas: TiposTarifasI[];
+  public cobranzaI: CobranzaI[] = [];
+
+  public hoteles: HotelesI[];
+  public tarifasHotel: TarifaHotelesI[];
+
+  public comisionistas: ComisionistasI[];
+  public comisiones: number[];
+
   //#endregion
 
   //#region SIGNATURE MANAGEMENT ATTRIBUTES
@@ -121,7 +145,12 @@ export class ContratoPage implements OnInit, AfterViewInit {
     public sessionServ: SessionService,
     public generalServ: GeneralService,
     public contratosServ: ContratosService,
-    public filesServ: FilesService
+    public filesServ: FilesService,
+    public tiposTarifasServ: TiposTarifasService,
+    public tarifasExtrasServ: TarifasExtrasService,
+    public hotelesServ: HotelesService,
+    public comisionistasServ: ComisionistasService,
+    public toastServ: ToastMessageService
   ) { }
 
   ngOnInit() {
@@ -130,13 +159,19 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
   }
 
-  ionViewWillEnter() {
+  async ionViewWillEnter() {
     console.log('view enter');
+    this.loadTiposTarifas();
+    this.loadTarifasExtras();
+    await this.loadHoteles();
+    await this.loadComisionistas();
+    this.reloadAll();
+  }
 
-
+  reloadAll() {
+    console.log('execute reloadAll');
     // verificamos si tenemos guardado un contract_id en local storage para continuar con la edición
     if (this.contratosServ.getContractNumber()) {
-      //this.contract_id = this.contratosServ.getContractData().id;
       this.num_contrato = this.contratosServ.getContractNumber();
 
       this.contratosServ.getContractData(this.num_contrato).subscribe(res => {
@@ -146,12 +181,20 @@ export class ContratoPage implements OnInit, AfterViewInit {
       }, error => {
         console.log(error);
         this.sweetMsgServ.printStatusArray(error.error.errors, 'error');
+        this.contratosServ.flushContractData();
+
+        this.initGeneralForm();
+        this.initClientForm();
       }).add(() => {
         if (this.contractData.etapas_guardadas && this.contractData.etapas_guardadas.length > 0) {
           let _datosGeneralesEtapa = this.contractData.etapas_guardadas.find(x => x === 'datos_generales');
           if (_datosGeneralesEtapa) {
             console.log('datos_generales');
+            if (this.contractData.vehiculo) {
+              this.vehiculoData = this.contractData.vehiculo;
+            }
             this.initGeneralForm(this.contractData);
+
           } else {
             this.initGeneralForm();
           }
@@ -165,27 +208,13 @@ export class ContratoPage implements OnInit, AfterViewInit {
           } else {
             this.initClientForm();
           }
-
-          let _datosVehiculoEtapa = this.contractData.etapas_guardadas.find(x => x === 'datos_vehiculo');
-          if (_datosVehiculoEtapa) {
-            console.log('datos_vehiculo');
-            this.vehiculoData = this.contractData.vehiculo;
-            console.log('vehiculoData', this.vehiculoData);
-            // TODO: cambiar por salida o llegada
-            this.initVehiculoForm('salida', this.contractData);
-          } else {
-            this.initVehiculoForm('salida');
-          }
         }
       });
     } else {
       this.initGeneralForm();
       this.initClientForm();
-      // TODO: cambiar por salida o llegada
-      this.initVehiculoForm('salida');
     }
   }
-
   ngAfterViewInit() {
     setTimeout(() => {
       this.initReviewCanva();
@@ -206,8 +235,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
   //#endregion
 
   //#region GENERAL FORM FUNCTIONS
-  initGeneralForm(data?) {
-    let _today = DateConv.transFormDate(moment.now(), 'regular');
+  initGeneralForm(data?: ContratoI) {
     let _todayHour = DateConv.transFormDate(moment.now(), 'time');
     let _usrProfile = this.sessionServ.getProfile();
     if (_usrProfile && _usrProfile.sucursal) {
@@ -222,22 +250,62 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
     this.generalDataForm = this.fb.group({
       num_contrato: [(data && data.num_contrato ? data.num_contrato : null)],
-      renta_of_id: [(data && data.renta_of_id ? data.renta_of_id : this.userSucursal.id), Validators.required],
-      renta_of_codigo: [(data && data.renta_of_codigo ? data.renta_of_codigo : this.userSucursal.codigo), [Validators.required]],
-      renta_of_dir: [(data && data.renta_of_dir ? data.renta_of_dir : this.userSucursal.direccion), Validators.required],
-      renta_of_fecha: [(data && data.renta_of_fecha ? data.renta_of_fecha : _today), Validators.required],
-      renta_of_hora: [(data && data.renta_of_hora ? data.renta_of_hora : _todayHour), Validators.required],
+      vehiculo_id: [(data && data.vehiculo && data.vehiculo.id ? data.vehiculo.id : (this.vehiculoData && this.vehiculoData.id) ? this.vehiculoData.id : null), Validators.required],
+      tipo_tarifa_id: [(data && data.tipo_tarifa_id) ? data.tipo_tarifa_id : null, Validators.required],
+      tipo_tarifa: [(data && data.tipo_tarifa) ? data.tipo_tarifa : null, Validators.required],
 
-      retorno_of_id: [(data && data.retorno_of_id ? data.retorno_of_id : null), Validators.required],
-      retorno_of_codigo: [(data && data.retorno_of_codigo ? data.retorno_of_codigo : null), Validators.required],
-      retorno_of_dir: [(data && data.retorno_of_dir ? data.retorno_of_dir : null), Validators.required],
-      retorno_of_fecha: [(data && data.retorno_of_fecha ? data.retorno_of_fecha : null), Validators.required],
-      retorno_of_hora: [(data && data.retorno_of_hora ? data.retorno_of_hora : null), Validators.required],
+      tarifa_modelo_id: [(data && data.tarifa_modelo_id) ? data.tarifa_modelo_id : null],
+      tarifa_modelo: [(data && data.tarifa_modelo) ? data.tarifa_modelo : null],
+      vehiculo_clase_id: [(data && data.vehiculo_clase_id) ? data.vehiculo_clase_id : null],
+      vehiculo_clase: [(data && data.vehiculo_clase) ? data.vehiculo_clase : null],
+      vehiculo_clase_precio: [(data && data.vehiculo_clase_precio) ? data.vehiculo_clase_precio : null],
+      comision: [(data && data.comision) ? data.comision : null],
+
+      precio_unitario_inicial: [(data && data.precio_unitario_inicial ? data.precio_unitario_inicial : null)],
+      precio_unitario_final: [(data && data.precio_unitario_final) ? data.precio_unitario_final : null],
+
+      rango_fechas: this.fb.group({
+        fecha_salida: [(data && data.fecha_salida ? data.fecha_salida : this._today), Validators.required],
+        fecha_retorno: [(data && data.fecha_retorno ? data.fecha_retorno : null), Validators.required],
+      }),
+
+      cobros_extras_ids: [(data && data.cobros_extras_ids ? data.cobros_extras_ids : null)],
+      cobros_extras: [(data && data.cobros_extras ? data.cobros_extras : null)],
+      subtotal: [(data && data.subtotal ? data.subtotal : null), Validators.required],
+      descuento: [(data && data.descuento ? data.descuento : null)],
+      con_iva: [(data && data.con_iva ? data.con_iva : null)],
+      iva: [(data && data.iva ? data.iva : null)],
+      iva_monto: [(data && data.iva_monto ? data.iva_monto : null)],
+      total: [(data && data.total ? data.total : null), Validators.required],
+
+      folio_cupon: [(data && data.folio_cupon ? data.folio_cupon : null)],
+      valor_cupon: [(data && data.valor_cupon ? data.valor_cupon : null)],
+
+      cobranza_calc: [(data && data.cobranza_calc ? data.cobranza_calc : null), Validators.required],
+
+      total_dias: [(data && data.total_dias) ? data.total_dias : null, Validators.required],
+      ub_salida_id: [(data && data.ub_salida_id) ? data.ub_salida_id : 1, Validators.required],
+      ub_retorno_id: [(data && data.ub_retorno_id) ? data.ub_retorno_id : 1, Validators.required],
     });
 
-    // this.gf.renta_of_codigo.disable();
-    // this.gf.retorno_of_codigo.disable();
-    console.log('init', this.generalDataForm.controls);
+    if (data && data.fecha_salida) {
+      this._today = data.fecha_salida;
+      this.contractFechaSalida = data.fecha_salida;
+      console.log('new min date --->', this._today);
+    }
+
+    if (data && data.cobranza_calc && data.cobranza_calc.length) {
+      this.cobranzaI = data.cobranza_calc;
+    }
+    if (data && data.tarifa_modelo == ModelsEnum.HOTELES && data.vehiculo_clase_id) {
+      this.loadHotelTarifas(false);
+    }
+
+    if (data && data.tarifa_modelo == ModelsEnum.COMISIONISTAS && data.comision) {
+      this.setComisiones(false);
+    }
+
+
   }
 
   initRentOfData(data) {
@@ -268,8 +336,31 @@ export class ContratoPage implements OnInit, AfterViewInit {
     }
   }
 
+  loadTiposTarifas() {
+    this.tiposTarifasServ.getActive().subscribe(res => {
+      if (res.ok) {
+        this.tiposTarifas = res.data;
+      }
+    }, error =>  {
+      console.log('tipos tarifas err -->', error);
+    })
+  }
+
+  loadTarifasExtras() {
+    this.tarifasExtrasServ.getActive().subscribe(res => {
+      if (res.ok) {
+        this.tarifasExtras = res.datas;
+      }
+    }, error => {
+      console.log('tipos tarifas extras err -->', error);
+    })
+  }
+
   get gf() {
     return this.generalDataForm.controls;
+  }
+  get rangoFechas() {
+    return this.gf.rango_fechas['controls'];
   }
   //#endregion
 
@@ -291,31 +382,31 @@ export class ContratoPage implements OnInit, AfterViewInit {
   get cf() {
     return this.clienteDataForm.controls;
   }
+
   //#endregion
 
-  //#region VEHICULO FORM FUNCTIONS
-  initVehiculoForm(tipo: 'salida' | 'llegada', data?) {
-    this.vehiculoForm = this.fb.group({
-      vehiculo_id: [(this.vehiculoData && this.vehiculoData.id ? this.vehiculoData.id : null), Validators.required],
-      km_salida: [(data && data.km_salida ? data.km_salida: null), Validators.required],
-      km_llegada: [(data && data.km_llegada ? data.km_llegada: null), Validators.required],
-      km_recorrido: [(data && data.km_recorrido ? data.km_recorrido: null), Validators.required],
-      gas_salida: [(data && data.gas_salida ? data.gas_salida: null), [Validators.required]],
-      gas_llegada: [(data && data.gas_llegada ? data.gas_llegada: null), Validators.required],
-    });
-    if (tipo === 'salida') {
-      this.vehiculoForm.controls.km_llegada.disable();
-      this.vehiculoForm.controls.km_recorrido.disable();
-      this.vehiculoForm.controls.gas_llegada.disable();
-    }
-    if (tipo === 'llegada') {
-      this.vehiculoForm.controls.km_salida.disable();
-      this.vehiculoForm.controls.gas_salida.disable();
+  //#region HOTELES FUNCTIONS
+  async loadHoteles() {
+    let res = await this.hotelesServ.getActive();
+    if (res.ok) {
+      this.hoteles = res.hoteles;
+    } else {
+      this.sweetMsgServ.printStatus('No hay hoteles dados de alta', 'warning');
+      return;
     }
   }
+  //#endregion
 
-  get vf() {
-    return this.vehiculoForm.controls;
+  //#region COMISIONISTAS FUNCTIONS
+
+  async loadComisionistas() {
+    let res = await this.comisionistasServ._getActive();
+    if (res.ok) {
+      this.comisionistas = res.data;
+    } else {
+      this.sweetMsgServ.printStatus('No hay comisionistas dados de alta', 'warning');
+      return;
+    }
   }
   //#endregion
 
@@ -402,9 +493,6 @@ export class ContratoPage implements OnInit, AfterViewInit {
       return;
     }
 
-    //this.sweetMsgServ.printStatus('Función en desarrollo', 'warning');
-    //return;
-
     this.sweetMsgServ.confirmRequest().then(async (data) => {
       if (data.value) {
 
@@ -417,7 +505,6 @@ export class ContratoPage implements OnInit, AfterViewInit {
           console.log('prepare formData info---->');
 
           if (!this.docDataTransfer[i].success || this.docDataTransfer[i].success === false || !this.docDataTransfer[i].file_id || this.docDataTransfer[i].file_id === null) {
-            //this.docDataTransfer[i].uploading = false;
             if (!this.docDataTransfer[i].etiqueta) {
               this.docDataTransfer[i].fileErrors = 'Ingrese un valor valido';
 
@@ -616,11 +703,370 @@ export class ContratoPage implements OnInit, AfterViewInit {
         case 'vehiculo':
           // TODO: arreglar cuando sea tipo salida o llegada
           this.vehiculoData = data;
-          this.initVehiculoForm('salida', data);
+          this.gf.vehiculo_id.patchValue(this.vehiculoData.id);
+          this.gf.vehiculo_clase_id.patchValue(this.vehiculoData.clase_id);
+          this.setVehiculoClaseData(true);
           break;
       }
-      //this.loadClienteData();
     }
+  }
+  //#endregion
+
+  //#region CALCULATION BUSINESS RULES
+
+  resetVehiculoTarifas() {
+    this.gf.vehiculo_clase_id.patchValue(null);
+    this.gf.vehiculo_clase.patchValue(null);
+    this.gf.vehiculo_clase_precio.patchValue(null);
+    this.gf.comision.patchValue(null);
+
+    if (this.vehiculoData) {
+      this.gf.vehiculo_clase_id.patchValue(this.vehiculoData.clase_id);
+      this.gf.vehiculo_clase.patchValue(this.vehiculoData.clase.clase);
+      this.gf.vehiculo_clase_precio.patchValue(this.vehiculoData.precio_renta);
+    }
+
+  }
+
+  initTipoTarifaRule(withInitRules?: boolean) {
+    let _tipoTarifa = this.tiposTarifas.find(x => x.tarifa === this.gf.tipo_tarifa.value);
+    this.gf.tipo_tarifa_id.patchValue(_tipoTarifa.id);
+
+    if (this.vehiculoData && this.vehiculoData.precio_renta) {
+      this.gf.precio_unitario_inicial.patchValue(this.vehiculoData.precio_renta);
+    }
+
+    switch (TxtConv.txtCon(_tipoTarifa.tarifa, 'uppercase')) {
+      case 'APOLLO':
+        this.gf.tarifa_modelo_id.patchValue(null);
+        this.gf.tarifa_modelo.patchValue(ModelsEnum.APOLLO);
+        this.gf.folio_cupon.patchValue(null);
+        this.gf.valor_cupon.patchValue(null);
+        this.gf.comision.patchValue(null);
+        this.resetVehiculoTarifas();
+        break;
+      case 'HOTEL':
+        if (!withInitRules) {
+          this.gf.tarifa_modelo_id.patchValue(null);
+        }
+
+        this.gf.tarifa_modelo.patchValue(ModelsEnum.HOTELES);
+        this.gf.precio_unitario_final.patchValue(null);
+        break;
+      case 'COMISIONISTA':
+        this.gf.precio_unitario_final.patchValue(null);
+        this.gf.tarifa_modelo_id.patchValue(null);
+        this.gf.tarifa_modelo.patchValue(ModelsEnum.COMISIONISTAS);
+        this.gf.folio_cupon.patchValue(null);
+        this.gf.valor_cupon.patchValue(null);
+        this.gf.comision.patchValue(null);
+        this.resetVehiculoTarifas();
+        break;
+    }
+    this.startDateChange();
+    this.setReturnDateChange();
+  }
+
+  loadHotelTarifas(withInitRules: boolean) {
+    let _hotelTarifas = this.hoteles.find(x => x.id === this.gf.tarifa_modelo_id.value);
+    if (_hotelTarifas) {
+      this.tarifasHotel = _hotelTarifas.tarifas;
+    }
+    if (this.tarifasHotel && this.tarifasHotel.length === 0) {
+      this.sweetMsgServ.printStatus('Este hotel no tiene un plan tarifario configurado, comunicate con el administrador', 'warning');
+      this.gf.tarifa_modelo_id.patchValue(null);
+      return;
+    }
+    if (!this.gf.vehiculo_clase_id.value) {
+      if (this.vehiculoData) {
+        this.gf.vehiculo_clase_id.patchValue(this.vehiculoData.clase_id);
+      }
+    }
+
+    this.setVehiculoClaseData(withInitRules);
+  }
+
+  setVehiculoClaseData(withInitRules: boolean) {
+    let _clases = this.tarifasHotel.find(x => x.clase_id === this.gf.vehiculo_clase_id.value);
+    if (_clases) {
+      this.gf.vehiculo_clase.patchValue(_clases.clase);
+      this.gf.vehiculo_clase_precio.patchValue(_clases.precio);
+      this.gf.precio_unitario_final.patchValue(_clases.precio);
+
+      if (withInitRules === true) {
+        this.initTipoTarifaRule(withInitRules);
+      }
+    }
+  }
+
+  setComisiones(clear: boolean) {
+    this.comisiones = null;
+    let _comisionesValues = this.comisionistas.find(x => x.id === this.gf.tarifa_modelo_id.value);
+    if (_comisionesValues) {
+      this.comisiones = _comisionesValues.comisiones_pactadas;
+    }
+    if (clear === true) {
+      this.gf.comision.setValue(null);
+      this.gf.precio_unitario_final.patchValue(null);
+      this.initCalcComisionista();
+    }
+
+    console.log('comision', this.gf.comision.value);
+
+  }
+
+  initCalcComisionista() {
+    this.startDateChange();
+    this.setReturnDateChange();
+  }
+
+  startDateChange() {
+    console.log('startDateChange');
+    if (this.contractFechaSalida) {
+      this.rangoFechas.fecha_salida.patchValue(this.contractFechaSalida);
+    }
+  }
+
+  setReturnDateChange() {
+    console.log('setReturnDateChange');
+    if (this.rangoFechas.fecha_retorno.invalid) {
+      this.rangoFechas.fecha_retorno.markAllAsTouched();
+      return;
+    }
+    this.gf.total_dias.patchValue(DateConv.diffDays(this.rangoFechas.fecha_salida.value, this.rangoFechas.fecha_retorno.value));
+
+    this.makeCalc();
+  }
+
+  async makeCalc(elementType?: string, cobro?: CobranzaI) {
+    if (this.gf.tipo_tarifa.invalid) {
+      this.sweetMsgServ.printStatus('Selecciona el tipo de tarífa', 'warning');
+      this.gf.tipo_tarifa.markAllAsTouched();
+      return;
+    }
+    if (this.gf.vehiculo_id.invalid) {
+      this.sweetMsgServ.printStatus('Selecciona un vehículo primero', 'warning');
+      this.gf.vehiculo_id.markAllAsTouched();
+      return;
+    }
+
+    console.log('precio inicial vehiculo --->', this.vehiculoData.precio_renta);
+
+    this.cobranzaI = [];
+    let _totalDias = this.gf.total_dias.value;
+    this.gf.tarifa_modelo_id.removeValidators(Validators.required);
+    this.gf.comision.removeValidators(Validators.required);
+
+    switch (TxtConv.txtCon(this.gf.tipo_tarifa.value, 'uppercase')) {
+      case 'APOLLO':
+        console.log('makeCalc tarifa apollo');
+        if (!this.vehiculoData.tarifas) {
+          console.log('El vehículo seleccionado no cuenta con un plan tarifario, comuniquese con el administrador');
+          this.sweetMsgServ.printStatus('El vehículo seleccionado no cuenta con un plan tarifario, comuniquese con el administrador', 'error');
+          return;
+        }
+        let _tarifas = this.vehiculoData.tarifas;
+
+        this.gf.precio_unitario_inicial.patchValue(this.vehiculoData.precio_renta);
+        this.gf.precio_unitario_final.patchValue(this.vehiculoData.precio_renta);
+
+        if (_totalDias < 7) {
+          this.baseRentFrequency = 'days';
+        } else if (_totalDias >= 7 && _totalDias < 30) {
+          this.baseRentFrequency = 'weeks';
+        } else if (_totalDias >= 30) {
+          this.baseRentFrequency = 'months';
+        }
+
+        let _tarifa = _tarifas.find(x => x.frecuencia_ref == this.baseRentFrequency);
+        console.log('tarifa baseRentFrequency -->', this.baseRentFrequency);
+        console.log('tarifa select -->', _tarifa);
+
+        this.cobranzaI.push({
+          element: 'renta',
+          value: _tarifa.precio_base,
+          quantity: _totalDias,
+          quantity_type: 'dias',
+          element_label: 'Renta',
+          number_sign: 'positive',
+          amount: parseFloat(Number(_tarifa.precio_base * _totalDias).toFixed(2)),
+          currency: this.baseCurrency
+        });
+
+        // Verificamos si tenemos descuento
+        if (_tarifa.ap_descuento == true) {
+          this.cobranzaI.push({
+            element: 'descuento',
+            value: null,
+            quantity: _tarifa.valor_descuento,
+            quantity_type: '%',
+            element_label: 'Descuento',
+            number_sign: 'negative',
+            amount: parseFloat(Number(_tarifa.precio_base * (_tarifa.valor_descuento / 100) * _totalDias).toFixed(2)),
+            currency: this.baseCurrency
+          })
+        }
+        break;
+      case 'HOTEL':
+        console.log('makeCalc', this.generalDataForm.value);
+        if (!this.gf.tarifa_modelo_id.value) {
+          this.sweetMsgServ.printStatus('Seccione un hotel de la lista', 'warning');
+          this.gf.tarifa_modelo_id.setValidators(Validators.required);
+          this.gf.tarifa_modelo_id.markAllAsTouched();
+          return;
+        }
+        this.setVehiculoClaseData(false);
+        let _precioUnitario = this.gf.precio_unitario_final.value;
+
+        this.cobranzaI.push({
+          element: 'renta',
+          value: _precioUnitario,
+          quantity: _totalDias,
+          quantity_type: 'dias',
+          element_label: 'Renta',
+          number_sign: 'positive',
+          amount: parseFloat(Number(_precioUnitario * _totalDias).toFixed(2)),
+          currency: this.baseCurrency
+        });
+        break;
+      case 'COMISIONISTA':
+        console.log('makeCalc form comisionistas');
+        if (!this.gf.tarifa_modelo_id.value) {
+          this.sweetMsgServ.printStatus('Seccione un comisionista de la lista', 'warning');
+          this.gf.tarifa_modelo_id.setValidators(Validators.required);
+          this.gf.tarifa_modelo_id.markAllAsTouched();
+          return;
+        }
+        if (!this.gf.comision.value) {
+          //this.sweetMsgServ.printStatus('Seccione un comisionista de la lista', 'warning');
+          this.gf.comision.setValidators(Validators.required);
+          this.gf.comision.markAllAsTouched();
+          return;
+        }
+        this.gf.precio_unitario_inicial.patchValue(this.vehiculoData.precio_renta);
+        let _nuevoPrecioUnitario = Number(this.gf.precio_unitario_inicial.value) + Number(this.gf.comision.value);
+        this.gf.precio_unitario_final.patchValue(_nuevoPrecioUnitario);
+
+        console.log('makeCalc form comisionistas precio --->', this.gf.precio_unitario_final.value);
+
+        this.cobranzaI.push({
+          element: 'renta',
+          value: _nuevoPrecioUnitario,
+          quantity: _totalDias,
+          quantity_type: 'dias',
+          element_label: 'Renta',
+          number_sign: 'positive',
+          amount: parseFloat(Number(_nuevoPrecioUnitario * _totalDias).toFixed(2)),
+          currency: this.baseCurrency
+        });
+
+        break;
+      default:
+        this.gf.tipo_tarifa.markAllAsTouched();
+        return
+    }
+
+    // Verificamos si tenemos extras
+    if (this.gf.cobros_extras.value && this.gf.cobros_extras.value.length > 0) {
+      await this.toastServ.presentToastWithOptions('Revise la información de los cargos extra en especial la cantidad unitaria');
+      for (let i = 0; i < this.gf.cobros_extras.value.length; i++) {
+        this.cobranzaI.push({
+          element: (elementType && elementType === 'extra' && cobro) ? cobro.element : 'extra',
+          value: (elementType && elementType === 'extra' && cobro) ? cobro.value : this.gf.cobros_extras.value[i].precio,
+          quantity: (elementType && elementType === 'extra' && cobro) ? cobro.quantity : 1,
+          quantity_type: (elementType && elementType === 'extra' && cobro) ? cobro.quantity_type : '',
+          element_label: (elementType && elementType === 'extra' && cobro) ? cobro.element_label : this.gf.cobros_extras.value[i].nombre,
+          number_sign: (elementType && elementType === 'extra' && cobro) ? cobro.number_sign : 'positive',
+          amount: (elementType && elementType === 'extra' && cobro) ? parseFloat(Number(this.gf.cobros_extras.value[i].precio * cobro.quantity).toFixed(2)) : parseFloat(Number(this.gf.cobros_extras.value[i].precio * 1).toFixed(2)),
+          currency: this.baseCurrency
+        })
+      }
+    }
+
+    // sacamos subtotal, iva y total final
+    let _subtotal = 0;
+    let _iva = 0;
+    let _total = 0;
+    for (let i = 0; i < this.cobranzaI.length; i++) {
+      _subtotal = _subtotal + ((this.cobranzaI[i].amount * (this.cobranzaI[i].number_sign === 'positive' ? 1 : -1)));
+    }
+    if (this.gf.con_iva.value) {
+      _iva = parseFloat(Number(_subtotal * this.iva).toFixed(2));
+      _total = (_subtotal + _iva);
+    } else {
+      _total = (_subtotal);
+    }
+
+
+    // subtotal
+    this.cobranzaI.push({
+      element: 'subtotal',
+      value: null,
+      quantity: null,
+      quantity_type: null,
+      element_label: 'Subtotal',
+      number_sign: 'positive',
+      amount: _subtotal,
+      currency: this.baseCurrency
+    });
+    this.gf.subtotal.patchValue(_subtotal);
+
+    // revisamos descuento
+    let _des = this.cobranzaI.filter(x => x.element === 'descuento');
+    let _desTotal = 0;
+    if (_des) {
+      for (let i = 0; i < _des.length; i++) {
+        _desTotal = (_desTotal + _des[i].amount);
+      }
+      this.gf.descuento.patchValue(_desTotal);
+    }
+
+    // iva
+    if (this.gf.con_iva.value) {
+      this.cobranzaI.push({
+        element: 'iva',
+        value: null,
+        quantity: this.iva * 100,
+        quantity_type: '%',
+        element_label: 'IVA',
+        number_sign: 'positive',
+        amount: _iva,
+        currency: this.baseCurrency
+      });
+      //this.gf.con_iva.patchValue(true);
+      this.gf.iva.patchValue(this.iva);
+      this.gf.iva_monto.patchValue(_iva);
+    }
+
+    // total
+    this.cobranzaI.push({
+      element: 'total',
+      value: null,
+      quantity: null,
+      quantity_type: null,
+      element_label: 'Total',
+      number_sign: 'positive',
+      amount: _total,
+      currency: this.baseCurrency
+    });
+    this.gf.total.patchValue(_total);
+    this.gf.cobranza_calc.patchValue(this.cobranzaI);
+  }
+
+  async pushSelectedExtras() {
+    let _ids = this.gf.cobros_extras_ids.value;
+    this.gf.cobros_extras.setValue(null);
+    let _extrasObj = []
+    for (let i = 0; i < _ids.length; i++) {
+      let _extra = this.tarifasExtras.find(x => x.id == _ids[i]);
+      if (_extra) {
+        _extrasObj.push(_extra);
+      }
+    }
+    if (_extrasObj && _extrasObj.length > 0) {
+      this.gf.cobros_extras.setValue(_extrasObj);
+    }
+    await this.makeCalc();
   }
   //#endregion
 
@@ -633,9 +1079,17 @@ export class ContratoPage implements OnInit, AfterViewInit {
         if (this.generalDataForm.invalid) {
           this.sweetMsgServ.printStatus('Verifica que los datos solicitados esten completos', 'warning');
           this.generalDataForm.markAllAsTouched();
+          console.log(this.generalDataForm);
           return;
         }
         _payload = this.generalDataForm.value;
+        if (moment.isMoment(_payload.rango_fechas.fecha_salida)) {
+          _payload.rango_fechas.fecha_salida = DateConv.transFormDate(_payload.rango_fechas.fecha_salida, 'regular');
+        }
+        if (moment.isMoment(_payload.rango_fechas.fecha_retorno)) {
+          _payload.rango_fechas.fecha_retorno = DateConv.transFormDate(_payload.rango_fechas.fecha_retorno, 'regular');
+        }
+        _payload.hora_elaboracion = DateConv.transFormDate(moment.now(), 'time');
         break;
       case 'datos_cliente':
         if (this.clienteDataForm.invalid) {
@@ -645,28 +1099,19 @@ export class ContratoPage implements OnInit, AfterViewInit {
         }
         _payload = this.clienteDataForm.value;
         break;
-      case 'datos_vehiculo':
-        if (this.vehiculoForm.invalid) {
-          this.sweetMsgServ.printStatus('Verifica que los datos solicitados esten completos', 'warning');
-          this.vehiculoForm.markAllAsTouched();
-          console.log('invalid form vehiculoForm', this.vehiculoForm);
-          return;
-        }
-        _payload = this.vehiculoForm.value;
-        break;
     }
 
     _payload.seccion = section;
     _payload.num_contrato = this.num_contrato;
     console.log(section + '--->', _payload);
-    //return;
-
+   //return;
     this.contratosServ.saveProgress(_payload).subscribe(res => {
       if (res.ok) {
         this.sweetMsgServ.printStatus(res.message, 'success');
         //this.contract_id = res.id;
         this.num_contrato = res.contract_number;
         this.contratosServ.setContractData(this.num_contrato);
+        this.reloadAll();
       }
     }, error => {
       console.log(error);

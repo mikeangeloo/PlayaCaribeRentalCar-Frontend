@@ -66,7 +66,7 @@ export class MultiTableFilterComponent implements OnInit {
 
   // Método para cargar datos de los campus
   loadDataTable() {
-    //this.listado-empresas = null;
+    //this.listado-hoteles = null;
     this.listData = null;
     this.spinner = true;
 

@@ -75,7 +75,7 @@ export class CategoriaVehiculosListComponent implements OnInit, OnChanges {
 
   // Método para cargar datos de los campus
   loadCategoriasVehiculosTable(_data?: CategoriasVehiculosI[]) {
-    //this.listado-empresas = null;
+    //this.listado-hoteles = null;
     this.listCatVehiculos = null;
     this.initCatVehiculos();
     this.spinner = true;

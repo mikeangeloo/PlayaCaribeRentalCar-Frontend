@@ -78,7 +78,7 @@ export class RolesListComponent implements OnInit {
 
   // Método para cargar datos de los campus
   loadRolesTable(_data?: RoleI[]) {
-    //this.listado-empresas = null;
+    //this.listado-hoteles = null;
     this.listRoles = null;
     this.initRoles();
     this.spinner = true;
