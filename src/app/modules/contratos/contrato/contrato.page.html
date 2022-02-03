@@ -217,7 +217,7 @@
                         <ion-col size="12" size-md="6">
                           <mat-form-field appearance="legacy">
                             <mat-label>Fecha salida - retorno</mat-label>
-                            <mat-date-range-input [rangePicker]="fechaRetornoRegreso" [formGroup]="gf.rango_fechas" [min]="_today">
+                            <mat-date-range-input [rangePicker]="fechaRetornoRegreso" [formGroup]="rangoFechasGroup" [min]="_today">
                               <input matStartDate formControlName="fecha_salida" placeholder="Start date" readonly autocomplete="off" (dateChange)="startDateChange()">
                               <input matEndDate formControlName="fecha_retorno" placeholder="End date" (dateChange)="setReturnDateChange()" readonly autocomplete="off">
                             </mat-date-range-input>
@@ -287,14 +287,15 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <ng-container *ngFor="let cobranza of cobranzaI">
+                        {{getExtraRows()}}
+                        <ng-container *ngFor="let cobranza of cobranzaI; let i = index">
                           <tr *ngIf=" cobranza.element !== 'extra'" [ngClass]="{'total-row': cobranza.element === 'total'}">
                             <td>{{cobranza.element_label}}</td>
                             <td>{{cobranza.value | currency}}</td>
                             <td>{{cobranza.quantity}} {{cobranza.quantity_type}}</td>
                             <td>{{(cobranza.number_sign === 'negative' ? '-' : '')}} {{cobranza.amount | currency}}</td>
                           </tr>
-                          <ng-container *ngIf=" cobranza.element == 'extra'">
+                          <ng-container *ngIf="cobranza.element == 'extra'">
                             <tr class="extra-row">
                               <td>Extras</td>
                               <td colspan="3"></td>

@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, OnInit} from '@angular/core';
+import {AfterViewInit, ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {NgxMaterialTimepickerTheme} from "ngx-material-timepicker";
 import {Months} from "../../../interfaces/shared/months";
 import * as moment from "moment";
@@ -32,6 +32,7 @@ import {ComisionistasService} from '../../../services/comisionistas.service';
 import {ModelsEnum} from '../../../enums/models.enum';
 import {ToastMessageService} from '../../../services/toast-message.service';
 
+
 @Component({
   selector: 'app-contrato',
   templateUrl: './contrato.page.html',
@@ -52,6 +53,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
   public txtConv = TxtConv;
   public dateConv = DateConv;
   public statusC = ContratosStatus;
+  public totalTdExtras: boolean;
   //#endregion
 
   //#region DATOS CLIENTE ATTRIBUTES
@@ -150,7 +152,8 @@ export class ContratoPage implements OnInit, AfterViewInit {
     public tarifasExtrasServ: TarifasExtrasService,
     public hotelesServ: HotelesService,
     public comisionistasServ: ComisionistasService,
-    public toastServ: ToastMessageService
+    public toastServ: ToastMessageService,
+    private cd: ChangeDetectorRef
   ) { }
 
   ngOnInit() {
@@ -361,6 +364,9 @@ export class ContratoPage implements OnInit, AfterViewInit {
   }
   get rangoFechas() {
     return this.gf.rango_fechas['controls'];
+  }
+  get rangoFechasGroup() {
+    return this.generalDataForm.get('rango_fechas') as FormGroup;
   }
   //#endregion
 
@@ -705,7 +711,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
           this.vehiculoData = data;
           this.gf.vehiculo_id.patchValue(this.vehiculoData.id);
           this.gf.vehiculo_clase_id.patchValue(this.vehiculoData.clase_id);
-          this.setVehiculoClaseData(true);
+          this.initTipoTarifaRule(true);
           break;
       }
     }
@@ -729,6 +735,11 @@ export class ContratoPage implements OnInit, AfterViewInit {
   }
 
   initTipoTarifaRule(withInitRules?: boolean) {
+    if (!this.gf.tipo_tarifa.value) {
+      this.sweetMsgServ.printStatus('Seleccione un tipo de tarifa para aplicar', 'warning');
+      this.gf.tipo_tarifa.markAllAsTouched();
+      return;
+    }
     let _tipoTarifa = this.tiposTarifas.find(x => x.tarifa === this.gf.tipo_tarifa.value);
     this.gf.tipo_tarifa_id.patchValue(_tipoTarifa.id);
 
@@ -787,14 +798,16 @@ export class ContratoPage implements OnInit, AfterViewInit {
   }
 
   setVehiculoClaseData(withInitRules: boolean) {
-    let _clases = this.tarifasHotel.find(x => x.clase_id === this.gf.vehiculo_clase_id.value);
-    if (_clases) {
-      this.gf.vehiculo_clase.patchValue(_clases.clase);
-      this.gf.vehiculo_clase_precio.patchValue(_clases.precio);
-      this.gf.precio_unitario_final.patchValue(_clases.precio);
+    if (TxtConv.txtCon(this.gf.tipo_tarifa.value, 'uppercase') === 'HOTEL') {
+      let _clases = this.tarifasHotel.find(x => x.clase_id === this.gf.vehiculo_clase_id.value);
+      if (_clases) {
+        this.gf.vehiculo_clase.patchValue(_clases.clase);
+        this.gf.vehiculo_clase_precio.patchValue(_clases.precio);
+        this.gf.precio_unitario_final.patchValue(_clases.precio);
 
-      if (withInitRules === true) {
-        this.initTipoTarifaRule(withInitRules);
+        if (withInitRules === true) {
+          this.initTipoTarifaRule(withInitRules);
+        }
       }
     }
   }
@@ -852,7 +865,11 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
     console.log('precio inicial vehiculo --->', this.vehiculoData.precio_renta);
 
+
+    let _tempExtrasCalc = this.cobranzaI.filter(x => x.element === 'extra');
+    console.log('tempExtrasCalc', _tempExtrasCalc);
     this.cobranzaI = [];
+
     let _totalDias = this.gf.total_dias.value;
     this.gf.tarifa_modelo_id.removeValidators(Validators.required);
     this.gf.comision.removeValidators(Validators.required);
@@ -968,19 +985,37 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
     // Verificamos si tenemos extras
     if (this.gf.cobros_extras.value && this.gf.cobros_extras.value.length > 0) {
-      await this.toastServ.presentToastWithOptions('Revise la información de los cargos extra en especial la cantidad unitaria');
-      for (let i = 0; i < this.gf.cobros_extras.value.length; i++) {
-        this.cobranzaI.push({
-          element: (elementType && elementType === 'extra' && cobro) ? cobro.element : 'extra',
-          value: (elementType && elementType === 'extra' && cobro) ? cobro.value : this.gf.cobros_extras.value[i].precio,
-          quantity: (elementType && elementType === 'extra' && cobro) ? cobro.quantity : 1,
-          quantity_type: (elementType && elementType === 'extra' && cobro) ? cobro.quantity_type : '',
-          element_label: (elementType && elementType === 'extra' && cobro) ? cobro.element_label : this.gf.cobros_extras.value[i].nombre,
-          number_sign: (elementType && elementType === 'extra' && cobro) ? cobro.number_sign : 'positive',
-          amount: (elementType && elementType === 'extra' && cobro) ? parseFloat(Number(this.gf.cobros_extras.value[i].precio * cobro.quantity).toFixed(2)) : parseFloat(Number(this.gf.cobros_extras.value[i].precio * 1).toFixed(2)),
-          currency: this.baseCurrency
-        })
+
+      if (elementType && elementType === 'extra' && cobro) {
+        this.cobranzaI.push(... _tempExtrasCalc);
+
+        let _singleCobro = this.cobranzaI.find(x => x.element_label === cobro.element_label);
+        let _extraInForm = this.gf.cobros_extras.value.find(x => x.nombre === cobro.element_label);
+        let _index = this.cobranzaI.findIndex(x => x.element_label === cobro.element_label);
+
+        if (_singleCobro && _extraInForm && _index) {
+          _singleCobro.quantity = cobro.quantity;
+          _singleCobro.amount = parseFloat(Number(_extraInForm.precio * cobro.quantity).toFixed(2))
+          this.cobranzaI[_index] = _singleCobro;
+        }
+      } else {
+        for (let i = 0; i < this.gf.cobros_extras.value.length; i++) {
+
+          this.cobranzaI.push({
+            element:  'extra',
+            value:  this.gf.cobros_extras.value[i].precio,
+            quantity:   1,
+            quantity_type:  '',
+            element_label:  this.gf.cobros_extras.value[i].nombre,
+            number_sign:  'positive',
+            amount:  parseFloat(Number(this.gf.cobros_extras.value[i].precio * 1).toFixed(2)),
+            currency: this.baseCurrency
+          })
+
+
+        }
       }
+
     }
 
     // sacamos subtotal, iva y total final
@@ -1066,7 +1101,24 @@ export class ContratoPage implements OnInit, AfterViewInit {
     if (_extrasObj && _extrasObj.length > 0) {
       this.gf.cobros_extras.setValue(_extrasObj);
     }
+    this.toastServ.presentToast('info','Revise la información de los cargos extra en especial la cantidad unitaria', 'top');
+    console.log('cobros extras --->', _extrasObj);
     await this.makeCalc();
+  }
+
+  getExtraRows() {
+    let elements = document.getElementsByClassName('extra-row');
+    if (elements && elements.length > 0) {
+
+      for (let i = 0; i < elements.length; i++) {
+        if (i === 0) {
+          elements[i].setAttribute('style', 'display:table-row');
+        }
+        if (i > 0) {
+          elements[i].setAttribute('style', 'display:none');
+        }
+      }
+    }
   }
   //#endregion
 
@@ -1104,6 +1156,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
     _payload.seccion = section;
     _payload.num_contrato = this.num_contrato;
     console.log(section + '--->', _payload);
+   //return;
    //return;
     this.contratosServ.saveProgress(_payload).subscribe(res => {
       if (res.ok) {

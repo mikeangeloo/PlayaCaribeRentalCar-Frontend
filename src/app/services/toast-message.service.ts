@@ -20,18 +20,29 @@ export class ToastMessageService {
       case 'warning':
         color = 'tertiary';
         break;
-      case 'info':
-        color = 'secondary';
-        break;
     }
-    const toast = await this.toastController.create({
-      message: theMessage,
-      duration: 4000,
-      color,
-      position
-    });
-    toast.present();
+    if (status !== 'info') {
+      const toast = await this.toastController.create({
+        message: theMessage,
+        duration: 4000,
+        color,
+        position,
+      });
+      toast.present();
+    } else {
+      const toast = await this.toastController.create({
+        header: 'Importante',
+        message: theMessage,
+        duration: 3000,
+        position,
+        cssClass: 'info-toast',
+      });
+      toast.present();
+    }
+
   }
+
+
 
   async presentToastWithOptions(message) {
     const toast = await this.toastController.create({
