@@ -39,6 +39,18 @@ export class UbicacionesService {
     }));
   }
 
+  public async _getActive() {
+    try {
+      let res = await this.httpClient.get<any>(`${this.dashURL}/ubicaciones`).toPromise();
+      if (res.ok) {
+        return {ok: true, data: res.datas}
+      }
+    } catch (e) {
+      return {ok: false, error: e}
+    }
+
+  }
+
   public getDataById(id): Observable<any> {
     return this.httpClient.get<any>(`${this.dashURL}/ubicaciones/${id}`).pipe(map(response => {
       return response;

@@ -11,4 +11,6 @@ export interface UbicacionesI
     activo?: number;
     created_at?: Date;
     updated_at?: Date;
+
+    alias?: string;
 }

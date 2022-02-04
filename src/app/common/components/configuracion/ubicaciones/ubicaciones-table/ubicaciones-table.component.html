@@ -31,6 +31,18 @@
                 </mat-cell>
               </ng-container>
 
+              <!-- alias -->
+              <ng-container matColumnDef="alias">
+                <mat-header-cell *matHeaderCellDef mat-sort-header>Alias</mat-header-cell>
+                <mat-cell *matCellDef="let row">
+                  <div class="column">
+                    <p>
+                      {{row.alias}}
+                    </p>
+                  </div>
+                </mat-cell>
+              </ng-container>
+
               <!-- pais-->
               <ng-container matColumnDef="pais">
                 <mat-header-cell *matHeaderCellDef mat-sort-header>Pais</mat-header-cell>

@@ -23,7 +23,15 @@
             <div class="form-content">
               <ion-row class="ion-no-padding ion-no-margin">
 
-                <ion-col size="12" size-md="6">
+                <ion-col size="12" size-md="4">
+                  <mat-form-field appearance="legacy">
+                    <mat-label>Alias</mat-label>
+                    <input matInput type="text" formControlName="alias" autocomplete="off">
+                    <mat-error *ngIf="uf.alias.errors?.required">Campo requerido</mat-error>
+                  </mat-form-field>
+                </ion-col>
+
+                <ion-col size="12" size-md="4">
                   <mat-form-field appearance="legacy">
                     <mat-label>Pais</mat-label>
                     <input matInput type="text" formControlName="pais" autocomplete="off" readonly>
@@ -31,7 +39,7 @@
                     <mat-hint>Solo lectura</mat-hint>
                   </mat-form-field>
                 </ion-col>
-                <ion-col size="12" size-md="6">
+                <ion-col size="12" size-md="4">
                   <mat-form-field appearance="legacy">
                     <mat-label>Estado</mat-label>
                     <input matInput type="text" formControlName="estado" autocomplete="off" readonly>

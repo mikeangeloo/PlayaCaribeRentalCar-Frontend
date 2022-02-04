@@ -26,6 +26,7 @@ export class UbicacionesTableComponent implements OnInit {
   @Output() emitData = new EventEmitter();
   displayedColumns: string[] = [
     'id',
+    'alias',
     'pais',
     'estado',
     'municipio',

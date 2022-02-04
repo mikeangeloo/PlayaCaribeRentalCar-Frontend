@@ -35,7 +35,8 @@ export class UbicacionesFormComponent implements OnInit {
       direccion: [null, Validators.required],
       cp: [null, Validators.required],
       referencias: [null],
-      activo: [null]
+      activo: [null],
+      alias: [null, Validators.required]
     });
   }
 
@@ -62,6 +63,7 @@ export class UbicacionesFormComponent implements OnInit {
       cp: (data && data.cp) ? data.cp : null,
       referencias: (data && data.referencias) ? data.referencias : null,
       activo: (data && data.activo) ? data.activo : 0,
+      alias: (data && data.alias) ? data.alias: null
     });
     this.uf.activo.disable();
   }
