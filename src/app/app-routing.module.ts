@@ -91,15 +91,17 @@ const routes: Routes = [
           //endregion
 
           //region CONFIGURACION
-        {
-            path: 'administracion/configuracion',
+          {
+            path: 'administracion/catalogos',
             loadChildren: () => import('./modules/configuracion/configuracion.module').then( m => m.ConfiguracionModule)
-        },
-        //endregion
+          },
+         //endregion
+
       //endregion
 
     ]
-  }
+  },
+
 ];
 
 @NgModule({

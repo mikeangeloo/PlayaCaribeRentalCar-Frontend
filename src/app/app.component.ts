@@ -220,15 +220,15 @@ export class AppComponent implements OnDestroy {
           ]
         },
         {
-          module: 'configuracion',
-          icon: 'settings',
-          label: 'Configuración',
+          module: 'catalogos',
+          icon: 'folder',
+          label: 'Catálogos',
           route: null,
           level: 1,
           active: false,
           children: [
             {
-              module: 'configuracion',
+              module: 'catalogos',
               icon: 'cash',
               label: 'Precios',
               route: null,
@@ -236,14 +236,22 @@ export class AppComponent implements OnDestroy {
               active: false,
               children: [
                 {
-                  module: 'configuracion',
+                  module: 'catalogos',
                   icon: 'pricetags',
                   label: 'Tarifas Extras',
-                  route: '/administracion/configuracion/precios/tarifas-extras',
+                  route: '/administracion/catalogos/precios/tarifas-extras',
                   level: 3,
                   active: false,
                 }
               ]
+            },
+            {
+              module: 'catalogos',
+              icon: 'location',
+              label: 'Ubicaciones',
+              route: '/administracion/catalogos/ubicaciones',
+              level: 2,
+              active: false,
             }
           ]
         }
