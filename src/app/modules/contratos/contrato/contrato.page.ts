@@ -31,6 +31,8 @@ import {ComisionistasI} from '../../../interfaces/comisionistas/comisionistas.in
 import {ComisionistasService} from '../../../services/comisionistas.service';
 import {ModelsEnum} from '../../../enums/models.enum';
 import {ToastMessageService} from '../../../services/toast-message.service';
+import {UbicacionesI} from '../../../interfaces/configuracion/ubicaciones.interface';
+import {UbicacionesService} from '../../../services/ubicaciones.service';
 
 
 @Component({
@@ -53,7 +55,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
   public txtConv = TxtConv;
   public dateConv = DateConv;
   public statusC = ContratosStatus;
-  public totalTdExtras: boolean;
+  public ubicaciones: UbicacionesI[];
   //#endregion
 
   //#region DATOS CLIENTE ATTRIBUTES
@@ -153,7 +155,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
     public hotelesServ: HotelesService,
     public comisionistasServ: ComisionistasService,
     public toastServ: ToastMessageService,
-    private cd: ChangeDetectorRef
+    public ubicacionesServ: UbicacionesService
   ) { }
 
   ngOnInit() {
@@ -168,6 +170,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
     this.loadTarifasExtras();
     await this.loadHoteles();
     await this.loadComisionistas();
+    await this.loadUbicaciones();
     this.reloadAll();
   }
 
@@ -412,6 +415,17 @@ export class ContratoPage implements OnInit, AfterViewInit {
     } else {
       this.sweetMsgServ.printStatus('No hay comisionistas dados de alta', 'warning');
       return;
+    }
+  }
+  //#endregion
+
+  //#region UBICACIONES FUNCIONTS
+  async loadUbicaciones() {
+    let res = await this.ubicacionesServ._getActive();
+    if (res.ok) {
+      this.ubicaciones = res.data
+    } else {
+      console.log('error loading ubicacioens');
     }
   }
   //#endregion
@@ -712,6 +726,12 @@ export class ContratoPage implements OnInit, AfterViewInit {
           this.gf.vehiculo_id.patchValue(this.vehiculoData.id);
           this.gf.vehiculo_clase_id.patchValue(this.vehiculoData.clase_id);
           this.initTipoTarifaRule(true);
+          break;
+        case 'ubicacionSalida':
+          this.gf.ub_salida_id.patchValue(data.id);
+          break;
+        case 'ubicacionRetorno':
+          this.gf.ub_retorno_id.patchValue(data.id);
           break;
       }
     }

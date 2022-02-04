@@ -252,20 +252,43 @@
                       </ion-row>
                       <mat-divider></mat-divider>
                       <ion-row>
-                        <ion-col size="12">
-                          <h4>Ubicaciones</h4>
-                        </ion-col>
+
                         <ion-col size="12" size-md="6">
+                          <ion-row>
+                            <ion-col size="6" class="ion-no-padding">
+                              <h4 style="margin: 0; padding: 0;">Ubicaciones</h4>
+                            </ion-col>
+                            <ion-col size="6">
+                              <div class="search-row-buttons">
+                                <ion-button size="small" color="secondary" (click)="openModalSearch('ubicaciones', 'ubicacionSalida')">
+                                  <ion-icon name="search"></ion-icon>
+                                </ion-button>
+                              </div>
+                            </ion-col>
+                          </ion-row>
                           <mat-form-field appearance="legacy">
                             <mat-label>Salida</mat-label>
-                            <input matInput formControlName="ub_salida_id" autocomplete="off" readonly>
+                            <mat-select formControlName="ub_salida_id">
+                              <mat-option *ngFor="let ubicacion of ubicaciones" [value]="ubicacion.id">{{(ubicacion.alias) ? ubicacion.alias : ubicacion.direccion}}</mat-option>
+                            </mat-select>
                             <mat-error *ngIf="gf.ub_salida_id.errors?.required">Campo requerido</mat-error>
                           </mat-form-field>
                         </ion-col>
                         <ion-col size="12" size-md="6">
+                          <ion-row>
+                            <ion-col size="12">
+                              <div class="search-row-buttons">
+                                <ion-button size="small" color="secondary" (click)="openModalSearch('ubicaciones', 'ubicacionRetorno')">
+                                  <ion-icon name="search"></ion-icon>
+                                </ion-button>
+                              </div>
+                            </ion-col>
+                          </ion-row>
                           <mat-form-field appearance="legacy">
                             <mat-label>Retorno</mat-label>
-                            <input matInput formControlName="ub_retorno_id" autocomplete="off" readonly>
+                            <mat-select formControlName="ub_retorno_id">
+                              <mat-option *ngFor="let ubicacion of ubicaciones" [value]="ubicacion.id">{{(ubicacion.alias) ? ubicacion.alias : ubicacion.direccion}}</mat-option>
+                            </mat-select>
                             <mat-error *ngIf="gf.ub_retorno_id.errors?.required">Campo requerido</mat-error>
                           </mat-form-field>
                         </ion-col>

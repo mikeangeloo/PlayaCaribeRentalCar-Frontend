@@ -7,12 +7,14 @@ import {NgxMaterialTimepickerModule} from 'ngx-material-timepicker';
 import {AppCommonModule} from '../../common/common.module';
 import {ConfiguracionRoutingModule} from './configuracion-routing.module';
 import {TarifasExtrasPage} from './precios/tarifas-extras/tarifas-extras.page';
+import {UbicacionesComponent} from './ubicaciones/ubicaciones.component';
 
 
 
 @NgModule({
   declarations: [
-      TarifasExtrasPage
+      TarifasExtrasPage,
+      UbicacionesComponent
   ],
   imports: [
     CommonModule,

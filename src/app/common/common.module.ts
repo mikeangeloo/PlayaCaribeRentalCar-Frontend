@@ -33,6 +33,8 @@ import {ClaseVehiculoFormComponent} from './components/clases-vehiculos/clase-ve
 import {ClasesVehiculosTableComponent} from './components/clases-vehiculos/clases-vehiculos-table/clases-vehiculos-table.component';
 import {TarifasExtrasFormComponent} from './components/configuracion/precios/tarifas-extras-form/tarifas-extras-form.component';
 import {TarifasExtrasTableComponent} from './components/configuracion/precios/tarifas-extras-table/tarifas-extras-table.component';
+import {UbicacionesFormComponent} from './components/configuracion/ubicaciones/ubicaciones-form/ubicaciones-form.component';
+import {UbicacionesTableComponent} from './components/configuracion/ubicaciones/ubicaciones-table/ubicaciones-table.component';
 
 
 
@@ -65,7 +67,9 @@ import {TarifasExtrasTableComponent} from './components/configuracion/precios/ta
     ClaseVehiculoFormComponent,
     ClasesVehiculosTableComponent,
     TarifasExtrasFormComponent,
-    TarifasExtrasTableComponent
+    TarifasExtrasTableComponent,
+    UbicacionesFormComponent,
+    UbicacionesTableComponent
   ],
   exports: [
     HotelesListComponent,
@@ -95,7 +99,9 @@ import {TarifasExtrasTableComponent} from './components/configuracion/precios/ta
     ClaseVehiculoFormComponent,
     ClasesVehiculosTableComponent,
     TarifasExtrasFormComponent,
-    TarifasExtrasTableComponent
+    TarifasExtrasTableComponent,
+    UbicacionesFormComponent,
+    UbicacionesTableComponent
   ],
   entryComponents: [
     HotelesListComponent,
@@ -125,7 +131,9 @@ import {TarifasExtrasTableComponent} from './components/configuracion/precios/ta
     ClaseVehiculoFormComponent,
     ClasesVehiculosTableComponent,
     TarifasExtrasFormComponent,
-    TarifasExtrasTableComponent
+    TarifasExtrasTableComponent,
+    UbicacionesFormComponent,
+    UbicacionesTableComponent
   ],
     imports: [
         CommonModule,
