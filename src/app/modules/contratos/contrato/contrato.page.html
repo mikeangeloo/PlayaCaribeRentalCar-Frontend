@@ -174,20 +174,71 @@
                           </mat-form-field>
                         </ion-col>
 
-                        <ion-col size="12" size-md="6">
-                          <mat-form-field appearance="legacy">
-                            <mat-label>Folio Cupón</mat-label>
-                            <input matInput type="text" autocomplete="off" formControlName="folio_cupon">
-                            <mat-error></mat-error>
-                          </mat-form-field>
-                        </ion-col>
 
-                        <ion-col size="12" size-md="6">
-                          <mat-form-field appearance="legacy">
-                            <mat-label>Valor Cupón</mat-label>
-                            <input type="text" autocomplete="off" matInput formControlName="valor_cupon">
-                            <mat-error></mat-error>
-                          </mat-form-field>
+
+                        <ion-col size="12" class="ion-text-center">
+                          <fieldset style="padding-bottom: 2rem;">
+                            <ng-container>
+                              <ion-row>
+                                <ion-col size="12" size-md="6">
+                                  <mat-form-field appearance="legacy">
+                                    <mat-label>Folio Cupón</mat-label>
+                                    <input matInput type="text" autocomplete="off" formControlName="folio_cupon">
+                                    <mat-error></mat-error>
+                                  </mat-form-field>
+                                </ion-col>
+
+                                <ion-col size="12" size-md="6" class="ion-text-center">
+                                  <div style="display: flex; justify-content: space-evenly; align-items: center;">
+                                    <app-camera (captureImg)="processDataImage($event, 'contratos_docs')" [justButton]="true" [btnSize]="'small'"></app-camera>
+                                    <ion-button [disabled]="disableUploadButton('contratos_docs')" *ngIf="contratos_docs && contratos_docs.length > 0" color="secondary" size="small" expand="round" type="button" (click)="uploadArrayDatasImg('cupon', 'contratos_docs', 'contrato_id')" style="width: 250px;">
+                                      <ion-icon name="cloud-upload"></ion-icon>&nbsp; SUBIR
+                                    </ion-button>
+                                  </div>
+                                </ion-col>
+                              </ion-row>
+
+                              <div style="display: flex; justify-content: center; flex-direction: column;" *ngIf="contratos_docs.length > 0">
+
+                                <ion-row >
+                                  <ion-col size="6" size-sm="auto" *ngFor="let imgData of contratos_docs; let i = index" style="margin-bottom: 1rem;">
+                                    <div class="capture-img-container">
+                                      <div class="btn-action-container">
+                                        <ion-button size="small" color="danger" (click)="removeImg(i, 'contratos_docs')" *ngIf="!imgData.file_id">
+                                          <ion-icon name="trash"></ion-icon>
+                                        </ion-button>
+
+                                        <ion-button size="small" color="danger" (click)="removeFromDisk(imgData, i, 'contratos_docs')" *ngIf="imgData.file_id">
+                                          <ion-icon name="trash"></ion-icon>
+                                        </ion-button>
+                                      </div>
+                                      <div class="upload-indications" *ngIf="imgData.success || !imgData.file_id">
+                                        <ion-icon name="cloud-upload" class="base-indicator"></ion-icon>
+                                        <ion-icon name="checkmark-sharp" class="indicator success" *ngIf="imgData.success === true"></ion-icon>
+                                        <ion-icon name="close-sharp" class="indicator success" *ngIf="imgData.success === false"></ion-icon>
+                                        <ion-icon name="hourglass-outline" class="indicator temp" *ngIf="!imgData.file_id"></ion-icon>
+                                      </div>
+                                      <ion-img [src]="imgData.url" *ngIf="isImage(imgData.mime_type) === true"></ion-img>
+                                      <ion-img src="assets/img/pdf-icon.png" *ngIf="imgData.mime_type === 'application/pdf'" style="width: 60%;margin: auto 0;"></ion-img>
+                                      <div class="loader-upload" *ngIf="imgData.uploading === true">
+                                        <ion-spinner name="bubbles" *ngIf="imgData.uploading === true"></ion-spinner>
+                                        <!--<ion-icon name="checkmark-sharp" *ngIf="imgData.success === true" style="color: #44bd00;font-size: 3rem;background: #f9f9f9;border-radius: 50%;padding: 8px;"></ion-icon>-->
+                                      </div>
+                                      <!--                            <ion-icon class="wrong-upload" name="close-sharp" *ngIf="imgData.success === false"></ion-icon>-->
+                                      <div class="file-name">
+                                        <label for="">Etiqueta</label>
+                                        <input type="text" autocomplete="off" value="{{imgData.etiqueta}}" [(ngModel)]="imgData.etiqueta" [disabled]="(imgData.file_id && imgData.file_id > 0 ? true : false)" [ngModelOptions]="{standalone: true}">
+                                        <small class="error" *ngIf="imgData.fileErrors">{{imgData.fileErrors}}</small>
+                                      </div>
+                                    </div>
+                                  </ion-col>
+                                </ion-row>
+
+                                <!-- <ion-img [src]="bodyImgURL"></ion-img> -->
+                              </div>
+
+                            </ng-container>
+                          </fieldset>
                         </ion-col>
                       </ion-row> <!-- Tipo de tarifa = Hotel -->
 
@@ -470,28 +521,25 @@
                     <ion-row>
                       <ion-col size="12" class="ion-text-center">
                         <div style="display: flex; justify-content: space-evenly; align-items: center;">
-<!--                          <ion-button class="add-button" style="margin: 0 auto;" (click)="presentActionSheet()" shape="round" color="dark" *ngIf="justButton">-->
-<!--                            <ion-icon name="camera"></ion-icon>-->
-<!--                          </ion-button>-->
-                          <app-camera (captureImg)="processDataImage($event)" [justButton]="true"></app-camera>
-                          <ion-button [disabled]="disableUploadButton()" *ngIf="docDataTransfer && docDataTransfer.length > 0" color="secondary" expand="round" type="button" (click)="uploadArrayDatasImg('licencia_conducir', 'clientes_docs', 'cliente_id')" style="width: 250px;">
+                          <app-camera (captureImg)="processDataImage($event, 'clientes_docs')" [justButton]="true"></app-camera>
+                          <ion-button [disabled]="disableUploadButton('clientes_docs')" *ngIf="clientes_docs && clientes_docs.length > 0" color="secondary" expand="round" type="button" (click)="uploadArrayDatasImg('licencia_conducir', 'clientes_docs', 'cliente_id')" style="width: 250px;">
                             <ion-icon name="cloud-upload"></ion-icon>&nbsp; SUBIR
                           </ion-button>
                         </div>
                       </ion-col>
                     </ion-row>
 
-                    <div style="display: flex; justify-content: center; flex-direction: column;" *ngIf="docDataTransfer.length > 0">
+                    <div style="display: flex; justify-content: center; flex-direction: column;" *ngIf="clientes_docs.length > 0">
 
                       <ion-row >
-                        <ion-col size="6" size-sm="auto" *ngFor="let imgData of docDataTransfer; let i = index" style="margin-bottom: 1rem;">
+                        <ion-col size="6" size-sm="auto" *ngFor="let imgData of clientes_docs; let i = index" style="margin-bottom: 1rem;">
                           <div class="capture-img-container">
                             <div class="btn-action-container">
-                              <ion-button size="small" color="danger" (click)="removeImg(i)" *ngIf="!imgData.file_id">
+                              <ion-button size="small" color="danger" (click)="removeImg(i, 'clientes_docs')" *ngIf="!imgData.file_id">
                                 <ion-icon name="trash"></ion-icon>
                               </ion-button>
 
-                              <ion-button size="small" color="danger" (click)="removeFromDisk(imgData, i)" *ngIf="imgData.file_id">
+                              <ion-button size="small" color="danger" (click)="removeFromDisk(imgData, i, 'clientes_docs')" *ngIf="imgData.file_id">
                                 <ion-icon name="trash"></ion-icon>
                               </ion-button>
                             </div>

@@ -31,6 +31,7 @@ export class CameraComponent implements OnInit, OnChanges {
   @Input() single: boolean;
   @Input() micuenta: boolean;
   @Input() specialFab: boolean;
+  @Input() btnSize: string;
   public image: File;
 
   @ViewChild('fileUpload', {read: ElementRef}) fileUpload: ElementRef;
