@@ -45,7 +45,7 @@ export class DateConv {
               moment(_startDate, 'YYYY-MM-DD')
                   .startOf('days')
                   .diff(moment(_finishDate, 'YYYY-MM-DD').startOf('days'), 'days')
-          ) + 1;
+          );
          return _diff;
       }
 }

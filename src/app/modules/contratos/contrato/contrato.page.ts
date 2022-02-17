@@ -170,7 +170,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
   async ionViewWillEnter() {
     console.log('view enter');
-    this.loadTiposTarifas();
+    await this.loadTiposTarifas();
     this.loadTarifasExtras();
     await this.loadHoteles();
     await this.loadComisionistas();
@@ -248,6 +248,8 @@ export class ContratoPage implements OnInit, AfterViewInit {
   //#region GENERAL FORM FUNCTIONS
   initGeneralForm(data?: ContratoI) {
     let _todayHour = DateConv.transFormDate(moment.now(), 'time');
+    let _tipoTarifaApollo = this.tiposTarifas.find(x => TxtConv.txtCon(x.tarifa, 'uppercase') === 'APOLLO');
+    console.log(_tipoTarifaApollo);
     let _usrProfile = this.sessionServ.getProfile();
     if (_usrProfile && _usrProfile.sucursal) {
       this.userSucursal = _usrProfile.sucursal;
@@ -262,8 +264,8 @@ export class ContratoPage implements OnInit, AfterViewInit {
     this.generalDataForm = this.fb.group({
       num_contrato: [(data && data.num_contrato ? data.num_contrato : null)],
       vehiculo_id: [(data && data.vehiculo && data.vehiculo.id ? data.vehiculo.id : (this.vehiculoData && this.vehiculoData.id) ? this.vehiculoData.id : null), Validators.required],
-      tipo_tarifa_id: [(data && data.tipo_tarifa_id) ? data.tipo_tarifa_id : null, Validators.required],
-      tipo_tarifa: [(data && data.tipo_tarifa) ? data.tipo_tarifa : null, Validators.required],
+      tipo_tarifa_id: [(data && data.tipo_tarifa_id) ? data.tipo_tarifa_id : (_tipoTarifaApollo && _tipoTarifaApollo.id ? _tipoTarifaApollo.id : null), Validators.required],
+      tipo_tarifa: [(data && data.tipo_tarifa) ? data.tipo_tarifa : (_tipoTarifaApollo && _tipoTarifaApollo.tarifa ? _tipoTarifaApollo.tarifa : null), Validators.required],
 
       tarifa_modelo_id: [(data && data.tarifa_modelo_id) ? data.tarifa_modelo_id : null],
       tarifa_modelo: [(data && data.tarifa_modelo) ? data.tarifa_modelo : null],
@@ -351,14 +353,13 @@ export class ContratoPage implements OnInit, AfterViewInit {
     }
   }
 
-  loadTiposTarifas() {
-    this.tiposTarifasServ.getActive().subscribe(res => {
-      if (res.ok) {
-        this.tiposTarifas = res.data;
-      }
-    }, error =>  {
-      console.log('tipos tarifas err -->', error);
-    })
+  async loadTiposTarifas() {
+    let res = await this.tiposTarifasServ._getActive();
+    if (res.ok) {
+      this.tiposTarifas = res.data;
+    } else {
+      console.log('error loadTiposTarifas --->', res);
+    }
   }
 
   loadTarifasExtras() {
@@ -1197,7 +1198,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
         if (moment.isMoment(_payload.rango_fechas.fecha_retorno)) {
           _payload.rango_fechas.fecha_retorno = DateConv.transFormDate(_payload.rango_fechas.fecha_retorno, 'regular');
         }
-        _payload.hora_elaboracion = DateConv.transFormDate(moment.now(), 'time');
+        //_payload.hora_elaboracion = DateConv.transFormDate(moment.now(), 'time');
         break;
       case 'datos_cliente':
         if (this.clienteDataForm.invalid) {
