@@ -316,6 +316,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
       cobros_extras_ids: [(data && data.cobros_extras_ids ? data.cobros_extras_ids : null)],
       cobros_extras: [(data && data.cobros_extras ? data.cobros_extras : null)],
       subtotal: [(data && data.subtotal ? data.subtotal : null), Validators.required],
+      con_descuento: [(data && data.con_descuento ? data.con_descuento: null), Validators.required],
       descuento: [(data && data.descuento ? data.descuento : null)],
       con_iva: [(data && data.con_iva ? data.con_iva : null)],
       iva: [(data && data.iva ? data.iva : null)],
@@ -1006,7 +1007,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
         });
 
         // Verificamos si tenemos descuento
-        if (_tarifa.ap_descuento == true) {
+        if (_tarifa.ap_descuento == true && (this.gf.con_descuento.value == true || this.gf.con_descuento.value == 1)) {
           this.cobranzaI.push({
             element: 'descuento',
             value: null,
