@@ -995,19 +995,21 @@ export class ContratoPage implements OnInit, AfterViewInit {
         console.log('tarifa baseRentFrequency -->', this.baseRentFrequency);
         console.log('tarifa select -->', _tarifa);
 
+        let _precioBase = (_tarifa && _tarifa.precio_base) ? _tarifa.precio_base : this.vehiculoData.precio_renta;
+
         this.cobranzaI.push({
           element: 'renta',
-          value: _tarifa.precio_base,
+          value: _precioBase,
           quantity: _totalDias,
           quantity_type: 'dias',
           element_label: 'Renta',
           number_sign: 'positive',
-          amount: parseFloat(Number(_tarifa.precio_base * _totalDias).toFixed(2)),
+          amount: parseFloat(Number(_precioBase * _totalDias).toFixed(2)),
           currency: this.baseCurrency
         });
 
         // Verificamos si tenemos descuento
-        if (_tarifa.ap_descuento == true && (this.gf.con_descuento.value == true || this.gf.con_descuento.value == 1)) {
+        if (_tarifa && _tarifa.ap_descuento == true && (this.gf.con_descuento.value == true || this.gf.con_descuento.value == 1)) {
           this.cobranzaI.push({
             element: 'descuento',
             value: null,
