@@ -265,10 +265,29 @@
 
                       <ion-row>
 
-                        <ion-col size="12" size-md="6">
+                        <ion-col size="12">
+                          <mat-slide-toggle [(ngModel)]="useCalendar" [ngModelOptions]="{standalone: true}">
+                            Usar calendario
+                          </mat-slide-toggle>
+                        </ion-col>
+
+                        <ion-col size="12" size-md="6" *ngIf="useCalendar === false">
+                          <mat-form-field appearance="legacy">
+                            <mat-label>Días de renta</mat-label>
+                            <input type="number" #totalDays matInput formControlName="total_dias" (input)="setReturnDateChange(totalDays.value)">
+                            <span matSuffix>{{(gf.total_dias.value > 1 ? 'días' : 'día')}}</span>
+                            <mat-hint style="font-size: 1.1em" *ngIf="rangoFechas.fecha_retorno.value && rangoFechas.fecha_salida.value">
+                              <mat-icon style="font-size: 1.1em; vertical-align: middle;">event</mat-icon>
+                              {{dateConv.transFormDate(rangoFechas.fecha_salida.value, 'slash')}} -
+                              {{dateConv.transFormDate(rangoFechas.fecha_retorno.value, 'slash')}}
+                            </mat-hint>
+                          </mat-form-field>
+                        </ion-col>
+
+                        <ion-col size="12" size-md="6" *ngIf="useCalendar === true">
                           <mat-form-field appearance="legacy">
                             <mat-label>Fecha salida - retorno</mat-label>
-                            <mat-date-range-input [rangePicker]="fechaRetornoRegreso" [formGroup]="rangoFechasGroup" [min]="_today">
+                            <mat-date-range-input  [rangePicker]="fechaRetornoRegreso" [formGroup]="rangoFechasGroup" [min]="_today">
                               <input matStartDate formControlName="fecha_salida" placeholder="Start date" readonly autocomplete="off" (dateChange)="startDateChange()">
                               <input matEndDate formControlName="fecha_retorno" placeholder="End date" (dateChange)="setReturnDateChange()" readonly autocomplete="off">
                             </mat-date-range-input>
@@ -303,9 +322,12 @@
                       </ion-row>
                       <mat-divider></mat-divider>
                       <ion-row>
+                        <ion-col size="12">
+                          <h4 style="padding: 0; margin: 0 0 1rem;">Ubicaciones</h4>
+                        </ion-col>
 
                         <ion-col size="12" size-md="6">
-                          <ion-row>
+                          <!--<ion-row>
                             <ion-col size="6" class="ion-no-padding">
                               <h4 style="margin: 0; padding: 0;">Ubicaciones</h4>
                             </ion-col>
@@ -316,30 +338,52 @@
                                 </ion-button>
                               </div>
                             </ion-col>
-                          </ion-row>
+                          </ion-row>-->
                           <mat-form-field appearance="legacy">
                             <mat-label>Salida</mat-label>
-                            <mat-select formControlName="ub_salida_id">
-                              <mat-option *ngFor="let ubicacion of ubicaciones" [value]="ubicacion.id">{{(ubicacion.alias) ? ubicacion.alias : ubicacion.direccion}}</mat-option>
-                            </mat-select>
+                            <input type="text"
+                                   placeholder="Pick one"
+                                   matInput
+                                   formControlName="ub_salida_id"
+                                   [matAutocomplete]="ubSalidaAuto">
+                            <mat-autocomplete  #ubSalidaAuto="matAutocomplete"  [displayWith]="displayUb.bind(this)">
+                              <mat-option *ngFor="let ubicacion of exitPlacesOptions$ | async" [value]="ubicacion.id">
+                                {{(ubicacion.alias) ? ubicacion.alias : ubicacion.direccion}}
+                              </mat-option>
+                            </mat-autocomplete>
+<!--                            <mat-select formControlName="ub_salida_id">-->
+<!--                              <mat-option *ngFor="let ubicacion of ubicaciones" [value]="ubicacion.id">{{(ubicacion.alias) ? ubicacion.alias : ubicacion.direccion}}</mat-option>-->
+<!--                            </mat-select>-->
                             <mat-error *ngIf="gf.ub_salida_id.errors?.required">Campo requerido</mat-error>
                           </mat-form-field>
                         </ion-col>
                         <ion-col size="12" size-md="6">
-                          <ion-row>
-                            <ion-col size="12">
-                              <div class="search-row-buttons">
-                                <ion-button size="small" color="secondary" (click)="openModalSearch('ubicaciones', 'ubicacionRetorno')">
-                                  <ion-icon name="search"></ion-icon>
-                                </ion-button>
-                              </div>
-                            </ion-col>
-                          </ion-row>
+<!--                          <ion-row>-->
+<!--                            <ion-col size="12">-->
+<!--                              <div class="search-row-buttons">-->
+<!--                                <ion-button size="small" color="secondary" (click)="openModalSearch('ubicaciones', 'ubicacionRetorno')">-->
+<!--                                  <ion-icon name="search"></ion-icon>-->
+<!--                                </ion-button>-->
+<!--                              </div>-->
+<!--                            </ion-col>-->
+<!--                          </ion-row>-->
                           <mat-form-field appearance="legacy">
                             <mat-label>Retorno</mat-label>
-                            <mat-select formControlName="ub_retorno_id">
-                              <mat-option *ngFor="let ubicacion of ubicaciones" [value]="ubicacion.id">{{(ubicacion.alias) ? ubicacion.alias : ubicacion.direccion}}</mat-option>
-                            </mat-select>
+                            <mat-label>Salida</mat-label>
+                            <input type="text"
+                                   placeholder="Pick one"
+                                   matInput
+                                   formControlName="ub_retorno_id"
+                                   [matAutocomplete]="ubRetornoAuto">
+                            <mat-autocomplete  #ubRetornoAuto="matAutocomplete"  [displayWith]="displayUb.bind(this)">
+                              <mat-option *ngFor="let ubicacion of returnPlacesOptions$ | async" [value]="ubicacion.id">
+                                {{(ubicacion.alias) ? ubicacion.alias : ubicacion.direccion}}
+                              </mat-option>
+                            </mat-autocomplete>
+<!--                            -->
+<!--                            <mat-select formControlName="ub_retorno_id">-->
+<!--                              <mat-option *ngFor="let ubicacion of ubicaciones" [value]="ubicacion.id">{{(ubicacion.alias) ? ubicacion.alias : ubicacion.direccion}}</mat-option>-->
+<!--                            </mat-select>-->
                             <mat-error *ngIf="gf.ub_retorno_id.errors?.required">Campo requerido</mat-error>
                           </mat-form-field>
                         </ion-col>
@@ -379,7 +423,11 @@
                               <td>{{cobranza.value | currency}}</td>
                               <td>
                                 <div class="table-input">
-                                  <input type="number" autocomplete="off" [(ngModel)]="cobranza.quantity" (ngModelChange)="makeCalc('extra', cobranza)" [ngModelOptions]="{standalone: true}">
+                                  <div style="display: flex;align-items: center;">
+                                    <input type="number" autocomplete="off" [(ngModel)]="cobranza.quantity" (ngModelChange)="makeCalc('extra', cobranza)" [ngModelOptions]="{standalone: true}">
+                                    <span>x {{gf.total_dias.value}} días</span>
+                                  </div>
+
                                 </div>
                               </td>
                               <td>{{(cobranza.number_sign === 'negative' ? '-' : '')}} {{cobranza.amount | currency}}</td>
@@ -855,7 +903,7 @@
                   </ion-col>
                   <ion-col size="12" size-md="4" class="ion-no-padding">
                     <fieldset>
-                      <legend>Img. Tarjeta</legend>
+                      <legend>Img. Voucher</legend>
                       <div style="text-align: center;">
                         <app-camera [justButton]="true"></app-camera>
                       </div>
@@ -879,7 +927,7 @@
                   </ion-col>
                   <ion-col size="12" size-md="4" class="ion-no-padding">
                     <fieldset>
-                      <legend>Img. Tarjeta</legend>
+                      <legend>Img. Voucher</legend>
                       <div style="text-align: center;">
                         <app-camera [justButton]="true"></app-camera>
                       </div>

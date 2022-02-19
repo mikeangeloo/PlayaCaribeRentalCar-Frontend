@@ -33,6 +33,7 @@ import {ModelsEnum} from '../../../enums/models.enum';
 import {ToastMessageService} from '../../../services/toast-message.service';
 import {UbicacionesI} from '../../../interfaces/configuracion/ubicaciones.interface';
 import {UbicacionesService} from '../../../services/ubicaciones.service';
+import {map, Observable, startWith} from 'rxjs';
 
 
 @Component({
@@ -57,6 +58,8 @@ export class ContratoPage implements OnInit, AfterViewInit {
   public statusC = ContratosStatus;
   public ubicaciones: UbicacionesI[];
   private contract_id: number;
+  exitPlacesOptions$: Observable<UbicacionesI[]>;
+  returnPlacesOptions$: Observable<UbicacionesI[]>;
   //#endregion
 
   //#region DATOS CLIENTE ATTRIBUTES
@@ -89,6 +92,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
   public validYears: any[];
   public _today = DateConv.transFormDate(moment.now(), 'regular');
   public contractFechaSalida = DateConv.transFormDate(moment.now(), 'regular');
+  public useCalendar = false;
   //#endregion
 
   //#region IMAGES MANAGEMENT ATTRIBUTES
@@ -175,52 +179,79 @@ export class ContratoPage implements OnInit, AfterViewInit {
     await this.loadHoteles();
     await this.loadComisionistas();
     await this.loadUbicaciones();
-    this.reloadAll();
+    await this.reloadAll();
+
+    this.exitPlacesOptions$ = this.gf.ub_salida_id.valueChanges.pipe(
+        startWith(''),
+        map(value => (typeof value === 'string' ? value: value.alias)),
+        map(alias => (alias ? this._filterUbicacion(alias): this.ubicaciones.slice())),
+    );
+
+    this.returnPlacesOptions$ = this.gf.ub_retorno_id.valueChanges.pipe(
+        startWith(''),
+        map(value => (typeof value === 'string' ? value: value.alias)),
+        map(alias => (alias ? this._filterUbicacion(alias): this.ubicaciones.slice())),
+    );
+
   }
 
-  reloadAll() {
+  private _filterUbicacion(alias: string): UbicacionesI[] {
+    const filterValue = alias.toLowerCase();
+    return this.ubicaciones.filter(alias => alias.alias.toLowerCase().includes(filterValue));
+  }
+
+  displayUb(id) {
+    if (!id) return '';
+    let index = this.ubicaciones.findIndex(state => state.id === id);
+    return this.ubicaciones[index].alias;
+  }
+
+  returnUbicacion(id) {
+    return this.ubicaciones.find(x => x.id == id)?.alias;
+  }
+
+  async reloadAll() {
     console.log('execute reloadAll');
     // verificamos si tenemos guardado un contract_id en local storage para continuar con la edición
     if (this.contratosServ.getContractNumber()) {
       this.num_contrato = this.contratosServ.getContractNumber();
 
-      this.contratosServ.getContractData(this.num_contrato).subscribe(res => {
+      let res = await this.contratosServ._getContractData(this.num_contrato);
         if (res.ok) {
           this.contractData = res.data;
-        }
-      }, error => {
-        console.log(error);
-        this.sweetMsgServ.printStatusArray(error.error.errors, 'error');
-        this.contratosServ.flushContractData();
 
-        this.initGeneralForm();
-        this.initClientForm();
-      }).add(() => {
-        if (this.contractData.etapas_guardadas && this.contractData.etapas_guardadas.length > 0) {
-          let _datosGeneralesEtapa = this.contractData.etapas_guardadas.find(x => x === 'datos_generales');
-          if (_datosGeneralesEtapa) {
-            console.log('datos_generales');
-            if (this.contractData.vehiculo) {
-              this.vehiculoData = this.contractData.vehiculo;
+          if (this.contractData.etapas_guardadas && this.contractData.etapas_guardadas.length > 0) {
+            let _datosGeneralesEtapa = this.contractData.etapas_guardadas.find(x => x === 'datos_generales');
+            if (_datosGeneralesEtapa) {
+              console.log('datos_generales');
+              if (this.contractData.vehiculo) {
+                this.vehiculoData = this.contractData.vehiculo;
+              }
+              this.initGeneralForm(this.contractData);
+              this.getDocs('cupon', 'contratos_docs', 'contrato_id', this.contractData.id);
+
+            } else {
+              this.initGeneralForm();
             }
-            this.initGeneralForm(this.contractData);
-            this.getDocs('cupon', 'contratos_docs', 'contrato_id', this.contractData.id);
 
-          } else {
-            this.initGeneralForm();
+            let _datosClienteEtapa = this.contractData.etapas_guardadas.find(x => x === 'datos_cliente');
+            if (_datosClienteEtapa) {
+              console.log('datos_cliente');
+              let _clientesPayload = this.contractData.cliente;
+              this.initClientForm(_clientesPayload);
+              this.getDocs('licencia_conducir', 'clientes_docs', 'cliente_id', _clientesPayload.id);
+            } else {
+              this.initClientForm();
+            }
           }
+        } else {
+          console.log(res.errors);
+          this.sweetMsgServ.printStatusArray(res.errors.error.errors, 'error');
+          this.contratosServ.flushContractData();
 
-          let _datosClienteEtapa = this.contractData.etapas_guardadas.find(x => x === 'datos_cliente');
-          if (_datosClienteEtapa) {
-            console.log('datos_cliente');
-            let _clientesPayload = this.contractData.cliente;
-            this.initClientForm(_clientesPayload);
-            this.getDocs('licencia_conducir', 'clientes_docs', 'cliente_id', _clientesPayload.id);
-          } else {
-            this.initClientForm();
-          }
+          this.initGeneralForm();
+          this.initClientForm();
         }
-      });
     } else {
       this.initGeneralForm();
       this.initClientForm();
@@ -897,13 +928,20 @@ export class ContratoPage implements OnInit, AfterViewInit {
     }
   }
 
-  setReturnDateChange() {
+  setReturnDateChange(inputDays?) {
     console.log('setReturnDateChange');
-    if (this.rangoFechas.fecha_retorno.invalid) {
-      this.rangoFechas.fecha_retorno.markAllAsTouched();
-      return;
+    if (inputDays) {
+      let _returnDate = moment().add(inputDays, 'days');
+      this.rangoFechas.fecha_retorno.patchValue(_returnDate);
+      //return;
+    } else {
+      if (this.rangoFechas.fecha_retorno.invalid) {
+        this.rangoFechas.fecha_retorno.markAllAsTouched();
+        return;
+      }
+      this.gf.total_dias.patchValue(DateConv.diffDays(this.rangoFechas.fecha_salida.value, this.rangoFechas.fecha_retorno.value));
     }
-    this.gf.total_dias.patchValue(DateConv.diffDays(this.rangoFechas.fecha_salida.value, this.rangoFechas.fecha_retorno.value));
+
 
     this.makeCalc();
   }
@@ -1052,7 +1090,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
         if (_singleCobro && _extraInForm && _index) {
           _singleCobro.quantity = cobro.quantity;
-          _singleCobro.amount = parseFloat(Number(_extraInForm.precio * cobro.quantity).toFixed(2))
+          _singleCobro.amount = parseFloat(Number(_extraInForm.precio * cobro.quantity * _totalDias).toFixed(2))
           this.cobranzaI[_index] = _singleCobro;
         }
       } else {
@@ -1065,7 +1103,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
             quantity_type:  '',
             element_label:  this.gf.cobros_extras.value[i].nombre,
             number_sign:  'positive',
-            amount:  parseFloat(Number(this.gf.cobros_extras.value[i].precio * 1).toFixed(2)),
+            amount:  parseFloat(Number(this.gf.cobros_extras.value[i].precio * 1 * _totalDias).toFixed(2)),
             currency: this.baseCurrency
           })
 
