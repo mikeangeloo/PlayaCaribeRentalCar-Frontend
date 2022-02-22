@@ -733,7 +733,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
   //#endregion
 
   //#region CARDS MANAGEMENT
-  async openTarjetaForm(_data?: CardI) {
+  async agregarTarjetaForm(concept: 'authorization' | 'charge', _data?: CardI) {
     //const pageEl: HTMLElement = document.querySelector('.ion-page');
     //this.generalService.presentLoading();
     const modal = await this.modalCtr.create({

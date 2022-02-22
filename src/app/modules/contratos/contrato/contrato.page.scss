@@ -127,27 +127,85 @@ ion-card {
 .cards-table {
   width: 100%;
   font-size: 0.8em;
+  .action-buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
   td {
     text-align: center;
     border-right: gray;
     border-right-style: solid;
     border-right-width: 1px;
+    padding-right: 4px;
+    padding-left: 4px;
+    min-width: 80px;
     &:first-of-type {
       text-align: left;
+      padding-left: 0;
     }
     &:last-of-type {
       text-align: right;
       font-weight: 700;
       border: none;
+      padding-right: 0;
     }
+  }
+
+  .table-input {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    position: relative;
+    width: 80%;
+    margin: 0 auto;
+    flex-direction: column;
+
+    input {
+      background: #f7ce9936;
+      color: #464646;
+      padding-left: 12px;
+      border: none;
+      min-height: 35px;
+      border-radius: 8px;
+      text-align: center;
+      width: 100%;
+      &:read-only {
+        background: #d9d9d945;
+      }
+    }
+
+    .input-prefix {
+      position: absolute;
+      right: 8%;
+      top: 7px;
+    }
+
+    .input-hint {
+      font-size: 10px;
+      color: var(--ion-color-medium);
+      text-align: left;
+      width: 100%;
+      margin: 0;
+    }
+  }
+
+  .error-feed {
+    text-align: left !important;
+    color: darkred;
   }
 }
 
 .border-ion-row {
+  ion-col {
+    overflow: scroll;
+    align-self: center;
+  }
   border: 1px solid darkgray;
   border-radius: 12px;
   padding: 12px;
   margin-bottom: 1.2rem;
+  margin-top: 1rem;
 }
 
 .fill-col {

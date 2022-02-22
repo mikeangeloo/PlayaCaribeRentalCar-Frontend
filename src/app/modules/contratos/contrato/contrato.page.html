@@ -884,67 +884,109 @@
 
             <ion-card>
               <ion-card-content>
-                <h4 style="font-weight: 500">DESCRIPCION DE LOS CARGOS Y PRE_AUTORIZACIONES</h4>
+                <h4 style="font-weight: 500">DESCRIPCION DE LOS CARGOS Y PRE-AUTORIZACIONES</h4>
                 <ion-row>
                   <ion-col size="6" class="ion-no-padding">
-                    <h4 style="margin: 0; padding: 0;">Balance por saldar: {{'607.26' | currency}}</h4>
-                  </ion-col>
-                  <ion-col size="6" class="ion-text-end ion-no-padding">
-                    <button mat-raised-button class="button-success" (click)="openTarjetaForm()">
-                      <ion-icon name="card"></ion-icon> &nbsp; Agregar Tarjeta
-                    </button>
+                    <h4 style="margin: 0; padding: 0;">Balance por saldar: {{(generalDataForm && generalDataForm.controls.total.value) ? (generalDataForm.controls.total.value | currency) : '--'}}</h4>
                   </ion-col>
                 </ion-row>
                 <br>
                 <mat-divider></mat-divider>
                 <br>
-                <ion-row class="border-ion-row">
-                  <ion-col size="12" size-md="8">
-                    <table class="cards-table">
-                      <tbody>
-                      <tr>
-                        <td>VISA</td>
-                        <td>4521*1234</td>
-                        <td>PRE-AUTH: 12345678</td>
-                        <td>11-NOV-21</td>
-                        <td>{{'3000' | currency}}</td>
-                      </tr>
-                      </tbody>
-                    </table>
-                  </ion-col>
-                  <ion-col size="12" size-md="4" class="ion-no-padding">
-                    <fieldset>
-                      <legend>Img. Voucher</legend>
-                      <div style="text-align: center;">
-                        <app-camera [justButton]="true"></app-camera>
-                      </div>
-                    </fieldset>
-                  </ion-col>
-                </ion-row>
+                <div>
+                  <ion-row>
+                    <ion-col size="12" size-md="6" class="ion-align-self-center">
+                      <h4 style="margin: 0;" class="ion-text-center ion-text-md-left">PRE-AUTORIZACIONES</h4>
+                    </ion-col>
+                    <ion-col size="12" size-md="6" class="ion-text-end">
+                      <button mat-raised-button class="button-secondary" (click)="agregarTarjetaForm('authorization')">
+                        <span style="font-size: 1.3rem;margin-right: 0.5rem;">+</span> <ion-icon name="card"></ion-icon> &nbsp;Tarjeta
+                      </button>
+                    </ion-col>
+                  </ion-row>
 
-                <ion-row class="border-ion-row">
-                  <ion-col size="12" size-md="8">
-                    <table class="cards-table">
-                      <tbody>
-                      <tr>
-                        <td>VISA</td>
-                        <td>4521*1234</td>
-                        <td>PRE-AUTH: 12345678</td>
-                        <td>11-NOV-21</td>
-                        <td>{{'780' | currency}}</td>
-                      </tr>
-                      </tbody>
-                    </table>
-                  </ion-col>
-                  <ion-col size="12" size-md="4" class="ion-no-padding">
-                    <fieldset>
-                      <legend>Img. Voucher</legend>
-                      <div style="text-align: center;">
-                        <app-camera [justButton]="true"></app-camera>
-                      </div>
-                    </fieldset>
-                  </ion-col>
-                </ion-row>
+                  <ion-row class="border-ion-row">
+                    <ion-col size="12" size-md="8">
+                      <table class="cards-table">
+                        <tbody>
+                        <tr>
+                          <td style="min-width: 60px; max-width: 60px">
+                            <div class="action-buttons">
+                              <button class="mat-elevation-z0" mat-mini-fab color="warn">
+                                <mat-icon>remove</mat-icon>
+                              </button>
+                              <button style="margin-top: 10px" class="mat-elevation-z0" mat-mini-fab color="accent">
+                                <mat-icon>edit</mat-icon>
+                              </button>
+                            </div>
+
+                          </td>
+                          <td>VISA</td>
+                          <td>CREDITO</td>
+                          <td>4521*1234</td>
+                          <td>11/22</td>
+                          <td>
+                            <div class="table-input">
+                              PRE-AUTH: <input type="text">
+                            </div>
+                          </td>
+                          <td>
+                            <div class="table-input">
+                              MONTO: <input type="text">
+                            </div>
+                          </td>
+                        </tr>
+                        </tbody>
+                      </table>
+                    </ion-col>
+                    <ion-col size="12" size-md="4" class="ion-no-padding">
+                      <fieldset>
+                        <legend>Img. Voucher</legend>
+                        <div style="text-align: center;">
+                          <app-camera [justButton]="true"></app-camera>
+                        </div>
+                      </fieldset>
+                    </ion-col>
+                  </ion-row>
+                </div> <!-- PRE AUTORIZACIONES -->
+
+                <mat-divider></mat-divider>
+                <br>
+                <div>
+                  <ion-row>
+                    <ion-col size="12" size-md="6" class="ion-align-self-center">
+                      <h4 style="margin: 0;" class="ion-text-center ion-text-md-left">CARGOS</h4>
+                    </ion-col>
+                    <ion-col size="12" size-md="6" class="ion-text-end">
+                      <button mat-raised-button class="button-secondary" (click)="agregarTarjetaForm('charge')">
+                        <span style="font-size: 1.3rem;margin-right: 0.5rem;">+</span> <ion-icon name="card"></ion-icon> &nbsp;Tarjeta
+                      </button>
+                    </ion-col>
+                  </ion-row>
+                  <ion-row class="border-ion-row">
+                    <ion-col size="12" size-md="8">
+                      <table class="cards-table">
+                        <tbody>
+                        <tr>
+                          <td>VISA</td>
+                          <td>4521*1234</td>
+                          <td>PRE-AUTH: 12345678</td>
+                          <td>11-NOV-21</td>
+                          <td>{{'780' | currency}}</td>
+                        </tr>
+                        </tbody>
+                      </table>
+                    </ion-col>
+                    <ion-col size="12" size-md="4" class="ion-no-padding">
+                      <fieldset>
+                        <legend>Img. Voucher</legend>
+                        <div style="text-align: center;">
+                          <app-camera [justButton]="true"></app-camera>
+                        </div>
+                      </fieldset>
+                    </ion-col>
+                  </ion-row>
+                </div> <!-- CARGOS -->
 
               </ion-card-content>
             </ion-card>
