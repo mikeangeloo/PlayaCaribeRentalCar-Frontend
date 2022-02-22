@@ -1,19 +1,17 @@
 import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild} from '@angular/core';
-import {UsersI} from "../../../../interfaces/users.interface";
 import {MatTableDataSource} from "@angular/material/table";
 import {MatPaginator} from "@angular/material/paginator";
 import {MatSort} from "@angular/material/sort";
 import {GeneralService} from "../../../../services/general.service";
-import {UsersService} from "../../../../services/users.service";
 import {ActionSheetController, ModalController, NavController} from "@ionic/angular";
 import {SweetMessagesService} from "../../../../services/sweet-messages.service";
 import {ToastMessageService} from "../../../../services/toast-message.service";
 import * as moment from "moment";
 import {TxtConv} from "../../../../helpers/txt-conv";
-import {UserFormComponent} from "../../control-accesso/users/user-form/user-form.component";
 import {VehiculosC, VehiculosI} from "../../../../interfaces/catalogo-vehiculos/vehiculos.interface";
 import {VehiculosService} from "../../../../services/vehiculos.service";
 import {VehiculoFormComponent} from "../vehiculo-form/vehiculo-form.component";
+import {TarifasApolloConfFormComponent} from '../../configuracion/precios/tarifas-apollo-conf-form/tarifas-apollo-conf-form.component';
 
 @Component({
   selector: 'app-vehiculos-list',
@@ -132,7 +130,7 @@ export class VehiculosListComponent implements OnInit, OnChanges {
   catchSelectedRow(_data: VehiculosI) {
     this.editVehiculo = _data;
   }
-  // Método para editar survey
+  // Método para editar
   async openVehiculoForm(_data?: VehiculosI) {
     if (_data) {
       this.editVehiculo = _data;
@@ -145,6 +143,22 @@ export class VehiculosListComponent implements OnInit, OnChanges {
       componentProps: {
         'asModal': true,
         'vehiculo_id': (_data && _data.id) ? _data.id : null
+      },
+      swipeToClose: true,
+      cssClass: 'edit-form'
+    });
+    await modal.present();
+    const {data} = await modal.onWillDismiss();
+    if (data.reload && data.reload === true) {
+      this.loadVehiculosTable();
+    }
+  }
+
+  async openTarifasApolloConfForm() {
+    const modal = await this.modalCtr.create({
+      component: TarifasApolloConfFormComponent,
+      componentProps: {
+        'asModal': true,
       },
       swipeToClose: true,
       cssClass: 'edit-form'

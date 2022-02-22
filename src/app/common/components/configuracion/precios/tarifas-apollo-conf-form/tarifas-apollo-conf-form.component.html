@@ -1,0 +1,87 @@
+<ion-header translucent *ngIf="asModal">
+  <ion-toolbar>
+    <ion-title>{{ title }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button class="close-btn" (click)="dismiss()">
+        <ion-icon name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content fullscreen>
+
+  <ion-card class="app-card">
+    <ion-card-content>
+      <ion-row>
+        <ion-col size="6">
+          <h2>Tarifas</h2>
+        </ion-col>
+        <!--        <ion-col size="6" class="ion-text-end">-->
+        <!--          <button mat-raised-button class="button-success" (click)="saveTarifas()">Guardar</button>-->
+        <!--        </ion-col>-->
+        <ion-col size="12">
+          <table class="complement-table">
+            <thead>
+            <tr>
+              <th>Frecuencia</th>
+              <th>Ap. Descuento</th>
+              <th>Valor Descuento</th>
+              <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            <ng-container *ngFor="let tApollo of tarifasApolloConf">
+              <tr>
+                <td>{{tApollo.frecuencia}}</td>
+                <td>
+                  <div class="table-input">
+                    <input type="text" [value]="(tApollo.ap_descuento === true || tApollo.ap_descuento === 1) ? 'Si' : 'No'" [readOnly]="true">
+                    <p class="input-hint">Solo Lectura</p>
+                  </div>
+                </td>
+                <td>
+                  <div class="table-input">
+                    <input  type="number" autocomplete="off" [(ngModel)]="tApollo.valor_descuento"  [readonly]="tApollo.ap_descuento === false || tApollo.ap_descuento === 0">
+                    <div class="input-prefix">
+                      <span>%</span>
+                    </div>
+                    <p class="input-hint" *ngIf="tApollo.ap_descuento === false || tApollo.ap_descuento === 0">Solo Lectura</p>
+                  </div>
+                </td>
+                <td>
+                  <div class="table-input" *ngIf="tApollo.ap_descuento === true || tApollo.ap_descuento == 1">
+                    <button mat-raised-button class="button-success" (click)="saveUpdate(tApollo)">
+                      <mat-icon>save</mat-icon>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+              <tr *ngIf="tApollo.errors && tApollo.errors.length > 0" class="error-feed">
+                <td colspan="5">
+                  <ul style="text-align: left">
+                    <li *ngFor="let error of tApollo.errors">
+                      {{error}}
+                    </li>
+                  </ul>
+                </td>
+              </tr>
+            </ng-container>
+
+            </tbody>
+          </table>
+        </ion-col>
+      </ion-row>
+    </ion-card-content>
+  </ion-card>
+</ion-content>
+
+<ion-footer>
+  <ion-toolbar>
+    <ion-buttons slot="end">
+      <ion-button color="medium" (click)="dismiss()">
+        Cerrar Ventana
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-footer>

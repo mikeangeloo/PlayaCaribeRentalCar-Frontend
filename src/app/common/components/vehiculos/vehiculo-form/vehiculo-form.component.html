@@ -276,11 +276,11 @@
                   </td>
                   <td>
                     <div class="table-input">
-                      <input type="number" autocomplete="off" [(ngModel)]="tApollo.valor_descuento" (ngModelChange)="recalTarifaRow(tApollo)" [readonly]="tApollo.ap_descuento === false || tApollo.ap_descuento === 0">
+                      <input  type="number" autocomplete="off" [(ngModel)]="tApollo.valor_descuento" (ngModelChange)="recalTarifaRow(tApollo)" [readonly]="applyTarifasRules === false || tApollo.ap_descuento === false || tApollo.ap_descuento === 0">
                       <div class="input-prefix">
                         <span>%</span>
                       </div>
-                      <p class="input-hint" *ngIf="tApollo.ap_descuento === false || tApollo.ap_descuento === 0">Solo Lectura</p>
+                      <p class="input-hint" *ngIf="applyTarifasRules === false || tApollo.ap_descuento === false || tApollo.ap_descuento === 0">Solo Lectura</p>
                     </div>
                   </td>
                   <td>
@@ -292,8 +292,8 @@
                   <td>
                     <div class="table-input">
                       <input type="text" autocomplete="off" [ngModel]="tApollo.precio_final | currency" [ngModelOptions]="{updateOn:'blur'}"
-                             (ngModelChange)="captureFinalPrice(tApollo, $event)" [readonly]="tApollo.precio_final_editable === false || tApollo.precio_final_editable === 0">
-                      <p class="input-hint" *ngIf="tApollo.precio_final_editable === false || tApollo.precio_final_editable === 0">Solo Lectura</p>
+                             (ngModelChange)="captureFinalPrice(tApollo, $event)" [readonly]="applyTarifasRules === false || tApollo.precio_final_editable === false || tApollo.precio_final_editable === 0">
+                      <p class="input-hint" *ngIf="applyTarifasRules === false || tApollo.precio_final_editable === false || tApollo.precio_final_editable === 0">Solo Lectura</p>
                     </div>
                   </td>
                 </tr>

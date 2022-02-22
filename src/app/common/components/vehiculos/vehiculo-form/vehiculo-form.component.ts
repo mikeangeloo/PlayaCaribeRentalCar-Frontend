@@ -43,6 +43,7 @@ export class VehiculoFormComponent implements OnInit {
 
   vehiculoC = VehiculosC;
   tarifaApolloPayload: TarifaApolloI[];
+  applyTarifasRules = false;
 
   constructor(
     public modalCtrl: ModalController,
@@ -382,13 +383,16 @@ export class VehiculoFormComponent implements OnInit {
       if (this.tarifaApolloPayload && this.tarifaApolloPayload.length > 0) {
         for (let i = 0; i < this.tarifaApolloPayload.length; i++) {
           this.tarifaApolloPayload[i].precio_base = this.vf.precio_renta.value;
-          if (this.tarifaApolloPayload[i].frecuencia_ref !== 'hours') {
-            let _valorDes = parseFloat(Number(this.tarifaApolloPayload[i].valor_descuento / 100).toFixed(4));
-            let _descuento = parseFloat(Number(this.tarifaApolloPayload[i].precio_base * _valorDes).toFixed(4));
-            let _total = parseFloat(Number(this.tarifaApolloPayload[i].precio_base - _descuento).toFixed(4));
 
-            this.tarifaApolloPayload[i].descuento = _descuento;
-            this.tarifaApolloPayload[i].precio_final = _total;
+          let _valorDes = parseFloat(Number(this.tarifaApolloPayload[i].valor_descuento / 100).toFixed(4));
+          let _descuento = parseFloat(Number(this.tarifaApolloPayload[i].precio_base * _valorDes).toFixed(4));
+          let _total = parseFloat(Number(this.tarifaApolloPayload[i].precio_base - _descuento).toFixed(4));
+
+          this.tarifaApolloPayload[i].descuento = _descuento;
+          this.tarifaApolloPayload[i].precio_final = _total;
+
+          if (this.tarifaApolloPayload[i].frecuencia_ref == 'hours') {
+            this.tarifaApolloPayload[i].precio_final = parseFloat(Number(this.tarifaApolloPayload[i].precio_base / 7).toFixed(2));
           }
         }
       }
@@ -405,6 +409,7 @@ export class VehiculoFormComponent implements OnInit {
   }
 
   reviewTarifaCapture(): boolean {
+    return true;
     let _haveErrors;
     if (this.tarifaApolloPayload && this.tarifaApolloPayload.length > 0) {
       for (let i = 0; i < this.tarifaApolloPayload.length; i++) {
