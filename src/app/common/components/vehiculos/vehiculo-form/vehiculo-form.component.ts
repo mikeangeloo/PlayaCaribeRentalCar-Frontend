@@ -16,6 +16,7 @@ import {ClasesVehiculosService} from '../../../../services/clases-vehiculos.serv
 import {TarifaApolloI} from '../../../../interfaces/tarifas/tarifa-apollo.interface';
 import {CurrencyPipe} from '@angular/common';
 import {error} from 'protractor';
+import {TarifasApolloConfService} from '../../../../services/tarifas-apollo-conf.service';
 
 @Component({
   selector: 'app-vehiculo-form',
@@ -42,6 +43,7 @@ export class VehiculoFormComponent implements OnInit {
 
   vehiculoC = VehiculosC;
   tarifaApolloPayload: TarifaApolloI[];
+  applyTarifasRules = false;
 
   constructor(
     public modalCtrl: ModalController,
@@ -53,7 +55,8 @@ export class VehiculoFormComponent implements OnInit {
     private categoriaVehiculoServ: CategoriaVehiculosService,
     private marcasServ: MarcasVehiculosService,
     private classVehiculosServ: ClasesVehiculosService,
-    private currencyPipe: CurrencyPipe
+    private currencyPipe: CurrencyPipe,
+    private tarifasApolloConfSer: TarifasApolloConfService
   ) {
     this.title = 'Formulario Véhiculo';
     this.vehiculoForm = this.fb.group({
@@ -84,17 +87,17 @@ export class VehiculoFormComponent implements OnInit {
     return this.vehiculoForm.controls;
   }
 
-  ngOnInit() {
+  async ngOnInit() {
     this.loadMarcasV();
     this.loadCategoriasV();
     this.loadClasesV();
 
     if (this.vehiculo_id) {
-      this.loadVehiculosData();
+      await this.loadVehiculosData();
     } else {
       this.vehiculoData = null;
       this.initVehiculoForm();
-      this.initTarifaApolloObj();
+      await this.initTarifaApolloObj();
     }
   }
 
@@ -128,14 +131,16 @@ export class VehiculoFormComponent implements OnInit {
     })
   }
 
-  initTarifaApolloObj(data?) {
+  async initTarifaApolloObj(data?) {
     // TODO: pasar a una tabla configuración en DB
     if (data) {
       this.tarifaApolloPayload = null;
       this.tarifaApolloPayload = data;
       return;
     }
-    this.tarifaApolloPayload = [
+    await this.loadTarifaApolloConf();
+    this.recalTarifaRow();
+    /*this.tarifaApolloPayload = [
       {
         id: null,
         frecuencia: 'Día(s)',
@@ -200,7 +205,34 @@ export class VehiculoFormComponent implements OnInit {
         required: true,
         errors: []
       }
-    ]
+    ]*/
+  }
+
+  async loadTarifaApolloConf() {
+    let res = await this.tarifasApolloConfSer._getActive();
+    if (res.ok) {
+      this.tarifaApolloPayload = [];
+      for (let i = 0; i < res.data.length; i++) {
+        this.tarifaApolloPayload.push(
+            {
+              id: null,
+              frecuencia: res.data[i].frecuencia,
+              frecuencia_ref: res.data[i].frecuencia_ref,
+              activo: res.data[i].activo,
+              modelo: 'vehiculos',
+              modelo_id: this.vehiculo_id ? this.vehiculo_id : null,
+              precio_base: this.vf.precio_renta.value,
+              precio_final_editable: res.data[i].precio_final_editable,
+              ap_descuento: res.data[i].ap_descuento,
+              valor_descuento: res.data[i].valor_descuento,
+              descuento: null,
+              precio_final: this.vf.precio_renta.value,
+              required: res.data[i].required,
+              errors: []
+            }
+        )
+      }
+    }
   }
 
   initVehiculoForm(data?) {
@@ -231,14 +263,14 @@ export class VehiculoFormComponent implements OnInit {
   async loadVehiculosData() {
 
     await this.generalServ.presentLoading();
-    this.vehiculosServ.getDataById(this.vehiculo_id).subscribe(res => {
+    this.vehiculosServ.getDataById(this.vehiculo_id).subscribe(async res => {
       this.generalServ.dismissLoading();
       if (res.ok === true) {
         this.vehiculoData = res.vehiculo;
         this.initVehiculoForm(res.vehiculo);
         // TODO: agregar data para initTarifaApolloObj
         let _tarifas = res.vehiculo.tarifas;
-        this.initTarifaApolloObj(_tarifas);
+        await this.initTarifaApolloObj(_tarifas);
       }
     }, error => {
       this.generalServ.dismissLoading();
@@ -351,13 +383,16 @@ export class VehiculoFormComponent implements OnInit {
       if (this.tarifaApolloPayload && this.tarifaApolloPayload.length > 0) {
         for (let i = 0; i < this.tarifaApolloPayload.length; i++) {
           this.tarifaApolloPayload[i].precio_base = this.vf.precio_renta.value;
-          if (this.tarifaApolloPayload[i].frecuencia_ref !== 'hours') {
-            let _valorDes = parseFloat(Number(this.tarifaApolloPayload[i].valor_descuento / 100).toFixed(4));
-            let _descuento = parseFloat(Number(this.tarifaApolloPayload[i].precio_base * _valorDes).toFixed(4));
-            let _total = parseFloat(Number(this.tarifaApolloPayload[i].precio_base - _descuento).toFixed(4));
 
-            this.tarifaApolloPayload[i].descuento = _descuento;
-            this.tarifaApolloPayload[i].precio_final = _total;
+          let _valorDes = parseFloat(Number(this.tarifaApolloPayload[i].valor_descuento / 100).toFixed(4));
+          let _descuento = parseFloat(Number(this.tarifaApolloPayload[i].precio_base * _valorDes).toFixed(4));
+          let _total = parseFloat(Number(this.tarifaApolloPayload[i].precio_base - _descuento).toFixed(4));
+
+          this.tarifaApolloPayload[i].descuento = _descuento;
+          this.tarifaApolloPayload[i].precio_final = _total;
+
+          if (this.tarifaApolloPayload[i].frecuencia_ref == 'hours') {
+            this.tarifaApolloPayload[i].precio_final = parseFloat(Number(this.tarifaApolloPayload[i].precio_base / 7).toFixed(2));
           }
         }
       }
@@ -374,6 +409,7 @@ export class VehiculoFormComponent implements OnInit {
   }
 
   reviewTarifaCapture(): boolean {
+    return true;
     let _haveErrors;
     if (this.tarifaApolloPayload && this.tarifaApolloPayload.length > 0) {
       for (let i = 0; i < this.tarifaApolloPayload.length; i++) {

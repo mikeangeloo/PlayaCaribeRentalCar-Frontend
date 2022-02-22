@@ -33,6 +33,7 @@ import {ModelsEnum} from '../../../enums/models.enum';
 import {ToastMessageService} from '../../../services/toast-message.service';
 import {UbicacionesI} from '../../../interfaces/configuracion/ubicaciones.interface';
 import {UbicacionesService} from '../../../services/ubicaciones.service';
+import {map, Observable, startWith} from 'rxjs';
 
 
 @Component({
@@ -56,6 +57,9 @@ export class ContratoPage implements OnInit, AfterViewInit {
   public dateConv = DateConv;
   public statusC = ContratosStatus;
   public ubicaciones: UbicacionesI[];
+  private contract_id: number;
+  exitPlacesOptions$: Observable<UbicacionesI[]>;
+  returnPlacesOptions$: Observable<UbicacionesI[]>;
   //#endregion
 
   //#region DATOS CLIENTE ATTRIBUTES
@@ -88,14 +92,17 @@ export class ContratoPage implements OnInit, AfterViewInit {
   public validYears: any[];
   public _today = DateConv.transFormDate(moment.now(), 'regular');
   public contractFechaSalida = DateConv.transFormDate(moment.now(), 'regular');
+  public useCalendar = false;
   //#endregion
 
   //#region IMAGES MANAGEMENT ATTRIBUTES
-  public docDataTransfer: DocDataTransfer[] = [];
+  public clientes_docs: DocDataTransfer[] = [];
+  public contratos_docs: DocDataTransfer[] = [];
+
   public docPayLoad: {
-    doc_type: 'licencia_conducir',
-    model: 'clientes_docs',
-    model_id: 'cliente_id'
+    doc_type: 'licencia_conducir' | 'cupon',
+    model: 'clientes_docs' | 'contratos_docs',
+    model_id: 'cliente_id' | 'contrato_id'
   }
   //#endregion
 
@@ -142,6 +149,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
   public signature = '';
   //#endregion
 
+
   constructor(
     public sweetMsgServ: SweetMessagesService,
     public modalCtr: ModalController,
@@ -166,56 +174,84 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
   async ionViewWillEnter() {
     console.log('view enter');
-    this.loadTiposTarifas();
+    await this.loadTiposTarifas();
     this.loadTarifasExtras();
     await this.loadHoteles();
     await this.loadComisionistas();
     await this.loadUbicaciones();
-    this.reloadAll();
+    await this.reloadAll();
+
+    this.exitPlacesOptions$ = this.gf.ub_salida_id.valueChanges.pipe(
+        startWith(''),
+        map(value => (typeof value === 'string' ? value: value.alias)),
+        map(alias => (alias ? this._filterUbicacion(alias): this.ubicaciones.slice())),
+    );
+
+    this.returnPlacesOptions$ = this.gf.ub_retorno_id.valueChanges.pipe(
+        startWith(''),
+        map(value => (typeof value === 'string' ? value: value.alias)),
+        map(alias => (alias ? this._filterUbicacion(alias): this.ubicaciones.slice())),
+    );
+
   }
 
-  reloadAll() {
+  private _filterUbicacion(alias: string): UbicacionesI[] {
+    const filterValue = alias.toLowerCase();
+    return this.ubicaciones.filter(alias => alias.alias.toLowerCase().includes(filterValue));
+  }
+
+  displayUb(id) {
+    if (!id) return '';
+    let index = this.ubicaciones.findIndex(state => state.id === id);
+    return this.ubicaciones[index].alias;
+  }
+
+  returnUbicacion(id) {
+    return this.ubicaciones.find(x => x.id == id)?.alias;
+  }
+
+  async reloadAll() {
     console.log('execute reloadAll');
     // verificamos si tenemos guardado un contract_id en local storage para continuar con la edición
     if (this.contratosServ.getContractNumber()) {
       this.num_contrato = this.contratosServ.getContractNumber();
 
-      this.contratosServ.getContractData(this.num_contrato).subscribe(res => {
+      let res = await this.contratosServ._getContractData(this.num_contrato);
         if (res.ok) {
           this.contractData = res.data;
-        }
-      }, error => {
-        console.log(error);
-        this.sweetMsgServ.printStatusArray(error.error.errors, 'error');
-        this.contratosServ.flushContractData();
 
-        this.initGeneralForm();
-        this.initClientForm();
-      }).add(() => {
-        if (this.contractData.etapas_guardadas && this.contractData.etapas_guardadas.length > 0) {
-          let _datosGeneralesEtapa = this.contractData.etapas_guardadas.find(x => x === 'datos_generales');
-          if (_datosGeneralesEtapa) {
-            console.log('datos_generales');
-            if (this.contractData.vehiculo) {
-              this.vehiculoData = this.contractData.vehiculo;
+          if (this.contractData.etapas_guardadas && this.contractData.etapas_guardadas.length > 0) {
+            let _datosGeneralesEtapa = this.contractData.etapas_guardadas.find(x => x === 'datos_generales');
+            if (_datosGeneralesEtapa) {
+              console.log('datos_generales');
+              if (this.contractData.vehiculo) {
+                this.vehiculoData = this.contractData.vehiculo;
+              }
+              this.initGeneralForm(this.contractData);
+              this.getDocs('cupon', 'contratos_docs', 'contrato_id', this.contractData.id);
+
+            } else {
+              this.initGeneralForm();
             }
-            this.initGeneralForm(this.contractData);
 
-          } else {
-            this.initGeneralForm();
+            let _datosClienteEtapa = this.contractData.etapas_guardadas.find(x => x === 'datos_cliente');
+            if (_datosClienteEtapa) {
+              console.log('datos_cliente');
+              let _clientesPayload = this.contractData.cliente;
+              this.initClientForm(_clientesPayload);
+              this.getDocs('licencia_conducir', 'clientes_docs', 'cliente_id', _clientesPayload.id);
+            } else {
+              this.initClientForm();
+            }
           }
+        } else {
+          console.log(res.errors);
+          this.sweetMsgServ.printStatusArray(res.errors.error.errors, 'error');
+          this.contratosServ.flushContractData();
 
-          let _datosClienteEtapa = this.contractData.etapas_guardadas.find(x => x === 'datos_cliente');
-          if (_datosClienteEtapa) {
-            console.log('datos_cliente');
-            let _clientesPayload = this.contractData.cliente;
-            this.initClientForm(_clientesPayload);
-            this.getDocs('licencia_conducir', 'clientes_docs', 'cliente_id', _clientesPayload.id);
-          } else {
-            this.initClientForm();
-          }
+          this.initGeneralForm();
+          this.initClientForm();
         }
-      });
     } else {
       this.initGeneralForm();
       this.initClientForm();
@@ -243,6 +279,8 @@ export class ContratoPage implements OnInit, AfterViewInit {
   //#region GENERAL FORM FUNCTIONS
   initGeneralForm(data?: ContratoI) {
     let _todayHour = DateConv.transFormDate(moment.now(), 'time');
+    let _tipoTarifaApollo = this.tiposTarifas.find(x => TxtConv.txtCon(x.tarifa, 'uppercase') === 'APOLLO');
+    console.log(_tipoTarifaApollo);
     let _usrProfile = this.sessionServ.getProfile();
     if (_usrProfile && _usrProfile.sucursal) {
       this.userSucursal = _usrProfile.sucursal;
@@ -257,8 +295,8 @@ export class ContratoPage implements OnInit, AfterViewInit {
     this.generalDataForm = this.fb.group({
       num_contrato: [(data && data.num_contrato ? data.num_contrato : null)],
       vehiculo_id: [(data && data.vehiculo && data.vehiculo.id ? data.vehiculo.id : (this.vehiculoData && this.vehiculoData.id) ? this.vehiculoData.id : null), Validators.required],
-      tipo_tarifa_id: [(data && data.tipo_tarifa_id) ? data.tipo_tarifa_id : null, Validators.required],
-      tipo_tarifa: [(data && data.tipo_tarifa) ? data.tipo_tarifa : null, Validators.required],
+      tipo_tarifa_id: [(data && data.tipo_tarifa_id) ? data.tipo_tarifa_id : (_tipoTarifaApollo && _tipoTarifaApollo.id ? _tipoTarifaApollo.id : null), Validators.required],
+      tipo_tarifa: [(data && data.tipo_tarifa) ? data.tipo_tarifa : (_tipoTarifaApollo && _tipoTarifaApollo.tarifa ? _tipoTarifaApollo.tarifa : null), Validators.required],
 
       tarifa_modelo_id: [(data && data.tarifa_modelo_id) ? data.tarifa_modelo_id : null],
       tarifa_modelo: [(data && data.tarifa_modelo) ? data.tarifa_modelo : null],
@@ -278,6 +316,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
       cobros_extras_ids: [(data && data.cobros_extras_ids ? data.cobros_extras_ids : null)],
       cobros_extras: [(data && data.cobros_extras ? data.cobros_extras : null)],
       subtotal: [(data && data.subtotal ? data.subtotal : null), Validators.required],
+      con_descuento: [(data && data.con_descuento ? data.con_descuento: null), Validators.required],
       descuento: [(data && data.descuento ? data.descuento : null)],
       con_iva: [(data && data.con_iva ? data.con_iva : null)],
       iva: [(data && data.iva ? data.iva : null)],
@@ -285,7 +324,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
       total: [(data && data.total ? data.total : null), Validators.required],
 
       folio_cupon: [(data && data.folio_cupon ? data.folio_cupon : null)],
-      valor_cupon: [(data && data.valor_cupon ? data.valor_cupon : null)],
+      //valor_cupon: [(data && data.valor_cupon ? data.valor_cupon : null)],
 
       cobranza_calc: [(data && data.cobranza_calc ? data.cobranza_calc : null), Validators.required],
 
@@ -293,6 +332,10 @@ export class ContratoPage implements OnInit, AfterViewInit {
       ub_salida_id: [(data && data.ub_salida_id) ? data.ub_salida_id : 1, Validators.required],
       ub_retorno_id: [(data && data.ub_retorno_id) ? data.ub_retorno_id : 1, Validators.required],
     });
+
+    if (data && data.id) {
+      this.contract_id = data.id;
+    }
 
     if (data && data.fecha_salida) {
       this._today = data.fecha_salida;
@@ -342,14 +385,13 @@ export class ContratoPage implements OnInit, AfterViewInit {
     }
   }
 
-  loadTiposTarifas() {
-    this.tiposTarifasServ.getActive().subscribe(res => {
-      if (res.ok) {
-        this.tiposTarifas = res.data;
-      }
-    }, error =>  {
-      console.log('tipos tarifas err -->', error);
-    })
+  async loadTiposTarifas() {
+    let res = await this.tiposTarifasServ._getActive();
+    if (res.ok) {
+      this.tiposTarifas = res.data;
+    } else {
+      console.log('error loadTiposTarifas --->', res);
+    }
   }
 
   loadTarifasExtras() {
@@ -473,9 +515,9 @@ export class ContratoPage implements OnInit, AfterViewInit {
   //#endregion
 
   //#region CAPTURE IMG FUNCTIONS
-  processDataImage(event: {imgUrl: string, image: File, type: string, fileName: string}) {
+  processDataImage(event: {imgUrl: string, image: File, type: string, fileName: string}, model = this.docPayLoad.model) {
 
-    this.docDataTransfer.push({
+    this[model].push({
       file: event.image,
       url: event.imgUrl,
       uploading: false,
@@ -484,18 +526,18 @@ export class ContratoPage implements OnInit, AfterViewInit {
       fileName: event.fileName
     });
 
-    console.log('docDataTranfer', this.docDataTransfer);
+    console.log(`processDataImage model: ${model} ---> `, this[model]);
 
   }
 
-  disableUploadButton(): boolean {
-    if (!this.docDataTransfer) {
+  disableUploadButton(model = this.docPayLoad.model): boolean {
+    if (!this[model]) {
       return true;
     }
 
-    if (this.docDataTransfer && this.docDataTransfer.length > 0) {
-      for (let i = 0; i < this.docDataTransfer.length; i++) {
-        if (!this.docDataTransfer[i].success || !this.docDataTransfer[i].file_id || this.docDataTransfer[i].success === false) {
+    if (this[model] && this[model].length > 0) {
+      for (let i = 0; i < this.clientes_docs.length; i++) {
+        if (!this[model][i].success || !this[model][i].file_id || this[model][i].success === false) {
           return false;
         }
       }
@@ -504,14 +546,37 @@ export class ContratoPage implements OnInit, AfterViewInit {
   }
 
   uploadArrayDatasImg(doc_type = this.docPayLoad.doc_type, model = this.docPayLoad.model, model_id = this.docPayLoad.model_id) {
-    if (!this.clienteDataForm.controls.cliente_id.value) {
-      this.sweetMsgServ.printStatus('Debe primero guardar el avance de la información capturada del cliente', 'warning');
-      return;
-    }
-    if (this.docDataTransfer.length === 0 ) {
+    if (this[model].length === 0 ) {
       this.sweetMsgServ.printStatus('Debe adjuntar una imagen', 'warning');
       return;
     }
+
+    let _model_id_value;
+    switch (model) {
+      case 'clientes_docs':
+        if (!this.clienteDataForm.controls.cliente_id.value) {
+          this.sweetMsgServ.printStatus('Debe primero guardar el avance de la información capturada del cliente', 'warning');
+          return;
+        }
+        _model_id_value = this.cf.cliente_id.value;
+        break;
+      case 'contratos_docs':
+        if (!this.contract_id) {
+          this.sweetMsgServ.printStatus('Debe primero guardar el avance de: Datos Generales', 'warning');
+          return;
+        }
+
+        if (!this.gf.folio_cupon.value) {
+          this.gf.folio_cupon.markAllAsTouched();
+          return;
+        }
+
+        _model_id_value = this.contract_id;
+
+        break;
+    }
+
+
 
     this.sweetMsgServ.confirmRequest().then(async (data) => {
       if (data.value) {
@@ -521,33 +586,33 @@ export class ContratoPage implements OnInit, AfterViewInit {
         let formData = new FormData();
         let _positions = [];
         let _etiquetas = [];
-        for (let i = 0; i< this.docDataTransfer.length; i++) {
+        for (let i = 0; i< this[model].length; i++) {
           console.log('prepare formData info---->');
 
-          if (!this.docDataTransfer[i].success || this.docDataTransfer[i].success === false || !this.docDataTransfer[i].file_id || this.docDataTransfer[i].file_id === null) {
-            if (!this.docDataTransfer[i].etiqueta) {
-              this.docDataTransfer[i].fileErrors = 'Ingrese un valor valido';
+          if (!this[model][i].success || this[model][i].success === false || !this[model][i].file_id || this[model][i].file_id === null) {
+            if (!this[model][i].etiqueta) {
+              this[model][i].fileErrors = 'Ingrese un valor valido';
 
             } else {
-              this.docDataTransfer[i].fileErrors = null;
+              this[model][i].fileErrors = null;
             }
 
-            if (this.docDataTransfer[i].fileErrors) {
+            if (this[model][i].fileErrors) {
               this.sweetMsgServ.printStatus('Revise que los elementos esten correctos', 'warning');
               return;
             }
             // @ts-ignore
-            formData.append('files[]', this.docDataTransfer[i].file, this.docDataTransfer[i].file.name);
+            formData.append('files[]', this[model][i].file, this[model][i].file.name);
             //this.docDataTransfer[i].uploading = true;
             _positions.push(i);
-            _etiquetas.push(this.docDataTransfer[i].etiqueta);
+            _etiquetas.push(this[model][i].etiqueta);
           }
         }
 
         formData.set('doc_type', doc_type);
         formData.set('model', model);
         formData.set('model_id', model_id);
-        formData.set('model_id_value', String(this.clienteDataForm.controls.cliente_id.value));
+        formData.set('model_id_value', String(_model_id_value));
         formData.set('positions', JSON.stringify(_positions));
         formData.set('etiquetas', JSON.stringify(_etiquetas));
 
@@ -562,30 +627,33 @@ export class ContratoPage implements OnInit, AfterViewInit {
           let _resPayload = res.payload;
 
           for (let i = 0; i < _resPayload.length; i++) {
-            this.docDataTransfer[_resPayload[i].position].success = _resPayload[i].success;
-            this.docDataTransfer[_resPayload[i].position].file_id = _resPayload[i].file_id;
-            this.docDataTransfer[_resPayload[i].position].model = _resPayload[i].model;
-            this.docDataTransfer[_resPayload[i].position].model_id = _resPayload[i].model_id;
-            this.docDataTransfer[_resPayload[i].position].model_id_value = _resPayload[i].model_id_value;
-            this.docDataTransfer[_resPayload[i].position].position = _resPayload[i].position;
-            this.docDataTransfer[_resPayload[i].position].doc_type = _resPayload[i].doc_type;
+            this[model][_resPayload[i].position].success = _resPayload[i].success;
+            this[model][_resPayload[i].position].file_id = _resPayload[i].file_id;
+            this[model][_resPayload[i].position].model = _resPayload[i].model;
+            this[model][_resPayload[i].position].model_id = _resPayload[i].model_id;
+            this[model][_resPayload[i].position].model_id_value = _resPayload[i].model_id_value;
+            this[model][_resPayload[i].position].position = _resPayload[i].position;
+            this[model][_resPayload[i].position].doc_type = _resPayload[i].doc_type;
             _lastIndex = i;
           }
         } else {
           _lastServError = res.error.errors;
         }
 
-        console.log('imgDatasTranfer -->', this.docDataTransfer);
+        console.log('imgDatasTranfer -->', this[model]);
 
         let successTotal = 0;
-        for (let j = 0; j < this.docDataTransfer.length; j++) {
-          if (this.docDataTransfer[j].success === true) {
+        for (let j = 0; j < this[model].length; j++) {
+          if (this.clientes_docs[j].success === true) {
             successTotal ++;
           }
         }
-        if (successTotal === this.docDataTransfer.length) {
+        if (successTotal === this[model].length) {
           console.log('all saved');
           this.sweetMsgServ.printStatus('Se han guardado sus imagenes de manera correcta', 'success');
+          if (model === 'contratos_docs') {
+            this.saveProcess('datos_generales', true);
+          }
         } else {
           console.log('error', _lastServError);
           if (_lastServError) {
@@ -598,11 +666,11 @@ export class ContratoPage implements OnInit, AfterViewInit {
     });
   }
 
-  removeImg(index) {
-    this.docDataTransfer.splice(index, 1);
+  removeImg(index, model = this.docPayLoad.model) {
+    this[model].splice(index, 1);
   }
 
-  async removeFromDisk(fileData: DocDataTransfer, index) {
+  async removeFromDisk(fileData: DocDataTransfer, index, model = this.docPayLoad.model) {
     await this.sweetMsgServ.confirmRequest('¿Estás seguro de querer eliminar el archivo?').then(async (data) => {
       if (data.value) {
         let _payload = {
@@ -615,7 +683,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
         let query = await this.filesServ.deleteDoc(_payload);
         if (query.ok) {
           this.sweetMsgServ.printStatus(query.data.message, 'success');
-          this.removeImg(index);
+          this.removeImg(index, model);
         } else {
           this.sweetMsgServ.printStatusArray(query.error.error.errors, 'error');
           console.log(query.error);
@@ -634,7 +702,8 @@ export class ContratoPage implements OnInit, AfterViewInit {
     let res = await this.filesServ.getDocs(_payload);
 
     if (res.ok) {
-      this.docDataTransfer = [];
+      this[model] = [];
+
       for (let i = 0; i < res.data.length; i++) {
         let _docData: DocDataTransfer = {
           position: res.data[i].position,
@@ -648,10 +717,10 @@ export class ContratoPage implements OnInit, AfterViewInit {
           model_id_value: res.data[i].model_id_value,
           etiqueta: res.data[i].etiqueta
         }
-        this.docDataTransfer.push(_docData);
+        this[model].push(_docData);
       }
     } else {
-      this.docDataTransfer = [];
+      this[model] = [];
       console.log('error --->', res.error);
     }
   }
@@ -772,7 +841,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
         this.gf.tarifa_modelo_id.patchValue(null);
         this.gf.tarifa_modelo.patchValue(ModelsEnum.APOLLO);
         this.gf.folio_cupon.patchValue(null);
-        this.gf.valor_cupon.patchValue(null);
+        //this.gf.valor_cupon.patchValue(null);
         this.gf.comision.patchValue(null);
         this.resetVehiculoTarifas();
         break;
@@ -789,7 +858,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
         this.gf.tarifa_modelo_id.patchValue(null);
         this.gf.tarifa_modelo.patchValue(ModelsEnum.COMISIONISTAS);
         this.gf.folio_cupon.patchValue(null);
-        this.gf.valor_cupon.patchValue(null);
+        //this.gf.valor_cupon.patchValue(null);
         this.gf.comision.patchValue(null);
         this.resetVehiculoTarifas();
         break;
@@ -860,13 +929,20 @@ export class ContratoPage implements OnInit, AfterViewInit {
     }
   }
 
-  setReturnDateChange() {
+  setReturnDateChange(inputDays?) {
     console.log('setReturnDateChange');
-    if (this.rangoFechas.fecha_retorno.invalid) {
-      this.rangoFechas.fecha_retorno.markAllAsTouched();
-      return;
+    if (inputDays) {
+      let _returnDate = moment().add(inputDays, 'days');
+      this.rangoFechas.fecha_retorno.patchValue(_returnDate);
+      //return;
+    } else {
+      if (this.rangoFechas.fecha_retorno.invalid) {
+        this.rangoFechas.fecha_retorno.markAllAsTouched();
+        return;
+      }
+      this.gf.total_dias.patchValue(DateConv.diffDays(this.rangoFechas.fecha_salida.value, this.rangoFechas.fecha_retorno.value));
     }
-    this.gf.total_dias.patchValue(DateConv.diffDays(this.rangoFechas.fecha_salida.value, this.rangoFechas.fecha_retorno.value));
+
 
     this.makeCalc();
   }
@@ -919,19 +995,21 @@ export class ContratoPage implements OnInit, AfterViewInit {
         console.log('tarifa baseRentFrequency -->', this.baseRentFrequency);
         console.log('tarifa select -->', _tarifa);
 
+        let _precioBase = (_tarifa && _tarifa.precio_base) ? _tarifa.precio_base : this.vehiculoData.precio_renta;
+
         this.cobranzaI.push({
           element: 'renta',
-          value: _tarifa.precio_base,
+          value: _precioBase,
           quantity: _totalDias,
           quantity_type: 'dias',
           element_label: 'Renta',
           number_sign: 'positive',
-          amount: parseFloat(Number(_tarifa.precio_base * _totalDias).toFixed(2)),
+          amount: parseFloat(Number(_precioBase * _totalDias).toFixed(2)),
           currency: this.baseCurrency
         });
 
         // Verificamos si tenemos descuento
-        if (_tarifa.ap_descuento == true) {
+        if (_tarifa && _tarifa.ap_descuento == true && (this.gf.con_descuento.value == true || this.gf.con_descuento.value == 1)) {
           this.cobranzaI.push({
             element: 'descuento',
             value: null,
@@ -1015,7 +1093,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
         if (_singleCobro && _extraInForm && _index) {
           _singleCobro.quantity = cobro.quantity;
-          _singleCobro.amount = parseFloat(Number(_extraInForm.precio * cobro.quantity).toFixed(2))
+          _singleCobro.amount = parseFloat(Number(_extraInForm.precio * cobro.quantity * _totalDias).toFixed(2))
           this.cobranzaI[_index] = _singleCobro;
         }
       } else {
@@ -1028,7 +1106,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
             quantity_type:  '',
             element_label:  this.gf.cobros_extras.value[i].nombre,
             number_sign:  'positive',
-            amount:  parseFloat(Number(this.gf.cobros_extras.value[i].precio * 1).toFixed(2)),
+            amount:  parseFloat(Number(this.gf.cobros_extras.value[i].precio * 1 * _totalDias).toFixed(2)),
             currency: this.baseCurrency
           })
 
@@ -1142,7 +1220,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
   }
   //#endregion
 
-  saveProcess(section: 'datos_generales' | 'datos_cliente' | 'datos_vehiculo') {
+  saveProcess(section: 'datos_generales' | 'datos_cliente' | 'datos_vehiculo', ignoreMsg?: boolean) {
     //this.sweetMsgServ.printStatus('Acción en desarrollo', 'warning');
     console.log('section', section);
     let _payload;
@@ -1161,11 +1239,14 @@ export class ContratoPage implements OnInit, AfterViewInit {
         if (moment.isMoment(_payload.rango_fechas.fecha_retorno)) {
           _payload.rango_fechas.fecha_retorno = DateConv.transFormDate(_payload.rango_fechas.fecha_retorno, 'regular');
         }
-        _payload.hora_elaboracion = DateConv.transFormDate(moment.now(), 'time');
+        //_payload.hora_elaboracion = DateConv.transFormDate(moment.now(), 'time');
         break;
       case 'datos_cliente':
         if (this.clienteDataForm.invalid) {
-          this.sweetMsgServ.printStatus('Verifica que los datos solicitados esten completos', 'warning');
+          if (!ignoreMsg) {
+            this.sweetMsgServ.printStatus('Verifica que los datos solicitados esten completos', 'warning');
+          }
+
           this.clienteDataForm.markAllAsTouched();
           return;
         }
@@ -1181,7 +1262,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
     this.contratosServ.saveProgress(_payload).subscribe(res => {
       if (res.ok) {
         this.sweetMsgServ.printStatus(res.message, 'success');
-        //this.contract_id = res.id;
+        this.contract_id = res.id;
         this.num_contrato = res.contract_number;
         this.contratosServ.setContractData(this.num_contrato);
         this.reloadAll();
@@ -1193,7 +1274,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
   }
 
   resetAll() {
-    this.docDataTransfer = [];
+    this.clientes_docs = [];
   }
 
 }

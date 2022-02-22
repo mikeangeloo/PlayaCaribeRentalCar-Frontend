@@ -90,10 +90,10 @@ export class SweetMessagesService {
   }
 
   // Función para preguntar al usuario si desea continuar, con mensaje configurable
-  confirmRequest(msg?, confirmBtnText?, cancelBtnText?) {
+  confirmRequest(msg?, extraTxt?: string, confirmBtnText?, cancelBtnText?, ) {
     this.deletePopOup = Swal.fire({
       title: msg ? msg : '¿Estas seguro de proceder?',
-      //text: msg ? msg : 'Esta acción no se podrá deshacer',
+      text: extraTxt ? extraTxt : 'Esta acción no se podrá deshacer',
       icon: 'warning',
       showCancelButton: true,
       focusCancel: true,

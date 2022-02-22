@@ -4,7 +4,7 @@
   </ion-fab-button>
 </ion-fab>
 
- <ion-button class="add-button" style="margin: 0 auto;" (click)="presentActionSheet()" shape="round" color="dark" *ngIf="justButton">
+ <ion-button class="add-button" [size]="btnSize" style="margin: 0 auto;" (click)="presentActionSheet()" shape="round" color="dark" *ngIf="justButton">
   <ion-icon name="camera"></ion-icon>
 </ion-button>
 

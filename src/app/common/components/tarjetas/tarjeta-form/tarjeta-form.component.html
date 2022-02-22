@@ -56,7 +56,7 @@
               <ion-row class="card-numbers">
                 <ion-col size="3" size-md="3">
                   <mat-form-field appearance="legacy">
-                    <input matInput formControlName="c_cn1" id="c_cn1" type="numeric" style="-webkit-text-security: disc;" inputmode="numeric" pattern="[0-9]*"
+                    <input matInput formControlName="c_cn1" id="c_cn1" type="numeric" style="/*-webkit-text-security: disc;*/" inputmode="numeric" pattern="[0-9]*"
                            [maxLength]="(cardConfig && cardConfig.l1) ? cardConfig.l1 : 4"
                            (keyup)="keytab($event, (cardConfig && cardConfig?.l1) ? cardConfig.l1 : 4)" autocomplete="off">
 
@@ -71,7 +71,7 @@
                 <ion-col size="3" size-md="3">
                   <mat-form-field appearance="legacy">
                     <mat-label></mat-label>
-                    <input matInput formControlName="c_cn2" id="c_cn2" type="numeric" style="-webkit-text-security: disc;" inputmode="numeric" pattern="[0-9]*" autocomplete="off"
+                    <input matInput formControlName="c_cn2" id="c_cn2" type="numeric" style="/*-webkit-text-security: disc;*/" inputmode="numeric" pattern="[0-9]*" autocomplete="off"
                            [maxLength]="(cardConfig && cardConfig.l2) ? cardConfig.l2 : 4"
                            (keyup)="keytab($event, cardConfig?.l2)">
                     <mat-icon matSuffix>card</mat-icon>
@@ -85,7 +85,7 @@
                 <ion-col size="3" size-md="3">
                   <mat-form-field appearance="legacy">
                     <mat-label></mat-label>
-                    <input matInput formControlName="c_cn3" id="c_cn3" type="numeric" style="-webkit-text-security: disc;" inputmode="numeric" pattern="[0-9]*" autocomplete="off"
+                    <input matInput formControlName="c_cn3" id="c_cn3" type="numeric" style="/*-webkit-text-security: disc;*/" inputmode="numeric" pattern="[0-9]*" autocomplete="off"
                            [maxLength]="(cardConfig && cardConfig.l3) ? cardConfig.l3 : 4"
                            (keyup)="keytab($event, cardConfig?.l3)">
                     <mat-icon matSuffix>card</mat-icon>
@@ -144,7 +144,7 @@
                 <ion-col size="4">
                   <mat-form-field appearance="legacy">
                     <mat-label>Código CCV</mat-label>
-                    <input matInput formControlName="c_code" type="numeric" style="-webkit-text-security: disc;" inputmode="numeric" pattern="[0-9]*" autocomplete="off"
+                    <input matInput formControlName="c_code" type="numeric" style="/*-webkit-text-security: disc;*/" inputmode="numeric" pattern="[0-9]*" autocomplete="off"
                            [maxLength]="(cardConfig && cardConfig.lv) ? cardConfig.lv : 4">
 
                     <mat-icon matSuffix>call_to_action</mat-icon>

@@ -34,5 +34,16 @@ export class TiposTarifasService {
     }));
   }
 
+  public async _getActive() {
+    try {
+      let res = await this.httpClient.get<any>(`${this.dashURL}/tipos-tarifas`).toPromise();
+      if (res.ok) {
+        return res
+      }
+    } catch (e) {
+      return {ok: false, errors: e}
+    }
+  }
+
 
 }

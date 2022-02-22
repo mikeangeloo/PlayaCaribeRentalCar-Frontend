@@ -40,6 +40,17 @@ export class ContratosService {
     }));
   }
 
+  public async _getContractData(_id) {
+    try {
+      let res = await this.httpClient.get<any>(`${this.dashURL}/contratos/${_id}`).toPromise();
+      if (res.ok) {
+        return {ok: true, data: res.data}
+      }
+    } catch (e) {
+      return {ok: false, errors: e}
+    }
+  }
+
   public getContractNumber(): string {
     const _data = localStorage.getItem('num_contrato');
     if (_data != 'undefined') {

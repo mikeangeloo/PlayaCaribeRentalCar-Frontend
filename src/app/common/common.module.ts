@@ -35,6 +35,7 @@ import {TarifasExtrasFormComponent} from './components/configuracion/precios/tar
 import {TarifasExtrasTableComponent} from './components/configuracion/precios/tarifas-extras-table/tarifas-extras-table.component';
 import {UbicacionesFormComponent} from './components/configuracion/ubicaciones/ubicaciones-form/ubicaciones-form.component';
 import {UbicacionesTableComponent} from './components/configuracion/ubicaciones/ubicaciones-table/ubicaciones-table.component';
+import {TarifasApolloConfFormComponent} from './components/configuracion/precios/tarifas-apollo-conf-form/tarifas-apollo-conf-form.component';
 
 
 
@@ -69,7 +70,8 @@ import {UbicacionesTableComponent} from './components/configuracion/ubicaciones/
     TarifasExtrasFormComponent,
     TarifasExtrasTableComponent,
     UbicacionesFormComponent,
-    UbicacionesTableComponent
+    UbicacionesTableComponent,
+    TarifasApolloConfFormComponent
   ],
   exports: [
     HotelesListComponent,
@@ -101,7 +103,8 @@ import {UbicacionesTableComponent} from './components/configuracion/ubicaciones/
     TarifasExtrasFormComponent,
     TarifasExtrasTableComponent,
     UbicacionesFormComponent,
-    UbicacionesTableComponent
+    UbicacionesTableComponent,
+    TarifasApolloConfFormComponent
   ],
   entryComponents: [
     HotelesListComponent,
@@ -133,7 +136,8 @@ import {UbicacionesTableComponent} from './components/configuracion/ubicaciones/
     TarifasExtrasFormComponent,
     TarifasExtrasTableComponent,
     UbicacionesFormComponent,
-    UbicacionesTableComponent
+    UbicacionesTableComponent,
+    TarifasApolloConfFormComponent
   ],
     imports: [
         CommonModule,

@@ -116,17 +116,16 @@
 
           </ng-container> &lt;!&ndash; Administración &ndash;&gt;-->
 
-
           <ng-container *ngTemplateOutlet="recursiveMenu; context: {$implicit: demoMenu}"></ng-container>
           <ng-template #recursiveMenu let-demoMenu>
             <ng-container *ngFor="let menu of demoMenu">
               <ng-container *ngIf="menu.route; else noItemRoute">
-                <ion-item class="item item-icon-left" detail [routerLink]="menu.route"  (click)="menuItemHandler(menu)" routerLinkActive="active-route" (click)="closeMenu()">
+                <ion-item class="item item-icon-left no-rotate"  detail [routerLink]="menu.route"  (click)="menuItemHandler(menu)" routerLinkActive="active-route" (click)="closeMenu()">
                   <ion-icon name="{{menu.icon}}"></ion-icon>&nbsp;<span style="width: 100%; margin-left: 7px;">{{menu.label}}</span>
                 </ion-item>
               </ng-container>
               <ng-template #noItemRoute>
-                <ion-item class="item item-icon-left" detail (click)="menuItemHandler(menu)"  [ngClass]="{'active-route': isActive(menu.module)}">
+                <ion-item class="item item-icon-left" detail (click)="menuItemHandler(menu)"  [ngClass]="{'active-route': isActive(menu.module), 'active-this': menu.active}">
                   <ion-icon name="{{menu.icon}}"></ion-icon>&nbsp;<span style="width: 100%; margin-left: 7px;">{{menu.label}}</span>
                 </ion-item>
               </ng-template>
