@@ -719,7 +719,10 @@ export class ContratoPage implements OnInit, AfterViewInit {
       component: TarjetaFormComponent,
       componentProps: {
         'asModal': true,
-        'justCapture': true
+        'card_id': (_data && _data.id) ? _data.id : null,
+        'cliente_id': this.cf.id.value,
+        'loadLoading': false,
+        'returnCapture': true
       },
       swipeToClose: true,
       cssClass: 'edit-form',
@@ -727,7 +730,8 @@ export class ContratoPage implements OnInit, AfterViewInit {
     });
     await modal.present();
     const {data} = await modal.onWillDismiss();
-    if (data.reload && data.reload === true) {
+    if (data.info) {
+      console.log('data.info --->', data.info);
       //this.loadClienteData();
     }
   }
