@@ -45,7 +45,7 @@ import {map, Observable, startWith} from 'rxjs';
 export class ContratoPage implements OnInit, AfterViewInit {
 
   //#region STEP CONTROLLER ATTRIBUTES
-  step = 0;
+  step = 4;
   //#endregion
 
   //#region DATOS GENERALES ATTRIBUTES
@@ -98,11 +98,12 @@ export class ContratoPage implements OnInit, AfterViewInit {
   //#region IMAGES MANAGEMENT ATTRIBUTES
   public clientes_docs: DocDataTransfer[] = [];
   public contratos_docs: DocDataTransfer[] = [];
+  public cobranza_docs: DocDataTransfer[] = [];
 
   public docPayLoad: {
     doc_type: 'licencia_conducir' | 'cupon',
-    model: 'clientes_docs' | 'contratos_docs',
-    model_id: 'cliente_id' | 'contrato_id'
+    model: 'clientes' | 'contratos' | 'cobranza',
+    //model_id: 'cliente_id' | 'contrato_id' | 'cobranza_id'
   }
   //#endregion
 
@@ -228,7 +229,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
                 this.vehiculoData = this.contractData.vehiculo;
               }
               this.initGeneralForm(this.contractData);
-              this.getDocs('cupon', 'contratos_docs', 'contrato_id', this.contractData.id);
+              this.getDocs('cupon', 'contratos', this.contractData.id);
 
             } else {
               this.initGeneralForm();
@@ -239,7 +240,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
               console.log('datos_cliente');
               let _clientesPayload = this.contractData.cliente;
               this.initClientForm(_clientesPayload);
-              this.getDocs('licencia_conducir', 'clientes_docs', 'cliente_id', _clientesPayload.id);
+              this.getDocs('licencia_conducir', 'clientes', _clientesPayload.id);
             } else {
               this.initClientForm();
             }
@@ -517,7 +518,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
   //#region CAPTURE IMG FUNCTIONS
   processDataImage(event: {imgUrl: string, image: File, type: string, fileName: string}, model = this.docPayLoad.model) {
 
-    this[model].push({
+    this[`${model}_docs`].push({
       file: event.image,
       url: event.imgUrl,
       uploading: false,
@@ -526,18 +527,18 @@ export class ContratoPage implements OnInit, AfterViewInit {
       fileName: event.fileName
     });
 
-    console.log(`processDataImage model: ${model} ---> `, this[model]);
+    console.log(`processDataImage model: ${model} ---> `, this[`${model}_docs`]);
 
   }
 
   disableUploadButton(model = this.docPayLoad.model): boolean {
-    if (!this[model]) {
+    if (!this[`${model}_docs`]) {
       return true;
     }
 
-    if (this[model] && this[model].length > 0) {
-      for (let i = 0; i < this.clientes_docs.length; i++) {
-        if (!this[model][i].success || !this[model][i].file_id || this[model][i].success === false) {
+    if (this[`${model}_docs`] && this[`${model}_docs`].length > 0) {
+      for (let i = 0; i < this[`${model}_docs`].length; i++) {
+        if (!this[`${model}_docs`][i].success || !this[`${model}_docs`][i].file_id || this[`${model}_docs`][i].success === false) {
           return false;
         }
       }
@@ -545,38 +546,18 @@ export class ContratoPage implements OnInit, AfterViewInit {
     return true;
   }
 
-  uploadArrayDatasImg(doc_type = this.docPayLoad.doc_type, model = this.docPayLoad.model, model_id = this.docPayLoad.model_id) {
-    if (this[model].length === 0 ) {
+  uploadArrayDatasImg(doc_type = this.docPayLoad.doc_type, model = this.docPayLoad.model, model_id) {
+    if (this[`${model}_docs`].length === 0 ) {
       this.sweetMsgServ.printStatus('Debe adjuntar una imagen', 'warning');
       return;
     }
 
-    let _model_id_value;
-    switch (model) {
-      case 'clientes_docs':
-        if (!this.clienteDataForm.controls.cliente_id.value) {
-          this.sweetMsgServ.printStatus('Debe primero guardar el avance de la información capturada del cliente', 'warning');
-          return;
-        }
-        _model_id_value = this.cf.cliente_id.value;
-        break;
-      case 'contratos_docs':
-        if (!this.contract_id) {
-          this.sweetMsgServ.printStatus('Debe primero guardar el avance de: Datos Generales', 'warning');
-          return;
-        }
-
-        if (!this.gf.folio_cupon.value) {
-          this.gf.folio_cupon.markAllAsTouched();
-          return;
-        }
-
-        _model_id_value = this.contract_id;
-
-        break;
+    if (!model_id) {
+      this.sweetMsgServ.printStatus('Debe guardar primero la información de esta sección', 'warning');
+      return;
     }
 
-
+    //let _model_id_value;
 
     this.sweetMsgServ.confirmRequest().then(async (data) => {
       if (data.value) {
@@ -586,33 +567,33 @@ export class ContratoPage implements OnInit, AfterViewInit {
         let formData = new FormData();
         let _positions = [];
         let _etiquetas = [];
-        for (let i = 0; i< this[model].length; i++) {
+        for (let i = 0; i< this[`${model}_docs`].length; i++) {
           console.log('prepare formData info---->');
 
-          if (!this[model][i].success || this[model][i].success === false || !this[model][i].file_id || this[model][i].file_id === null) {
-            if (!this[model][i].etiqueta) {
-              this[model][i].fileErrors = 'Ingrese un valor valido';
+          if (!this[`${model}_docs`][i].success || this[`${model}_docs`][i].success === false || !this[`${model}_docs`][i].file_id || this[`${model}_docs`][i].file_id === null) {
+            if (!this[`${model}_docs`][i].etiqueta) {
+              this[`${model}_docs`][i].fileErrors = 'Ingrese un valor valido';
 
             } else {
-              this[model][i].fileErrors = null;
+              this[`${model}_docs`][i].fileErrors = null;
             }
 
-            if (this[model][i].fileErrors) {
+            if (this[`${model}_docs`][i].fileErrors) {
               this.sweetMsgServ.printStatus('Revise que los elementos esten correctos', 'warning');
               return;
             }
             // @ts-ignore
-            formData.append('files[]', this[model][i].file, this[model][i].file.name);
+            formData.append('files[]', this[`${model}_docs`][i].file, this[`${model}_docs`][i].file.name);
             //this.docDataTransfer[i].uploading = true;
             _positions.push(i);
-            _etiquetas.push(this[model][i].etiqueta);
+            _etiquetas.push(this[`${model}_docs`][i].etiqueta);
           }
         }
 
         formData.set('doc_type', doc_type);
         formData.set('model', model);
         formData.set('model_id', model_id);
-        formData.set('model_id_value', String(_model_id_value));
+        //formData.set('model_id_value', String(_model_id_value));
         formData.set('positions', JSON.stringify(_positions));
         formData.set('etiquetas', JSON.stringify(_etiquetas));
 
@@ -627,31 +608,31 @@ export class ContratoPage implements OnInit, AfterViewInit {
           let _resPayload = res.payload;
 
           for (let i = 0; i < _resPayload.length; i++) {
-            this[model][_resPayload[i].position].success = _resPayload[i].success;
-            this[model][_resPayload[i].position].file_id = _resPayload[i].file_id;
-            this[model][_resPayload[i].position].model = _resPayload[i].model;
-            this[model][_resPayload[i].position].model_id = _resPayload[i].model_id;
-            this[model][_resPayload[i].position].model_id_value = _resPayload[i].model_id_value;
-            this[model][_resPayload[i].position].position = _resPayload[i].position;
-            this[model][_resPayload[i].position].doc_type = _resPayload[i].doc_type;
+            this[`${model}_docs`][_resPayload[i].position].success = _resPayload[i].success;
+            this[`${model}_docs`][_resPayload[i].position].file_id = _resPayload[i].file_id;
+            this[`${model}_docs`][_resPayload[i].position].model = _resPayload[i].model;
+            this[`${model}_docs`][_resPayload[i].position].model_id = _resPayload[i].model_id;
+            //this[`${model}_docs`][_resPayload[i].position].model_id_value = _resPayload[i].model_id_value;
+            this[`${model}_docs`][_resPayload[i].position].position = _resPayload[i].position;
+            this[`${model}_docs`][_resPayload[i].position].doc_type = _resPayload[i].doc_type;
             _lastIndex = i;
           }
         } else {
           _lastServError = res.error.errors;
         }
 
-        console.log('imgDatasTranfer -->', this[model]);
+        console.log('imgDatasTranfer -->', this[`${model}_docs`]);
 
         let successTotal = 0;
-        for (let j = 0; j < this[model].length; j++) {
-          if (this.clientes_docs[j].success === true) {
+        for (let j = 0; j < this[`${model}_docs`].length; j++) {
+          if (this[`${model}_docs`][j].success === true) {
             successTotal ++;
           }
         }
-        if (successTotal === this[model].length) {
+        if (successTotal === this[`${model}_docs`].length) {
           console.log('all saved');
           this.sweetMsgServ.printStatus('Se han guardado sus imagenes de manera correcta', 'success');
-          if (model === 'contratos_docs') {
+          if (model === 'contratos') {
             this.saveProcess('datos_generales', true);
           }
         } else {
@@ -667,7 +648,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
   }
 
   removeImg(index, model = this.docPayLoad.model) {
-    this[model].splice(index, 1);
+    this[`${model}_docs`].splice(index, 1);
   }
 
   async removeFromDisk(fileData: DocDataTransfer, index, model = this.docPayLoad.model) {
@@ -677,7 +658,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
           doc_type: fileData.doc_type,
           model: fileData.model,
           model_id: fileData.model_id,
-          model_id_value: fileData.model_id_value,
+          //model_id_value: fileData.model_id_value,
           id: fileData.file_id
         }
         let query = await this.filesServ.deleteDoc(_payload);
@@ -692,17 +673,16 @@ export class ContratoPage implements OnInit, AfterViewInit {
     });
   }
 
-  async getDocs(doc_type = this.docPayLoad.doc_type, model = this.docPayLoad.model, model_id = this.docPayLoad.model_id, model_id_value: number) {
+  async getDocs(doc_type = this.docPayLoad.doc_type, model = this.docPayLoad.model, model_id: number) {
     let _payload = {
       doc_type,
       model,
-      model_id,
-      model_id_value
+      model_id
     }
     let res = await this.filesServ.getDocs(_payload);
 
     if (res.ok) {
-      this[model] = [];
+      this[`${model}_docs`] = [];
 
       for (let i = 0; i < res.data.length; i++) {
         let _docData: DocDataTransfer = {
@@ -714,13 +694,12 @@ export class ContratoPage implements OnInit, AfterViewInit {
           model_id: res.data[i].model_id,
           mime_type: res.data[i].mime_type,
           url: res.data[i].file,
-          model_id_value: res.data[i].model_id_value,
           etiqueta: res.data[i].etiqueta
         }
-        this[model].push(_docData);
+        this[`${model}_docs`].push(_docData);
       }
     } else {
-      this[model] = [];
+      this[`${model}_docs`] = [];
       console.log('error --->', res.error);
     }
   }
@@ -787,7 +766,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
           break;
         case 'cliente':
           this.initClientForm(data);
-          this.getDocs('licencia_conducir', 'clientes_docs', 'cliente_id', data.id);
+          this.getDocs('licencia_conducir', 'clientes', data.id);
           break;
         case 'vehiculo':
           // TODO: arreglar cuando sea tipo salida o llegada
@@ -1274,7 +1253,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
   }
 
   resetAll() {
-    this.clientes_docs = [];
+    //this.clientes_docs = [];
   }
 
 }

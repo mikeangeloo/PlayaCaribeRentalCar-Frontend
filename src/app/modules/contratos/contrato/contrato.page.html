@@ -190,8 +190,8 @@
 
                                 <ion-col size="12" size-md="6" class="ion-text-center">
                                   <div style="display: flex; justify-content: space-evenly; align-items: center;">
-                                    <app-camera (captureImg)="processDataImage($event, 'contratos_docs')" [justButton]="true" [btnSize]="'small'"></app-camera>
-                                    <ion-button [disabled]="disableUploadButton('contratos_docs')" *ngIf="contratos_docs && contratos_docs.length > 0" color="secondary" size="small" expand="round" type="button" (click)="uploadArrayDatasImg('cupon', 'contratos_docs', 'contrato_id')" style="width: 250px;">
+                                    <app-camera (captureImg)="processDataImage($event, 'contratos')" [justButton]="true" [btnSize]="'small'"></app-camera>
+                                    <ion-button [disabled]="disableUploadButton('contratos')" *ngIf="contratos_docs && contratos_docs.length > 0" color="secondary" size="small" expand="round" type="button" (click)="uploadArrayDatasImg('cupon', 'contratos', contract_id)" style="width: 250px;">
                                       <ion-icon name="cloud-upload"></ion-icon>&nbsp; SUBIR
                                     </ion-button>
                                   </div>
@@ -204,11 +204,11 @@
                                   <ion-col size="6" size-sm="auto" *ngFor="let imgData of contratos_docs; let i = index" style="margin-bottom: 1rem;">
                                     <div class="capture-img-container">
                                       <div class="btn-action-container">
-                                        <ion-button size="small" color="danger" (click)="removeImg(i, 'contratos_docs')" *ngIf="!imgData.file_id">
+                                        <ion-button size="small" color="danger" (click)="removeImg(i, 'contratos')" *ngIf="!imgData.file_id">
                                           <ion-icon name="trash"></ion-icon>
                                         </ion-button>
 
-                                        <ion-button size="small" color="danger" (click)="removeFromDisk(imgData, i, 'contratos_docs')" *ngIf="imgData.file_id">
+                                        <ion-button size="small" color="danger" (click)="removeFromDisk(imgData, i, 'contratos')" *ngIf="imgData.file_id">
                                           <ion-icon name="trash"></ion-icon>
                                         </ion-button>
                                       </div>
@@ -580,8 +580,8 @@
                     <ion-row>
                       <ion-col size="12" class="ion-text-center">
                         <div style="display: flex; justify-content: space-evenly; align-items: center;">
-                          <app-camera (captureImg)="processDataImage($event, 'clientes_docs')" [justButton]="true"></app-camera>
-                          <ion-button [disabled]="disableUploadButton('clientes_docs')" *ngIf="clientes_docs && clientes_docs.length > 0" color="secondary" expand="round" type="button" (click)="uploadArrayDatasImg('licencia_conducir', 'clientes_docs', 'cliente_id')" style="width: 250px;">
+                          <app-camera (captureImg)="processDataImage($event, 'clientes')" [justButton]="true"></app-camera>
+                          <ion-button [disabled]="disableUploadButton('clientes')" *ngIf="clientes_docs && clientes_docs.length > 0" color="secondary" expand="round" type="button" (click)="uploadArrayDatasImg('licencia_conducir', 'clientes', clienteDataForm.controls.cliente_id.value)" style="width: 250px;">
                             <ion-icon name="cloud-upload"></ion-icon>&nbsp; SUBIR
                           </ion-button>
                         </div>
@@ -594,11 +594,11 @@
                         <ion-col size="6" size-sm="auto" *ngFor="let imgData of clientes_docs; let i = index" style="margin-bottom: 1rem;">
                           <div class="capture-img-container">
                             <div class="btn-action-container">
-                              <ion-button size="small" color="danger" (click)="removeImg(i, 'clientes_docs')" *ngIf="!imgData.file_id">
+                              <ion-button size="small" color="danger" (click)="removeImg(i, 'clientes')" *ngIf="!imgData.file_id">
                                 <ion-icon name="trash"></ion-icon>
                               </ion-button>
 
-                              <ion-button size="small" color="danger" (click)="removeFromDisk(imgData, i, 'clientes_docs')" *ngIf="imgData.file_id">
+                              <ion-button size="small" color="danger" (click)="removeFromDisk(imgData, i, 'clientes')" *ngIf="imgData.file_id">
                                 <ion-icon name="trash"></ion-icon>
                               </ion-button>
                             </div>
@@ -650,226 +650,6 @@
           </mat-expansion-panel>
         </div>
       </mat-accordion> <!-- Datos Cliente -->
-
-<!--      <mat-accordion>
-        <div class="accordion-margin">
-          <mat-expansion-panel (opened)="setStep(3)" [expanded]="step === 3" hideToggle>
-            <mat-expansion-panel-header>
-              <mat-panel-title>
-                Detalle Cobro
-              </mat-panel-title>
-              <mat-panel-description style="margin: 0; justify-content: flex-end;">
-                <ion-icon name="cash"></ion-icon>
-              </mat-panel-description>
-            </mat-expansion-panel-header>
-
-            <ion-card>
-              <ion-card-content>
-                <h4 style="font-weight: 500">TARIFA APOLLO MX</h4>
-
-                <table class="desgloce-table">
-                  <thead>
-                  <tr>
-                    <th>DESCRIPCIÓN DE LOS CARGOS</th>
-                    <th></th>
-                    <th></th>
-                    <th>CARGOS</th>
-                  </tr>
-                  <tr>
-                    <th></th>
-                    <th>PRECIO UNIT.</th>
-                    <th>DIA</th>
-                    <th></th>
-                  </tr>
-                  </thead>
-                  <tbody>
-                  <tr>
-                    <td style="text-underline: var(&#45;&#45;ion-color-dark)">TARIFA TIEMPO Y KILOMETRAJE T&K</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                  </tr>
-                  <tr>
-                    <td>HOURS / HORAS</td>
-                    <td></td>
-                    <td></td>
-                    <td>{{'0' | currency}}</td>
-                  </tr>
-                  <tr>
-                    <td>DAYS / DIAS</td>
-                    <td>
-                      <ion-item>
-                        <ion-label class="ion-no-margin ion-no-padding">$</ion-label>
-                        <ion-input type="number" [value]="'780.00'"></ion-input>
-                      </ion-item>
-                    </td>
-                    <td>
-                      <ion-item>
-                        <ion-label class="ion-no-padding ion-no-margin">X</ion-label>
-                        <ion-input type="number" value="1"></ion-input>
-                      </ion-item>
-                    </td>
-                    <td>{{'0' | currency}}</td>
-                  </tr>
-                  <tr>
-                    <td>WEEKS / SEMANAL</td>
-                    <td></td>
-                    <td></td>
-                    <td>{{'0' | currency}}</td>
-                  </tr>
-                  <tr>
-                    <td>MONTHS / MENSUAL</td>
-                    <td></td>
-                    <td></td>
-                    <td>{{'0' | currency}}</td>
-                  </tr>
-                  <tr>
-                    <td>EX DAYS / DIA EXTRA</td>
-                    <td></td>
-                    <td></td>
-                    <td>{{'0' | currency}}</td>
-                  </tr>
-                  </tbody>
-                  <tfoot>
-                  <tr>
-                    <th>SUBTOTAL-1</th>
-                    <th></th>
-                    <th></th>
-                    <th>{{'349' | currency}}</th>
-                  </tr>
-                  </tfoot>
-                </table>
-
-                <table class="desgloce-table">
-                  <thead>
-                  <tr class="empty-tr">
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                  </tr>
-                  <tr>
-                    <th></th>
-                    <th>PRECIO UNIT.</th>
-                    <th>DIA</th>
-                    <th></th>
-                  </tr>
-                  </thead>
-                  <tbody>
-                  <tr>
-                    <td style="text-decoration: underline">CARGOS DE PROTECCIONES (OBLIGATORIO)</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                  </tr>
-                  <tr>
-                    <td>DAÑOS MATERIALES 90%</td>
-                    <td></td>
-                    <td></td>
-                    <td>{{'52.35' | currency}}</td>
-                  </tr>
-                  <tr>
-                    <td>DAÑOS TERCEROS</td>
-                    <td></td>
-                    <td></td>
-                    <td>{{'69.80' | currency}}</td>
-                  </tr>
-                  <tr>
-                    <td>GASTOS MEDICOS</td>
-                    <td></td>
-                    <td></td>
-                    <td>{{'34.90' | currency}}</td>
-                  </tr>
-                  <tr>
-                    <td>ASISTENCIA VIAL</td>
-                    <td></td>
-                    <td></td>
-                    <td>{{'17.45' | currency}}</td>
-                  </tr>
-                  <tr class="remarkFont">
-                    <td></td>
-                    <td>PRECIO UNIT.</td>
-                    <td>L</td>
-                    <td></td>
-                  </tr>
-                  <tr class="remarkFont">
-                    <td style="text-decoration: underline">CARGOS DE COMBUSTIBLE</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                  </tr>
-                  </tbody>
-                  <tfoot>
-                  <tr>
-                    <th>SUBTOTAL-2</th>
-                    <th></th>
-                    <th></th>
-                    <th>{{'523.50' | currency}}</th>
-                  </tr>
-                  </tfoot>
-                </table>
-
-                <table class="desgloce-table">
-                  <thead>
-                  <tr class="empty-tr">
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                  </tr>
-                  <tr>
-                    <th></th>
-                    <th>PRECIO UNIT.</th>
-                    <th>DIA</th>
-                    <th></th>
-                  </tr>
-                  </thead>
-                  <tbody>
-                  <tr class="remarkFont">
-                    <td style="text-decoration: underline">CUOTAS LOCALES E IMPUESTOS FEDERALES</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                  </tr>
-                  <tr class="remarkFont">
-                    <td>I.V.A / TAX @ 16%</td>
-                    <td></td>
-                    <td></td>
-                    <td>{{'83.76' | currency}}</td>
-                  </tr>
-                  </tbody>
-                  <tfoot>
-                  <tr>
-                    <th>
-                      CARGOS ESTIMADOS TOTALES INICIALES X______
-                      <br>
-                      <small>
-                        *TODAS LAS CANTIDADES AQUÍ REFLEJADAS SON EN MONEDA NACIONAL (MNX)
-                      </small>
-                    </th>
-                    <th></th>
-                    <th></th>
-                    <th>{{'607.26' | currency}}</th>
-                  </tr>
-                  </tfoot>
-                </table>
-
-              </ion-card-content>
-            </ion-card>
-
-            <mat-action-row>
-              <button (click)="prevStep()" mat-flat-button style="font-size: 1.5rem;">
-                <ion-icon name="chevron-back-outline" style="color: var(&#45;&#45;ion-color-medium);"></ion-icon>
-              </button> &nbsp; &nbsp;
-
-              <button (click)="nextStep()" mat-flat-button style="font-size: 1.5rem;">
-                <ion-icon name="chevron-forward-outline" style="color: var(&#45;&#45;ion-color-medium);"></ion-icon>
-              </button>
-            </mat-action-row>
-          </mat-expansion-panel>
-        </div>
-      </mat-accordion> &lt;!&ndash; Detalle Cobro &ndash;&gt;-->
-
       <mat-accordion>
         <div class="accordion-margin">
           <mat-expansion-panel (opened)="setStep(4)" [expanded]="step === 4" hideToggle>
