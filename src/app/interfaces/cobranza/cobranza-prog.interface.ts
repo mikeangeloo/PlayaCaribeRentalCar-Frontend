@@ -5,6 +5,7 @@ export interface CobranzaProgI
     id?: number;
     contrato_id?: number;
     tarjeta_id?: number;
+    cliente_id?: number;
     fecha_cargo?: string;
     monto?: string;
     moneda?: string;

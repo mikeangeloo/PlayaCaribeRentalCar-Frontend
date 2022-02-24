@@ -35,6 +35,7 @@ import {UbicacionesI} from '../../../interfaces/configuracion/ubicaciones.interf
 import {UbicacionesService} from '../../../services/ubicaciones.service';
 import {map, Observable, startWith} from 'rxjs';
 import {CobranzaProgI} from '../../../interfaces/cobranza/cobranza-prog.interface';
+import {CobranzaService} from '../../../services/cobranza.service';
 
 
 @Component({
@@ -146,6 +147,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
   public comisiones: number[];
 
   public cobranzaProgData: CobranzaProgI[] = [];
+  public balancePorPagar: number;
 
   //#endregion
 
@@ -166,7 +168,8 @@ export class ContratoPage implements OnInit, AfterViewInit {
     public hotelesServ: HotelesService,
     public comisionistasServ: ComisionistasService,
     public toastServ: ToastMessageService,
-    public ubicacionesServ: UbicacionesService
+    public ubicacionesServ: UbicacionesService,
+    public cobranzaServ: CobranzaService
   ) { }
 
   ngOnInit() {
@@ -249,6 +252,10 @@ export class ContratoPage implements OnInit, AfterViewInit {
             if (_cobranzaData && (this.contractData.cobranza && this.contractData.cobranza.length > 0)) {
               console.log('cobranza');
               this.cobranzaProgData = this.contractData.cobranza;
+              if (this.gf.total.value) {
+                this.balancePorPagar = this.gf.total.value;
+                this.recalBalancePorCobrar();
+              }
             } else {
               this.cobranzaProgData = [];
             }
@@ -723,7 +730,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
   //#endregion
 
   //#region CARDS MANAGEMENT
-  async agregarTarjetaForm(concept, _data?: CardI) {
+  async agregarTarjetaForm(concept, _data?: CardI, pushData?: boolean) {
     //const pageEl: HTMLElement = document.querySelector('.ion-page');
     //this.generalService.presentLoading();
     const modal = await this.modalCtr.create({
@@ -742,6 +749,29 @@ export class ContratoPage implements OnInit, AfterViewInit {
     await modal.present();
     const {data} = await modal.onWillDismiss();
     if (data.info) {
+      if (pushData && pushData === true) {
+        let _prepare: CobranzaProgI = {
+          id: null,
+          tarjeta: data.info,
+          edit: false,
+          contrato_id: this.contract_id,
+          cliente_id: this.cf.cliente_id.value,
+          cod_banco: null,
+          tarjeta_id: data.info.id,
+          estatus: null,
+          created_at: null,
+          fecha_cargo: null,
+          fecha_procesado: null,
+          fecha_reg: null,
+          moneda: this.baseCurrency,
+          monto: null,
+          tipo: concept,
+          res_banco: null,
+          updated_at: null,
+        }
+        this.cobranzaProgData.push(_prepare);
+        this.saveProcess('cobranza', null, _prepare);
+      }
       return data.info
       //console.log('data.info --->', data);
       //this.loadClienteData();
@@ -1222,9 +1252,20 @@ export class ContratoPage implements OnInit, AfterViewInit {
     cobro.edit = enable;
   }
   cancelCobro(cobro: CobranzaProgI) {
-    this.sweetMsgServ.confirmRequest('¿Estás seguro de querer remover este elemento?', 'Esta acción no se puede revertir').then((data) => {
+    this.sweetMsgServ.confirmRequest('¿Estás seguro de querer remover este elemento?', 'Esta acción no se puede revertir').then(async (data) => {
       if (data.value) {
-
+        let _payload = {
+          cobranza_id: cobro.id
+        }
+        let res = await this.cobranzaServ.cancelCobro(_payload);
+        if (res.ok) {
+          this.toastServ.presentToast('success', res.message, 'top');
+          let cobroIndex = this.cobranzaProgData.findIndex(x => x.id === cobro.id);
+          this.cobranzaProgData.splice(cobroIndex, 1);
+          this.recalBalancePorCobrar();
+        } else {
+          this.sweetMsgServ.printStatusArray(res.errors.error.errors, 'error');
+        }
       }
     })
   }
@@ -1239,6 +1280,23 @@ export class ContratoPage implements OnInit, AfterViewInit {
       cobro.tarjeta = _res;
     }
   }
+
+  recalBalancePorCobrar() {
+    let total = 0;
+    let _data = this.cobranzaProgData.filter(x => x.tipo == 2);
+    console.log('recalBalancePorCobrar', _data);
+    if (_data && _data.length > 0) {
+      for (let i = 0; i < _data.length; i++) {
+        total =  parseFloat(total + _data[i].monto);
+      }
+    }
+    if (this.balancePorPagar < total) {
+      this.sweetMsgServ.printStatus('El monto acumado de cobro es mayor al balance por cobrar', 'warning');
+    }
+    this.balancePorPagar = (this.balancePorPagar -  total);
+
+  }
+
   //#endregion
 
   saveProcess(section: 'datos_generales' | 'datos_cliente' | 'datos_vehiculo' | 'cobranza', ignoreMsg?: boolean, payload?) {
