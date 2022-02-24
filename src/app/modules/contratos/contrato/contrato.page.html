@@ -679,55 +679,72 @@
                       <h4 style="margin: 0;" class="ion-text-center ion-text-md-left">PRE-AUTORIZACIONES</h4>
                     </ion-col>
                     <ion-col size="12" size-md="6" class="ion-text-end">
-                      <button mat-raised-button class="button-secondary" (click)="agregarTarjetaForm('authorization')">
+                      <button mat-raised-button class="button-secondary" (click)="agregarTarjetaForm(1)">
                         <span style="font-size: 1.3rem;margin-right: 0.5rem;">+</span> <ion-icon name="card"></ion-icon> &nbsp;Tarjeta
                       </button>
                     </ion-col>
                   </ion-row>
 
-                  <ion-row class="border-ion-row">
-                    <ion-col size="12" size-md="8">
-                      <table class="cards-table">
-                        <tbody>
-                        <tr>
-                          <td style="min-width: 60px; max-width: 60px">
-                            <div class="action-buttons">
-                              <button class="mat-elevation-z0" mat-mini-fab color="warn">
-                                <mat-icon>remove</mat-icon>
-                              </button>
-                              <button style="margin-top: 10px" class="mat-elevation-z0" mat-mini-fab color="accent">
-                                <mat-icon>edit</mat-icon>
-                              </button>
-                            </div>
+                  <ng-container *ngFor="let cobranzaAuth of cobranzaProgData">
+                    <ion-row class="border-ion-row" *ngIf="cobranzaAuth.tipo == 1">
+                      <ion-col size="12" size-md="8">
+                        <table class="cards-table">
+                          <tbody>
+                          <tr>
+                            <td style="min-width: 60px; max-width: 60px">
+                              <div class="action-buttons">
+                                <button *ngIf="!cobranzaAuth.id || cobranzaAuth.edit === true" (click)="updateSaveCobro(cobranzaAuth)" class="mat-elevation-z0 button-success" mat-mini-fab>
+                                  <mat-icon>save</mat-icon>
+                                </button>
+                                <button *ngIf="cobranzaAuth.id && cobranzaAuth.edit !== true" class="mat-elevation-z0" mat-mini-fab color="warn">
+                                  <mat-icon>remove</mat-icon>
+                                </button>
+                                <button *ngIf="cobranzaAuth.edit !== true && cobranzaAuth.id" (click)="enableDisableEditCobro(cobranzaAuth, true)" style="margin-top: 10px" class="mat-elevation-z0" mat-mini-fab color="accent">
+                                  <mat-icon>edit</mat-icon>
+                                </button>
+                                <button *ngIf="cobranzaAuth.edit === true && cobranzaAuth.id" (click)="enableDisableEditCobro(cobranzaAuth, false)" style="margin-top: 10px" class="mat-elevation-z0 button-cancel" mat-mini-fab>
+                                  <mat-icon>cancel</mat-icon>
+                                </button>
+                              </div>
 
-                          </td>
-                          <td>VISA</td>
-                          <td>CREDITO</td>
-                          <td>4521*1234</td>
-                          <td>11/22</td>
-                          <td>
-                            <div class="table-input">
-                              PRE-AUTH: <input type="text">
-                            </div>
-                          </td>
-                          <td>
-                            <div class="table-input">
-                              MONTO: <input type="text">
-                            </div>
-                          </td>
-                        </tr>
-                        </tbody>
-                      </table>
-                    </ion-col>
-                    <ion-col size="12" size-md="4" class="ion-no-padding">
-                      <fieldset>
-                        <legend>Img. Voucher</legend>
-                        <div style="text-align: center;">
-                          <app-camera [justButton]="true"></app-camera>
-                        </div>
-                      </fieldset>
-                    </ion-col>
-                  </ion-row>
+                            </td>
+                            <td>
+                              {{(cobranzaAuth.tarjeta && cobranzaAuth.tarjeta.c_type) ? cobranzaAuth.tarjeta.c_type : '--'}}
+                              <br>
+                              <button *ngIf="cobranzaAuth.edit === true && cobranzaAuth.id" (click)="updateTarjeta(cobranzaAuth, 1)" style="margin-top: 10px" class="mat-elevation-z0 button-secondary" mat-icon-button>
+                                <mat-icon>price_change</mat-icon>
+                              </button>
+                            </td>
+                            <td>{{(cobranzaAuth.tarjeta && cobranzaAuth.tarjeta.c_method) ? cobranzaAuth.tarjeta.c_method : '--'}}</td>
+                            <td>{{(cobranzaAuth.tarjeta && (cobranzaAuth.tarjeta.c_cn1 && cobranzaAuth.tarjeta.c_cn4)) ? cobranzaAuth.tarjeta.c_cn1 + '*' + cobranzaAuth.tarjeta.c_cn4: '--'}}</td>
+                            <td>{{(cobranzaAuth.tarjeta && (cobranzaAuth.tarjeta.c_month && cobranzaAuth.tarjeta.c_year)) ? cobranzaAuth.tarjeta.c_month + '/' + cobranzaAuth.tarjeta.c_year: '--'}}</td>
+                            <td>
+                              <div class="table-input">
+                                PRE-AUTH: <input type="text" [(ngModel)]="cobranzaAuth.cod_banco" [readOnly]="cobranzaAuth.edit !== true">
+                                <p class="input-hint" *ngIf="cobranzaAuth.edit !== true">Solo Lectura</p>
+                              </div>
+                            </td>
+                            <td>
+                              <div class="table-input">
+                                MONTO ({{cobranzaAuth.moneda}}): <input type="number" [(ngModel)]="cobranzaAuth.monto" [readOnly]="cobranzaAuth.edit !== true">
+                                <p class="input-hint" *ngIf="cobranzaAuth.edit !== true">Solo Lectura</p>
+                              </div>
+                            </td>
+                          </tr>
+                          </tbody>
+                        </table>
+                      </ion-col>
+                      <ion-col size="12" size-md="4" class="ion-no-padding">
+                        <fieldset>
+                          <legend>Img. Voucher</legend>
+                          <div style="text-align: center;">
+                            <app-camera [justButton]="true"></app-camera>
+                          </div>
+                        </fieldset>
+                      </ion-col>
+                    </ion-row>
+                  </ng-container>
+
                 </div> <!-- PRE AUTORIZACIONES -->
 
                 <mat-divider></mat-divider>
@@ -738,34 +755,47 @@
                       <h4 style="margin: 0;" class="ion-text-center ion-text-md-left">CARGOS</h4>
                     </ion-col>
                     <ion-col size="12" size-md="6" class="ion-text-end">
-                      <button mat-raised-button class="button-secondary" (click)="agregarTarjetaForm('charge')">
+                      <button mat-raised-button class="button-secondary" (click)="agregarTarjetaForm(2)">
                         <span style="font-size: 1.3rem;margin-right: 0.5rem;">+</span> <ion-icon name="card"></ion-icon> &nbsp;Tarjeta
                       </button>
                     </ion-col>
                   </ion-row>
-                  <ion-row class="border-ion-row">
-                    <ion-col size="12" size-md="8">
-                      <table class="cards-table">
-                        <tbody>
-                        <tr>
-                          <td>VISA</td>
-                          <td>4521*1234</td>
-                          <td>PRE-AUTH: 12345678</td>
-                          <td>11-NOV-21</td>
-                          <td>{{'780' | currency}}</td>
-                        </tr>
-                        </tbody>
-                      </table>
-                    </ion-col>
-                    <ion-col size="12" size-md="4" class="ion-no-padding">
-                      <fieldset>
-                        <legend>Img. Voucher</legend>
-                        <div style="text-align: center;">
-                          <app-camera [justButton]="true"></app-camera>
-                        </div>
-                      </fieldset>
-                    </ion-col>
-                  </ion-row>
+
+                  <ng-container *ngFor="let cobranzaPago of cobranzaProgData">
+                    <ion-row class="border-ion-row" *ngIf="cobranzaPago.tipo === 2">
+                      <ion-col size="12" size-md="8">
+                        <table class="cards-table">
+                          <tbody>
+                          <tr>
+                            <td>{{(cobranzaPago.tarjeta && cobranzaPago.tarjeta.c_type) ? cobranzaPago.tarjeta.c_type : '--'}}</td>
+                            <td>{{(cobranzaPago.tarjeta && cobranzaPago.tarjeta.c_method) ? cobranzaPago.tarjeta.c_method : '--'}}</td>
+                            <td>{{(cobranzaPago.tarjeta && (cobranzaPago.tarjeta.c_cn1 && cobranzaPago.tarjeta.c_cn4)) ? cobranzaPago.tarjeta.c_cn1 + '*' + cobranzaPago.tarjeta.c_cn4: '--'}}</td>
+                            <td>{{(cobranzaPago.tarjeta && (cobranzaPago.tarjeta.c_month && cobranzaPago.tarjeta.c_year)) ? cobranzaPago.tarjeta.c_month + '/' + cobranzaPago.tarjeta.c_year: '--'}}</td>
+                            <td>
+                              <div class="table-input">
+                                PAGO: <input type="text" [(ngModel)]="cobranzaPago.cod_banco">
+                              </div>
+                            </td>
+                            <td>
+                              <div class="table-input">
+                                MONTO: <input type="number" [(ngModel)]="cobranzaPago.monto"> {{cobranzaPago.moneda}}
+                              </div>
+                            </td>
+                          </tr>
+                          </tbody>
+                        </table>
+                      </ion-col>
+                      <ion-col size="12" size-md="4" class="ion-no-padding">
+                        <fieldset>
+                          <legend>Img. Voucher</legend>
+                          <div style="text-align: center;">
+                            <app-camera [justButton]="true"></app-camera>
+                          </div>
+                        </fieldset>
+                      </ion-col>
+                    </ion-row>
+                  </ng-container>
+
                 </div> <!-- CARGOS -->
 
               </ion-card-content>

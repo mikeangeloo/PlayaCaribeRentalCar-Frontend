@@ -1,4 +1,4 @@
-import {AfterViewInit, ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import {AfterViewInit, Component, OnInit} from '@angular/core';
 import {NgxMaterialTimepickerTheme} from "ngx-material-timepicker";
 import {Months} from "../../../interfaces/shared/months";
 import * as moment from "moment";
@@ -7,7 +7,7 @@ import {CardI} from "../../../interfaces/cards/card.interface";
 import {TarjetaFormComponent} from "../../../common/components/tarjetas/tarjeta-form/tarjeta-form.component";
 import {ModalController} from "@ionic/angular";
 import {MultiTableFilterComponent} from "../../../common/components/multi-table-filter/multi-table-filter.component";
-import {Form, FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
+import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {DateConv} from "../../../helpers/date-conv";
 import {SessionService} from "../../../services/session.service";
 import {SucursalesI} from "../../../interfaces/sucursales.interface";
@@ -23,7 +23,7 @@ import {TiposTarifasI} from '../../../interfaces/configuracion/tipos-tarifas.int
 import {TiposTarifasService} from '../../../services/tipos-tarifas.service';
 import {TarifasExtrasI} from '../../../interfaces/configuracion/tarifas-extras.interface';
 import {TarifasExtrasService} from '../../../services/tarifas-extras.service';
-import {CobranzaI} from '../../../interfaces/contratos/cobranza-calc.interface';
+import {CobranzaCalcI} from '../../../interfaces/cobranza/cobranza-calc.interface';
 import {HotelesI} from '../../../interfaces/hoteles/hoteles.interface';
 import {HotelesService} from '../../../services/hoteles.service';
 import {TarifaHotelesI} from '../../../interfaces/tarifas/tarifa-hoteles.interface';
@@ -34,6 +34,7 @@ import {ToastMessageService} from '../../../services/toast-message.service';
 import {UbicacionesI} from '../../../interfaces/configuracion/ubicaciones.interface';
 import {UbicacionesService} from '../../../services/ubicaciones.service';
 import {map, Observable, startWith} from 'rxjs';
+import {CobranzaProgI} from '../../../interfaces/cobranza/cobranza-prog.interface';
 
 
 @Component({
@@ -136,7 +137,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
   tarifasExtras: TarifasExtrasI[];
   public tiposTarifas: TiposTarifasI[];
-  public cobranzaI: CobranzaI[] = [];
+  public cobranzaI: CobranzaCalcI[] = [];
 
   public hoteles: HotelesI[];
   public tarifasHotel: TarifaHotelesI[];
@@ -144,12 +145,13 @@ export class ContratoPage implements OnInit, AfterViewInit {
   public comisionistas: ComisionistasI[];
   public comisiones: number[];
 
+  public cobranzaProgData: CobranzaProgI[] = [];
+
   //#endregion
 
   //#region SIGNATURE MANAGEMENT ATTRIBUTES
   public signature = '';
   //#endregion
-
 
   constructor(
     public sweetMsgServ: SweetMessagesService,
@@ -169,8 +171,6 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
   ngOnInit() {
     this.validYears = this.getYears();
-    //this.initGeneralForm();
-
   }
 
   async ionViewWillEnter() {
@@ -244,6 +244,14 @@ export class ContratoPage implements OnInit, AfterViewInit {
             } else {
               this.initClientForm();
             }
+
+            let _cobranzaData = this.contractData.etapas_guardadas.find(x => x === 'cobranza');
+            if (_cobranzaData && (this.contractData.cobranza && this.contractData.cobranza.length > 0)) {
+              console.log('cobranza');
+              this.cobranzaProgData = this.contractData.cobranza;
+            } else {
+              this.cobranzaProgData = [];
+            }
           }
         } else {
           console.log(res.errors);
@@ -252,12 +260,15 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
           this.initGeneralForm();
           this.initClientForm();
+          this.cobranzaProgData = [];
         }
     } else {
       this.initGeneralForm();
       this.initClientForm();
+      this.cobranzaProgData = [];
     }
   }
+
   ngAfterViewInit() {
     setTimeout(() => {
       this.initReviewCanva();
@@ -712,7 +723,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
   //#endregion
 
   //#region CARDS MANAGEMENT
-  async agregarTarjetaForm(concept: 'authorization' | 'charge', _data?: CardI) {
+  async agregarTarjetaForm(concept, _data?: CardI) {
     //const pageEl: HTMLElement = document.querySelector('.ion-page');
     //this.generalService.presentLoading();
     const modal = await this.modalCtr.create({
@@ -720,7 +731,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
       componentProps: {
         'asModal': true,
         'card_id': (_data && _data.id) ? _data.id : null,
-        'cliente_id': this.cf.id.value,
+        'cliente_id': this.cf.cliente_id.value,
         'loadLoading': false,
         'returnCapture': true
       },
@@ -731,8 +742,11 @@ export class ContratoPage implements OnInit, AfterViewInit {
     await modal.present();
     const {data} = await modal.onWillDismiss();
     if (data.info) {
-      console.log('data.info --->', data.info);
+      return data.info
+      //console.log('data.info --->', data);
       //this.loadClienteData();
+    } else {
+      return null;
     }
   }
   //#endregion
@@ -930,7 +944,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
     this.makeCalc();
   }
 
-  async makeCalc(elementType?: string, cobro?: CobranzaI) {
+  async makeCalc(elementType?: string, cobro?: CobranzaCalcI) {
     if (this.gf.tipo_tarifa.invalid) {
       this.sweetMsgServ.printStatus('Selecciona el tipo de tarífa', 'warning');
       this.gf.tipo_tarifa.markAllAsTouched();
@@ -1203,7 +1217,31 @@ export class ContratoPage implements OnInit, AfterViewInit {
   }
   //#endregion
 
-  saveProcess(section: 'datos_generales' | 'datos_cliente' | 'datos_vehiculo', ignoreMsg?: boolean) {
+  //#region COBRANZAPROG FUNCTIONS
+  enableDisableEditCobro(cobro: CobranzaProgI, enable: boolean) {
+    cobro.edit = enable;
+  }
+  cancelCobro(cobro: CobranzaProgI) {
+    this.sweetMsgServ.confirmRequest('¿Estás seguro de querer remover este elemento?', 'Esta acción no se puede revertir').then((data) => {
+      if (data.value) {
+
+      }
+    })
+  }
+
+  updateSaveCobro(cobro: CobranzaProgI) {
+    this.saveProcess('cobranza', null, cobro);
+  }
+
+  async updateTarjeta(cobro: CobranzaProgI, tipoCobro: number) {
+    let _res = await this.agregarTarjetaForm(tipoCobro, cobro.tarjeta);
+    if (_res) {
+      cobro.tarjeta = _res;
+    }
+  }
+  //#endregion
+
+  saveProcess(section: 'datos_generales' | 'datos_cliente' | 'datos_vehiculo' | 'cobranza', ignoreMsg?: boolean, payload?) {
     //this.sweetMsgServ.printStatus('Acción en desarrollo', 'warning');
     console.log('section', section);
     let _payload;
@@ -1235,20 +1273,31 @@ export class ContratoPage implements OnInit, AfterViewInit {
         }
         _payload = this.clienteDataForm.value;
         break;
+      case 'cobranza':
+        if (!payload) {
+          this.sweetMsgServ.printStatus('Verifica que los datos solicitados esten completos', 'warning');
+          return;
+        }
+        if (payload.tarjeta) {
+          delete payload.tarjeta;
+        }
+        _payload = payload;
+        _payload.cobranza_id = payload.id;
+        break;
     }
 
     _payload.seccion = section;
     _payload.num_contrato = this.num_contrato;
     console.log(section + '--->', _payload);
-   //return;
-   //return;
-    this.contratosServ.saveProgress(_payload).subscribe(res => {
+    //return;
+
+    this.contratosServ.saveProgress(_payload).subscribe(async res => {
       if (res.ok) {
         this.sweetMsgServ.printStatus(res.message, 'success');
         this.contract_id = res.id;
         this.num_contrato = res.contract_number;
         this.contratosServ.setContractData(this.num_contrato);
-        this.reloadAll();
+        await this.reloadAll();
       }
     }, error => {
       console.log(error);

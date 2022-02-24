@@ -1,4 +1,4 @@
-export interface CobranzaI
+export interface CobranzaCalcI
 {
     element: string;
     element_label: string;

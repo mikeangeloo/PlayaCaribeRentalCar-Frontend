@@ -55,7 +55,7 @@ export class TarjetaFormComponent implements OnInit {
     this.initCardForm();
 
     this.validYears = this.getYears();
-    if (this.card_id && this.returnCapture === false) {
+    if (this.card_id) {
       this.loadTarjetaData();
     } else {
       this.fillCardForm();
@@ -250,8 +250,6 @@ export class TarjetaFormComponent implements OnInit {
       if (this.loadLoading) {
         this.generalServ.dismissLoading();
       }
-
-      this.dismiss(true);
       if (res.ok === true) {
         this.card_id = res.card_id;
         card.id = res.card_id;

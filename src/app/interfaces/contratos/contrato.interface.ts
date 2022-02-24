@@ -1,7 +1,8 @@
 import {ClientesI} from "../clientes/clientes.interface";
 import {VehiculosI} from '../catalogo-vehiculos/vehiculos.interface';
 import {TarifasExtrasI} from '../configuracion/tarifas-extras.interface';
-import {CobranzaI} from './cobranza-calc.interface';
+import {CobranzaCalcI} from '../cobranza/cobranza-calc.interface';
+import {CobranzaProgI} from '../cobranza/cobranza-prog.interface';
 
 export interface ContratoI
 {
@@ -38,7 +39,7 @@ export interface ContratoI
   folio_cupon?: string;
   valor_cupon?: number;
 
-  cobranza_calc: CobranzaI[];
+  cobranza_calc: CobranzaCalcI[];
   hora_elaboracion: string;
   etapas_guardadas: string[];
   etapas_completas?: any;
@@ -49,4 +50,6 @@ export interface ContratoI
   updated_at: Date;
   cliente?: any;
   vehiculo: VehiculosI;
+
+  cobranza: CobranzaProgI[];
 }
