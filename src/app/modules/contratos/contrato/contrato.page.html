@@ -177,7 +177,17 @@
 
 
                         <ion-col size="12" class="ion-text-center">
-                          <fieldset style="padding-bottom: 2rem;">
+                          <app-modelos-docs model="contratos" docType="cupon" [model_id_value]="">
+                            <ion-col size="12" size-md="6" name="extra-form">
+                              <mat-form-field appearance="legacy">
+                                <mat-label>Folio Cupón</mat-label>
+                                <input matInput type="text" autocomplete="off" formControlName="folio_cupon">
+                                <mat-error></mat-error>
+                              </mat-form-field>
+                            </ion-col>
+                          </app-modelos-docs>
+
+                        <!--  <fieldset style="padding-bottom: 2rem;">
                             <ng-container>
                               <ion-row>
                                 <ion-col size="12" size-md="6">
@@ -222,9 +232,9 @@
                                       <ion-img src="assets/img/pdf-icon.png" *ngIf="imgData.mime_type === 'application/pdf'" style="width: 60%;margin: auto 0;"></ion-img>
                                       <div class="loader-upload" *ngIf="imgData.uploading === true">
                                         <ion-spinner name="bubbles" *ngIf="imgData.uploading === true"></ion-spinner>
-                                        <!--<ion-icon name="checkmark-sharp" *ngIf="imgData.success === true" style="color: #44bd00;font-size: 3rem;background: #f9f9f9;border-radius: 50%;padding: 8px;"></ion-icon>-->
+                                        &lt;!&ndash;<ion-icon name="checkmark-sharp" *ngIf="imgData.success === true" style="color: #44bd00;font-size: 3rem;background: #f9f9f9;border-radius: 50%;padding: 8px;"></ion-icon>&ndash;&gt;
                                       </div>
-                                      <!--                            <ion-icon class="wrong-upload" name="close-sharp" *ngIf="imgData.success === false"></ion-icon>-->
+                                      &lt;!&ndash;                            <ion-icon class="wrong-upload" name="close-sharp" *ngIf="imgData.success === false"></ion-icon>&ndash;&gt;
                                       <div class="file-name">
                                         <label for="">Etiqueta</label>
                                         <input type="text" autocomplete="off" value="{{imgData.etiqueta}}" [(ngModel)]="imgData.etiqueta" [disabled]="(imgData.file_id && imgData.file_id > 0 ? true : false)" [ngModelOptions]="{standalone: true}">
@@ -234,11 +244,11 @@
                                   </ion-col>
                                 </ion-row>
 
-                                <!-- <ion-img [src]="bodyImgURL"></ion-img> -->
+                                &lt;!&ndash; <ion-img [src]="bodyImgURL"></ion-img> &ndash;&gt;
                               </div>
 
                             </ng-container>
-                          </fieldset>
+                          </fieldset>-->
                         </ion-col>
                       </ion-row> <!-- Tipo de tarifa = Hotel -->
 
