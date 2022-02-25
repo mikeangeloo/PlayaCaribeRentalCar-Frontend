@@ -240,41 +240,7 @@ ion-card {
 }
 
 
-.upload-indications {
-  display: flex;
-  position: absolute;
-  left: 10px;
-  margin: 0;
-  top: 2px;
-  .base-indicator {
-    color: white;
-    background: #3772dd;
-    padding: 5px;
-    border-radius: 25%;
-    font-size: 1.4rem;
-    position: relative;
-  }
-  .indicator{
-    color: white;
 
-    padding: 5px;
-    border-radius: 25%;
-    margin-left: 3px;
-    position: absolute;
-    bottom: -6px;
-    right: -12px;
-    font-size: 0.8rem;
-  }
-  .success {
-    background: #3ba301;
-  }
-  .temp {
-    background: #484848;
-  }
-  .error {
-    background: darkred;
-  }
-}
 
 .danger-color {
   color: var(--ion-color-danger);

@@ -2,6 +2,7 @@ import {Component, EventEmitter, Input, OnChanges, OnInit, SimpleChanges} from '
 import {DocDataTransfer} from '../../../interfaces/shared/doc-data-tranfer.interface';
 import {SweetMessagesService} from '../../../services/sweet-messages.service';
 import {FilesService} from '../../../services/files.service';
+import {IonButtons} from '@ionic/angular';
 
 @Component({
   selector: 'app-modelos-docs',
@@ -12,12 +13,15 @@ export class ModelosDocsComponent implements OnInit, OnChanges {
 
   //#region IMAGES MANAGEMENT ATTRIBUTES
   public clientes_docs: DocDataTransfer[] = [];
-  public contratos_docs: DocDataTransfer[] = [];
+  public docData_docs: DocDataTransfer[] = [];
   public cobranza_docs: DocDataTransfer[] = [];
 
   @Input() model_id_value: number;
-  @Input() docType: 'licencia_conducir' | 'cupon';
+  @Input() docType: 'licencia_conducir' | 'cupon' | 'voucher';
   @Input() model: 'clientes' | 'contratos' | 'cobranza';
+  @Input() justButton: boolean;
+  @Input() btnSize: 'small' | 'default' | 'large' = 'default';
+  @Input() fullSize: boolean;
 
   saveProcess$ = new EventEmitter();
   //#endregion
@@ -45,7 +49,7 @@ export class ModelosDocsComponent implements OnInit, OnChanges {
   //#region CAPTURE IMG FUNCTIONS
   processDataImage(event: {imgUrl: string, image: File, type: string, fileName: string}, model = this.model) {
 
-    this[`${model}_docs`].push({
+    this.docData_docs.push({
       file: event.image,
       url: event.imgUrl,
       uploading: false,
@@ -54,18 +58,18 @@ export class ModelosDocsComponent implements OnInit, OnChanges {
       fileName: event.fileName
     });
 
-    console.log(`processDataImage model: ${model} ---> `, this[`${model}_docs`]);
+    console.log('processDataImage model: ${model} --->' , this.docData_docs);
 
   }
 
   disableUploadButton(model = this.model): boolean {
-    if (!this[`${model}_docs`]) {
+    if (!this.docData_docs) {
       return true;
     }
 
-    if (this[`${model}_docs`] && this[`${model}_docs`].length > 0) {
-      for (let i = 0; i < this[`${model}_docs`].length; i++) {
-        if (!this[`${model}_docs`][i].success || !this[`${model}_docs`][i].file_id || this[`${model}_docs`][i].success === false) {
+    if (this.docData_docs && this.docData_docs.length > 0) {
+      for (let i = 0; i < this.docData_docs.length; i++) {
+        if (!this.docData_docs[i].success || !this.docData_docs[i].file_id || this.docData_docs[i].success === false) {
           return false;
         }
       }
@@ -74,7 +78,7 @@ export class ModelosDocsComponent implements OnInit, OnChanges {
   }
 
   uploadArrayDatasImg(doc_type = this.docType, model = this.model, model_id) {
-    if (this[`${model}_docs`].length === 0 ) {
+    if (this.docData_docs.length === 0 ) {
       this.sweetMsgServ.printStatus('Debe adjuntar una imagen', 'warning');
       return;
     }
@@ -94,26 +98,26 @@ export class ModelosDocsComponent implements OnInit, OnChanges {
         let formData = new FormData();
         let _positions = [];
         let _etiquetas = [];
-        for (let i = 0; i< this[`${model}_docs`].length; i++) {
+        for (let i = 0; i< this.docData_docs.length; i++) {
           console.log('prepare formData info---->');
 
-          if (!this[`${model}_docs`][i].success || this[`${model}_docs`][i].success === false || !this[`${model}_docs`][i].file_id || this[`${model}_docs`][i].file_id === null) {
-            if (!this[`${model}_docs`][i].etiqueta) {
-              this[`${model}_docs`][i].fileErrors = 'Ingrese un valor valido';
+          if (!this.docData_docs[i].success || this.docData_docs[i].success === false || !this.docData_docs[i].file_id || this.docData_docs[i].file_id === null) {
+            if (!this.docData_docs[i].etiqueta) {
+              this.docData_docs[i].fileErrors = 'Ingrese un valor valido';
 
             } else {
-              this[`${model}_docs`][i].fileErrors = null;
+              this.docData_docs[i].fileErrors = null;
             }
 
-            if (this[`${model}_docs`][i].fileErrors) {
+            if (this.docData_docs[i].fileErrors) {
               this.sweetMsgServ.printStatus('Revise que los elementos esten correctos', 'warning');
               return;
             }
             // @ts-ignore
-            formData.append('files[]', this[`${model}_docs`][i].file, this[`${model}_docs`][i].file.name);
+            formData.append('files[]', this.docData_docs[i].file, this.docData_docs[i].file.name);
             //this.docDataTransfer[i].uploading = true;
             _positions.push(i);
-            _etiquetas.push(this[`${model}_docs`][i].etiqueta);
+            _etiquetas.push(this.docData_docs[i].etiqueta);
           }
         }
 
@@ -135,28 +139,28 @@ export class ModelosDocsComponent implements OnInit, OnChanges {
           let _resPayload = res.payload;
 
           for (let i = 0; i < _resPayload.length; i++) {
-            this[`${model}_docs`][_resPayload[i].position].success = _resPayload[i].success;
-            this[`${model}_docs`][_resPayload[i].position].file_id = _resPayload[i].file_id;
-            this[`${model}_docs`][_resPayload[i].position].model = _resPayload[i].model;
-            this[`${model}_docs`][_resPayload[i].position].model_id = _resPayload[i].model_id;
+            this.docData_docs[_resPayload[i].position].success = _resPayload[i].success;
+            this.docData_docs[_resPayload[i].position].file_id = _resPayload[i].file_id;
+            this.docData_docs[_resPayload[i].position].model = _resPayload[i].model;
+            this.docData_docs[_resPayload[i].position].model_id = _resPayload[i].model_id;
             //this[`${model}_docs`][_resPayload[i].position].model_id_value = _resPayload[i].model_id_value;
-            this[`${model}_docs`][_resPayload[i].position].position = _resPayload[i].position;
-            this[`${model}_docs`][_resPayload[i].position].doc_type = _resPayload[i].doc_type;
+            this.docData_docs[_resPayload[i].position].position = _resPayload[i].position;
+            this.docData_docs[_resPayload[i].position].doc_type = _resPayload[i].doc_type;
             _lastIndex = i;
           }
         } else {
           _lastServError = res.error.errors;
         }
 
-        console.log('imgDatasTranfer -->', this[`${model}_docs`]);
+        console.log('imgDatasTranfer -->', this.docData_docs);
 
         let successTotal = 0;
-        for (let j = 0; j < this[`${model}_docs`].length; j++) {
-          if (this[`${model}_docs`][j].success === true) {
+        for (let j = 0; j < this.docData_docs.length; j++) {
+          if (this.docData_docs[j].success === true) {
             successTotal ++;
           }
         }
-        if (successTotal === this[`${model}_docs`].length) {
+        if (successTotal === this.docData_docs.length) {
           console.log('all saved');
           this.sweetMsgServ.printStatus('Se han guardado sus imagenes de manera correcta', 'success');
           this.saveProcess$.emit(true);
@@ -176,7 +180,7 @@ export class ModelosDocsComponent implements OnInit, OnChanges {
   }
 
   removeImg(index, model = this.model) {
-    this[`${model}_docs`].splice(index, 1);
+    this.docData_docs.splice(index, 1);
   }
 
   async removeFromDisk(fileData: DocDataTransfer, index, model = this.model) {
@@ -210,7 +214,7 @@ export class ModelosDocsComponent implements OnInit, OnChanges {
     let res = await this.filesServ.getDocs(_payload);
 
     if (res.ok) {
-      this[`${model}_docs`] = [];
+      this.docData_docs = [];
 
       for (let i = 0; i < res.data.length; i++) {
         let _docData: DocDataTransfer = {
@@ -224,10 +228,10 @@ export class ModelosDocsComponent implements OnInit, OnChanges {
           url: res.data[i].file,
           etiqueta: res.data[i].etiqueta
         }
-        this[`${model}_docs`].push(_docData);
+        this.docData_docs.push(_docData);
       }
     } else {
-      this[`${model}_docs`] = [];
+      this.docData_docs = [];
       console.log('error --->', res.error);
     }
   }

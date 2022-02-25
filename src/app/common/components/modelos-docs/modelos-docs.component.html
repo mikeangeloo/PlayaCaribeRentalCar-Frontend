@@ -11,20 +11,20 @@
 <!--        </mat-form-field>-->
 <!--      </ion-col>-->
 
-      <ion-col size="12" size-md="6" class="ion-text-center">
+      <ion-col size="12" [sizeMd]="fullSize && fullSize === true ? 12 : 6" class="ion-text-center">
         <div style="display: flex; justify-content: space-evenly; align-items: center;">
-          <app-camera (captureImg)="processDataImage($event, model)" [justButton]="true" [btnSize]="'small'"></app-camera>
-          <ion-button [disabled]="disableUploadButton(model)" *ngIf="contratos_docs && contratos_docs.length > 0" color="secondary" size="small" expand="round" type="button" (click)="uploadArrayDatasImg(docType, model, model_id_value)" style="width: 250px;">
+          <app-camera (captureImg)="processDataImage($event, model)" [justButton]="justButton" [btnSize]="btnSize"></app-camera>
+          <ion-button [disabled]="disableUploadButton(model)" *ngIf="docData_docs && docData_docs.length > 0" color="secondary" size="{{btnSize}}" expand="round" type="button" (click)="uploadArrayDatasImg(docType, model, model_id_value)">
             <ion-icon name="cloud-upload"></ion-icon>&nbsp; SUBIR
           </ion-button>
         </div>
       </ion-col>
     </ion-row>
 
-    <div style="display: flex; justify-content: center; flex-direction: column;" *ngIf="contratos_docs.length > 0">
+    <div style="display: flex; justify-content: center; flex-direction: column;" *ngIf="docData_docs.length > 0">
 
       <ion-row >
-        <ion-col size="6" size-sm="auto" *ngFor="let imgData of contratos_docs; let i = index" style="margin-bottom: 1rem;">
+        <ion-col size="6" size-sm="auto" *ngFor="let imgData of docData_docs; let i = index" style="margin-bottom: 1rem;">
           <div class="capture-img-container">
             <div class="btn-action-container">
               <ion-button size="small" color="danger" (click)="removeImg(i, model)" *ngIf="!imgData.file_id">
