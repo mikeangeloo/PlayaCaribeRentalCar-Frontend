@@ -1,0 +1,64 @@
+<fieldset style="padding-bottom: 2rem;">
+  <ng-container>
+    <ng-content select="[name=legend]"></ng-content>
+    <ion-row>
+      <ng-content select="[name=extra-form]"></ng-content>
+<!--      <ion-col size="12" size-md="6">-->
+<!--        <mat-form-field appearance="legacy">-->
+<!--          <mat-label>Folio Cupón</mat-label>-->
+<!--          <input matInput type="text" autocomplete="off" formControlName="folio_cupon">-->
+<!--          <mat-error></mat-error>-->
+<!--        </mat-form-field>-->
+<!--      </ion-col>-->
+
+      <ion-col size="12" [sizeMd]="fullSize && fullSize === true ? 12 : 6" class="ion-text-center">
+        <div style="display: flex; justify-content: space-evenly; align-items: center;">
+          <app-camera (captureImg)="processDataImage($event, model)" [justButton]="justButton" [btnSize]="btnSize"></app-camera>
+          <ion-button [disabled]="disableUploadButton(model)" *ngIf="docData_docs && docData_docs.length > 0" color="secondary" size="{{btnSize}}" expand="round" type="button" (click)="uploadArrayDatasImg(docType, model, model_id_value)">
+            <ion-icon name="cloud-upload"></ion-icon>&nbsp; SUBIR
+          </ion-button>
+        </div>
+      </ion-col>
+    </ion-row>
+
+    <div style="display: flex; justify-content: center; flex-direction: column;" *ngIf="docData_docs.length > 0">
+
+      <ion-row >
+        <ion-col size="6" size-sm="auto" *ngFor="let imgData of docData_docs; let i = index" style="margin-bottom: 1rem;">
+          <div class="capture-img-container">
+            <div class="btn-action-container">
+              <ion-button size="small" color="danger" (click)="removeImg(i, model)" *ngIf="!imgData.file_id">
+                <ion-icon name="trash"></ion-icon>
+              </ion-button>
+
+              <ion-button size="small" color="danger" (click)="removeFromDisk(imgData, i, model)" *ngIf="imgData.file_id">
+                <ion-icon name="trash"></ion-icon>
+              </ion-button>
+            </div>
+            <div class="upload-indications" *ngIf="imgData.success || !imgData.file_id">
+              <ion-icon name="cloud-upload" class="base-indicator"></ion-icon>
+              <ion-icon name="checkmark-sharp" class="indicator success" *ngIf="imgData.success === true"></ion-icon>
+              <ion-icon name="close-sharp" class="indicator success" *ngIf="imgData.success === false"></ion-icon>
+              <ion-icon name="hourglass-outline" class="indicator temp" *ngIf="!imgData.file_id"></ion-icon>
+            </div>
+            <ion-img [src]="imgData.url" *ngIf="isImage(imgData.mime_type) === true"></ion-img>
+            <ion-img src="assets/img/pdf-icon.png" *ngIf="imgData.mime_type === 'application/pdf'" style="width: 60%;margin: auto 0;"></ion-img>
+            <div class="loader-upload" *ngIf="imgData.uploading === true">
+              <ion-spinner name="bubbles" *ngIf="imgData.uploading === true"></ion-spinner>
+              <!--<ion-icon name="checkmark-sharp" *ngIf="imgData.success === true" style="color: #44bd00;font-size: 3rem;background: #f9f9f9;border-radius: 50%;padding: 8px;"></ion-icon>-->
+            </div>
+            <!--                            <ion-icon class="wrong-upload" name="close-sharp" *ngIf="imgData.success === false"></ion-icon>-->
+            <div class="file-name">
+              <label for="">Etiqueta</label>
+              <input type="text" autocomplete="off" value="{{imgData.etiqueta}}" [(ngModel)]="imgData.etiqueta" [disabled]="(imgData.file_id && imgData.file_id > 0 ? true : false)" [ngModelOptions]="{standalone: true}">
+              <small class="error" *ngIf="imgData.fileErrors">{{imgData.fileErrors}}</small>
+            </div>
+          </div>
+        </ion-col>
+      </ion-row>
+
+      <!-- <ion-img [src]="bodyImgURL"></ion-img> -->
+    </div>
+
+  </ng-container>
+</fieldset>

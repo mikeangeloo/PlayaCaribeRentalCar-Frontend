@@ -18,11 +18,11 @@ import {ToastMessageService} from "../../../../services/toast-message.service";
 })
 export class TarjetaFormComponent implements OnInit {
 
-  @Output() closeModal = new EventEmitter();
-  @Output() submitCard = new EventEmitter();
-  @Input() disableLocations: boolean;
-  @Input() ownerName: string;
-  @Input() justCapture = false;
+  //@Output() closeModal = new EventEmitter();
+  //@Output() submitCard = new EventEmitter();
+  //@Input() disableLocations: boolean;
+  //@Input() ownerName: string;
+  @Input() returnCapture = false;
   // @ViewChild('compInfo') compInfo :
 
   public cardData: CardI;
@@ -55,7 +55,7 @@ export class TarjetaFormComponent implements OnInit {
     this.initCardForm();
 
     this.validYears = this.getYears();
-    if (this.card_id && this.justCapture === false) {
+    if (this.card_id) {
       this.loadTarjetaData();
     } else {
       this.fillCardForm();
@@ -207,12 +207,6 @@ export class TarjetaFormComponent implements OnInit {
 
   //#endregion
 
-  dismiss(reload?) {
-    this.modalCtrl.dismiss({
-      reload
-    });
-  }
-
   saveUpdate() {
 
     if (this.cardForm.invalid) {
@@ -228,6 +222,7 @@ export class TarjetaFormComponent implements OnInit {
       String(cardData.c_cn4);
 
     const card = {
+      id: (this.card_id) ? this.card_id : null,
       c_number,
       c_name: cardData.c_name,
       c_cn1: cardData.c_cn1,
@@ -247,10 +242,7 @@ export class TarjetaFormComponent implements OnInit {
       cliente_id: (this.cliente_id) ? this.cliente_id : null,
     };
 
-    if (this.justCapture === true) {
-      this.submitCard.emit(card);
-      return;
-    }
+
     if (this.loadLoading) {
       this.generalServ.presentLoading('Guardando cambios ...');
     }
@@ -258,9 +250,14 @@ export class TarjetaFormComponent implements OnInit {
       if (this.loadLoading) {
         this.generalServ.dismissLoading();
       }
-
-      this.dismiss(true);
       if (res.ok === true) {
+        this.card_id = res.card_id;
+        card.id = res.card_id;
+        if (this.returnCapture == true) {
+          this.dismiss(false, card);
+        } else {
+          this.dismiss(true, null);
+        }
         this.toastServ.presentToast('success', res.message, 'top');
       }
     }, error => {
@@ -270,8 +267,12 @@ export class TarjetaFormComponent implements OnInit {
         this.generalServ.dismissLoading();
       }
     });
-
-    //this.submitCard.emit(card);
   }
 
+  dismiss(reload?, _data?) {
+    this.modalCtrl.dismiss({
+      reload,
+      info: _data
+    });
+  }
 }

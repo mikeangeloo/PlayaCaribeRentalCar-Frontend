@@ -174,71 +174,17 @@
                           </mat-form-field>
                         </ion-col>
 
-
-
                         <ion-col size="12" class="ion-text-center">
-                          <fieldset style="padding-bottom: 2rem;">
-                            <ng-container>
-                              <ion-row>
-                                <ion-col size="12" size-md="6">
-                                  <mat-form-field appearance="legacy">
-                                    <mat-label>Folio Cupón</mat-label>
-                                    <input matInput type="text" autocomplete="off" formControlName="folio_cupon">
-                                    <mat-error></mat-error>
-                                  </mat-form-field>
-                                </ion-col>
+                          <app-modelos-docs model="contratos" docType="cupon" btnSize="small" [fullSize]="false" [justButton]="true" [model_id_value]="contract_id">
+                            <ion-col size="12" size-md="6" name="extra-form">
+                              <mat-form-field appearance="legacy">
+                                <mat-label>Folio Cupón</mat-label>
+                                <input matInput type="text" autocomplete="off" formControlName="folio_cupon">
+                                <mat-error></mat-error>
+                              </mat-form-field>
+                            </ion-col>
+                          </app-modelos-docs>
 
-                                <ion-col size="12" size-md="6" class="ion-text-center">
-                                  <div style="display: flex; justify-content: space-evenly; align-items: center;">
-                                    <app-camera (captureImg)="processDataImage($event, 'contratos_docs')" [justButton]="true" [btnSize]="'small'"></app-camera>
-                                    <ion-button [disabled]="disableUploadButton('contratos_docs')" *ngIf="contratos_docs && contratos_docs.length > 0" color="secondary" size="small" expand="round" type="button" (click)="uploadArrayDatasImg('cupon', 'contratos_docs', 'contrato_id')" style="width: 250px;">
-                                      <ion-icon name="cloud-upload"></ion-icon>&nbsp; SUBIR
-                                    </ion-button>
-                                  </div>
-                                </ion-col>
-                              </ion-row>
-
-                              <div style="display: flex; justify-content: center; flex-direction: column;" *ngIf="contratos_docs.length > 0">
-
-                                <ion-row >
-                                  <ion-col size="6" size-sm="auto" *ngFor="let imgData of contratos_docs; let i = index" style="margin-bottom: 1rem;">
-                                    <div class="capture-img-container">
-                                      <div class="btn-action-container">
-                                        <ion-button size="small" color="danger" (click)="removeImg(i, 'contratos_docs')" *ngIf="!imgData.file_id">
-                                          <ion-icon name="trash"></ion-icon>
-                                        </ion-button>
-
-                                        <ion-button size="small" color="danger" (click)="removeFromDisk(imgData, i, 'contratos_docs')" *ngIf="imgData.file_id">
-                                          <ion-icon name="trash"></ion-icon>
-                                        </ion-button>
-                                      </div>
-                                      <div class="upload-indications" *ngIf="imgData.success || !imgData.file_id">
-                                        <ion-icon name="cloud-upload" class="base-indicator"></ion-icon>
-                                        <ion-icon name="checkmark-sharp" class="indicator success" *ngIf="imgData.success === true"></ion-icon>
-                                        <ion-icon name="close-sharp" class="indicator success" *ngIf="imgData.success === false"></ion-icon>
-                                        <ion-icon name="hourglass-outline" class="indicator temp" *ngIf="!imgData.file_id"></ion-icon>
-                                      </div>
-                                      <ion-img [src]="imgData.url" *ngIf="isImage(imgData.mime_type) === true"></ion-img>
-                                      <ion-img src="assets/img/pdf-icon.png" *ngIf="imgData.mime_type === 'application/pdf'" style="width: 60%;margin: auto 0;"></ion-img>
-                                      <div class="loader-upload" *ngIf="imgData.uploading === true">
-                                        <ion-spinner name="bubbles" *ngIf="imgData.uploading === true"></ion-spinner>
-                                        <!--<ion-icon name="checkmark-sharp" *ngIf="imgData.success === true" style="color: #44bd00;font-size: 3rem;background: #f9f9f9;border-radius: 50%;padding: 8px;"></ion-icon>-->
-                                      </div>
-                                      <!--                            <ion-icon class="wrong-upload" name="close-sharp" *ngIf="imgData.success === false"></ion-icon>-->
-                                      <div class="file-name">
-                                        <label for="">Etiqueta</label>
-                                        <input type="text" autocomplete="off" value="{{imgData.etiqueta}}" [(ngModel)]="imgData.etiqueta" [disabled]="(imgData.file_id && imgData.file_id > 0 ? true : false)" [ngModelOptions]="{standalone: true}">
-                                        <small class="error" *ngIf="imgData.fileErrors">{{imgData.fileErrors}}</small>
-                                      </div>
-                                    </div>
-                                  </ion-col>
-                                </ion-row>
-
-                                <!-- <ion-img [src]="bodyImgURL"></ion-img> -->
-                              </div>
-
-                            </ng-container>
-                          </fieldset>
                         </ion-col>
                       </ion-row> <!-- Tipo de tarifa = Hotel -->
 
@@ -573,62 +519,10 @@
 
                 </form>
 
+                <app-modelos-docs model="clientes" docType="licencia_conducir" [fullSize]="true" [justButton]="true" [model_id_value]="clienteDataForm && clienteDataForm.controls.cliente_id.value ? clienteDataForm.controls.cliente_id.value : null">
+                  <legend name="legend">Doc. Cliente</legend>
+                </app-modelos-docs>
 
-                <fieldset style="padding-bottom: 2rem;">
-                  <legend>Doc. Cliente</legend>
-                  <ng-container>
-                    <ion-row>
-                      <ion-col size="12" class="ion-text-center">
-                        <div style="display: flex; justify-content: space-evenly; align-items: center;">
-                          <app-camera (captureImg)="processDataImage($event, 'clientes_docs')" [justButton]="true"></app-camera>
-                          <ion-button [disabled]="disableUploadButton('clientes_docs')" *ngIf="clientes_docs && clientes_docs.length > 0" color="secondary" expand="round" type="button" (click)="uploadArrayDatasImg('licencia_conducir', 'clientes_docs', 'cliente_id')" style="width: 250px;">
-                            <ion-icon name="cloud-upload"></ion-icon>&nbsp; SUBIR
-                          </ion-button>
-                        </div>
-                      </ion-col>
-                    </ion-row>
-
-                    <div style="display: flex; justify-content: center; flex-direction: column;" *ngIf="clientes_docs.length > 0">
-
-                      <ion-row >
-                        <ion-col size="6" size-sm="auto" *ngFor="let imgData of clientes_docs; let i = index" style="margin-bottom: 1rem;">
-                          <div class="capture-img-container">
-                            <div class="btn-action-container">
-                              <ion-button size="small" color="danger" (click)="removeImg(i, 'clientes_docs')" *ngIf="!imgData.file_id">
-                                <ion-icon name="trash"></ion-icon>
-                              </ion-button>
-
-                              <ion-button size="small" color="danger" (click)="removeFromDisk(imgData, i, 'clientes_docs')" *ngIf="imgData.file_id">
-                                <ion-icon name="trash"></ion-icon>
-                              </ion-button>
-                            </div>
-                            <div class="upload-indications" *ngIf="imgData.success || !imgData.file_id">
-                              <ion-icon name="cloud-upload" class="base-indicator"></ion-icon>
-                              <ion-icon name="checkmark-sharp" class="indicator success" *ngIf="imgData.success === true"></ion-icon>
-                              <ion-icon name="close-sharp" class="indicator success" *ngIf="imgData.success === false"></ion-icon>
-                              <ion-icon name="hourglass-outline" class="indicator temp" *ngIf="!imgData.file_id"></ion-icon>
-                            </div>
-                            <ion-img [src]="imgData.url" *ngIf="isImage(imgData.mime_type) === true"></ion-img>
-                            <ion-img src="assets/img/pdf-icon.png" *ngIf="imgData.mime_type === 'application/pdf'" style="width: 60%;margin: auto 0;"></ion-img>
-                            <div class="loader-upload" *ngIf="imgData.uploading === true">
-                              <ion-spinner name="bubbles" *ngIf="imgData.uploading === true"></ion-spinner>
-                              <!--<ion-icon name="checkmark-sharp" *ngIf="imgData.success === true" style="color: #44bd00;font-size: 3rem;background: #f9f9f9;border-radius: 50%;padding: 8px;"></ion-icon>-->
-                            </div>
-<!--                            <ion-icon class="wrong-upload" name="close-sharp" *ngIf="imgData.success === false"></ion-icon>-->
-                            <div class="file-name">
-                              <label for="">Etiqueta</label>
-                              <input type="text" autocomplete="off" value="{{imgData.etiqueta}}" [(ngModel)]="imgData.etiqueta" [disabled]="(imgData.file_id && imgData.file_id > 0 ? true : false)">
-                              <small class="error" *ngIf="imgData.fileErrors">{{imgData.fileErrors}}</small>
-                            </div>
-                          </div>
-                        </ion-col>
-                      </ion-row>
-
-                      <!-- <ion-img [src]="bodyImgURL"></ion-img> -->
-                    </div>
-
-                  </ng-container>
-                </fieldset>
               </ion-card-content>
               <ion-card-title>
                 <div class="card-action-buttons">
@@ -650,232 +544,12 @@
           </mat-expansion-panel>
         </div>
       </mat-accordion> <!-- Datos Cliente -->
-
-<!--      <mat-accordion>
-        <div class="accordion-margin">
-          <mat-expansion-panel (opened)="setStep(3)" [expanded]="step === 3" hideToggle>
-            <mat-expansion-panel-header>
-              <mat-panel-title>
-                Detalle Cobro
-              </mat-panel-title>
-              <mat-panel-description style="margin: 0; justify-content: flex-end;">
-                <ion-icon name="cash"></ion-icon>
-              </mat-panel-description>
-            </mat-expansion-panel-header>
-
-            <ion-card>
-              <ion-card-content>
-                <h4 style="font-weight: 500">TARIFA APOLLO MX</h4>
-
-                <table class="desgloce-table">
-                  <thead>
-                  <tr>
-                    <th>DESCRIPCIÓN DE LOS CARGOS</th>
-                    <th></th>
-                    <th></th>
-                    <th>CARGOS</th>
-                  </tr>
-                  <tr>
-                    <th></th>
-                    <th>PRECIO UNIT.</th>
-                    <th>DIA</th>
-                    <th></th>
-                  </tr>
-                  </thead>
-                  <tbody>
-                  <tr>
-                    <td style="text-underline: var(&#45;&#45;ion-color-dark)">TARIFA TIEMPO Y KILOMETRAJE T&K</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                  </tr>
-                  <tr>
-                    <td>HOURS / HORAS</td>
-                    <td></td>
-                    <td></td>
-                    <td>{{'0' | currency}}</td>
-                  </tr>
-                  <tr>
-                    <td>DAYS / DIAS</td>
-                    <td>
-                      <ion-item>
-                        <ion-label class="ion-no-margin ion-no-padding">$</ion-label>
-                        <ion-input type="number" [value]="'780.00'"></ion-input>
-                      </ion-item>
-                    </td>
-                    <td>
-                      <ion-item>
-                        <ion-label class="ion-no-padding ion-no-margin">X</ion-label>
-                        <ion-input type="number" value="1"></ion-input>
-                      </ion-item>
-                    </td>
-                    <td>{{'0' | currency}}</td>
-                  </tr>
-                  <tr>
-                    <td>WEEKS / SEMANAL</td>
-                    <td></td>
-                    <td></td>
-                    <td>{{'0' | currency}}</td>
-                  </tr>
-                  <tr>
-                    <td>MONTHS / MENSUAL</td>
-                    <td></td>
-                    <td></td>
-                    <td>{{'0' | currency}}</td>
-                  </tr>
-                  <tr>
-                    <td>EX DAYS / DIA EXTRA</td>
-                    <td></td>
-                    <td></td>
-                    <td>{{'0' | currency}}</td>
-                  </tr>
-                  </tbody>
-                  <tfoot>
-                  <tr>
-                    <th>SUBTOTAL-1</th>
-                    <th></th>
-                    <th></th>
-                    <th>{{'349' | currency}}</th>
-                  </tr>
-                  </tfoot>
-                </table>
-
-                <table class="desgloce-table">
-                  <thead>
-                  <tr class="empty-tr">
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                  </tr>
-                  <tr>
-                    <th></th>
-                    <th>PRECIO UNIT.</th>
-                    <th>DIA</th>
-                    <th></th>
-                  </tr>
-                  </thead>
-                  <tbody>
-                  <tr>
-                    <td style="text-decoration: underline">CARGOS DE PROTECCIONES (OBLIGATORIO)</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                  </tr>
-                  <tr>
-                    <td>DAÑOS MATERIALES 90%</td>
-                    <td></td>
-                    <td></td>
-                    <td>{{'52.35' | currency}}</td>
-                  </tr>
-                  <tr>
-                    <td>DAÑOS TERCEROS</td>
-                    <td></td>
-                    <td></td>
-                    <td>{{'69.80' | currency}}</td>
-                  </tr>
-                  <tr>
-                    <td>GASTOS MEDICOS</td>
-                    <td></td>
-                    <td></td>
-                    <td>{{'34.90' | currency}}</td>
-                  </tr>
-                  <tr>
-                    <td>ASISTENCIA VIAL</td>
-                    <td></td>
-                    <td></td>
-                    <td>{{'17.45' | currency}}</td>
-                  </tr>
-                  <tr class="remarkFont">
-                    <td></td>
-                    <td>PRECIO UNIT.</td>
-                    <td>L</td>
-                    <td></td>
-                  </tr>
-                  <tr class="remarkFont">
-                    <td style="text-decoration: underline">CARGOS DE COMBUSTIBLE</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                  </tr>
-                  </tbody>
-                  <tfoot>
-                  <tr>
-                    <th>SUBTOTAL-2</th>
-                    <th></th>
-                    <th></th>
-                    <th>{{'523.50' | currency}}</th>
-                  </tr>
-                  </tfoot>
-                </table>
-
-                <table class="desgloce-table">
-                  <thead>
-                  <tr class="empty-tr">
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                  </tr>
-                  <tr>
-                    <th></th>
-                    <th>PRECIO UNIT.</th>
-                    <th>DIA</th>
-                    <th></th>
-                  </tr>
-                  </thead>
-                  <tbody>
-                  <tr class="remarkFont">
-                    <td style="text-decoration: underline">CUOTAS LOCALES E IMPUESTOS FEDERALES</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                  </tr>
-                  <tr class="remarkFont">
-                    <td>I.V.A / TAX @ 16%</td>
-                    <td></td>
-                    <td></td>
-                    <td>{{'83.76' | currency}}</td>
-                  </tr>
-                  </tbody>
-                  <tfoot>
-                  <tr>
-                    <th>
-                      CARGOS ESTIMADOS TOTALES INICIALES X______
-                      <br>
-                      <small>
-                        *TODAS LAS CANTIDADES AQUÍ REFLEJADAS SON EN MONEDA NACIONAL (MNX)
-                      </small>
-                    </th>
-                    <th></th>
-                    <th></th>
-                    <th>{{'607.26' | currency}}</th>
-                  </tr>
-                  </tfoot>
-                </table>
-
-              </ion-card-content>
-            </ion-card>
-
-            <mat-action-row>
-              <button (click)="prevStep()" mat-flat-button style="font-size: 1.5rem;">
-                <ion-icon name="chevron-back-outline" style="color: var(&#45;&#45;ion-color-medium);"></ion-icon>
-              </button> &nbsp; &nbsp;
-
-              <button (click)="nextStep()" mat-flat-button style="font-size: 1.5rem;">
-                <ion-icon name="chevron-forward-outline" style="color: var(&#45;&#45;ion-color-medium);"></ion-icon>
-              </button>
-            </mat-action-row>
-          </mat-expansion-panel>
-        </div>
-      </mat-accordion> &lt;!&ndash; Detalle Cobro &ndash;&gt;-->
-
       <mat-accordion>
         <div class="accordion-margin">
           <mat-expansion-panel (opened)="setStep(4)" [expanded]="step === 4" hideToggle>
             <mat-expansion-panel-header>
               <mat-panel-title>
-                Cobranza (En desarrollo)
+                Cobranza
               </mat-panel-title>
               <mat-panel-description style="margin: 0; justify-content: flex-end;">
                 <ion-icon name="wallet"></ion-icon>
@@ -884,67 +558,153 @@
 
             <ion-card>
               <ion-card-content>
-                <h4 style="font-weight: 500">DESCRIPCION DE LOS CARGOS Y PRE_AUTORIZACIONES</h4>
-                <ion-row>
-                  <ion-col size="6" class="ion-no-padding">
-                    <h4 style="margin: 0; padding: 0;">Balance por saldar: {{'607.26' | currency}}</h4>
-                  </ion-col>
-                  <ion-col size="6" class="ion-text-end ion-no-padding">
-                    <button mat-raised-button class="button-success" (click)="openTarjetaForm()">
-                      <ion-icon name="card"></ion-icon> &nbsp; Agregar Tarjeta
-                    </button>
-                  </ion-col>
-                </ion-row>
+                <h4 style="font-weight: 500">DESCRIPCION DE LOS CARGOS Y PRE-AUTORIZACIONES</h4>
                 <br>
                 <mat-divider></mat-divider>
                 <br>
-                <ion-row class="border-ion-row">
-                  <ion-col size="12" size-md="8">
-                    <table class="cards-table">
-                      <tbody>
-                      <tr>
-                        <td>VISA</td>
-                        <td>4521*1234</td>
-                        <td>PRE-AUTH: 12345678</td>
-                        <td>11-NOV-21</td>
-                        <td>{{'3000' | currency}}</td>
-                      </tr>
-                      </tbody>
-                    </table>
-                  </ion-col>
-                  <ion-col size="12" size-md="4" class="ion-no-padding">
-                    <fieldset>
-                      <legend>Img. Voucher</legend>
-                      <div style="text-align: center;">
-                        <app-camera [justButton]="true"></app-camera>
-                      </div>
-                    </fieldset>
-                  </ion-col>
-                </ion-row>
+                <div>
+                  <ion-row>
+                    <ion-col size="12" size-md="6" class="ion-align-self-center">
+                      <h4 style="margin: 0;" class="ion-text-center ion-text-md-left">PRE-AUTORIZACIONES</h4>
+                    </ion-col>
+                    <ion-col size="12" size-md="6" class="ion-text-end">
+                      <button mat-raised-button class="button-secondary" (click)="agregarTarjetaForm(1, null, true)">
+                        <span style="font-size: 1.3rem;margin-right: 0.5rem;">+</span> <ion-icon name="card"></ion-icon> &nbsp;Tarjeta
+                      </button>
+                    </ion-col>
+                  </ion-row>
 
-                <ion-row class="border-ion-row">
-                  <ion-col size="12" size-md="8">
-                    <table class="cards-table">
-                      <tbody>
-                      <tr>
-                        <td>VISA</td>
-                        <td>4521*1234</td>
-                        <td>PRE-AUTH: 12345678</td>
-                        <td>11-NOV-21</td>
-                        <td>{{'780' | currency}}</td>
-                      </tr>
-                      </tbody>
-                    </table>
-                  </ion-col>
-                  <ion-col size="12" size-md="4" class="ion-no-padding">
-                    <fieldset>
-                      <legend>Img. Voucher</legend>
-                      <div style="text-align: center;">
-                        <app-camera [justButton]="true"></app-camera>
-                      </div>
-                    </fieldset>
-                  </ion-col>
-                </ion-row>
+                  <ng-container *ngFor="let cobranzaAuth of cobranzaProgData">
+                    <ion-row class="border-ion-row" *ngIf="cobranzaAuth.tipo == 1">
+                      <ion-col size-md="12">
+                        <table class="cards-table">
+                          <tbody>
+                          <tr>
+                            <td style="min-width: 60px; max-width: 60px">
+                              <div class="action-buttons">
+                                <button *ngIf="!cobranzaAuth.id || cobranzaAuth.edit === true" (click)="updateSaveCobro(cobranzaAuth)" class="mat-elevation-z0 button-success" mat-mini-fab>
+                                  <mat-icon>save</mat-icon>
+                                </button>
+                                <button *ngIf="cobranzaAuth.id && cobranzaAuth.edit !== true" (click)="cancelCobro(cobranzaAuth)" class="mat-elevation-z0" mat-mini-fab color="warn">
+                                  <mat-icon>remove</mat-icon>
+                                </button>
+                                <button *ngIf="cobranzaAuth.edit !== true && cobranzaAuth.id" (click)="enableDisableEditCobro(cobranzaAuth, true)" style="margin-top: 10px" class="mat-elevation-z0" mat-mini-fab color="accent">
+                                  <mat-icon>edit</mat-icon>
+                                </button>
+                                <button *ngIf="cobranzaAuth.edit === true && cobranzaAuth.id" (click)="enableDisableEditCobro(cobranzaAuth, false)" style="margin-top: 10px" class="mat-elevation-z0 button-cancel" mat-mini-fab>
+                                  <mat-icon>cancel</mat-icon>
+                                </button>
+                              </div>
+
+                            </td>
+                            <td>
+                              {{(cobranzaAuth.tarjeta && cobranzaAuth.tarjeta.c_type) ? cobranzaAuth.tarjeta.c_type : '--'}}
+                              <br>
+                              <button *ngIf="cobranzaAuth.edit === true && cobranzaAuth.id" (click)="updateTarjeta(cobranzaAuth, 1)" style="margin-top: 10px" class="mat-elevation-z0 button-secondary" mat-icon-button>
+                                <mat-icon>price_change</mat-icon>
+                              </button>
+                            </td>
+                            <td>{{(cobranzaAuth.tarjeta && cobranzaAuth.tarjeta.c_method) ? cobranzaAuth.tarjeta.c_method : '--'}}</td>
+                            <td>{{(cobranzaAuth.tarjeta && (cobranzaAuth.tarjeta.c_cn1 && cobranzaAuth.tarjeta.c_cn4)) ? cobranzaAuth.tarjeta.c_cn1 + '*' + cobranzaAuth.tarjeta.c_cn4: '--'}}</td>
+                            <td>{{(cobranzaAuth.tarjeta && (cobranzaAuth.tarjeta.c_month && cobranzaAuth.tarjeta.c_year)) ? cobranzaAuth.tarjeta.c_month + '/' + cobranzaAuth.tarjeta.c_year: '--'}}</td>
+                            <td>
+                              <div class="table-input">
+                                PRE-AUTH: <input type="text" [(ngModel)]="cobranzaAuth.cod_banco" [readOnly]="cobranzaAuth.edit !== true">
+                                <p class="input-hint" *ngIf="cobranzaAuth.edit !== true">Solo Lectura</p>
+                              </div>
+                            </td>
+                            <td>
+                              <div class="table-input">
+                                MONTO ({{cobranzaAuth.moneda}}): <input type="number" [(ngModel)]="cobranzaAuth.monto" [readOnly]="cobranzaAuth.edit !== true">
+                                <p class="input-hint" *ngIf="cobranzaAuth.edit !== true">Solo Lectura</p>
+                              </div>
+                            </td>
+                          </tr>
+                          </tbody>
+                        </table>
+                      </ion-col>
+                      <ion-col size-md="12" class="ion-no-padding">
+                        <app-modelos-docs model="cobranza" docType="voucher" btnSize="small" [justButton]="true" [fullSize]="true" [model_id_value]="cobranzaAuth.id">
+                          <legend name="legend">Img. Voucher</legend>
+                        </app-modelos-docs>
+                      </ion-col>
+                    </ion-row>
+                  </ng-container>
+
+                </div> <!-- PRE AUTORIZACIONES -->
+
+                <mat-divider></mat-divider>
+                <br>
+                <div>
+                  <ion-row>
+                    <ion-col size="12" size-md="6" class="ion-align-self-center">
+                      <h4 style="margin: 0;" class="ion-text-center ion-text-md-left">CARGOS</h4>
+                      <ion-row>
+                        <ion-col size="6" class="ion-no-padding">
+                          <h4 style="margin: 0; padding: 0;">Total: <span style="color: var(--ion-color-success)">{{(generalDataForm && generalDataForm.controls.total.value) ? (generalDataForm.controls.total.value | currency) : '--'}}</span></h4>
+                          <h4 style="margin: 0; padding: 0;">Balance por saldar: <span [ngClass]="{'danger-color': balancePorPagar > 0}">{{(balancePorPagar) ? (balancePorPagar | currency) : ('0' | currency)}}</span></h4>
+                        </ion-col>
+                      </ion-row>
+                    </ion-col>
+                    <ion-col size="12" size-md="6" class="ion-text-end">
+                      <button mat-raised-button class="button-secondary" (click)="agregarTarjetaForm(2, null, true)">
+                        <span style="font-size: 1.3rem;margin-right: 0.5rem;">+</span> <ion-icon name="card"></ion-icon> &nbsp;Tarjeta
+                      </button>
+                    </ion-col>
+                  </ion-row>
+
+                  <ng-container *ngFor="let cobranzaPago of cobranzaProgData">
+                    <ion-row class="border-ion-row" *ngIf="cobranzaPago.tipo === 2">
+                      <ion-col size="12">
+                        <table class="cards-table">
+                          <tbody>
+                          <tr>
+                            <td style="min-width: 60px; max-width: 60px">
+                              <div class="action-buttons">
+                                <button *ngIf="!cobranzaPago.id || cobranzaPago.edit === true" (click)="updateSaveCobro(cobranzaPago)" class="mat-elevation-z0 button-success" mat-mini-fab>
+                                  <mat-icon>save</mat-icon>
+                                </button>
+                                <button *ngIf="cobranzaPago.id && cobranzaPago.edit !== true" (click)="cancelCobro(cobranzaPago)" class="mat-elevation-z0" mat-mini-fab color="warn">
+                                  <mat-icon>remove</mat-icon>
+                                </button>
+                                <button *ngIf="cobranzaPago.edit !== true && cobranzaPago.id" (click)="enableDisableEditCobro(cobranzaPago, true)" style="margin-top: 10px" class="mat-elevation-z0" mat-mini-fab color="accent">
+                                  <mat-icon>edit</mat-icon>
+                                </button>
+                                <button *ngIf="cobranzaPago.edit === true && cobranzaPago.id" (click)="enableDisableEditCobro(cobranzaPago, false)" style="margin-top: 10px" class="mat-elevation-z0 button-cancel" mat-mini-fab>
+                                  <mat-icon>cancel</mat-icon>
+                                </button>
+                              </div>
+
+                            </td>
+                            <td>{{(cobranzaPago.tarjeta && cobranzaPago.tarjeta.c_type) ? cobranzaPago.tarjeta.c_type : '--'}}</td>
+                            <td>{{(cobranzaPago.tarjeta && cobranzaPago.tarjeta.c_method) ? cobranzaPago.tarjeta.c_method : '--'}}</td>
+                            <td>{{(cobranzaPago.tarjeta && (cobranzaPago.tarjeta.c_cn1 && cobranzaPago.tarjeta.c_cn4)) ? cobranzaPago.tarjeta.c_cn1 + '*' + cobranzaPago.tarjeta.c_cn4: '--'}}</td>
+                            <td>{{(cobranzaPago.tarjeta && (cobranzaPago.tarjeta.c_month && cobranzaPago.tarjeta.c_year)) ? cobranzaPago.tarjeta.c_month + '/' + cobranzaPago.tarjeta.c_year: '--'}}</td>
+                            <td>
+                              <div class="table-input">
+                                PAGO: <input type="text" [(ngModel)]="cobranzaPago.cod_banco" [readOnly]="cobranzaPago.edit !== true">
+                                <p class="input-hint" *ngIf="cobranzaPago.edit !== true">Solo Lectura</p>
+                              </div>
+                            </td>
+                            <td>
+                              <div class="table-input">
+                                MONTO ({{cobranzaPago.moneda}}): <input type="number" [(ngModel)]="cobranzaPago.monto" [readOnly]="cobranzaPago.edit !== true">
+                                <p class="input-hint" *ngIf="cobranzaPago.edit !== true">Solo Lectura</p>
+                              </div>
+                            </td>
+                          </tr>
+                          </tbody>
+                        </table>
+                      </ion-col>
+                      <ion-col size="12" class="ion-no-padding">
+                        <app-modelos-docs model="cobranza" docType="voucher" btnSize="small" [justButton]="true" [fullSize]="true" [model_id_value]="cobranzaPago.id">
+                          <legend name="legend">Img. Voucher</legend>
+                        </app-modelos-docs>
+                      </ion-col>
+                    </ion-row>
+                  </ng-container>
+
+                </div> <!-- CARGOS -->
 
               </ion-card-content>
             </ion-card>
