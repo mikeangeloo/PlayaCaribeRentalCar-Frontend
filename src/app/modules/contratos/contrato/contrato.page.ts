@@ -59,7 +59,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
   public dateConv = DateConv;
   public statusC = ContratosStatus;
   public ubicaciones: UbicacionesI[];
-  private contract_id: number;
+  public contract_id: number;
   exitPlacesOptions$: Observable<UbicacionesI[]>;
   returnPlacesOptions$: Observable<UbicacionesI[]>;
   //#endregion
