@@ -27,7 +27,7 @@ export class ClientesTableComponent implements OnInit {
   displayedColumns: string[] = [
     'id',
     'nombre',
-    'apellidos',
+    //'apellidos',
     'telefono',
     'num_licencia',
     'licencia_exp',

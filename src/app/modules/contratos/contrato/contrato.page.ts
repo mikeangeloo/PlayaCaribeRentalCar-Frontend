@@ -47,7 +47,7 @@ import {CobranzaService} from '../../../services/cobranza.service';
 export class ContratoPage implements OnInit, AfterViewInit {
 
   //#region STEP CONTROLLER ATTRIBUTES
-  step = 4;
+  step = 0;
   //#endregion
 
   //#region DATOS GENERALES ATTRIBUTES
@@ -439,7 +439,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
     this.clienteDataForm = this.fb.group({
       cliente_id: [(data && data.id ? data.id : null)],
       nombre: [(data && data.nombre ? data.nombre: null), Validators.required],
-      apellidos: [(data && data.apellidos ? data.apellidos: null), Validators.required],
+      //apellidos: [(data && data.apellidos ? data.apellidos: null), Validators.required],
       telefono: [(data && data.telefono ? data.telefono: null), Validators.required],
       email: [(data && data.email ? data.email: null), [Validators.required, Validators.email]],
       direccion: [(data && data.direccion ? data.direccion: null), Validators.required],

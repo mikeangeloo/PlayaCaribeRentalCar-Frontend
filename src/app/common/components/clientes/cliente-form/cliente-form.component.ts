@@ -43,7 +43,7 @@ export class ClienteFormComponent implements OnInit {
     this.clienteForm = this.fb.group({
       id: [null],
       nombre: [null, Validators.required],
-      apellidos: [null, Validators.required],
+      //apellidos: [null, Validators.required],
       telefono: [null, Validators.required],
       num_licencia: [null, Validators.required],
       licencia_mes: [null, Validators.required],
@@ -70,7 +70,7 @@ export class ClienteFormComponent implements OnInit {
     this.clienteForm.setValue({
       id: (data && data.id) ? data.id : null,
       nombre: (data && data.nombre) ? data.nombre : null,
-      apellidos: (data && data.apellidos) ? data.apellidos : null,
+      //apellidos: (data && data.apellidos) ? data.apellidos : null,
       telefono: (data && data.telefono) ? data.telefono : null,
       num_licencia: (data && data.num_licencia) ? data.num_licencia : null,
       licencia_mes: (data && data.licencia_mes) ? data.licencia_mes : null,
