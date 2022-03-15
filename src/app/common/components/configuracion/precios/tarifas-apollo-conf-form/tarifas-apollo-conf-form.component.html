@@ -15,11 +15,11 @@
     <ion-card-content>
       <ion-row>
         <ion-col size="6">
-          <h2>Tarifas</h2>
+          <h2>Ajustes</h2>
         </ion-col>
-        <!--        <ion-col size="6" class="ion-text-end">-->
-        <!--          <button mat-raised-button class="button-success" (click)="saveTarifas()">Guardar</button>-->
-        <!--        </ion-col>-->
+        <ion-col size="6" class="ion-text-end">
+          <button mat-raised-button class="button-success" (click)="saveUpdate()">Guardar</button>
+        </ion-col>
         <ion-col size="12">
           <table class="complement-table">
             <thead>
@@ -27,7 +27,7 @@
               <th>Frecuencia</th>
               <th>Ap. Descuento</th>
               <th>Valor Descuento</th>
-              <th></th>
+<!--              <th></th>-->
             </tr>
             </thead>
             <tbody>
@@ -49,16 +49,16 @@
                     <p class="input-hint" *ngIf="tApollo.ap_descuento === false || tApollo.ap_descuento === 0">Solo Lectura</p>
                   </div>
                 </td>
-                <td>
-                  <div class="table-input" *ngIf="tApollo.ap_descuento === true || tApollo.ap_descuento == 1">
-                    <button mat-raised-button class="button-success" (click)="saveUpdate(tApollo)">
-                      <mat-icon>save</mat-icon>
-                    </button>
-                  </div>
-                </td>
+<!--                <td>-->
+<!--                  <div class="table-input" *ngIf="tApollo.ap_descuento === true || tApollo.ap_descuento == 1">-->
+<!--                    <button mat-raised-button class="button-success" (click)="saveUpdate(tApollo)">-->
+<!--                      <mat-icon>save</mat-icon>-->
+<!--                    </button>-->
+<!--                  </div>-->
+<!--                </td>-->
               </tr>
               <tr *ngIf="tApollo.errors && tApollo.errors.length > 0" class="error-feed">
-                <td colspan="5">
+                <td colspan="4">
                   <ul style="text-align: left">
                     <li *ngFor="let error of tApollo.errors">
                       {{error}}

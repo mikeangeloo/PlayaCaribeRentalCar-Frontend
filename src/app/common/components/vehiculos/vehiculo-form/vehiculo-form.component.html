@@ -225,6 +225,7 @@
                 <ion-col size="6">
                   <mat-form-field appearance="legacy">
                     <mat-label>Precio Renta</mat-label>
+<!--                    <input matInput type="number" formControlName="precio_renta" (ngModelChange)="recalTarifaRow()">-->
                     <input matInput type="number" formControlName="precio_renta" (ngModelChange)="recalTarifaRow()">
                     <mat-error *ngIf="vf.precio_renta.errors?.required">Campo requerido</mat-error>
                   </mat-form-field>
@@ -246,13 +247,10 @@
         </ion-col>
       </ion-row>
 
-      <ion-row>
+<!--      <ion-row>
         <ion-col size="6">
           <h2>Tarifas</h2>
         </ion-col>
-<!--        <ion-col size="6" class="ion-text-end">-->
-<!--          <button mat-raised-button class="button-success" (click)="saveTarifas()">Guardar</button>-->
-<!--        </ion-col>-->
         <ion-col size="12">
           <table class="complement-table">
             <thead>
@@ -311,7 +309,7 @@
             </tbody>
           </table>
         </ion-col>
-      </ion-row>
+      </ion-row>-->
     </ion-card-content>
   </ion-card>
 

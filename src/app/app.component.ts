@@ -237,6 +237,14 @@ export class AppComponent implements OnDestroy {
               children: [
                 {
                   module: 'catalogos',
+                  icon: 'pricetags-outline',
+                  label: 'Tarifas x Categoría',
+                  route: '/administracion/catalogos/precios/tarifas-categorias',
+                  level: 3,
+                  active: false,
+                },
+                {
+                  module: 'catalogos',
                   icon: 'pricetags',
                   label: 'Tarifas Extras',
                   route: '/administracion/catalogos/precios/tarifas-extras',
