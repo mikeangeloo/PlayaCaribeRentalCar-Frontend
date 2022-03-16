@@ -14,5 +14,7 @@ export interface TarifaApolloConfI
     created_at?: Date;
     updated_at?: Date;
 
+    enable?: boolean;
+
     errors?: string[];
 }

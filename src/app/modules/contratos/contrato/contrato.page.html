@@ -293,9 +293,10 @@
                     <ion-col size="12" size-md="4">
                       <mat-form-field appearance="legacy" *ngIf="gf.tipo_tarifa.value !== 'Hotel'">
                         <mat-label>Categoría Vehículo</mat-label>
-                        <mat-select *ngFor="let tarifaCat of tarifasCategorias">
-                          <mat-option [value]="tarifaCat.id">{{tarifaCat.categoria}}</mat-option>
+                        <mat-select (selectionChange)="setTarifasCat()" formControlName="tarifa_modelo_id">
+                          <mat-option  *ngFor="let tarifaCat of tarifasCategorias" [value]="tarifaCat.id">{{tarifaCat.categoria}}</mat-option>
                         </mat-select>
+                        <mat-error *ngIf="gf.tarifa_modelo_id.errors?.required">Este campo es requerido</mat-error>
                       </mat-form-field> <!-- Tarifa x Categoría -->
 
                       <mat-form-field appearance="legacy" *ngIf="gf.tipo_tarifa.value == 'Hotel'">
@@ -304,7 +305,7 @@
                           <mat-option *ngFor="let clase of tarifasHotel" [value]="clase.clase_id">{{clase.clase}}</mat-option>
                         </mat-select>
                         <mat-error></mat-error>
-                      </mat-form-field>
+                      </mat-form-field> <!-- clase vehiculo -->
                     </ion-col> <!-- Categoría vehículo | clase vehiculo -->
 
 
@@ -399,9 +400,13 @@
                           </div>
                           <mat-form-field *ngIf="gf.con_descuento.value == 1 || gf.con_descuento.value == true">
                             <mat-label>Descuento %</mat-label>
-                            <mat-select>
-                              <mat-option>Demo</mat-option>
+                            <mat-select formControlName="tarifa_apollo_id" (selectionChange)="makeCalc()">
+                              <ng-container *ngFor="let confDes of selectedTarifaCat.tarifas" >
+                                <mat-option *ngIf="confDes.ap_descuento" [value]="confDes.id" [disabled]="confDes.enable === false">{{confDes.valor_descuento}}</mat-option>
+                              </ng-container>
+
                             </mat-select>
+                            <mat-error *ngIf="gf.tarifa_apollo_id.errors?.required">Este campo es requerido</mat-error>
                           </mat-form-field> <!-- cantidad de descuento -->
 
                         </ion-col> <!-- aplicar IVA | aplicar descuento -->

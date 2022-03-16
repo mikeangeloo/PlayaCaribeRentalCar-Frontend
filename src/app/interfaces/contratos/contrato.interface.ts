@@ -20,6 +20,7 @@ export interface ContratoI
 
   tarifa_modelo?: string;
   tarifa_modelo_id?: number;
+  tarifa_apollo_id?: number;
   tarifa_modelo_label?: string;
   tarifa_modelo_precio?: number;
   tarifa_modelo_obj?: string;

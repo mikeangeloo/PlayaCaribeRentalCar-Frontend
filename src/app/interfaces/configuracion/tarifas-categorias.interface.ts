@@ -4,7 +4,7 @@ export interface TarifasCategoriasI
 {
   id?: number;
   categoria?: string;
-  precio_renta?: string;
+  precio_renta?: number;
   activo?: number;
   created_at?: Date;
   updated_at?: Date;
