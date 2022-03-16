@@ -1111,6 +1111,9 @@ export class ContratoPage implements OnInit, AfterViewInit {
           this.gf.con_descuento.enable();
         } else {
           this.gf.con_descuento.disable();
+          this.gf.con_descuento.patchValue(null);
+          this.gf.tarifa_apollo_id.patchValue(null);
+          this.prepareDescuentos(this.selectedTarifaCat, false);
         }
 
         let _precioBase = (_tarifa && _tarifa.precio_base) ? _tarifa.precio_base : this.selectedTarifaCat.precio_renta;
@@ -1141,10 +1144,6 @@ export class ContratoPage implements OnInit, AfterViewInit {
               currency: this.baseCurrency
             });
           }
-        } else {
-          this.gf.con_descuento.patchValue(null);
-          this.gf.tarifa_apollo_id.patchValue(null);
-          this.prepareDescuentos(this.selectedTarifaCat, false);
         }
         break;
       case 'HOTEL':
