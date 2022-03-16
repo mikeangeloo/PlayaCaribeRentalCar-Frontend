@@ -36,6 +36,8 @@ import {UbicacionesService} from '../../../services/ubicaciones.service';
 import {map, Observable, startWith} from 'rxjs';
 import {CobranzaProgI} from '../../../interfaces/cobranza/cobranza-prog.interface';
 import {CobranzaService} from '../../../services/cobranza.service';
+import {TarifasCategoriasI} from '../../../interfaces/configuracion/tarifas-categorias.interface';
+import {TarifasCategoriasService} from '../../../services/tarifas-categorias.service';
 
 
 @Component({
@@ -62,6 +64,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
   public contract_id: number;
   exitPlacesOptions$: Observable<UbicacionesI[]>;
   returnPlacesOptions$: Observable<UbicacionesI[]>;
+  tarifasCategorias: TarifasCategoriasI[];
   //#endregion
 
   //#region DATOS CLIENTE ATTRIBUTES
@@ -169,7 +172,8 @@ export class ContratoPage implements OnInit, AfterViewInit {
     public comisionistasServ: ComisionistasService,
     public toastServ: ToastMessageService,
     public ubicacionesServ: UbicacionesService,
-    public cobranzaServ: CobranzaService
+    public cobranzaServ: CobranzaService,
+    public tarifasCatServ: TarifasCategoriasService
   ) { }
 
   ngOnInit() {
@@ -179,6 +183,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
   async ionViewWillEnter() {
     console.log('view enter');
     await this.loadTiposTarifas();
+    await this.loadTarifasCat();
     this.loadTarifasExtras();
     await this.loadHoteles();
     await this.loadComisionistas();
@@ -317,14 +322,22 @@ export class ContratoPage implements OnInit, AfterViewInit {
       tipo_tarifa_id: [(data && data.tipo_tarifa_id) ? data.tipo_tarifa_id : (_tipoTarifaApollo && _tipoTarifaApollo.id ? _tipoTarifaApollo.id : null), Validators.required],
       tipo_tarifa: [(data && data.tipo_tarifa) ? data.tipo_tarifa : (_tipoTarifaApollo && _tipoTarifaApollo.tarifa ? _tipoTarifaApollo.tarifa : null), Validators.required],
 
-      tarifa_modelo_id: [(data && data.tarifa_modelo_id) ? data.tarifa_modelo_id : null],
-      tarifa_modelo: [(data && data.tarifa_modelo) ? data.tarifa_modelo : null],
+      modelo_id: [(data && data.modelo_id) ? data.modelo_id : null],
+      modelo: [(data && data.modelo) ? data.modelo : null],
+
+      tarifa_modelo: [(data && data.tarifa_modelo) ? data.tarifa_modelo: null],
+      tarifa_modelo_id: [(data && data.tarifa_modelo_id) ? data.tarifa_modelo_id: null],
+      tarifa_modelo_label: [(data && data.tarifa_modelo_label) ? data.tarifa_modelo_label: null],
+      tarifa_modelo_precio: [(data && data.tarifa_modelo_precio) ? data.tarifa_modelo_precio: null],
+      tarifa_modelo_obj: [(data && data.tarifa_modelo_obj) ? data.tarifa_modelo_obj: null],
+
       vehiculo_clase_id: [(data && data.vehiculo_clase_id) ? data.vehiculo_clase_id : null],
       vehiculo_clase: [(data && data.vehiculo_clase) ? data.vehiculo_clase : null],
       vehiculo_clase_precio: [(data && data.vehiculo_clase_precio) ? data.vehiculo_clase_precio : null],
-      comision: [(data && data.comision) ? data.comision : null],
+
 
       precio_unitario_inicial: [(data && data.precio_unitario_inicial ? data.precio_unitario_inicial : null)],
+      comision: [(data && data.comision) ? data.comision : null],
       precio_unitario_final: [(data && data.precio_unitario_final) ? data.precio_unitario_final : null],
 
       rango_fechas: this.fb.group({
@@ -365,11 +378,11 @@ export class ContratoPage implements OnInit, AfterViewInit {
     if (data && data.cobranza_calc && data.cobranza_calc.length) {
       this.cobranzaI = data.cobranza_calc;
     }
-    if (data && data.tarifa_modelo == ModelsEnum.HOTELES && data.vehiculo_clase_id) {
+    if (data && data.modelo == ModelsEnum.HOTELES && data.vehiculo_clase_id) {
       this.loadHotelTarifas(false);
     }
 
-    if (data && data.tarifa_modelo == ModelsEnum.COMISIONISTAS && data.comision) {
+    if (data && data.modelo == ModelsEnum.COMISIONISTAS && data.comision) {
       this.setComisiones(false);
     }
 
@@ -410,6 +423,15 @@ export class ContratoPage implements OnInit, AfterViewInit {
       this.tiposTarifas = res.data;
     } else {
       console.log('error loadTiposTarifas --->', res);
+    }
+  }
+
+  async loadTarifasCat() {
+    let res = await this.tarifasCatServ._getActive();
+    if (res.ok) {
+      this.tarifasCategorias = res.data;
+    } else {
+      console.log('error loadTarifasCat --->', res);
     }
   }
 
@@ -865,8 +887,8 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
     switch (TxtConv.txtCon(_tipoTarifa.tarifa, 'uppercase')) {
       case 'APOLLO':
-        this.gf.tarifa_modelo_id.patchValue(null);
-        this.gf.tarifa_modelo.patchValue(ModelsEnum.APOLLO);
+        this.gf.modelo_id.patchValue(null);
+        this.gf.modelo.patchValue(ModelsEnum.APOLLO);
         this.gf.folio_cupon.patchValue(null);
         //this.gf.valor_cupon.patchValue(null);
         this.gf.comision.patchValue(null);
@@ -874,16 +896,16 @@ export class ContratoPage implements OnInit, AfterViewInit {
         break;
       case 'HOTEL':
         if (!withInitRules) {
-          this.gf.tarifa_modelo_id.patchValue(null);
+          this.gf.modelo_id.patchValue(null);
         }
 
-        this.gf.tarifa_modelo.patchValue(ModelsEnum.HOTELES);
+        this.gf.modelo.patchValue(ModelsEnum.HOTELES);
         this.gf.precio_unitario_final.patchValue(null);
         break;
       case 'COMISIONISTA':
         this.gf.precio_unitario_final.patchValue(null);
-        this.gf.tarifa_modelo_id.patchValue(null);
-        this.gf.tarifa_modelo.patchValue(ModelsEnum.COMISIONISTAS);
+        this.gf.modelo_id.patchValue(null);
+        this.gf.modelo.patchValue(ModelsEnum.COMISIONISTAS);
         this.gf.folio_cupon.patchValue(null);
         //this.gf.valor_cupon.patchValue(null);
         this.gf.comision.patchValue(null);
@@ -895,13 +917,13 @@ export class ContratoPage implements OnInit, AfterViewInit {
   }
 
   loadHotelTarifas(withInitRules: boolean) {
-    let _hotelTarifas = this.hoteles.find(x => x.id === this.gf.tarifa_modelo_id.value);
+    let _hotelTarifas = this.hoteles.find(x => x.id === this.gf.modelo_id.value);
     if (_hotelTarifas) {
       this.tarifasHotel = _hotelTarifas.tarifas;
     }
     if (this.tarifasHotel && this.tarifasHotel.length === 0) {
       this.sweetMsgServ.printStatus('Este hotel no tiene un plan tarifario configurado, comunicate con el administrador', 'warning');
-      this.gf.tarifa_modelo_id.patchValue(null);
+      this.gf.modelo_id.patchValue(null);
       return;
     }
     if (!this.gf.vehiculo_clase_id.value) {
@@ -930,7 +952,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
   setComisiones(clear: boolean) {
     this.comisiones = null;
-    let _comisionesValues = this.comisionistas.find(x => x.id === this.gf.tarifa_modelo_id.value);
+    let _comisionesValues = this.comisionistas.find(x => x.id === this.gf.modelo_id.value);
     if (_comisionesValues) {
       this.comisiones = _comisionesValues.comisiones_pactadas;
     }
@@ -994,7 +1016,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
     this.cobranzaI = [];
 
     let _totalDias = this.gf.total_dias.value;
-    this.gf.tarifa_modelo_id.removeValidators(Validators.required);
+    this.gf.modelo_id.removeValidators(Validators.required);
     this.gf.comision.removeValidators(Validators.required);
 
     switch (TxtConv.txtCon(this.gf.tipo_tarifa.value, 'uppercase')) {
@@ -1051,10 +1073,10 @@ export class ContratoPage implements OnInit, AfterViewInit {
         break;
       case 'HOTEL':
         console.log('makeCalc', this.generalDataForm.value);
-        if (!this.gf.tarifa_modelo_id.value) {
+        if (!this.gf.modelo_id.value) {
           this.sweetMsgServ.printStatus('Seccione un hotel de la lista', 'warning');
-          this.gf.tarifa_modelo_id.setValidators(Validators.required);
-          this.gf.tarifa_modelo_id.markAllAsTouched();
+          this.gf.modelo_id.setValidators(Validators.required);
+          this.gf.modelo_id.markAllAsTouched();
           return;
         }
         this.setVehiculoClaseData(false);
@@ -1073,10 +1095,10 @@ export class ContratoPage implements OnInit, AfterViewInit {
         break;
       case 'COMISIONISTA':
         console.log('makeCalc form comisionistas');
-        if (!this.gf.tarifa_modelo_id.value) {
+        if (!this.gf.modelo_id.value) {
           this.sweetMsgServ.printStatus('Seccione un comisionista de la lista', 'warning');
-          this.gf.tarifa_modelo_id.setValidators(Validators.required);
-          this.gf.tarifa_modelo_id.markAllAsTouched();
+          this.gf.modelo_id.setValidators(Validators.required);
+          this.gf.modelo_id.markAllAsTouched();
           return;
         }
         if (!this.gf.comision.value) {

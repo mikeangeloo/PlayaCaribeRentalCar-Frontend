@@ -280,22 +280,6 @@
                       </ion-col> <!-- Dias de renta date range picker -->
                     </ng-container> <!-- Días de renta group -->
 
-                    <ion-col size="12" size-md="4">
-                      <mat-form-field appearance="legacy" *ngIf="gf.tipo_tarifa.value !== 'Hotel'">
-                        <mat-label>Categoría Vehículo</mat-label>
-                        <mat-select>
-                          <mat-option>Demo</mat-option>
-                        </mat-select>
-                      </mat-form-field>
-
-                      <mat-form-field appearance="legacy" *ngIf="gf.tipo_tarifa.value == 'Hotel'">
-                        <mat-label>Vehículo Clase</mat-label>
-                        <mat-select formControlName="vehiculo_clase_id" (selectionChange)="setVehiculoClaseData(true)">
-                          <mat-option *ngFor="let clase of tarifasHotel" [value]="clase.clase_id">{{clase.clase}}</mat-option>
-                        </mat-select>
-                        <mat-error></mat-error>
-                      </mat-form-field>
-                    </ion-col> <!-- Categoría vehículo | clase vehiculo -->
 
                     <ion-col size="12" size-md="4">
                       <mat-form-field appearance="legacy">
@@ -306,8 +290,25 @@
                       </mat-form-field>
                     </ion-col> <!-- tipo de tarifa picker -->
 
+                    <ion-col size="12" size-md="4">
+                      <mat-form-field appearance="legacy" *ngIf="gf.tipo_tarifa.value !== 'Hotel'">
+                        <mat-label>Categoría Vehículo</mat-label>
+                        <mat-select *ngFor="let tarifaCat of tarifasCategorias">
+                          <mat-option [value]="tarifaCat.id">{{tarifaCat.categoria}}</mat-option>
+                        </mat-select>
+                      </mat-form-field> <!-- Tarifa x Categoría -->
 
-                  </ion-row> <!-- Días de renta | categoría | tipo tarifa -->
+                      <mat-form-field appearance="legacy" *ngIf="gf.tipo_tarifa.value == 'Hotel'">
+                        <mat-label>Vehículo Clase</mat-label>
+                        <mat-select formControlName="vehiculo_clase_id" (selectionChange)="setVehiculoClaseData(true)">
+                          <mat-option *ngFor="let clase of tarifasHotel" [value]="clase.clase_id">{{clase.clase}}</mat-option>
+                        </mat-select>
+                        <mat-error></mat-error>
+                      </mat-form-field>
+                    </ion-col> <!-- Categoría vehículo | clase vehiculo -->
+
+
+                  </ion-row> <!-- Días de renta | tarifa x categoría | tipo tarifa -->
 
                   <ion-row>
                     <ion-col size="12" size-md="4">
@@ -323,12 +324,12 @@
                       <ion-col size="12" size-md="4">
                         <mat-form-field appearance="legacy">
                           <mat-label>Hotel</mat-label>
-                          <mat-select formControlName="tarifa_modelo_id" (selectionChange)="loadHotelTarifas(true)">
+                          <mat-select formControlName="modelo_id" (selectionChange)="loadHotelTarifas(true)">
                             <mat-option *ngFor="let hotel of hoteles" [value]="hotel.id">{{hotel.nombre}}</mat-option>
                           </mat-select>
-                          <mat-error *ngIf="gf.tarifa_modelo_id.errors?.required">Campo requerido</mat-error>
+                          <mat-error *ngIf="gf.modelo_id.errors?.required">Campo requerido</mat-error>
                         </mat-form-field>
-                      </ion-col>
+                      </ion-col>  <!-- Hotel -->
 
                       <ion-col size="12" size-md="4" class="ion-text-center">
                         <app-modelos-docs model="contratos" docType="cupon" btnSize="small" [fullSize]="true" [justButton]="true" [model_id_value]="contract_id">
@@ -340,19 +341,19 @@
                             </mat-form-field>
                           </ion-col>
                         </app-modelos-docs>
-                      </ion-col>
-                    </ng-container>
+                      </ion-col>  <!-- Folio cupón -->
+                    </ng-container>  <!-- Hotel | Folio cupón -->
 
 
                     <ng-container *ngIf="gf.tipo_tarifa.value === 'Comisionista'">
                       <ion-col size="12" size-md="4">
                         <mat-form-field appearance="legacy">
                           <mat-label>Comisionista</mat-label>
-                          <mat-select formControlName="tarifa_modelo_id" (selectionChange)="setComisiones(true)">
+                          <mat-select formControlName="modelo_id" (selectionChange)="setComisiones(true)">
                             <mat-option *ngFor="let comisionista of comisionistas" [value]="comisionista.id">{{comisionista.nombre}} {{comisionista.apellidos}}</mat-option>
                           </mat-select>
-                          <mat-error *ngIf="gf.tarifa_modelo_id.errors?.required">Campo requerido</mat-error>
-                        </mat-form-field>
+                          <mat-error *ngIf="gf.modelo_id.errors?.required">Campo requerido</mat-error>
+                        </mat-form-field><!-- modelo_id -->
                       </ion-col>
                       <ion-col size="12" size-md="4">
                         <mat-form-field appearance="legacy">
@@ -361,9 +362,9 @@
                             <mat-option *ngFor="let comision of comisiones" [value]="comision">{{comision}}</mat-option>
                           </mat-select>
                           <mat-error *ngIf="gf.comision.errors?.required">Campo requerido</mat-error>
-                        </mat-form-field>
+                        </mat-form-field> <!-- comision -->
                       </ion-col>
-                    </ng-container>
+                    </ng-container> <!-- Comisionista: | modelo_id | comision -->
                   </ion-row>
 
                   <mat-divider></mat-divider>
@@ -405,7 +406,7 @@
 
                         </ion-col> <!-- aplicar IVA | aplicar descuento -->
                       </ion-row>
-                    </ion-col>
+                    </ion-col> <!-- precio unitario | aplicar IVA | aplicar descuento -->
 
                     <ion-col size="12" size-md="6">
                       <div style="text-align: center">
@@ -455,9 +456,7 @@
                         </tbody>
                       </table>
                     </ion-col> <!-- desbloce de cobro -->
-
-
-                  </ion-row>
+                  </ion-row> <!-- precio unitario | aplicar IVA | aplicar descuento | desbloce de cobro -->
 
                 </ion-card-content>
                 <div class="card-action-buttons">

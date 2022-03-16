@@ -3,7 +3,7 @@ import {environment} from '../../environments/environment';
 import {HttpClient} from '@angular/common/http';
 import {NavController} from '@ionic/angular';
 import {map, Observable} from 'rxjs';
-import {TarifaApolloConfI} from '../interfaces/tarifas/tarifa-apollo-conf.interface';
+import {TarifasCategoriasI} from '../interfaces/configuracion/tarifas-categorias.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -44,7 +44,7 @@ export class TarifasCategoriasService {
     try {
       let res = await this.httpClient.get<any>(`${this.dashURL}/tarifas-categorias`).toPromise();
       if (res.ok) {
-        return {ok: true, data: res.data as TarifaApolloConfI[]}
+        return {ok: true, data: res.data as TarifasCategoriasI[]}
       }
     } catch (e) {
       return {ok: false, errors: e}
