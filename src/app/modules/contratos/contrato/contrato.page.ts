@@ -942,6 +942,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
       this.sweetMsgServ.printStatus('Esta opción no aplica para descuento', 'warning');
     }
     this.selectedTarifaCat = null;
+    this.gf.con_descuento.patchValue(null);
     this.gf.tarifa_modelo.patchValue(ModelsEnum.TARIFASCAT);
     this.gf.tarifa_modelo_id.patchValue(tarifaCat.id);
     this.gf.tarifa_apollo_id.patchValue(null);
@@ -954,6 +955,8 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
     this.selectedTarifaCat = tarifaCat;
 
+    console.log('setTarifasCat, selectedTarifaCat -->', this.selectedTarifaCat);
+
     this.prepareDescuentos(this.selectedTarifaCat, false);
 
     //TODO: makeCalc?
@@ -964,6 +967,22 @@ export class ContratoPage implements OnInit, AfterViewInit {
     if (tarifaCat && tarifaCat.tarifas && tarifaCat.tarifas.length > 0) {
       for (let i = 0; i < tarifaCat.tarifas.length; i++) {
         tarifaCat.tarifas[i].enable = enable;
+      }
+    }
+  }
+
+  enableDisableDescuentoFreq(enable: boolean) {
+    if (this.gf.total_dias.value && this.selectedTarifaCat && this.selectedTarifaCat.tarifas) {
+      let _totalDias = this.gf.total_dias.value;
+      for (let i = 0; i < this.selectedTarifaCat.tarifas.length; i++) {
+        if (this.selectedTarifaCat.tarifas[i].frecuencia_ref == 'weeks' && (_totalDias >= 7)) {
+          this.selectedTarifaCat.tarifas[i].enable = enable;
+        } else if (this.selectedTarifaCat.tarifas[i].frecuencia_ref === 'months' && _totalDias >= 30) {
+          this.selectedTarifaCat.tarifas[i].enable = enable;
+        } else {
+          this.selectedTarifaCat.tarifas[i].enable = false;
+        }
+
       }
     }
   }
@@ -1071,6 +1090,17 @@ export class ContratoPage implements OnInit, AfterViewInit {
     this.gf.modelo_id.removeValidators(Validators.required);
     this.gf.comision.removeValidators(Validators.required);
 
+    if (!this.gf.con_descuento.value) {
+      this.gf.tarifa_apollo_id.patchValue(null);
+      this.gf.tarifa_apollo_id.removeValidators(Validators.required);
+    } else {
+      if (!this.gf.tarifa_apollo_id.value) {
+        this.gf.tarifa_apollo_id.setValidators(Validators.required);
+        this.gf.tarifa_apollo_id.markAllAsTouched();
+        return;
+      }
+    }
+
     switch (TxtConv.txtCon(this.gf.tipo_tarifa.value, 'uppercase')) {
       case 'APOLLO':
         console.log('makeCalc tarifa apollo');
@@ -1102,6 +1132,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
           this.baseRentFrequency = 'months';
         }
 
+        this.enableDisableDescuentoFreq(true);
         let _tarifa = _tarifas.find(x => x.frecuencia_ref == this.baseRentFrequency);
         _tarifa.enable = true;
         console.log('tarifa baseRentFrequency -->', this.baseRentFrequency);
@@ -1247,6 +1278,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
     for (let i = 0; i < this.cobranzaI.length; i++) {
       _subtotal = _subtotal + ((this.cobranzaI[i].amount * (this.cobranzaI[i].number_sign === 'positive' ? 1 : -1)));
     }
+    _subtotal = parseFloat(Number(_subtotal).toFixed(2));
     if (this.gf.con_iva.value) {
       _iva = parseFloat(Number(_subtotal * this.iva).toFixed(2));
       _total = (_subtotal + _iva);
@@ -1444,7 +1476,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
     _payload.seccion = section;
     _payload.num_contrato = this.num_contrato;
     console.log(section + '--->', _payload);
-    //return;
+    return;
 
     this.contratosServ.saveProgress(_payload).subscribe(async res => {
       if (res.ok) {
