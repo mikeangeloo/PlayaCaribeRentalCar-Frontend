@@ -351,7 +351,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
       cobros_extras_ids: [(data && data.cobros_extras_ids ? data.cobros_extras_ids : null)],
       cobros_extras: [(data && data.cobros_extras ? data.cobros_extras : null)],
       subtotal: [(data && data.subtotal ? data.subtotal : null), Validators.required],
-      con_descuento: [(data && data.con_descuento ? data.con_descuento: null), Validators.required],
+      con_descuento: [(data && data.con_descuento ? data.con_descuento: null)],
       descuento: [(data && data.descuento ? data.descuento : null)],
       con_iva: [(data && data.con_iva ? data.con_iva : null)],
       iva: [(data && data.iva ? data.iva : null)],
@@ -372,6 +372,14 @@ export class ContratoPage implements OnInit, AfterViewInit {
       this.contract_id = data.id;
     }
 
+    if (data && data.tarifa_modelo_id) {
+      let tarifaCat: TarifasCategoriasI = this.tarifasCategorias.find(x => x.id === this.gf.tarifa_modelo_id.value);
+      if (!tarifaCat.tarifas || tarifaCat.tarifas.length === 0) {
+        this.sweetMsgServ.printStatus('Esta opción no aplica para descuento', 'warning');
+      }
+      this.selectedTarifaCat = tarifaCat;
+    }
+
     if (data && data.fecha_salida) {
       this._today = data.fecha_salida;
       this.contractFechaSalida = data.fecha_salida;
@@ -389,12 +397,15 @@ export class ContratoPage implements OnInit, AfterViewInit {
       this.setComisiones(false);
     }
 
-    if (data && data.con_descuento) {
+    if (data && (data.con_descuento == true || data.con_descuento == 1)) {
       this.generalDataForm.controls.con_descuento.enable();
     } else {
       this.generalDataForm.controls.con_descuento.disable();
     }
 
+    if (data && data.total_dias) {
+      this.setBaseRentFrequency();
+    }
 
   }
 
@@ -462,6 +473,22 @@ export class ContratoPage implements OnInit, AfterViewInit {
   }
   get rangoFechasGroup() {
     return this.generalDataForm.get('rango_fechas') as FormGroup;
+  }
+
+  setBaseRentFrequency() {
+    let _totalDias = this.gf.total_dias.value;
+    if (!_totalDias) {
+      this.gf.total_dias.markAllAsTouched();
+      return;
+    }
+    if (_totalDias < 7) {
+      this.baseRentFrequency = 'days';
+    } else if (_totalDias >= 7 && _totalDias < 30) {
+      this.baseRentFrequency = 'weeks';
+    } else if (_totalDias >= 30) {
+      this.baseRentFrequency = 'months';
+    }
+    this.enableDisableDescuentoFreq(true);
   }
   //#endregion
 
@@ -936,7 +963,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
     this.prepareDescuentos(this.selectedTarifaCat, false);
   }
 
-  setTarifasCat() {
+  setTarifasCat(withMakeCalc: boolean) {
     let tarifaCat: TarifasCategoriasI = this.tarifasCategorias.find(x => x.id === this.gf.tarifa_modelo_id.value);
     if (!tarifaCat.tarifas || tarifaCat.tarifas.length === 0) {
       this.sweetMsgServ.printStatus('Esta opción no aplica para descuento', 'warning');
@@ -960,7 +987,9 @@ export class ContratoPage implements OnInit, AfterViewInit {
     this.prepareDescuentos(this.selectedTarifaCat, false);
 
     //TODO: makeCalc?
-    this.makeCalc();
+    if (withMakeCalc) {
+      this.makeCalc();
+    }
   }
 
   prepareDescuentos(tarifaCat: TarifasCategoriasI, enable: boolean) {
@@ -977,8 +1006,10 @@ export class ContratoPage implements OnInit, AfterViewInit {
       for (let i = 0; i < this.selectedTarifaCat.tarifas.length; i++) {
         if (this.selectedTarifaCat.tarifas[i].frecuencia_ref == 'weeks' && (_totalDias >= 7)) {
           this.selectedTarifaCat.tarifas[i].enable = enable;
+          this.gf.con_descuento.enable();
         } else if (this.selectedTarifaCat.tarifas[i].frecuencia_ref === 'months' && _totalDias >= 30) {
           this.selectedTarifaCat.tarifas[i].enable = enable;
+          this.gf.con_descuento.enable();
         } else {
           this.selectedTarifaCat.tarifas[i].enable = false;
         }
@@ -1124,15 +1155,18 @@ export class ContratoPage implements OnInit, AfterViewInit {
         this.gf.precio_unitario_inicial.patchValue(this.selectedTarifaCat.precio_renta);
         this.gf.precio_unitario_final.patchValue(this.selectedTarifaCat.precio_renta);
 
-        if (_totalDias < 7) {
-          this.baseRentFrequency = 'days';
-        } else if (_totalDias >= 7 && _totalDias < 30) {
-          this.baseRentFrequency = 'weeks';
-        } else if (_totalDias >= 30) {
-          this.baseRentFrequency = 'months';
-        }
+        // if (_totalDias < 7) {
+        //   this.baseRentFrequency = 'days';
+        // } else if (_totalDias >= 7 && _totalDias < 30) {
+        //   this.baseRentFrequency = 'weeks';
+        // } else if (_totalDias >= 30) {
+        //   this.baseRentFrequency = 'months';
+        // }
+        //
+        // this.enableDisableDescuentoFreq(true);
 
-        this.enableDisableDescuentoFreq(true);
+        this.setBaseRentFrequency();
+
         let _tarifa = _tarifas.find(x => x.frecuencia_ref == this.baseRentFrequency);
         _tarifa.enable = true;
         console.log('tarifa baseRentFrequency -->', this.baseRentFrequency);
@@ -1476,7 +1510,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
     _payload.seccion = section;
     _payload.num_contrato = this.num_contrato;
     console.log(section + '--->', _payload);
-    return;
+    //return;
 
     this.contratosServ.saveProgress(_payload).subscribe(async res => {
       if (res.ok) {

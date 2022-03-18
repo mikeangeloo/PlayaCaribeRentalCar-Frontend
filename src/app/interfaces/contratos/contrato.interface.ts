@@ -36,7 +36,7 @@ export interface ContratoI
   cobros_extras_ids?: number[];
   cobros_extras: TarifasExtrasI[];
   subtotal: number
-  con_descuento: number;
+  con_descuento: number | boolean;
   descuento: number;
   con_iva: number;
   iva: number;

@@ -293,7 +293,7 @@
                     <ion-col size="12" size-md="4">
                       <mat-form-field appearance="legacy" *ngIf="gf.tipo_tarifa.value !== 'Hotel'">
                         <mat-label>Categoría Vehículo</mat-label>
-                        <mat-select (selectionChange)="setTarifasCat()" formControlName="tarifa_modelo_id">
+                        <mat-select (selectionChange)="setTarifasCat(true)" formControlName="tarifa_modelo_id">
                           <mat-option  *ngFor="let tarifaCat of tarifasCategorias" [value]="tarifaCat.id">{{tarifaCat.categoria}}</mat-option>
                         </mat-select>
                         <mat-error *ngIf="gf.tarifa_modelo_id.errors?.required">Este campo es requerido</mat-error>
