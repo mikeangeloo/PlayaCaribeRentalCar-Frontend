@@ -850,11 +850,16 @@ export class ContratoPage implements OnInit, AfterViewInit {
   async openModalSearch(_endpoint: string, section: string) {
     //const pageEl: HTMLElement = document.querySelector('.ion-page');
     //this.generalService.presentLoading();
+    let _payload = {
+      orderBy: 'tarifa_categoria_id',
+      tarifa_categoria_id: this.selectedTarifaCat.id
+    }
     const modal = await this.modalCtr.create({
       component: MultiTableFilterComponent,
       componentProps: {
         'asModal': true,
-        'endpoint': _endpoint
+        'endpoint': _endpoint,
+        'payload': _payload
       },
       swipeToClose: true,
       cssClass: 'edit-form',

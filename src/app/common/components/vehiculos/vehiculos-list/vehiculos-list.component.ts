@@ -32,7 +32,7 @@ export class VehiculosListComponent implements OnInit, OnChanges {
     'marca',
     'modelo_ano',
     'categoria',
-    'precio_renta',
+    'tarifa_categoria',
     'placas',
     'version',
     'activo',

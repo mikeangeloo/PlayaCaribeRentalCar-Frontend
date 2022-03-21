@@ -75,18 +75,6 @@
                 </mat-cell>
               </ng-container>
 
-              <!-- modelo-->
-              <ng-container matColumnDef="modelo">
-                <mat-header-cell *matHeaderCellDef mat-sort-header>Modelo</mat-header-cell>
-                <mat-cell *matCellDef="let row">
-                  <div class="column">
-                    <p class="text-overflow">
-                      {{row.modelo}}
-                    </p>
-                  </div>
-                </mat-cell>
-              </ng-container>
-
               <!-- marca-->
               <ng-container matColumnDef="marca">
                 <mat-header-cell *matHeaderCellDef mat-sort-header>Marca</mat-header-cell>
@@ -94,6 +82,18 @@
                   <div class="column">
                     <p class="text-overflow">
                       {{row.marca.marca}}
+                    </p>
+                  </div>
+                </mat-cell>
+              </ng-container>
+
+              <!-- modelo-->
+              <ng-container matColumnDef="modelo">
+                <mat-header-cell *matHeaderCellDef mat-sort-header>Modelo</mat-header-cell>
+                <mat-cell *matCellDef="let row">
+                  <div class="column">
+                    <p class="text-overflow">
+                      {{row.modelo}}
                     </p>
                   </div>
                 </mat-cell>
@@ -148,13 +148,19 @@
               </ng-container>
 
               <!-- precio -->
-              <ng-container matColumnDef="precio_renta">
+              <ng-container matColumnDef="tarifa_categoria">
                 <mat-header-cell *matHeaderCellDef mat-sort-header>Precio Renta</mat-header-cell>
                 <mat-cell *matCellDef="let row">
                   <div class="column">
-                    <p>
-                      {{row.precio_renta | currency}}
-                    </p>
+                    <ng-container *ngIf="row.tarifa_categoria">
+                      <p style="margin: 0; padding: 0" class="text-overflow">
+                        {{row.tarifa_categoria.categoria}}
+                      </p>
+                      <p style="margin: 0; padding: 0; font-size: 12px">
+                        {{row.tarifa_categoria.precio_renta | currency}}
+                      </p>
+                    </ng-container>
+                    <p *ngIf="!row.tarifa_categoria"> -- </p>
                   </div>
                 </mat-cell>
               </ng-container>

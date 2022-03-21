@@ -41,22 +41,6 @@
                     </div>
                   </mat-cell>
                 </ng-container>
-
-                <!-- acciones -->
-<!--                <ng-container matColumnDef="acciones">-->
-<!--                  <mat-header-cell *matHeaderCellDef>Acciones</mat-header-cell>-->
-<!--                  <mat-cell *matCellDef="let row">-->
-<!--                    <div class="column">-->
-<!--                      <div class="action-btn-container">-->
-<!--                        <ion-button fill="clear" (click)="pickSelectedRow(row)">-->
-<!--                          <ion-icon  name="copy-outline"></ion-icon>-->
-<!--                        </ion-button>-->
-<!--                      </div>-->
-<!--                    </div>-->
-<!--                  </mat-cell>-->
-<!--                </ng-container>-->
-
-
                 <!-- rows staticos-->
                 <ng-container matColumnDef="init">
                   <mat-footer-cell *matFooterCellDef colspan="7" style="color: var(--ion-color-primary); font-weight: 400;">
@@ -78,10 +62,6 @@
 
                 <!--Table Footer-->
                 <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-<!--                <mat-header-row *matHeaderRowDef="['acciones']"></mat-header-row>-->
-                <!--                <ng-container *ngIf="isModal">-->
-                <!--                  <mat-row *matRowDef="let row; columns: displayedColumns;" (click)="editAction(row)" [ngClass]="{hovered: row.hovered, highlighted: row.id === editEmpresa.id}" (mouseover)="row.hovered = true" (mouseout)="row.hovered = false"></mat-row>-->
-                <!--                </ng-container>-->
                 <ng-container *ngIf="isModal === false || !isModal">
                   <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
                 </ng-container>
@@ -109,7 +89,7 @@
           </p>
         </div>
       </ion-col>
-    </ion-row>
+    </ion-row> <!-- full list data -->
 
   </div>
 </ion-content>

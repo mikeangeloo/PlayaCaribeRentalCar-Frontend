@@ -21,6 +21,7 @@ export class MultiTableFilterComponent implements OnInit {
 
   @Input() asModal: boolean;
   @Input() endpoint: string;
+  @Input() payload: any;
   public title = 'Listado de ';
 
   public spinner = false;
@@ -70,7 +71,7 @@ export class MultiTableFilterComponent implements OnInit {
     this.listData = null;
     this.spinner = true;
 
-    this.generalServ.getList(this.endpoint).subscribe(response => {
+    this.generalServ.getList(this.endpoint, this.payload).subscribe(response => {
       if (response.ok === true) {
         this.spinner = false;
         this.listData = new MatTableDataSource(response.data);
