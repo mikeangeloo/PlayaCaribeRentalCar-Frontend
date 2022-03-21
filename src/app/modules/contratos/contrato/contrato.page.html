@@ -299,13 +299,15 @@
                         <mat-error *ngIf="gf.tarifa_modelo_id.errors?.required">Este campo es requerido</mat-error>
                       </mat-form-field> <!-- Tarifa x Categoría -->
 
-                      <mat-form-field appearance="legacy" *ngIf="gf.tipo_tarifa.value == 'Hotel'">
-                        <mat-label>Vehículo Clase</mat-label>
-                        <mat-select formControlName="vehiculo_clase_id" (selectionChange)="setVehiculoClaseData(true)">
-                          <mat-option *ngFor="let clase of tarifasHotel" [value]="clase.clase_id">{{clase.clase}}</mat-option>
+                      <mat-form-field appearance="legacy" *ngIf="gf.tipo_tarifa.value === 'Hotel'">
+                        <mat-label>Hotel</mat-label>
+                        <mat-select formControlName="modelo_id" (selectionChange)="loadHotelTarifas(true)">
+                          <mat-option *ngFor="let hotel of hoteles" [value]="hotel.id">{{hotel.nombre}}</mat-option>
                         </mat-select>
-                        <mat-error></mat-error>
-                      </mat-form-field> <!-- clase vehiculo -->
+                        <mat-error *ngIf="gf.modelo_id.errors?.required">Campo requerido</mat-error>
+                      </mat-form-field>  <!-- Hotel -->
+
+
                     </ion-col> <!-- Categoría vehículo | clase vehiculo -->
 
 
@@ -323,14 +325,14 @@
 
                     <ng-container *ngIf="gf.tipo_tarifa.value === 'Hotel'">
                       <ion-col size="12" size-md="4">
-                        <mat-form-field appearance="legacy">
-                          <mat-label>Hotel</mat-label>
-                          <mat-select formControlName="modelo_id" (selectionChange)="loadHotelTarifas(true)">
-                            <mat-option *ngFor="let hotel of hoteles" [value]="hotel.id">{{hotel.nombre}}</mat-option>
+                        <mat-form-field appearance="legacy" *ngIf="gf.tipo_tarifa.value == 'Hotel'">
+                          <mat-label>Vehículo Clase</mat-label>
+                          <mat-select formControlName="vehiculo_clase_id" (selectionChange)="setVehiculoClaseData(true)">
+                            <mat-option *ngFor="let clase of tarifasHotel" [value]="clase.clase_id">{{clase.clase}}</mat-option>
                           </mat-select>
-                          <mat-error *ngIf="gf.modelo_id.errors?.required">Campo requerido</mat-error>
-                        </mat-form-field>
-                      </ion-col>  <!-- Hotel -->
+                          <mat-error></mat-error>
+                        </mat-form-field> <!-- clase vehiculo -->
+                      </ion-col>
 
                       <ion-col size="12" size-md="4" class="ion-text-center">
                         <app-modelos-docs model="contratos" docType="cupon" btnSize="small" [fullSize]="true" [justButton]="true" [model_id_value]="contract_id">

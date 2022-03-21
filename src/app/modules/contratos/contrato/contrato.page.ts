@@ -39,6 +39,7 @@ import {CobranzaService} from '../../../services/cobranza.service';
 import {TarifasCategoriasI} from '../../../interfaces/configuracion/tarifas-categorias.interface';
 import {TarifasCategoriasService} from '../../../services/tarifas-categorias.service';
 import {TarifaApolloConfI} from '../../../interfaces/tarifas/tarifa-apollo-conf.interface';
+import {DateTransform} from '../../../helpers/date-trans';
 
 
 @Component({
@@ -372,7 +373,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
       this.contract_id = data.id;
     }
 
-    if (data && data.tarifa_modelo_id) {
+    if (data && data.tarifa_modelo_id && TxtConv.txtCon(data.tipo_tarifa, 'uppercase') !== 'HOTEL') {
       let tarifaCat: TarifasCategoriasI = this.tarifasCategorias.find(x => x.id === this.gf.tarifa_modelo_id.value);
       if (!tarifaCat.tarifas || tarifaCat.tarifas.length === 0) {
         this.sweetMsgServ.printStatus('Esta opción no aplica para descuento', 'warning');
@@ -915,7 +916,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
         this.gf.folio_cupon.patchValue(null);
         //this.gf.valor_cupon.patchValue(null);
         this.gf.comision.patchValue(null);
-        this.resetVehiculoTarifas();
+        this.resetTarifasData();
         break;
       case 'HOTEL':
         if (!withInitRules) {
@@ -924,6 +925,8 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
         this.gf.modelo.patchValue(ModelsEnum.HOTELES);
         this.gf.precio_unitario_final.patchValue(null);
+        this.selectedTarifaCat = null;
+        //this.resetTarifasData();
         break;
       case 'COMISIONISTA':
         this.gf.precio_unitario_final.patchValue(null);
@@ -932,24 +935,24 @@ export class ContratoPage implements OnInit, AfterViewInit {
         this.gf.folio_cupon.patchValue(null);
         //this.gf.valor_cupon.patchValue(null);
         this.gf.comision.patchValue(null);
-        this.resetVehiculoTarifas();
+        this.resetTarifasData();
         break;
     }
     this.startDateChange();
     this.setReturnDateChange();
   }
 
-  resetVehiculoTarifas() {
+  resetTarifasData() {
     this.gf.vehiculo_clase_id.patchValue(null);
     this.gf.vehiculo_clase.patchValue(null);
     this.gf.vehiculo_clase_precio.patchValue(null);
     this.gf.comision.patchValue(null);
 
-    if (this.vehiculoData) {
-      this.gf.vehiculo_clase_id.patchValue(this.vehiculoData.clase_id);
-      this.gf.vehiculo_clase.patchValue(this.vehiculoData.clase.clase);
-      this.gf.vehiculo_clase_precio.patchValue(this.vehiculoData.precio_renta);
-    }
+    // if (this.vehiculoData) {
+    //   this.gf.vehiculo_clase_id.patchValue(this.vehiculoData.clase_id);
+    //   this.gf.vehiculo_clase.patchValue(this.vehiculoData.clase.clase);
+    //   this.gf.vehiculo_clase_precio.patchValue(this.vehiculoData.precio_renta);
+    // }
 
     //TODO: new flow
     this.gf.tarifa_modelo.patchValue(null);
@@ -1040,10 +1043,19 @@ export class ContratoPage implements OnInit, AfterViewInit {
   setVehiculoClaseData(withInitRules: boolean) {
     if (TxtConv.txtCon(this.gf.tipo_tarifa.value, 'uppercase') === 'HOTEL') {
       let _clases = this.tarifasHotel.find(x => x.clase_id === this.gf.vehiculo_clase_id.value);
+      console.log('setVehiculoClaseData -->', _clases);
       if (_clases) {
         this.gf.vehiculo_clase.patchValue(_clases.clase);
         this.gf.vehiculo_clase_precio.patchValue(_clases.precio);
+        this.gf.precio_unitario_inicial.patchValue(null); // TODO: agregar precio unitario al escoger vehiculo data
         this.gf.precio_unitario_final.patchValue(_clases.precio);
+
+        this.gf.tarifa_modelo.patchValue(ModelsEnum.TARIFASHOTEL);
+        this.gf.tarifa_modelo_id.patchValue(_clases.id);
+        this.gf.tarifa_apollo_id.patchValue(null);
+        this.gf.tarifa_modelo_label.patchValue(_clases.clase);
+        this.gf.tarifa_modelo_precio.patchValue(_clases.precio);
+        this.gf.tarifa_modelo_obj.patchValue(_clases);
 
         if (withInitRules === true) {
           this.initTipoTarifaRule(withInitRules);
@@ -1083,7 +1095,8 @@ export class ContratoPage implements OnInit, AfterViewInit {
   setReturnDateChange(inputDays?) {
     console.log('setReturnDateChange');
     if (inputDays) {
-      let _returnDate = moment().add(inputDays, 'days');
+      //let _returnDate = moment().add(inputDays, 'days');
+      let _returnDate = DateConv.transFormDate(this._today, 'moment').add(inputDays, 'days');
       this.rangoFechas.fecha_retorno.patchValue(_returnDate);
       //return;
     } else {
@@ -1132,6 +1145,9 @@ export class ContratoPage implements OnInit, AfterViewInit {
       }
     }
 
+    let _tarifas;
+    let _tarifa;
+
     switch (TxtConv.txtCon(this.gf.tipo_tarifa.value, 'uppercase')) {
       case 'APOLLO':
         console.log('makeCalc tarifa apollo');
@@ -1150,7 +1166,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
           return;
         }
 
-        let _tarifas = this.selectedTarifaCat.tarifas;
+        _tarifas = this.selectedTarifaCat.tarifas;
 
         this.gf.precio_unitario_inicial.patchValue(this.selectedTarifaCat.precio_renta);
         this.gf.precio_unitario_final.patchValue(this.selectedTarifaCat.precio_renta);
@@ -1167,7 +1183,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
         this.setBaseRentFrequency();
 
-        let _tarifa = _tarifas.find(x => x.frecuencia_ref == this.baseRentFrequency);
+        _tarifa = _tarifas.find(x => x.frecuencia_ref == this.baseRentFrequency);
         _tarifa.enable = true;
         console.log('tarifa baseRentFrequency -->', this.baseRentFrequency);
         console.log('tarifa select -->', _tarifa);
@@ -1235,6 +1251,10 @@ export class ContratoPage implements OnInit, AfterViewInit {
         break;
       case 'COMISIONISTA':
         console.log('makeCalc form comisionistas');
+        if (!this.selectedTarifaCat || !this.gf.tarifa_modelo_id.value) {
+          this.gf.tarifa_modelo_id.markAllAsTouched();
+          return;
+        }
         if (!this.gf.modelo_id.value) {
           this.sweetMsgServ.printStatus('Seccione un comisionista de la lista', 'warning');
           this.gf.modelo_id.setValidators(Validators.required);
@@ -1247,9 +1267,27 @@ export class ContratoPage implements OnInit, AfterViewInit {
           this.gf.comision.markAllAsTouched();
           return;
         }
-        this.gf.precio_unitario_inicial.patchValue(this.vehiculoData.precio_renta);
+        _tarifas = this.selectedTarifaCat.tarifas;
+
+        this.gf.precio_unitario_inicial.patchValue(this.selectedTarifaCat.precio_renta);
         let _nuevoPrecioUnitario = Number(this.gf.precio_unitario_inicial.value) + Number(this.gf.comision.value);
         this.gf.precio_unitario_final.patchValue(_nuevoPrecioUnitario);
+
+        this.setBaseRentFrequency();
+
+        _tarifa = _tarifas.find(x => x.frecuencia_ref == this.baseRentFrequency);
+        _tarifa.enable = true;
+        console.log('tarifa baseRentFrequency -->', this.baseRentFrequency);
+        console.log('tarifa select -->', _tarifa);
+
+        if (this.gf.tarifa_modelo_id.value &&  _tarifa.ap_descuento === true || _tarifa.ap_descuento == 1) {
+          this.gf.con_descuento.enable();
+        } else {
+          this.gf.con_descuento.disable();
+          this.gf.con_descuento.patchValue(null);
+          this.gf.tarifa_apollo_id.patchValue(null);
+          this.prepareDescuentos(this.selectedTarifaCat, false);
+        }
 
         console.log('makeCalc form comisionistas precio --->', this.gf.precio_unitario_final.value);
 
@@ -1263,6 +1301,23 @@ export class ContratoPage implements OnInit, AfterViewInit {
           amount: parseFloat(Number(_nuevoPrecioUnitario * _totalDias).toFixed(2)),
           currency: this.baseCurrency
         });
+
+        // Verificamos si tenemos descuento
+        if (_tarifa && (_tarifa.ap_descuento == true || _tarifa.ap_descuento == 1) && this.gf.tarifa_apollo_id.value && (this.gf.con_descuento.value == true || this.gf.con_descuento.value == 1)) {
+          let tarifaApolloConf = _tarifas.find(x => x.id === this.gf.tarifa_apollo_id.value);
+          if (tarifaApolloConf) {
+            this.cobranzaI.push({
+              element: 'descuento',
+              value: null,
+              quantity: tarifaApolloConf.valor_descuento,
+              quantity_type: '%',
+              element_label: 'Descuento',
+              number_sign: 'negative',
+              amount: parseFloat(Number(_nuevoPrecioUnitario * (tarifaApolloConf.valor_descuento / 100) * _totalDias).toFixed(2)),
+              currency: this.baseCurrency
+            });
+          }
+        }
 
         break;
       default:
