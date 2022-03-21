@@ -876,11 +876,10 @@ export class ContratoPage implements OnInit, AfterViewInit {
           this.getDocs('licencia_conducir', 'clientes', data.id);
           break;
         case 'vehiculo':
-          // TODO: arreglar cuando sea tipo salida o llegada
           this.vehiculoData = data;
-          this.gf.vehiculo_id.patchValue(this.vehiculoData.id);
-          this.gf.vehiculo_clase_id.patchValue(this.vehiculoData.clase_id);
-          this.initTipoTarifaRule(true);
+          //this.gf.vehiculo_id.patchValue(this.vehiculoData.id);
+          //this.gf.vehiculo_clase_id.patchValue(this.vehiculoData.clase_id);
+          //this.initTipoTarifaRule(true);
           break;
         case 'ubicacionSalida':
           this.gf.ub_salida_id.patchValue(data.id);
