@@ -962,6 +962,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
     this.gf.tarifa_modelo_precio.patchValue(null);
     this.gf.tarifa_modelo_obj.patchValue(null);
     this.gf.con_descuento.disable();
+    this.gf.con_descuento.patchValue(null);
 
     this.prepareDescuentos(this.selectedTarifaCat, false);
   }

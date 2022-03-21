@@ -400,7 +400,7 @@
                               Aplicar Descuento ?
                             </mat-checkbox>
                           </div>
-                          <mat-form-field *ngIf="gf.con_descuento.value == 1 || gf.con_descuento.value == true">
+                          <mat-form-field *ngIf="gf.tipo_tarifa.value !== 'Hotel' && (gf.con_descuento.value == 1 || gf.con_descuento.value == true)">
                             <mat-label>Descuento %</mat-label>
                             <mat-select formControlName="tarifa_apollo_id" (selectionChange)="makeCalc()">
                               <ng-container *ngFor="let confDes of selectedTarifaCat.tarifas" >
