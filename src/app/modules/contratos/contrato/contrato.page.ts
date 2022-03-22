@@ -15,7 +15,7 @@ import {TxtConv} from "../../../helpers/txt-conv";
 import {GeneralService} from "../../../services/general.service";
 import {ContratosService} from "../../../services/contratos.service";
 import {ContratoI} from "../../../interfaces/contratos/contrato.interface";
-import {ContratosStatus} from "../../../enums/contratos-status.enum";
+import {ContratosStatus, ContratosStatusE} from '../../../enums/contratos-status.enum';
 import {FilesService} from '../../../services/files.service';
 import {DocDataTransfer} from '../../../interfaces/shared/doc-data-tranfer.interface';
 import {VehiculosI} from '../../../interfaces/catalogo-vehiculos/vehiculos.interface';
@@ -76,6 +76,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
   //#region DATOS VEHICULO
   vehiculoData: VehiculosI;
+  vehiculoForm: FormGroup;
   //#endregion
 
   //#region CLOCK PICKER ATTRIBUTES
@@ -236,14 +237,23 @@ export class ContratoPage implements OnInit, AfterViewInit {
             let _datosGeneralesEtapa = this.contractData.etapas_guardadas.find(x => x === 'datos_generales');
             if (_datosGeneralesEtapa) {
               console.log('datos_generales');
-              if (this.contractData.vehiculo) {
-                this.vehiculoData = this.contractData.vehiculo;
-              }
               this.initGeneralForm(this.contractData);
               this.getDocs('cupon', 'contratos', this.contractData.id);
 
             } else {
               this.initGeneralForm();
+            }
+
+            let _datosVehiculo = this.contractData.etapas_guardadas.find(x => x === 'datos_vehiculo');
+            if (_datosVehiculo) {
+              console.log('datos_vehiculo');
+              if (this.contractData.vehiculo) {
+                this.vehiculoData = this.contractData.vehiculo;
+                this.initVehiculoForm(this.vehiculoData);
+              }
+
+            } else {
+              this.initVehiculoForm();
             }
 
             let _datosClienteEtapa = this.contractData.etapas_guardadas.find(x => x === 'datos_cliente');
@@ -275,11 +285,13 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
           this.initGeneralForm();
           this.initClientForm();
+          this.initVehiculoForm();
           this.cobranzaProgData = [];
         }
     } else {
       this.initGeneralForm();
       this.initClientForm();
+      this.initVehiculoForm();
       this.cobranzaProgData = [];
     }
   }
@@ -512,6 +524,43 @@ export class ContratoPage implements OnInit, AfterViewInit {
     return this.clienteDataForm.controls;
   }
 
+  //#endregion
+
+  //#region VEHICULO FORM FUNCTIONS
+  initVehiculoForm(data?) {
+    this.vehiculoForm = this.fb.group({
+      vehiculo_id: [(data && data.id ? data.id : null), Validators.required],
+      km_anterior: [(data && data.km_anterior ? data.km_anterior : (data && data.km_recorridos) ? data.km_recorridos : null), Validators.required],
+      km_inicial: [(data && data.km_inicial ? data.km_inicial : null), Validators.required],
+      km_final: [(data && data.km_final ? data.km_final : null)],
+      cant_combustible_salida: [(data && data.cant_combustible_salida ? data.cant_combustible_salida : null), Validators.required],
+      cant_combustible_retorno: [(data && data.cant_combustible_retorno ? data.cant_combustible_retorno : null)],
+    });
+
+    this.vehiculoForm.controls.km_anterior.disable();
+
+    if (this.contractData && this.contractData.estatus) {
+      switch (this.contractData.estatus) {
+        case ContratosStatusE.ELIMINADO:
+        case ContratosStatusE.RETORNO:
+          this.vehiculoForm.disable();
+          break;
+        case ContratosStatusE.BORRADOR:
+        case ContratosStatusE.RESERVADO:
+          this.vehiculoForm.controls.km_final.disable();
+          this.vehiculoForm.controls.cant_combustible_retorno.disable();
+          break;
+        case ContratosStatusE.SALIDA:
+          this.vehiculoForm.controls.km_inicial.disable();
+          this.vehiculoForm.controls.cant_combustible_salida.disable();
+          break;
+      }
+    }
+  }
+
+  get vf() {
+    return this.vehiculoForm.controls;
+  }
   //#endregion
 
   //#region HOTELES FUNCTIONS
@@ -882,6 +931,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
           break;
         case 'vehiculo':
           this.vehiculoData = data;
+          this.initVehiculoForm(this.vehiculoData);
           //this.gf.vehiculo_id.patchValue(this.vehiculoData.id);
           //this.gf.vehiculo_clase_id.patchValue(this.vehiculoData.clase_id);
           //this.initTipoTarifaRule(true);
@@ -1543,6 +1593,14 @@ export class ContratoPage implements OnInit, AfterViewInit {
         }
         //_payload.hora_elaboracion = DateConv.transFormDate(moment.now(), 'time');
         break;
+      case 'datos_vehiculo':
+        if (this.vehiculoForm.invalid) {
+          this.sweetMsgServ.printStatus('Verifica que los datos solicitados esten completos', 'warning');
+          this.vehiculoForm.markAllAsTouched();
+          return;
+        }
+        _payload = this.vehiculoForm.value;
+        break;
       case 'datos_cliente':
         if (this.clienteDataForm.invalid) {
           if (!ignoreMsg) {
@@ -1570,7 +1628,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
     _payload.seccion = section;
     _payload.num_contrato = this.num_contrato;
     console.log(section + '--->', _payload);
-    //return;
+    return;
 
     this.contratosServ.saveProgress(_payload).subscribe(async res => {
       if (res.ok) {

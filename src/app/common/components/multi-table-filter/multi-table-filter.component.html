@@ -28,8 +28,13 @@
                   <mat-header-cell *matHeaderCellDef mat-sort-header>{{def.label}}</mat-header-cell>
                   <mat-cell *matCellDef="let row">
                     <div class="column" *ngIf="def.entry !== 'acciones'">
-                      <p class="text-overflow" matTooltip="{{row[def.entry]}}">
+                      <p class="text-overflow" matTooltip="{{row[def.entry]}}" *ngIf="def.entry !== 'estatus'">
                         {{row[def.entry]}}
+                      </p>
+                      <p class="text-overflow" *ngIf="endpoint === 'vehiculos' && def.entry === 'estatus'">
+                        <ion-chip class="{{row.estatus}}" title="{{vehiculoC.getLabel(row.estatus)}}">
+                          <ion-label>{{vehiculoC.getLabel(row.estatus)}}</ion-label>
+                        </ion-chip>
                       </p>
                     </div>
                     <div class="column" *ngIf="def.entry === 'acciones'">

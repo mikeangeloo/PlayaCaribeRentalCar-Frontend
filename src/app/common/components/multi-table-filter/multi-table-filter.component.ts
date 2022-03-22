@@ -11,6 +11,7 @@ import {GeneralService} from "../../../services/general.service";
 import {SucursalesService} from "../../../services/sucursales.service";
 import {SweetMessagesService} from "../../../services/sweet-messages.service";
 import {ToastMessageService} from "../../../services/toast-message.service";
+import {VehiculosC} from '../../../interfaces/catalogo-vehiculos/vehiculos.interface';
 
 @Component({
   selector: 'app-multi-table-filter',
@@ -35,6 +36,8 @@ export class MultiTableFilterComponent implements OnInit {
   public searchKey: string;
   @ViewChild(MatPaginator, {static: false}) paginator3: MatPaginator;
   @ViewChild(MatSort, {static: true}) sort: MatSort;
+
+  public vehiculoC = VehiculosC;
 
   constructor(
     public modalCtrl: ModalController,

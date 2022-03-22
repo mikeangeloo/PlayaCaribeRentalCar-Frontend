@@ -500,7 +500,7 @@
 
             <ion-row>
               <ion-col size="12">
-                <div *ngIf="vehiculoData">
+                <div *ngIf="vehiculoData" [formGroup]="vehiculoForm">
                   <ion-row>
                     <ion-col size="12">
                       <div class="search-row-buttons">
@@ -557,13 +557,81 @@
                     </ion-col> <!--No. Serie-->
                     <ion-col size size-md="4">
                       <mat-form-field appearance="legacy">
+                        <mat-label>No. Poliza</mat-label>
+                        <input type="text" matInput [disabled]="true" [value]="vehiculoData && vehiculoData.num_poliza_seg ? vehiculoData.num_poliza_seg : null">
+                        <mat-hint>Solo lectura</mat-hint>
+                      </mat-form-field>  <!--Poliza-->
+                    </ion-col>
+                    <ion-col size size-md="4">
+                      <mat-form-field appearance="legacy">
                         <mat-label>Capacidad Tanque</mat-label>
                         <input type="number" matInput [disabled]="true" [value]="vehiculoData && vehiculoData.cap_tanque ? vehiculoData.cap_tanque : null" style="text-align: right;">
                         <span matSuffix>LT</span>
                         <mat-hint>Solo lectura</mat-hint>
                       </mat-form-field>
                     </ion-col> <!--Capacidad Tanque-->
+                    <ion-col size size-md="4">
+                      <mat-form-field appearance="legacy">
+                        <mat-label>Cant. Combustible Salida</mat-label>
+                        <mat-select formControlName="cant_combustible_salida">
+                          <mat-option value="1/8">1/8</mat-option>
+                          <mat-option value="2/8">2/8</mat-option>
+                          <mat-option value="3/8">3/8</mat-option>
+                          <mat-option value="4/8">4/8</mat-option>
+                          <mat-option value="5/8">5/8</mat-option>
+                          <mat-option value="6/8">6/8</mat-option>
+                          <mat-option value="7/8">7/8</mat-option>
+                          <mat-option value="8/8">8/8</mat-option>
+                        </mat-select>
+                        <mat-error *ngIf="vf.cant_combustible_salida.errors?.required">Campo requerido</mat-error>
+                        <mat-hint *ngIf="vf.cant_combustible_salida.disabled">Solo lectura</mat-hint>
+                      </mat-form-field> <!-- Cant. Combustible salida -->
+                    </ion-col>
+                    <ion-col size size-md="4">
+                      <mat-form-field appearance="legacy">
+                        <mat-label>Cant. Combustible Retorno</mat-label>
+                        <mat-select formControlName="cant_combustible_retorno">
+                          <mat-option value="1/8">1/8</mat-option>
+                          <mat-option value="2/8">2/8</mat-option>
+                          <mat-option value="3/8">3/8</mat-option>
+                          <mat-option value="4/8">4/8</mat-option>
+                          <mat-option value="5/8">5/8</mat-option>
+                          <mat-option value="6/8">6/8</mat-option>
+                          <mat-option value="7/8">7/8</mat-option>
+                          <mat-option value="8/8">8/8</mat-option>
+                        </mat-select>
+                        <mat-error *ngIf="vf.cant_combustible_retorno.errors?.required">Campo requerido</mat-error>
+                        <mat-hint *ngIf="vf.cant_combustible_retorno.disabled">Solo lectura</mat-hint>
+                      </mat-form-field> <!-- Cant. Combustible retorno -->
+                    </ion-col>
+                    <ion-col size size-md="4">
+                      <mat-form-field appearance="legacy">
+                        <mat-label>Km. Anterior</mat-label>
+                        <input matInput type="number" formControlName="km_anterior">
+                      </mat-form-field> <!-- Km. Anterior-->
+                      <mat-hint>Solo lectura</mat-hint>
+                    </ion-col>
+                    <ion-col size size-md="4">
+                      <mat-form-field appearance="legacy">
+                        <mat-label>Km. Inicio</mat-label>
+                        <input matInput type="number" formControlName="km_inicial">
+                        <mat-error *ngIf="vf.km_inicial.errors?.required">Campo requerido</mat-error>
+                        <mat-hint *ngIf="vf.km_inicial.disabled">Solo lectura</mat-hint>
+                      </mat-form-field> <!-- Km. Inicio-->
+                    </ion-col>
+                    <ion-col size size-md="4">
+                      <mat-form-field appearance="legacy">
+                        <mat-label>Km. Final</mat-label>
+                        <input matInput type="number" formControlName="km_final">
+                        <mat-error *ngIf="vf.km_final.errors?.required">Campo requerido</mat-error>
+                        <mat-hint *ngIf="vf.km_final.disabled">Solo lectura</mat-hint>
+                      </mat-form-field> <!-- Km. Final-->
+                    </ion-col>
                   </ion-row> <!-- No. Placas  No.Serie  Capacidad Tanque  -->
+
+                  <div class="card-action-buttons">
+                    <ion-button  color="success" (click)="saveProcess('datos_vehiculo')">GUARDAR</ion-button>
+                  </div>
                 </div>
                 <div *ngIf="!vehiculoData">
                   <ion-row>
