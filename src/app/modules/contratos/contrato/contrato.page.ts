@@ -249,7 +249,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
               console.log('datos_vehiculo');
               if (this.contractData.vehiculo) {
                 this.vehiculoData = this.contractData.vehiculo;
-                this.initVehiculoForm(this.vehiculoData);
+                this.initVehiculoForm(this.contractData);
               }
 
             } else {
@@ -536,7 +536,17 @@ export class ContratoPage implements OnInit, AfterViewInit {
       cant_combustible_salida: [(data && data.cant_combustible_salida ? data.cant_combustible_salida : null), Validators.required],
       cant_combustible_retorno: [(data && data.cant_combustible_retorno ? data.cant_combustible_retorno : null)],
     });
+    this.checkVehiculoFormDisableFields();
+  }
 
+  get vf() {
+    return this.vehiculoForm.controls;
+  }
+
+  checkVehiculoFormDisableFields() {
+    if (this.vehiculoData && this.vehiculoData.km_recorridos) {
+      this.vehiculoForm.controls.km_anterior.patchValue(this.vehiculoData.km_recorridos);
+    }
     this.vehiculoForm.controls.km_anterior.disable();
 
     if (this.contractData && this.contractData.estatus) {
@@ -556,10 +566,6 @@ export class ContratoPage implements OnInit, AfterViewInit {
           break;
       }
     }
-  }
-
-  get vf() {
-    return this.vehiculoForm.controls;
   }
   //#endregion
 
@@ -1599,7 +1605,9 @@ export class ContratoPage implements OnInit, AfterViewInit {
           this.vehiculoForm.markAllAsTouched();
           return;
         }
+        this.vehiculoForm.enable();
         _payload = this.vehiculoForm.value;
+        this.checkVehiculoFormDisableFields();
         break;
       case 'datos_cliente':
         if (this.clienteDataForm.invalid) {
@@ -1628,7 +1636,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
     _payload.seccion = section;
     _payload.num_contrato = this.num_contrato;
     console.log(section + '--->', _payload);
-    return;
+    //return;
 
     this.contratosServ.saveProgress(_payload).subscribe(async res => {
       if (res.ok) {

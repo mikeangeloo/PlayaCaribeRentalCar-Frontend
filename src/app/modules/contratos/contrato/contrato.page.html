@@ -500,7 +500,7 @@
 
             <ion-row>
               <ion-col size="12">
-                <div *ngIf="vehiculoData" [formGroup]="vehiculoForm">
+                <form *ngIf="vehiculoData" [formGroup]="vehiculoForm">
                   <ion-row>
                     <ion-col size="12">
                       <div class="search-row-buttons">
@@ -632,7 +632,7 @@
                   <div class="card-action-buttons">
                     <ion-button  color="success" (click)="saveProcess('datos_vehiculo')">GUARDAR</ion-button>
                   </div>
-                </div>
+                </form>
                 <div *ngIf="!vehiculoData">
                   <ion-row>
                     <ion-col size="12">
