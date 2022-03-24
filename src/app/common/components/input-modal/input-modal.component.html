@@ -1,0 +1,50 @@
+<ion-header translucent *ngIf="asModal">
+  <ion-toolbar>
+    <ion-title>{{ title }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button class="close-btn" (click)="dismiss()">
+        <ion-icon name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content fullscreen>
+
+  <ion-card class="app-card">
+    <ion-card-content>
+      <ion-row style="height: 100%; align-content: center; justify-content: center">
+        <ion-col size="12" style="height: 90%">
+          <div class="title-container">
+            <p style="color: #af0202;font-size: 1.1em;">
+              <span style="font-weight: 500">Por saldar:</span> {{balanceCobro | currency}}
+            </p>
+          </div>
+
+          <mat-form-field>
+            <mat-label>Monto</mat-label>
+            <mat-icon matPrefix>paid</mat-icon>
+            &nbsp;
+            <input type="number" matInput [(ngModel)]="monto">
+          </mat-form-field>
+
+          <br>
+          <ion-button class="btn-shadow" color="secondary" expand="full" (click)="saveUpdate()">
+            Guardar
+          </ion-button>
+
+        </ion-col>
+      </ion-row>
+    </ion-card-content>
+  </ion-card>
+</ion-content>
+
+<ion-footer>
+  <ion-toolbar>
+    <ion-buttons slot="end">
+      <ion-button color="medium" (click)="dismiss()">
+        Cerrar Ventana
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-footer>

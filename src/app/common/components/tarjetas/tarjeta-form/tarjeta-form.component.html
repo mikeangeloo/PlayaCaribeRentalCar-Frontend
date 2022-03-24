@@ -14,6 +14,9 @@
       <ion-row style="height: 100%; align-content: center; justify-content: center">
         <ion-col size="12" style="height: 90%">
           <div class="title-container">
+            <p style="color: #af0202;font-size: 1.1em;" *ngIf="cardForm.controls.c_charge_method.value === 2">
+              <span style="font-weight: 500">Por saldar:</span> {{montoCobrar | currency}}
+            </p>
           </div>
           <ng-container>
             <form [formGroup]="cardForm">
@@ -39,13 +42,13 @@
                 </ion-col>
                 <ion-col size="4">
                   <mat-form-field appearance="legacy">
-                    <mat-label>Método de Pago</mat-label>
-                    <mat-select formControlName="c_method">
-                      <mat-option value="DC">Débito</mat-option>
-                      <mat-option value="CC">Crédito</mat-option>
+                    <mat-label>Tipo de Pago</mat-label>
+                    <mat-select formControlName="c_charge_method">
+                      <mat-option [value]="1">PreAutorización</mat-option>
+                      <mat-option [value]="2">Pago</mat-option>
                     </mat-select>
                     <mat-icon matSuffix>branding_watermark</mat-icon>
-                    <mat-error *ngIf="cardForm.controls['c_method'].errors?.required">Campo requerido
+                    <mat-error *ngIf="cardForm.controls['c_charge_method'].errors?.required">Campo requerido
                     </mat-error>
                   </mat-form-field>
                 </ion-col>
@@ -157,6 +160,27 @@
                   </mat-form-field>
                 </ion-col>
               </ion-row> <!-- c_month, c_year, c_code-->
+
+              <hr>
+
+              <ion-row *ngIf="needCaptureAmount">
+                <ion-col size>
+                  <mat-form-field appearance="legacy">
+                    <mat-label>Cod. Banco</mat-label>
+                    <input type="text" matInput formControlName="cod_banco">
+                    <mat-error *ngIf="cardForm.controls['cod_banco'].errors?.required">Campo requerido
+                    </mat-error>
+                  </mat-form-field>
+                </ion-col>
+                <ion-col size>
+                  <mat-form-field appearance="legacy">
+                    <mat-label>Monto cobrado</mat-label>
+                    <input type="number" matInput formControlName="monto">
+                    <mat-error *ngIf="cardForm.controls['monto'].errors?.required">Campo requerido
+                    </mat-error>
+                  </mat-form-field>
+                </ion-col>
+              </ion-row>
             </form> <!-- cardForm-->
 
 

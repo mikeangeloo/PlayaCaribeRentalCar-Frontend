@@ -680,149 +680,246 @@
                 <br>
                 <mat-divider></mat-divider>
                 <br>
-                <div>
-                  <ion-row>
-                    <ion-col size="12" size-md="6" class="ion-align-self-center">
-                      <h4 style="margin: 0;" class="ion-text-center ion-text-md-left">PRE-AUTORIZACIONES</h4>
-                    </ion-col>
-                    <ion-col size="12" size-md="6" class="ion-text-end">
-                      <button mat-raised-button class="button-secondary" (click)="agregarTarjetaForm(1, null, true)">
-                        <span style="font-size: 1.3rem;margin-right: 0.5rem;">+</span> <ion-icon name="card"></ion-icon> &nbsp;Tarjeta
-                      </button>
-                    </ion-col>
-                  </ion-row>
-
-                  <ng-container *ngFor="let cobranzaAuth of cobranzaProgData">
-                    <ion-row class="border-ion-row" *ngIf="cobranzaAuth.tipo == 1">
-                      <ion-col size-md="12">
-                        <table class="cards-table">
-                          <tbody>
-                          <tr>
-                            <td style="min-width: 60px; max-width: 60px">
-                              <div class="action-buttons">
-                                <button *ngIf="!cobranzaAuth.id || cobranzaAuth.edit === true" (click)="updateSaveCobro(cobranzaAuth)" class="mat-elevation-z0 button-success" mat-mini-fab>
-                                  <mat-icon>save</mat-icon>
-                                </button>
-                                <button *ngIf="cobranzaAuth.id && cobranzaAuth.edit !== true" (click)="cancelCobro(cobranzaAuth)" class="mat-elevation-z0" mat-mini-fab color="warn">
-                                  <mat-icon>remove</mat-icon>
-                                </button>
-                                <button *ngIf="cobranzaAuth.edit !== true && cobranzaAuth.id" (click)="enableDisableEditCobro(cobranzaAuth, true)" style="margin-top: 10px" class="mat-elevation-z0" mat-mini-fab color="accent">
-                                  <mat-icon>edit</mat-icon>
-                                </button>
-                                <button *ngIf="cobranzaAuth.edit === true && cobranzaAuth.id" (click)="enableDisableEditCobro(cobranzaAuth, false)" style="margin-top: 10px" class="mat-elevation-z0 button-cancel" mat-mini-fab>
-                                  <mat-icon>cancel</mat-icon>
-                                </button>
-                              </div>
-
-                            </td>
-                            <td>
-                              {{(cobranzaAuth.tarjeta && cobranzaAuth.tarjeta.c_type) ? cobranzaAuth.tarjeta.c_type : '--'}}
-                              <br>
-                              <button *ngIf="cobranzaAuth.edit === true && cobranzaAuth.id" (click)="updateTarjeta(cobranzaAuth, 1)" style="margin-top: 10px" class="mat-elevation-z0 button-secondary" mat-icon-button>
-                                <mat-icon>price_change</mat-icon>
-                              </button>
-                            </td>
-                            <td>{{(cobranzaAuth.tarjeta && cobranzaAuth.tarjeta.c_method) ? cobranzaAuth.tarjeta.c_method : '--'}}</td>
-                            <td>{{(cobranzaAuth.tarjeta && (cobranzaAuth.tarjeta.c_cn1 && cobranzaAuth.tarjeta.c_cn4)) ? cobranzaAuth.tarjeta.c_cn1 + '*' + cobranzaAuth.tarjeta.c_cn4: '--'}}</td>
-                            <td>{{(cobranzaAuth.tarjeta && (cobranzaAuth.tarjeta.c_month && cobranzaAuth.tarjeta.c_year)) ? cobranzaAuth.tarjeta.c_month + '/' + cobranzaAuth.tarjeta.c_year: '--'}}</td>
-                            <td>
-                              <div class="table-input">
-                                PRE-AUTH: <input type="text" [(ngModel)]="cobranzaAuth.cod_banco" [readOnly]="cobranzaAuth.edit !== true">
-                                <p class="input-hint" *ngIf="cobranzaAuth.edit !== true">Solo Lectura</p>
-                              </div>
-                            </td>
-                            <td>
-                              <div class="table-input">
-                                MONTO ({{cobranzaAuth.moneda}}): <input type="number" [(ngModel)]="cobranzaAuth.monto" [readOnly]="cobranzaAuth.edit !== true">
-                                <p class="input-hint" *ngIf="cobranzaAuth.edit !== true">Solo Lectura</p>
-                              </div>
-                            </td>
-                          </tr>
-                          </tbody>
-                        </table>
-                      </ion-col>
-                      <ion-col size-md="12" class="ion-no-padding">
-                        <app-modelos-docs model="cobranza" docType="voucher" btnSize="small" [justButton]="true" [fullSize]="true" [model_id_value]="cobranzaAuth.id">
-                          <legend name="legend">Img. Voucher</legend>
-                        </app-modelos-docs>
-                      </ion-col>
-                    </ion-row>
-                  </ng-container>
-
-                </div> <!-- PRE AUTORIZACIONES -->
-
-                <mat-divider></mat-divider>
+                <ion-row>
+                  <ion-col size="6">
+                    <h4 style="margin: 0; padding: 0;">Total: <span style="color: var(--ion-color-success)">{{(generalDataForm && generalDataForm.controls.total.value) ? (generalDataForm.controls.total.value | currency) : '--'}}</span></h4>
+                    <h4 style="margin: 0; padding: 0;">Balance por saldar: <span [ngClass]="{'danger-color': balancePorPagar > 0}">{{(balancePorPagar) ? (balancePorPagar | currency) : ('0' | currency)}}</span></h4>
+                  </ion-col>
+                  <ion-col size="6" class="ion-text-end">
+                    <button mat-raised-button class="button-secondary" (click)="agregarPagoOpt()">
+                      <span style="font-size: 1.3rem;margin-right: 0.5rem;">+</span>&nbsp;Cobro&nbsp;<ion-icon name="wallet"></ion-icon>
+                    </button>
+                  </ion-col>
+                </ion-row>
                 <br>
-                <div>
-                  <ion-row>
-                    <ion-col size="12" size-md="6" class="ion-align-self-center">
-                      <h4 style="margin: 0;" class="ion-text-center ion-text-md-left">CARGOS</h4>
-                      <ion-row>
-                        <ion-col size="6" class="ion-no-padding">
-                          <h4 style="margin: 0; padding: 0;">Total: <span style="color: var(--ion-color-success)">{{(generalDataForm && generalDataForm.controls.total.value) ? (generalDataForm.controls.total.value | currency) : '--'}}</span></h4>
-                          <h4 style="margin: 0; padding: 0;">Balance por saldar: <span [ngClass]="{'danger-color': balancePorPagar > 0}">{{(balancePorPagar) ? (balancePorPagar | currency) : ('0' | currency)}}</span></h4>
-                        </ion-col>
-                      </ion-row>
-                    </ion-col>
-                    <ion-col size="12" size-md="6" class="ion-text-end">
-                      <button mat-raised-button class="button-secondary" (click)="agregarTarjetaForm(2, null, true)">
-                        <span style="font-size: 1.3rem;margin-right: 0.5rem;">+</span> <ion-icon name="card"></ion-icon> &nbsp;Tarjeta
-                      </button>
-                    </ion-col>
-                  </ion-row>
+                <ion-row>
+                  <ion-col size="12" size-md="6">
+                    <ion-card style="margin: 0;">
+                      <ion-card-content>
+                        <div class="accordion-title">
+                          <span class="icon">
+                             <ion-icon name="checkmark-circle" [color]="(balancePorPagar == 0) ? 'success': ''"></ion-icon>
+                          </span>
+                          <span>
+                            Pagado
+                          </span>
+                          <span>
+                            {{pagadoTotal | currency}}
+                          </span>
+                        </div>
 
-                  <ng-container *ngFor="let cobranzaPago of cobranzaProgData">
-                    <ion-row class="border-ion-row" *ngIf="cobranzaPago.tipo === 2">
-                      <ion-col size="12">
-                        <table class="cards-table">
-                          <tbody>
-                          <tr>
-                            <td style="min-width: 60px; max-width: 60px">
-                              <div class="action-buttons">
-                                <button *ngIf="!cobranzaPago.id || cobranzaPago.edit === true" (click)="updateSaveCobro(cobranzaPago)" class="mat-elevation-z0 button-success" mat-mini-fab>
-                                  <mat-icon>save</mat-icon>
-                                </button>
-                                <button *ngIf="cobranzaPago.id && cobranzaPago.edit !== true" (click)="cancelCobro(cobranzaPago)" class="mat-elevation-z0" mat-mini-fab color="warn">
-                                  <mat-icon>remove</mat-icon>
-                                </button>
-                                <button *ngIf="cobranzaPago.edit !== true && cobranzaPago.id" (click)="enableDisableEditCobro(cobranzaPago, true)" style="margin-top: 10px" class="mat-elevation-z0" mat-mini-fab color="accent">
-                                  <mat-icon>edit</mat-icon>
-                                </button>
-                                <button *ngIf="cobranzaPago.edit === true && cobranzaPago.id" (click)="enableDisableEditCobro(cobranzaPago, false)" style="margin-top: 10px" class="mat-elevation-z0 button-cancel" mat-mini-fab>
-                                  <mat-icon>cancel</mat-icon>
-                                </button>
-                              </div>
+                        <mat-accordion>
+                          <ng-container *ngFor="let cobranzaPago of cobranzaProgData">
+                            <mat-expansion-panel style="margin-top: 1rem" *ngIf="cobranzaPago.tipo === cobranzaTipos.PAGOTARJETA">
+                              <mat-expansion-panel-header >
+                                <mat-panel-title>
+                                  Tarjeta
+                                </mat-panel-title>
+                                <mat-panel-description>
+                                  <div class="tarjeta-resume">
+                                  <span class="tipo-tarjeta">
+                                    {{(cobranzaPago.tarjeta && cobranzaPago.tarjeta.c_type) ? cobranzaPago.tarjeta.c_type : '--'}}
+                                  </span>
+                                    <span>
+                                    {{(cobranzaPago.tarjeta && cobranzaPago.tarjeta.c_cn4) ? cobranzaPago.tarjeta.c_cn4 : '--'}}
+                                  </span>
+                                    <span>
+                                       {{(cobranzaPago.monto) ? (cobranzaPago.monto | currency) : ('0' | currency) }} {{cobranzaPago.moneda}}
+                                  </span>
+                                  </div>
+                                </mat-panel-description>
+                              </mat-expansion-panel-header>
+                              <ion-row class="border-ion-row">
+                                <ion-col size="12">
+                                  <ion-row>
+                                    <ion-col size="fill">
+                                      <div class="action-buttons">
+                                        <button *ngIf="cobranzaPago.id && cobranzaPago.edit !== true" (click)="cancelCobro(cobranzaPago)" class="mat-elevation-z0" mat-mini-fab color="warn">
+                                          <mat-icon>remove</mat-icon>
+                                        </button>
+                                        <button *ngIf="cobranzaPago.edit !== true && cobranzaPago.id" (click)="editCobro(cobranzaTipos.PAGOTARJETA, cobranzaPago)" style="margin-top: 10px" class="mat-elevation-z0" mat-mini-fab color="accent">
+                                          <mat-icon>edit</mat-icon>
+                                        </button>
+                                      </div>
+                                    </ion-col>
+                                    <ion-col size>
+                                      <div class="info-card">
+                                        <div class="info-row">
+                                          <span>Tipo Tarjeta: </span>
+                                          <p>
+                                            {{(cobranzaPago.tarjeta && cobranzaPago.tarjeta.c_type) ? cobranzaPago.tarjeta.c_type : '--'}}
+                                          </p>
+                                        </div>
+                                        <div class="info-row">
+                                          <span>Num. Tarjeta: </span>
+                                          <p>
+                                            {{(cobranzaPago.tarjeta && (cobranzaPago.tarjeta.c_cn1 && cobranzaPago.tarjeta.c_cn4)) ? cobranzaPago.tarjeta.c_cn1 + '*' + cobranzaPago.tarjeta.c_cn4: '--'}}
+                                          </p>
+                                        </div>
+                                        <div class="info-row">
+                                          <span>Mes / Año: </span>
+                                          <p>
+                                            {{(cobranzaPago.tarjeta && (cobranzaPago.tarjeta.c_month && cobranzaPago.tarjeta.c_year)) ? cobranzaPago.tarjeta.c_month + '/' + cobranzaPago.tarjeta.c_year: '--'}}
+                                          </p>
+                                        </div>
+                                        <div class="info-row">
+                                          <span>Código Banco: </span>
+                                          <p>
+                                            {{cobranzaPago.cod_banco}}
+                                          </p>
+                                        </div>
+                                        <div class="info-row">
+                                          <span>Monto: </span>
+                                          <p>
+                                            {{cobranzaPago.monto | currency}} {{cobranzaPago.moneda}}
+                                          </p>
+                                        </div>
+                                      </div>
+                                    </ion-col>
+                                  </ion-row>
+                                </ion-col>
+                                <ion-col size="12" class="ion-no-padding">
+                                  <app-modelos-docs model="cobranza" docType="voucher" btnSize="small" [justButton]="true" [fullSize]="true" [model_id_value]="cobranzaPago.id">
+                                    <legend name="legend">Img. Voucher</legend>
+                                  </app-modelos-docs>
+                                </ion-col>
+                              </ion-row>
+                            </mat-expansion-panel>
+                            <mat-expansion-panel style="margin-top: 1rem"  *ngIf="cobranzaPago.tipo === cobranzaTipos.PAGOEFECTIVO" >
+                              <mat-expansion-panel-header #panelH>
+                                <mat-panel-title>
+                                  Efectivo
+                                </mat-panel-title>
+                                <mat-panel-description>
+                                  <div class="tarjeta-resume">
+                                <span style="padding-right: 0.5em">
+                                  {{cobranzaPago.monto | currency}} {{cobranzaPago.moneda}}
+                                </span>
+                                  </div>
+                                </mat-panel-description>
+                              </mat-expansion-panel-header>
+                              <ion-row>
+                                <ion-col size="12">
+                                  <div style="display: flex; justify-content: space-evenly;">
+                                    <button *ngIf="cobranzaPago.id && cobranzaPago.edit !== true" (click)="cancelCobro(cobranzaPago)" class="mat-elevation-z0" mat-mini-fab color="warn">
+                                      <mat-icon>remove</mat-icon>
+                                    </button>
+                                    <button *ngIf="cobranzaPago.edit !== true && cobranzaPago.id" (click)="editCobro(cobranzaTipos.PAGOEFECTIVO, cobranzaPago)" class="mat-elevation-z0" mat-mini-fab color="accent">
+                                      <mat-icon>edit</mat-icon>
+                                    </button>
+                                  </div>
 
-                            </td>
-                            <td>{{(cobranzaPago.tarjeta && cobranzaPago.tarjeta.c_type) ? cobranzaPago.tarjeta.c_type : '--'}}</td>
-                            <td>{{(cobranzaPago.tarjeta && cobranzaPago.tarjeta.c_method) ? cobranzaPago.tarjeta.c_method : '--'}}</td>
-                            <td>{{(cobranzaPago.tarjeta && (cobranzaPago.tarjeta.c_cn1 && cobranzaPago.tarjeta.c_cn4)) ? cobranzaPago.tarjeta.c_cn1 + '*' + cobranzaPago.tarjeta.c_cn4: '--'}}</td>
-                            <td>{{(cobranzaPago.tarjeta && (cobranzaPago.tarjeta.c_month && cobranzaPago.tarjeta.c_year)) ? cobranzaPago.tarjeta.c_month + '/' + cobranzaPago.tarjeta.c_year: '--'}}</td>
-                            <td>
-                              <div class="table-input">
-                                PAGO: <input type="text" [(ngModel)]="cobranzaPago.cod_banco" [readOnly]="cobranzaPago.edit !== true">
-                                <p class="input-hint" *ngIf="cobranzaPago.edit !== true">Solo Lectura</p>
-                              </div>
-                            </td>
-                            <td>
-                              <div class="table-input">
-                                MONTO ({{cobranzaPago.moneda}}): <input type="number" [(ngModel)]="cobranzaPago.monto" [readOnly]="cobranzaPago.edit !== true">
-                                <p class="input-hint" *ngIf="cobranzaPago.edit !== true">Solo Lectura</p>
-                              </div>
-                            </td>
-                          </tr>
-                          </tbody>
-                        </table>
-                      </ion-col>
-                      <ion-col size="12" class="ion-no-padding">
-                        <app-modelos-docs model="cobranza" docType="voucher" btnSize="small" [justButton]="true" [fullSize]="true" [model_id_value]="cobranzaPago.id">
-                          <legend name="legend">Img. Voucher</legend>
-                        </app-modelos-docs>
-                      </ion-col>
-                    </ion-row>
-                  </ng-container>
+                                </ion-col>
+                              </ion-row>
 
-                </div> <!-- CARGOS -->
+                            </mat-expansion-panel>
+                          </ng-container>
+
+                        </mat-accordion>
+                      </ion-card-content>
+                    </ion-card>
+
+                  </ion-col>
+                  <ion-col size="12" size-md="6">
+                    <ion-card style="margin: 0;">
+                      <ion-card-content>
+                        <div class="accordion-title">
+                        <span class="icon">
+                          <ion-icon name="checkmark-circle" [color]="(pagadoAutTotal > 0) ? 'success': ''"></ion-icon>
+                        </span>
+                          <span>
+                          Pre autorización
+                        </span>
+                          <span>
+                          {{pagadoAutTotal | currency}}
+                        </span>
+                        </div>
+
+                        <mat-accordion>
+                          <ng-container *ngFor="let cobranzaAuth of cobranzaProgData">
+                            <mat-expansion-panel *ngIf="cobranzaAuth.tipo === cobranzaTipos.PREAUTHORIZACION" >
+                              <mat-expansion-panel-header>
+                                <mat-panel-title>
+                                  Tarjeta
+                                </mat-panel-title>
+                                <mat-panel-description>
+                                  <div class="tarjeta-resume">
+                                  <span class="tipo-tarjeta">
+                                    {{(cobranzaAuth.tarjeta && cobranzaAuth.tarjeta.c_type) ? cobranzaAuth.tarjeta.c_type : '--'}}
+                                  </span>
+                                    <span>
+                                    {{(cobranzaAuth.tarjeta && cobranzaAuth.tarjeta.c_cn4) ? cobranzaAuth.tarjeta.c_cn4 : '--'}}
+                                  </span>
+                                    <span>
+                                       {{(cobranzaAuth.monto) ? (cobranzaAuth.monto | currency) : ('0' | currency) }} {{cobranzaAuth.moneda}}
+                                  </span>
+                                  </div>
+                                </mat-panel-description>
+                              </mat-expansion-panel-header>
+                              <ion-row class="border-ion-row">
+                                <ion-col size="12">
+                                  <ion-row>
+                                    <ion-col size="fill">
+                                      <div class="action-buttons">
+                                        <button *ngIf="cobranzaAuth.id && cobranzaAuth.edit !== true" (click)="cancelCobro(cobranzaAuth)" class="mat-elevation-z0" mat-mini-fab color="warn">
+                                          <mat-icon>remove</mat-icon>
+                                        </button>
+                                        <button *ngIf="cobranzaAuth.edit !== true && cobranzaAuth.id" (click)="editCobro(cobranzaTipos.PREAUTHORIZACION, cobranzaAuth)" style="margin-top: 10px" class="mat-elevation-z0" mat-mini-fab color="accent">
+                                          <mat-icon>edit</mat-icon>
+                                        </button>
+                                      </div>
+                                    </ion-col>
+                                    <ion-col size>
+                                      <div class="info-card">
+                                        <div class="info-row">
+                                          <span>Tipo Tarjeta: </span>
+                                          <p>
+                                            {{(cobranzaAuth.tarjeta && cobranzaAuth.tarjeta.c_type) ? cobranzaAuth.tarjeta.c_type : '--'}}
+                                          </p>
+                                        </div>
+                                        <div class="info-row">
+                                          <span>Num. Tarjeta: </span>
+                                          <p>
+                                            {{(cobranzaAuth.tarjeta && (cobranzaAuth.tarjeta.c_cn1 && cobranzaAuth.tarjeta.c_cn4)) ? cobranzaAuth.tarjeta.c_cn1 + '*' + cobranzaAuth.tarjeta.c_cn4: '--'}}
+                                          </p>
+                                        </div>
+                                        <div class="info-row">
+                                          <span>Mes / Año: </span>
+                                          <p>
+                                            {{(cobranzaAuth.tarjeta && (cobranzaAuth.tarjeta.c_month && cobranzaAuth.tarjeta.c_year)) ? cobranzaAuth.tarjeta.c_month + '/' + cobranzaAuth.tarjeta.c_year: '--'}}
+                                          </p>
+                                        </div>
+                                        <div class="info-row">
+                                          <span>Código Banco: </span>
+                                          <p>
+                                            {{cobranzaAuth.cod_banco}}
+                                          </p>
+                                        </div>
+                                        <div class="info-row">
+                                          <span>Monto: </span>
+                                          <p>
+                                            {{cobranzaAuth.monto | currency}} {{cobranzaAuth.moneda}}
+                                          </p>
+                                        </div>
+                                      </div>
+                                    </ion-col>
+                                  </ion-row>
+                                </ion-col>
+                                <ion-col size="12" class="ion-no-padding">
+                                  <app-modelos-docs model="cobranza" docType="voucher" btnSize="small" [justButton]="true" [fullSize]="true" [model_id_value]="cobranzaAuth.id">
+                                    <legend name="legend">Img. Voucher</legend>
+                                  </app-modelos-docs>
+                                </ion-col>
+                              </ion-row>
+                            </mat-expansion-panel>
+                          </ng-container>
+
+                        </mat-accordion>
+                      </ion-card-content>
+                    </ion-card>
+
+                  </ion-col>
+                </ion-row> <!-- Pagado | PreAutorización -->
 
               </ion-card-content>
             </ion-card>

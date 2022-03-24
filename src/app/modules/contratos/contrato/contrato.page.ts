@@ -1,20 +1,20 @@
 import {AfterViewInit, Component, OnInit} from '@angular/core';
-import {NgxMaterialTimepickerTheme} from "ngx-material-timepicker";
-import {Months} from "../../../interfaces/shared/months";
-import * as moment from "moment";
-import {SweetMessagesService} from "../../../services/sweet-messages.service";
-import {CardI} from "../../../interfaces/cards/card.interface";
-import {TarjetaFormComponent} from "../../../common/components/tarjetas/tarjeta-form/tarjeta-form.component";
-import {ModalController} from "@ionic/angular";
-import {MultiTableFilterComponent} from "../../../common/components/multi-table-filter/multi-table-filter.component";
-import {FormBuilder, FormGroup, Validators} from "@angular/forms";
-import {DateConv} from "../../../helpers/date-conv";
-import {SessionService} from "../../../services/session.service";
-import {SucursalesI} from "../../../interfaces/sucursales.interface";
-import {TxtConv} from "../../../helpers/txt-conv";
-import {GeneralService} from "../../../services/general.service";
-import {ContratosService} from "../../../services/contratos.service";
-import {ContratoI} from "../../../interfaces/contratos/contrato.interface";
+import {NgxMaterialTimepickerTheme} from 'ngx-material-timepicker';
+import {Months} from '../../../interfaces/shared/months';
+import * as moment from 'moment';
+import {SweetMessagesService} from '../../../services/sweet-messages.service';
+import {CardI} from '../../../interfaces/cards/card.interface';
+import {TarjetaFormComponent} from '../../../common/components/tarjetas/tarjeta-form/tarjeta-form.component';
+import {ActionSheetController, ModalController} from '@ionic/angular';
+import {MultiTableFilterComponent} from '../../../common/components/multi-table-filter/multi-table-filter.component';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {DateConv} from '../../../helpers/date-conv';
+import {SessionService} from '../../../services/session.service';
+import {SucursalesI} from '../../../interfaces/sucursales.interface';
+import {TxtConv} from '../../../helpers/txt-conv';
+import {GeneralService} from '../../../services/general.service';
+import {ContratosService} from '../../../services/contratos.service';
+import {ContratoI} from '../../../interfaces/contratos/contrato.interface';
 import {ContratosStatus, ContratosStatusE} from '../../../enums/contratos-status.enum';
 import {FilesService} from '../../../services/files.service';
 import {DocDataTransfer} from '../../../interfaces/shared/doc-data-tranfer.interface';
@@ -38,8 +38,8 @@ import {CobranzaProgI} from '../../../interfaces/cobranza/cobranza-prog.interfac
 import {CobranzaService} from '../../../services/cobranza.service';
 import {TarifasCategoriasI} from '../../../interfaces/configuracion/tarifas-categorias.interface';
 import {TarifasCategoriasService} from '../../../services/tarifas-categorias.service';
-import {TarifaApolloConfI} from '../../../interfaces/tarifas/tarifa-apollo-conf.interface';
-import {DateTransform} from '../../../helpers/date-trans';
+import {CobranzaTipoE} from '../../../enums/cobranza-tipo.enum';
+import {InputModalComponent} from '../../../common/components/input-modal/input-modal.component';
 
 
 @Component({
@@ -155,6 +155,10 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
   public cobranzaProgData: CobranzaProgI[] = [];
   public balancePorPagar: number;
+  public cobranzaTipos = CobranzaTipoE;
+
+  public pagadoTotal = 0;
+  public pagadoAutTotal = 0;
 
   //#endregion
 
@@ -177,7 +181,8 @@ export class ContratoPage implements OnInit, AfterViewInit {
     public toastServ: ToastMessageService,
     public ubicacionesServ: UbicacionesService,
     public cobranzaServ: CobranzaService,
-    public tarifasCatServ: TarifasCategoriasService
+    public tarifasCatServ: TarifasCategoriasService,
+    public actionSheetController: ActionSheetController
   ) { }
 
   ngOnInit() {
@@ -270,13 +275,14 @@ export class ContratoPage implements OnInit, AfterViewInit {
             if (_cobranzaData && (this.contractData.cobranza && this.contractData.cobranza.length > 0)) {
               console.log('cobranza');
               this.cobranzaProgData = this.contractData.cobranza;
-              if (this.gf.total.value) {
-                this.balancePorPagar = this.gf.total.value;
-                this.recalBalancePorCobrar();
-              }
+
             } else {
               this.cobranzaProgData = [];
             }
+          }
+          if (this.generalDataForm.controls.total.value) {
+
+            this.recalBalancePorCobrar();
           }
         } else {
           console.log(res.errors);
@@ -844,9 +850,60 @@ export class ContratoPage implements OnInit, AfterViewInit {
   //#endregion
 
   //#region CARDS MANAGEMENT
-  async agregarTarjetaForm(concept, _data?: CardI, pushData?: boolean) {
+  async agregarPagoOpt() {
+    const actionSheet = await this.actionSheetController.create({
+      header: 'Opciones',
+      cssClass: 'my-custom-class',
+      backdropDismiss: false,
+      buttons: [
+        {
+          text: 'Pago con Tarjeta',
+          icon: 'card',
+          cssClass: this.balancePorPagar == 0 ? 'disable' : '',
+          handler: () => {
+            console.log('Capturar Pago con Tarjeta clicked');
+            this.agregarTarjetaForm(CobranzaTipoE.PAGOTARJETA, null, true);
+          },
+        },
+        {
+          text: 'Pago Efectivo',
+          icon: 'cash',
+          cssClass: this.balancePorPagar == 0 ? 'disable' : '',
+          handler: () => {
+            console.log('Pago Efectivo clicked');
+            //this.attachFiles();
+            this.agregarEfectivo();
+          },
+        },
+        {
+          text: 'Captura Pre-Autorización',
+          icon: 'card',
+          handler: () => {
+            console.log('Captura Pre-Autorización clicked');
+            this.agregarTarjetaForm(CobranzaTipoE.PREAUTHORIZACION, null, true);
+          },
+        },
+        {
+          text: 'Cancelar',
+          icon: 'close',
+          role: 'cancel',
+          cssClass: 'action-sheet-cancel',
+          handler: () => {
+            console.log('Cancel clicked');
+          },
+        },
+      ],
+    });
+    await actionSheet.present();
+
+    const { role } = await actionSheet.onDidDismiss();
+    console.log('onDidDismiss resolved with role', role);
+  }
+
+  async agregarTarjetaForm(tipo: CobranzaTipoE.PAGOTARJETA | CobranzaTipoE.PREAUTHORIZACION, _data?: CardI, pushData?: boolean, cobranza: CobranzaProgI = null) {
     //const pageEl: HTMLElement = document.querySelector('.ion-page');
     //this.generalService.presentLoading();
+    let _titular = this.cf.nombre.value;
     const modal = await this.modalCtr.create({
       component: TarjetaFormComponent,
       componentProps: {
@@ -854,7 +911,13 @@ export class ContratoPage implements OnInit, AfterViewInit {
         'card_id': (_data && _data.id) ? _data.id : null,
         'cliente_id': this.cf.cliente_id.value,
         'loadLoading': false,
-        'returnCapture': true
+        'returnCapture': true,
+        'needCaptureAmount': true,
+        'cod_banco': (cobranza && cobranza.cod_banco) ? cobranza.cod_banco : null,
+        'monto': (cobranza && cobranza.monto) ? cobranza.monto : null,
+        'tipoPago': tipo,
+        'titularTarj': _titular,
+        'montoCobrar': this.balancePorPagar
       },
       swipeToClose: true,
       cssClass: 'edit-form',
@@ -862,7 +925,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
     });
     await modal.present();
     const {data} = await modal.onWillDismiss();
-    if (data.info) {
+    if (data && data.info) {
       if (pushData && pushData === true) {
         let _prepare: CobranzaProgI = {
           id: null,
@@ -870,7 +933,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
           edit: false,
           contrato_id: this.contract_id,
           cliente_id: this.cf.cliente_id.value,
-          cod_banco: null,
+          cod_banco: data.info.cod_banco,
           tarjeta_id: data.info.id,
           estatus: null,
           created_at: null,
@@ -878,14 +941,61 @@ export class ContratoPage implements OnInit, AfterViewInit {
           fecha_procesado: null,
           fecha_reg: null,
           moneda: this.baseCurrency,
-          monto: null,
-          tipo: concept,
+          monto: data.info.monto,
+          tipo: data.info.c_charge_method,
           res_banco: null,
           updated_at: null,
+          cobranza_id: (cobranza && cobranza.id) ? cobranza.id : null
         }
-        this.cobranzaProgData.push(_prepare);
+        //this.cobranzaProgData.push(_prepare);
         this.saveProcess('cobranza', null, _prepare);
       }
+      return data.info
+      //console.log('data.info --->', data);
+      //this.loadClienteData();
+    } else {
+      return null;
+    }
+  }
+
+  async agregarEfectivo(cobranza: CobranzaProgI = null) {
+    const modal = await this.modalCtr.create({
+      component: InputModalComponent,
+      componentProps: {
+        'asModal': true,
+        'monto': (cobranza && cobranza.monto) ? cobranza.monto : null,
+        'balanceCobro': this.balancePorPagar,
+        'cobranza_id': (cobranza && cobranza.id) ? cobranza.id : null
+      },
+      swipeToClose: true,
+      cssClass: 'small-form',
+      //presentingElement: pageEl
+    });
+    await modal.present();
+    const {data} = await modal.onWillDismiss();
+    if (data && data.info) {
+      let _prepare: CobranzaProgI = {
+        id: null,
+        tarjeta: null,
+        edit: false,
+        contrato_id: this.contract_id,
+        cliente_id: this.cf.cliente_id.value,
+        cod_banco: null,
+        tarjeta_id: null,
+        estatus: null,
+        created_at: null,
+        fecha_cargo: null,
+        fecha_procesado: null,
+        fecha_reg: null,
+        moneda: this.baseCurrency,
+        monto: data.info.monto,
+        tipo: CobranzaTipoE.PAGOEFECTIVO,
+        res_banco: null,
+        updated_at: null,
+        cobranza_id: (cobranza && cobranza.id) ? cobranza.id : null
+      }
+      //this.cobranzaProgData.push(_prepare);
+      this.saveProcess('cobranza', null, _prepare);
       return data.info
       //console.log('data.info --->', data);
       //this.loadClienteData();
@@ -1527,6 +1637,15 @@ export class ContratoPage implements OnInit, AfterViewInit {
   //#endregion
 
   //#region COBRANZAPROG FUNCTIONS
+  async editCobro(tipo: CobranzaTipoE.PAGOTARJETA | CobranzaTipoE.PREAUTHORIZACION | CobranzaTipoE.PAGOEFECTIVO, cobro: CobranzaProgI) {
+    if (tipo === CobranzaTipoE.PREAUTHORIZACION || tipo === CobranzaTipoE.PAGOTARJETA) {
+      await this.agregarTarjetaForm(cobro.tipo, cobro.tarjeta, true, cobro);
+    }
+
+    if (tipo === CobranzaTipoE.PAGOEFECTIVO) {
+      await this.agregarEfectivo(cobro);
+    }
+  }
   enableDisableEditCobro(cobro: CobranzaProgI, enable: boolean) {
     cobro.edit = enable;
   }
@@ -1562,18 +1681,37 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
   recalBalancePorCobrar() {
     let total = 0;
-    let _data = this.cobranzaProgData.filter(x => x.tipo == 2);
+    this.balancePorPagar = this.generalDataForm.controls.total.value;
+    let _data = this.cobranzaProgData.filter(x => x.tipo == 2 || x.tipo == 3);
     console.log('recalBalancePorCobrar', _data);
     if (_data && _data.length > 0) {
       for (let i = 0; i < _data.length; i++) {
-        total =  parseFloat(total + _data[i].monto);
+        total =  parseFloat(Number(Number(total) + Number(_data[i].monto)).toFixed(2));
       }
     }
     if (this.balancePorPagar < total) {
       this.sweetMsgServ.printStatus('El monto acumado de cobro es mayor al balance por cobrar', 'warning');
     }
-    this.balancePorPagar = (this.balancePorPagar -  total);
+    this.balancePorPagar = Number(this.balancePorPagar -  total);
 
+    this.setTotalPago();
+  }
+
+  setTotalPago() {
+    this.pagadoAutTotal = 0;
+    this.pagadoTotal = 0;
+    let _dataPagado = this.cobranzaProgData.filter(x => x.tipo == (CobranzaTipoE.PAGOTARJETA || CobranzaTipoE.PAGOEFECTIVO));
+    if (_dataPagado && _dataPagado.length > 0) {
+      for (let i = 0; i < _dataPagado.length; i++) {
+        this.pagadoTotal =  parseFloat(Number(Number(this.pagadoTotal) + Number(_dataPagado[i].monto)).toFixed(2));
+      }
+    }
+    let _dataPreAutorizado = this.cobranzaProgData.filter(x => x.tipo == (CobranzaTipoE.PREAUTHORIZACION));
+    if (_dataPreAutorizado && _dataPreAutorizado.length > 0) {
+      for (let i = 0; i < _dataPreAutorizado.length; i++) {
+        this.pagadoAutTotal =  parseFloat(Number(Number(this.pagadoAutTotal) + Number(_dataPreAutorizado[i].monto)).toFixed(2));
+      }
+    }
   }
 
   //#endregion
@@ -1629,7 +1767,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
           delete payload.tarjeta;
         }
         _payload = payload;
-        _payload.cobranza_id = payload.id;
+        //_payload.cobranza_id = payload.id;
         break;
     }
 

@@ -40,6 +40,7 @@ import {ModelosDocsComponent} from './components/modelos-docs/modelos-docs.compo
 import {TarifasCategoriasTableComponent} from './components/configuracion/precios/tarifas-categorias-table/tarifas-categorias-table.component';
 import {TarifaCategoriaFormComponent} from './components/configuracion/precios/tarifa-categoria-form/tarifa-categoria-form.component';
 import {FrecuenciaConfComponent} from './frecuencia-conf/frecuencia-conf.component';
+import {InputModalComponent} from './components/input-modal/input-modal.component';
 
 
 
@@ -79,7 +80,8 @@ import {FrecuenciaConfComponent} from './frecuencia-conf/frecuencia-conf.compone
     ModelosDocsComponent,
     TarifaCategoriaFormComponent,
     TarifasCategoriasTableComponent,
-    FrecuenciaConfComponent
+    FrecuenciaConfComponent,
+    InputModalComponent
   ],
   exports: [
     HotelesListComponent,
@@ -116,7 +118,8 @@ import {FrecuenciaConfComponent} from './frecuencia-conf/frecuencia-conf.compone
     ModelosDocsComponent,
     TarifaCategoriaFormComponent,
     TarifasCategoriasTableComponent,
-    FrecuenciaConfComponent
+    FrecuenciaConfComponent,
+    InputModalComponent
   ],
   entryComponents: [
     HotelesListComponent,
@@ -153,7 +156,8 @@ import {FrecuenciaConfComponent} from './frecuencia-conf/frecuencia-conf.compone
     ModelosDocsComponent,
     TarifaCategoriaFormComponent,
     TarifasCategoriasTableComponent,
-    FrecuenciaConfComponent
+    FrecuenciaConfComponent,
+    InputModalComponent
   ],
     imports: [
         CommonModule,
