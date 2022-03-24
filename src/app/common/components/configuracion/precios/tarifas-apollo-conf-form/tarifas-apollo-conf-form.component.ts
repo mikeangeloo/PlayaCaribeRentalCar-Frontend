@@ -48,7 +48,7 @@ export class TarifasApolloConfFormComponent implements OnInit {
     this.generalServ.dismissLoading();
   }
 
-  saveUpdate(row: TarifaApolloConfI) {
+  saveUpdate() {
     let success = 0;
     let errors = 0;
     let totalProcess = 0;

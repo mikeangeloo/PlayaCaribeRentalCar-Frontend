@@ -11,8 +11,8 @@ export interface TarifaApolloConfI
     precio_final_editable?: number;
     precio_final?: number;
     required?: boolean;
-    created_at?: Date;
-    updated_at?: Date;
+    created_at?: string;
+    updated_at?: string;
 
     enable?: boolean;
 
