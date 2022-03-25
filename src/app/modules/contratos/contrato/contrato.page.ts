@@ -100,6 +100,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
   public months = Months;
   public validYears: any[];
   public _today = DateConv.transFormDate(moment.now(), 'regular');
+  public _maxDate: any;
   public contractFechaSalida = DateConv.transFormDate(moment.now(), 'regular');
   public useCalendar = false;
   //#endregion
@@ -402,6 +403,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
     if (data && data.fecha_salida) {
       this._today = data.fecha_salida;
       this.contractFechaSalida = data.fecha_salida;
+      this._maxDate = DateConv.transFormDate(this._today, 'moment').add(30, 'days');
       console.log('new min date --->', this._today);
     }
 
@@ -502,12 +504,15 @@ export class ContratoPage implements OnInit, AfterViewInit {
     }
     if (_totalDias < 7) {
       this.baseRentFrequency = 'days';
+      this.gf.con_descuento.patchValue(null);
+      this.gf.con_descuento.disable();
     } else if (_totalDias >= 7 && _totalDias < 30) {
       this.baseRentFrequency = 'weeks';
     } else if (_totalDias >= 30) {
       this.baseRentFrequency = 'months';
     }
     this.enableDisableDescuentoFreq(true);
+
   }
   //#endregion
 
@@ -1015,9 +1020,12 @@ export class ContratoPage implements OnInit, AfterViewInit {
   async openModalSearch(_endpoint: string, section: string) {
     //const pageEl: HTMLElement = document.querySelector('.ion-page');
     //this.generalService.presentLoading();
-    let _payload = {
-      orderBy: 'tarifa_categoria_id',
-      tarifa_categoria_id: this.selectedTarifaCat.id
+    let _payload = null;
+    if (this.selectedTarifaCat && this.selectedTarifaCat.id) {
+      _payload = {
+        orderBy: 'tarifa_categoria_id',
+        tarifa_categoria_id: this.selectedTarifaCat.id
+      }
     }
     const modal = await this.modalCtr.create({
       component: MultiTableFilterComponent,
@@ -1186,8 +1194,10 @@ export class ContratoPage implements OnInit, AfterViewInit {
           this.gf.con_descuento.enable();
         } else {
           this.selectedTarifaCat.tarifas[i].enable = false;
+          if (this.gf.tarifa_apollo_id.value == this.selectedTarifaCat.tarifas[i].id) {
+            this.gf.tarifa_apollo_id.patchValue(null);
+          }
         }
-
       }
     }
   }
@@ -1263,8 +1273,15 @@ export class ContratoPage implements OnInit, AfterViewInit {
     }
   }
 
-  setReturnDateChange(inputDays?) {
-    console.log('setReturnDateChange');
+  setReturnDateChange(inputDays?, byDays?: boolean) {
+    console.log('setReturnDateChange', inputDays);
+    this._maxDate = DateConv.transFormDate(this._today, 'moment').add(30, 'days');
+    if (!inputDays && byDays) {
+      this.gf.total_dias.patchValue( null);
+      this.rangoFechas.fecha_salida.patchValue(this._today);
+      this.rangoFechas.fecha_retorno.patchValue(null);
+      return;
+    }
     if (inputDays) {
       //let _returnDate = moment().add(inputDays, 'days');
       let _returnDate = DateConv.transFormDate(this._today, 'moment').add(inputDays, 'days');
@@ -1277,6 +1294,9 @@ export class ContratoPage implements OnInit, AfterViewInit {
       }
       this.gf.total_dias.patchValue(DateConv.diffDays(this.rangoFechas.fecha_salida.value, this.rangoFechas.fecha_retorno.value));
     }
+    setTimeout(() => {
+      this.setBaseRentFrequency()
+    }, 300);
 
 
     this.makeCalc();
@@ -1683,7 +1703,6 @@ export class ContratoPage implements OnInit, AfterViewInit {
     let total = 0;
     this.balancePorPagar = this.generalDataForm.controls.total.value;
     let _data = this.cobranzaProgData.filter(x => x.tipo == 2 || x.tipo == 3);
-    console.log('recalBalancePorCobrar', _data);
     if (_data && _data.length > 0) {
       for (let i = 0; i < _data.length; i++) {
         total =  parseFloat(Number(Number(total) + Number(_data[i].monto)).toFixed(2));
@@ -1700,7 +1719,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
   setTotalPago() {
     this.pagadoAutTotal = 0;
     this.pagadoTotal = 0;
-    let _dataPagado = this.cobranzaProgData.filter(x => x.tipo == (CobranzaTipoE.PAGOTARJETA || CobranzaTipoE.PAGOEFECTIVO));
+    let _dataPagado = this.cobranzaProgData.filter(x => x.tipo == CobranzaTipoE.PAGOTARJETA || x.tipo == CobranzaTipoE.PAGOEFECTIVO);
     if (_dataPagado && _dataPagado.length > 0) {
       for (let i = 0; i < _dataPagado.length; i++) {
         this.pagadoTotal =  parseFloat(Number(Number(this.pagadoTotal) + Number(_dataPagado[i].monto)).toFixed(2));

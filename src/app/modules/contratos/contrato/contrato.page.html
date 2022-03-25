@@ -254,7 +254,7 @@
                       <ion-col size="12" size-md="4" *ngIf="useCalendar === false">
                         <mat-form-field appearance="legacy">
                           <mat-label>Días de renta</mat-label>
-                          <input type="number" max="30" #totalDays matInput formControlName="total_dias" (input)="setReturnDateChange(totalDays.value)">
+                          <input type="number" max="30" #totalDays matInput formControlName="total_dias" (input)="setReturnDateChange(totalDays.value, true)">
                           <span matSuffix>{{(gf.total_dias.value > 1 ? 'días' : 'día')}}</span>
                           <mat-hint style="font-size: 1.1em" *ngIf="rangoFechas.fecha_retorno.value && rangoFechas.fecha_salida.value">
                             <mat-icon style="font-size: 1.1em; vertical-align: middle;">event</mat-icon>
@@ -267,7 +267,7 @@
                       <ion-col size="12" size-md="4" *ngIf="useCalendar === true">
                         <mat-form-field appearance="legacy">
                           <mat-label>Fecha salida - retorno</mat-label>
-                          <mat-date-range-input  [rangePicker]="fechaRetornoRegreso" [formGroup]="rangoFechasGroup" [min]="_today" [max]="30">
+                          <mat-date-range-input  [rangePicker]="fechaRetornoRegreso" [formGroup]="rangoFechasGroup" [min]="_today" [max]="_maxDate">
                             <input matStartDate formControlName="fecha_salida" placeholder="Start date" readonly autocomplete="off" (dateChange)="startDateChange()">
                             <input matEndDate formControlName="fecha_retorno" placeholder="End date" (dateChange)="setReturnDateChange()" readonly autocomplete="off">
                           </mat-date-range-input>
