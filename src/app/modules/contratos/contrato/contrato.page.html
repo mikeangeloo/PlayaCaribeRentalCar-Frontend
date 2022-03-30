@@ -953,9 +953,10 @@
                 <h4 class="ion-text-center">Por diseñar vista ....</h4>
 
                 <ion-row  (loadeddata)="initReviewCanva()">
-                  <ion-col size="12" id="revisionRowW">
-                    <canvas id="revisionC"></canvas>
+                  <ion-col size="12" id="revisionRowW" style="overflow:scroll;">
+                    <canvas id="revisionC" height="700" width="900"></canvas>
                   </ion-col>
+                  <app-checklist-inspector-zone></app-checklist-inspector-zone>
                 </ion-row>
               </ion-card-content>
             </ion-card>

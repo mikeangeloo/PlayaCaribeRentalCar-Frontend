@@ -51,7 +51,7 @@ import {InputModalComponent} from '../../../common/components/input-modal/input-
 export class ContratoPage implements OnInit, AfterViewInit {
 
   //#region STEP CONTROLLER ATTRIBUTES
-  step = 0;
+  step = 4;
   //#endregion
 
   //#region DATOS GENERALES ATTRIBUTES
@@ -631,8 +631,8 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
     console.log('_height', _height);
 
-    canvas.width = _width;
-    canvas.height = _height;
+    //canvas.width = _width;
+    //canvas.height = 800;
 
 
     var background = new Image();

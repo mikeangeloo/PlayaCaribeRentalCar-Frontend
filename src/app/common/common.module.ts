@@ -41,6 +41,7 @@ import {TarifasCategoriasTableComponent} from './components/configuracion/precio
 import {TarifaCategoriaFormComponent} from './components/configuracion/precios/tarifa-categoria-form/tarifa-categoria-form.component';
 import {FrecuenciaConfComponent} from './frecuencia-conf/frecuencia-conf.component';
 import {InputModalComponent} from './components/input-modal/input-modal.component';
+import {ChecklistInspectorZoneComponent} from './components/checklist-inspector-zone/checklist-inspector-zone.component';
 
 
 
@@ -81,7 +82,8 @@ import {InputModalComponent} from './components/input-modal/input-modal.componen
     TarifaCategoriaFormComponent,
     TarifasCategoriasTableComponent,
     FrecuenciaConfComponent,
-    InputModalComponent
+    InputModalComponent,
+    ChecklistInspectorZoneComponent
   ],
   exports: [
     HotelesListComponent,
@@ -119,7 +121,8 @@ import {InputModalComponent} from './components/input-modal/input-modal.componen
     TarifaCategoriaFormComponent,
     TarifasCategoriasTableComponent,
     FrecuenciaConfComponent,
-    InputModalComponent
+    InputModalComponent,
+    ChecklistInspectorZoneComponent
   ],
   entryComponents: [
     HotelesListComponent,
@@ -157,7 +160,8 @@ import {InputModalComponent} from './components/input-modal/input-modal.componen
     TarifaCategoriaFormComponent,
     TarifasCategoriasTableComponent,
     FrecuenciaConfComponent,
-    InputModalComponent
+    InputModalComponent,
+    ChecklistInspectorZoneComponent
   ],
     imports: [
         CommonModule,
