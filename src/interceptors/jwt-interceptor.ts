@@ -5,6 +5,8 @@ import { catchError, tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { SessionService } from 'src/app/services/session.service';
 import { NavController } from '@ionic/angular';
+import {error} from 'protractor';
+import {ToastMessageService} from '../app/services/toast-message.service';
 
 
 /*
@@ -20,7 +22,8 @@ export class JwtInterceptor implements HttpInterceptor {
   constructor(
       public navigate: NavController,
       public router: Router,
-      private SessionService: SessionService
+      private SessionService: SessionService,
+      private toastServ: ToastMessageService
   ) {}
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
      // Preparamamos variables para inyectar en los headers
@@ -51,6 +54,10 @@ export class JwtInterceptor implements HttpInterceptor {
 
     return next.handle(req).pipe(tap((value: HttpEvent<any>) => {
     }), catchError((err: HttpErrorResponse) => {
+      if (err.status === 500) {
+        this.toastServ.presentToast('error', err.statusText, 'top');
+        return throwError(err);
+      }
       // si el estatos es 403 (Forbidden) redirigmos al login
       if (err.status === 403 && this.router.routerState.snapshot.url !== '/landing') {
         this.navigate.navigateRoot('/landing');

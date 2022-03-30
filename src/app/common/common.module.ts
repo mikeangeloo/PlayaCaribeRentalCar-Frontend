@@ -37,6 +37,10 @@ import {UbicacionesFormComponent} from './components/configuracion/ubicaciones/u
 import {UbicacionesTableComponent} from './components/configuracion/ubicaciones/ubicaciones-table/ubicaciones-table.component';
 import {TarifasApolloConfFormComponent} from './components/configuracion/precios/tarifas-apollo-conf-form/tarifas-apollo-conf-form.component';
 import {ModelosDocsComponent} from './components/modelos-docs/modelos-docs.component';
+import {TarifasCategoriasTableComponent} from './components/configuracion/precios/tarifas-categorias-table/tarifas-categorias-table.component';
+import {TarifaCategoriaFormComponent} from './components/configuracion/precios/tarifa-categoria-form/tarifa-categoria-form.component';
+import {FrecuenciaConfComponent} from './frecuencia-conf/frecuencia-conf.component';
+import {InputModalComponent} from './components/input-modal/input-modal.component';
 
 
 
@@ -73,7 +77,11 @@ import {ModelosDocsComponent} from './components/modelos-docs/modelos-docs.compo
     UbicacionesFormComponent,
     UbicacionesTableComponent,
     TarifasApolloConfFormComponent,
-    ModelosDocsComponent
+    ModelosDocsComponent,
+    TarifaCategoriaFormComponent,
+    TarifasCategoriasTableComponent,
+    FrecuenciaConfComponent,
+    InputModalComponent
   ],
   exports: [
     HotelesListComponent,
@@ -107,7 +115,11 @@ import {ModelosDocsComponent} from './components/modelos-docs/modelos-docs.compo
     UbicacionesFormComponent,
     UbicacionesTableComponent,
     TarifasApolloConfFormComponent,
-    ModelosDocsComponent
+    ModelosDocsComponent,
+    TarifaCategoriaFormComponent,
+    TarifasCategoriasTableComponent,
+    FrecuenciaConfComponent,
+    InputModalComponent
   ],
   entryComponents: [
     HotelesListComponent,
@@ -141,7 +153,11 @@ import {ModelosDocsComponent} from './components/modelos-docs/modelos-docs.compo
     UbicacionesFormComponent,
     UbicacionesTableComponent,
     TarifasApolloConfFormComponent,
-    ModelosDocsComponent
+    ModelosDocsComponent,
+    TarifaCategoriaFormComponent,
+    TarifasCategoriasTableComponent,
+    FrecuenciaConfComponent,
+    InputModalComponent
   ],
     imports: [
         CommonModule,

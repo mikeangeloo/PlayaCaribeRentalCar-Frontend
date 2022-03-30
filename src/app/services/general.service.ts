@@ -54,8 +54,8 @@ export class GeneralService {
     return years;
   }
 
-  public getList(endpoint): Observable<any> {
-    return this.httpClient.get<any>(`${this.dashURL}/${endpoint}/list`).pipe(map(response => {
+  public getList(endpoint, payload?): Observable<any> {
+    return this.httpClient.get<any>(`${this.dashURL}/${endpoint}/list`, {params: payload}).pipe(map(response => {
       return response;
     }));
   }

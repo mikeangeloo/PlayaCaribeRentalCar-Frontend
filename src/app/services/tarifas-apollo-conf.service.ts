@@ -40,9 +40,9 @@ export class TarifasApolloConfService {
     }));
   }
 
-  public async _getActive() {
+  public async _getActive(_payload?) {
     try {
-      let res = await this.httpClient.get<any>(`${this.dashURL}/tarifas-apollo-conf`).toPromise();
+      let res = await this.httpClient.get<any>(`${this.dashURL}/tarifas-apollo-conf`, {params: _payload}).toPromise();
       if (res.ok) {
         return {ok: true, data: res.data as TarifaApolloConfI[]}
       }
@@ -57,15 +57,25 @@ export class TarifasApolloConfService {
     }));
   }
 
-  public saveUpdate(data, id?): Observable<any> {
+  public async saveUpdate(data, id?) {
     if (id && id > 0) {
-      return this.httpClient.put<any>(`${this.dashURL}/tarifas-apollo-conf/${id}`, data).pipe(map(response => {
-        return response;
-      }));
+      try {
+        let res = await this.httpClient.put<any>(`${this.dashURL}/tarifas-apollo-conf/${id}`, data).toPromise();
+        if (res.ok) {
+          return {ok: true, message: res.message}
+        }
+      } catch (e) {
+        return {ok: false, errors: e}
+      }
     } else {
-      return this.httpClient.post<any>(`${this.dashURL}/tarifas-apollo-conf`, data).pipe(map(response => {
-        return response;
-      }));
+      try {
+        let res = await this.httpClient.post<any>(`${this.dashURL}/tarifas-apollo-conf`, data).toPromise();
+        if (res.ok) {
+          return {ok: true, message: res.message}
+        }
+      } catch (e) {
+        return {ok: false, errors: e}
+      }
     }
   }
 

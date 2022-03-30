@@ -322,6 +322,11 @@ ion-content {
   background: #F5F3FA;
 }
 
+.disable {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
 .text-overflow {
   text-overflow: ellipsis;
   overflow: hidden;
@@ -666,6 +671,12 @@ mat-header-row {
   @media (min-width: 768px) {
     --height: 90%;
     --width: 85%;
+  }
+}
+.small-form {
+  @media (min-width: 768px) {
+    --height: 35%;
+    --width: 30%;
   }
 }
 //#endregion

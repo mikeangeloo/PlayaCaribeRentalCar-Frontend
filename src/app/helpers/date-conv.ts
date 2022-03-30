@@ -3,7 +3,7 @@ import * as moment from "moment-timezone";
 import {Moment} from 'moment';
 
 export class DateConv {
-    public static transFormDate(date, format: 'military' | 'regular' | 'matrix' | 'slash' | 'time' | 'localTime' | 'localTimeMoment') {
+    public static transFormDate(date, format: 'military' | 'regular' | 'matrix' | 'slash' | 'time' | 'localTime' | 'localTimeMoment' | 'moment') {
         if (!moment.invalid(date)) {
           return false;
         }
@@ -32,6 +32,9 @@ export class DateConv {
             break;
           case 'localTimeMoment':
             convertDate = moment.utc(date).tz(moment.tz.guess());
+            break;
+          case 'moment':
+            convertDate = moment(date);
             break;
         }
         return convertDate;

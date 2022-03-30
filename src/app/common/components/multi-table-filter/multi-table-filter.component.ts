@@ -11,6 +11,7 @@ import {GeneralService} from "../../../services/general.service";
 import {SucursalesService} from "../../../services/sucursales.service";
 import {SweetMessagesService} from "../../../services/sweet-messages.service";
 import {ToastMessageService} from "../../../services/toast-message.service";
+import {VehiculosC} from '../../../interfaces/catalogo-vehiculos/vehiculos.interface';
 
 @Component({
   selector: 'app-multi-table-filter',
@@ -21,6 +22,7 @@ export class MultiTableFilterComponent implements OnInit {
 
   @Input() asModal: boolean;
   @Input() endpoint: string;
+  @Input() payload: any;
   public title = 'Listado de ';
 
   public spinner = false;
@@ -34,6 +36,8 @@ export class MultiTableFilterComponent implements OnInit {
   public searchKey: string;
   @ViewChild(MatPaginator, {static: false}) paginator3: MatPaginator;
   @ViewChild(MatSort, {static: true}) sort: MatSort;
+
+  public vehiculoC = VehiculosC;
 
   constructor(
     public modalCtrl: ModalController,
@@ -70,7 +74,7 @@ export class MultiTableFilterComponent implements OnInit {
     this.listData = null;
     this.spinner = true;
 
-    this.generalServ.getList(this.endpoint).subscribe(response => {
+    this.generalServ.getList(this.endpoint, this.payload).subscribe(response => {
       if (response.ok === true) {
         this.spinner = false;
         this.listData = new MatTableDataSource(response.data);

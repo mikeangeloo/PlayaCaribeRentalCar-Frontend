@@ -16,6 +16,7 @@ import {TarifaApolloConfI} from '../../../../../interfaces/tarifas/tarifa-apollo
 export class TarifasApolloConfFormComponent implements OnInit {
 
   @Input() asModal: boolean;
+  @Input() model: 'vehiculos' | 'tarifas_catalogos';
   public title: string;
   public tarifasApolloConf: TarifaApolloConfI[];
   constructor(
@@ -26,7 +27,7 @@ export class TarifasApolloConfFormComponent implements OnInit {
       private sweetMsg: SweetMessagesService,
       private toastServ: ToastMessageService
   ) {
-    this.title = 'Formulario Tarifas Apollo Conf.';
+    this.title = 'Formulario Tarifas, Frecuencias, Descuentos Apollo Conf.';
   }
 
   async ngOnInit() {
@@ -34,8 +35,11 @@ export class TarifasApolloConfFormComponent implements OnInit {
   }
 
   async loadTarifasApolloConf() {
+    let _payload = {
+      model: this.model
+    }
     this.generalServ.presentLoading();
-    let res = await this.tarifasApolloConfServ._getActive();
+    let res = await this.tarifasApolloConfServ._getActive(_payload);
     if (res.ok) {
       this.tarifasApolloConf = res.data;
     } else {
@@ -44,18 +48,31 @@ export class TarifasApolloConfFormComponent implements OnInit {
     this.generalServ.dismissLoading();
   }
 
-  saveUpdate(row: TarifaApolloConfI) {
-    this.sweetMsg.confirmRequest('¿Estás seguro de querar cambiar la configuración?', 'Esto afectará los precios de cada vehículo en el listado').then((data) => {
+  saveUpdate() {
+    let success = 0;
+    let errors = 0;
+    let totalProcess = 0;
+    this.sweetMsg.confirmRequest('¿Estás seguro de querar cambiar la configuración?', 'Esto afectará los precios de cada elemento en el listado').then(async (data) => {
       if (data.value) {
-        this.tarifasApolloConfServ.saveUpdate(row, row.id).subscribe(res => {
-          if (res.ok) {
-            this.sweetMsg.printStatus(res.message, 'success');
-            this.dismiss(true);
+        for (let i = 0; i < this.tarifasApolloConf.length; i++) {
+          if (this.tarifasApolloConf[i].ap_descuento === true || this.tarifasApolloConf[i].ap_descuento == 1) {
+            totalProcess ++;
+            let res = await this.tarifasApolloConfServ.saveUpdate(this.tarifasApolloConf[i], this.tarifasApolloConf[i].id);
+            if (res.ok) {
+              success ++;
+            } else {
+              errors ++;
+              console.log(res.errors);
+            }
           }
-        }, error => {
-          console.log(error);
-          this.sweetMsg.printStatusArray(error.error.errors, 'error');
-        })
+        }
+        if (totalProcess === success) {
+          this.sweetMsg.printStatus('Información actualizada correctamente', 'success');
+        } else if (totalProcess > success && totalProcess < errors) {
+          this.sweetMsg.printStatus('Se proceso su solicitud pero hay elementos que no fueron procesados correctamente, verifique la información', 'warning');
+        } else if (totalProcess === errors) {
+          this.sweetMsg.printStatus('Hubo un error al momento de procesar la información, intente nuevamente', 'error');
+        }
       }
     })
   }

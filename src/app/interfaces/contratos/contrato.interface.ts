@@ -12,14 +12,21 @@ export interface ContratoI
   tipo_tarifa_id: number;
   tipo_tarifa: string;
 
-  tarifa_modelo_id?: number;
-  tarifa_modelo?: string;
+  modelo_id?: number;
+  modelo?: string;
   vehiculo_clase_id?: number;
   vehiculo_clase?: string;
   vehiculo_clase_precio?: number;
-  comision?: number;
+
+  tarifa_modelo?: string;
+  tarifa_modelo_id?: number;
+  tarifa_apollo_id?: number;
+  tarifa_modelo_label?: string;
+  tarifa_modelo_precio?: number;
+  tarifa_modelo_obj?: string;
 
   precio_unitario_inicial: string;
+  comision?: number;
   precio_unitario_final: string;
   fecha_salida: string;
   fecha_retorno: string;
@@ -29,7 +36,7 @@ export interface ContratoI
   cobros_extras_ids?: number[];
   cobros_extras: TarifasExtrasI[];
   subtotal: number
-  con_descuento: number;
+  con_descuento: number | boolean;
   descuento: number;
   con_iva: number;
   iva: number;

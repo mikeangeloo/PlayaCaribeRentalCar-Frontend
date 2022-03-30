@@ -224,9 +224,11 @@
               <ion-row class="ion-no-padding ion-no-margin">
                 <ion-col size="6">
                   <mat-form-field appearance="legacy">
-                    <mat-label>Precio Renta</mat-label>
-                    <input matInput type="number" formControlName="precio_renta" (ngModelChange)="recalTarifaRow()">
-                    <mat-error *ngIf="vf.precio_renta.errors?.required">Campo requerido</mat-error>
+                    <mat-label>Tarifa</mat-label>
+                    <mat-select formControlName="tarifa_categoria_id" (selectionChange)="setPrecioRenta()">
+                      <mat-option *ngFor="let tarifa of tarifasCategorias" [value]="tarifa.id">{{tarifa.categoria}} | {{tarifa.precio_renta | currency}}</mat-option>
+                    </mat-select>
+                    <mat-error *ngIf="vf.tarifa_categoria_id.errors?.required">Campo requerido</mat-error>
                   </mat-form-field>
                 </ion-col>
                 <ion-col size="6">
@@ -243,73 +245,6 @@
               <br />
             </div>
           </form>
-        </ion-col>
-      </ion-row>
-
-      <ion-row>
-        <ion-col size="6">
-          <h2>Tarifas</h2>
-        </ion-col>
-<!--        <ion-col size="6" class="ion-text-end">-->
-<!--          <button mat-raised-button class="button-success" (click)="saveTarifas()">Guardar</button>-->
-<!--        </ion-col>-->
-        <ion-col size="12">
-          <table class="complement-table">
-            <thead>
-              <tr>
-                <th>Frecuencia</th>
-                <th>Ap. Descuento</th>
-                <th>Valor Descuento</th>
-                <th>Descuento</th>
-                <th>P. Final</th>
-              </tr>
-            </thead>
-            <tbody>
-              <ng-container *ngFor="let tApollo of tarifaApolloPayload">
-                <tr>
-                  <td>{{tApollo.frecuencia}}</td>
-                  <td>
-                    <div class="table-input">
-                      <input type="text" [value]="(tApollo.ap_descuento === true || tApollo.ap_descuento === 1) ? 'Si' : 'No'" [readOnly]="true">
-                      <p class="input-hint">Solo Lectura</p>
-                    </div>
-                  </td>
-                  <td>
-                    <div class="table-input">
-                      <input  type="number" autocomplete="off" [(ngModel)]="tApollo.valor_descuento" (ngModelChange)="recalTarifaRow(tApollo)" [readonly]="applyTarifasRules === false || tApollo.ap_descuento === false || tApollo.ap_descuento === 0">
-                      <div class="input-prefix">
-                        <span>%</span>
-                      </div>
-                      <p class="input-hint" *ngIf="applyTarifasRules === false || tApollo.ap_descuento === false || tApollo.ap_descuento === 0">Solo Lectura</p>
-                    </div>
-                  </td>
-                  <td>
-                    <div class="table-input">
-                      <input type="number" autocomplete="off" readonly [value]="tApollo.descuento">
-                      <p class="input-hint">Solo Lectura</p>
-                    </div>
-                  </td>
-                  <td>
-                    <div class="table-input">
-                      <input type="text" autocomplete="off" [ngModel]="tApollo.precio_final | currency" [ngModelOptions]="{updateOn:'blur'}"
-                             (ngModelChange)="captureFinalPrice(tApollo, $event)" [readonly]="applyTarifasRules === false || tApollo.precio_final_editable === false || tApollo.precio_final_editable === 0">
-                      <p class="input-hint" *ngIf="applyTarifasRules === false || tApollo.precio_final_editable === false || tApollo.precio_final_editable === 0">Solo Lectura</p>
-                    </div>
-                  </td>
-                </tr>
-                <tr *ngIf="tApollo.errors && tApollo.errors.length > 0" class="error-feed">
-                  <td colspan="5">
-                    <ul style="text-align: left">
-                      <li *ngFor="let error of tApollo.errors">
-                        {{error}}
-                      </li>
-                    </ul>
-                  </td>
-                </tr>
-              </ng-container>
-
-            </tbody>
-          </table>
         </ion-col>
       </ion-row>
     </ion-card-content>

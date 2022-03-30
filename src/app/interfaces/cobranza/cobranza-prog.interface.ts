@@ -7,7 +7,7 @@ export interface CobranzaProgI
     tarjeta_id?: number;
     cliente_id?: number;
     fecha_cargo?: string;
-    monto?: string;
+    monto?: number;
     moneda?: string;
     tipo?: number;
     estatus?: number;
@@ -18,6 +18,7 @@ export interface CobranzaProgI
     created_at?: string;
     updated_at?: string;
     tarjeta?: CardI;
+    cobranza_id: number;
 
     edit?: boolean;
 }

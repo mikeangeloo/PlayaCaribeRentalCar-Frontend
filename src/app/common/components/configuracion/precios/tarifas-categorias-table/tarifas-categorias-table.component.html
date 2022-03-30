@@ -1,24 +1,28 @@
 <div class="main-content">
-
   <ion-row>
-    <ion-col size="12" [ngClass]="{hide: !clientes || clientes.length === 0}">
+    <ion-col size="12">
       <ion-card class="ion-no-margin ion-no-padding">
         <ion-card-header>
-          <h2>Listado de Clientes</h2>
+          <h2>Listado de Tarifas x Categoría</h2>
         </ion-card-header>
         <ion-card-content>
 
           <ion-row>
-            <ion-col size="12" size-md="2" class="ion-align-self-center" *ngIf="isModal === false || !isModal">
+            <ion-col size="12" size-md="fill" class="ion-align-self-center" *ngIf="isModal === false || !isModal">
               <!--                <button mat-raised-button color="primary">Nuevo</button>-->
-              <ion-button color="primary" class="btn-shadow no-contrast" (click)="openClienteForm()">Nuevo</ion-button>
+              <ion-button color="primary" class="btn-shadow no-contrast" (click)="openTarifaCatForm()">Nuevo</ion-button>
+              <!--              <ion-button color="primary" class="btn-shadow no-contrast" [routerLink]="['/administracion/catalogo-vehiculos/categorias-vehiculos/', 0]">Nuevo</ion-button>-->
             </ion-col>
-            <ion-col size="12" size-md="10">
+            <ion-col size="12" size-md="fill" class="ion-align-self-center" *ngIf="isModal === false || !isModal">
+              <ion-button color="primary" class="btn-shadow no-contrast" (click)="openTarifasApolloConfForm()">Ajustar Porcentajes</ion-button>
+            </ion-col>
+
+            <ion-col size="12" size-md="8">
               <ion-searchbar placeholder="Ingrese un valor para filtrar los resultados de la tabla..." class="ion-no-padding" (ionInput)="applyFilter($event)" (ionCancel)="onSearchClear()"></ion-searchbar>
             </ion-col>
           </ion-row>
           <div class="mat-elevation-z8 table-container">
-            <mat-table [dataSource]="listClientes" matSort>
+            <mat-table [dataSource]="listTarifas" matSort>
               <!-- id -->
               <ng-container matColumnDef="id">
                 <mat-header-cell *matHeaderCellDef mat-sort-header>Id</mat-header-cell>
@@ -31,61 +35,25 @@
                 </mat-cell>
               </ng-container>
 
-              <!-- nombre -->
-              <ng-container matColumnDef="nombre">
-                <mat-header-cell *matHeaderCellDef mat-sort-header>Nombre</mat-header-cell>
+              <!-- categoria-->
+              <ng-container matColumnDef="categoria">
+                <mat-header-cell *matHeaderCellDef mat-sort-header>Categoría</mat-header-cell>
                 <mat-cell *matCellDef="let row">
                   <div class="column">
                     <p>
-                      {{row.nombre}}
+                      {{row.categoria}}
                     </p>
                   </div>
                 </mat-cell>
               </ng-container>
 
-              <!-- apellidos-->
-<!--              <ng-container matColumnDef="apellidos">-->
-<!--                <mat-header-cell *matHeaderCellDef mat-sort-header>Apellidos</mat-header-cell>-->
-<!--                <mat-cell *matCellDef="let row">-->
-<!--                  <div class="column">-->
-<!--                    <p>-->
-<!--                      {{row.apellidos}}-->
-<!--                    </p>-->
-<!--                  </div>-->
-<!--                </mat-cell>-->
-<!--              </ng-container>-->
-
-              <!-- telefono-->
-              <ng-container matColumnDef="telefono">
-                <mat-header-cell *matHeaderCellDef mat-sort-header>Teléfono</mat-header-cell>
+              <!-- precio-->
+              <ng-container matColumnDef="precio">
+                <mat-header-cell *matHeaderCellDef mat-sort-header>Precio Base</mat-header-cell>
                 <mat-cell *matCellDef="let row">
                   <div class="column">
                     <p>
-                      {{row.telefono}}
-                    </p>
-                  </div>
-                </mat-cell>
-              </ng-container>
-
-              <!-- num_licencia-->
-              <ng-container matColumnDef="num_licencia">
-                <mat-header-cell *matHeaderCellDef mat-sort-header>Num. Licencia</mat-header-cell>
-                <mat-cell *matCellDef="let row">
-                  <div class="column">
-                    <p>
-                      {{row.num_licencia}}
-                    </p>
-                  </div>
-                </mat-cell>
-              </ng-container>
-
-              <!-- licencia_exp-->
-              <ng-container matColumnDef="licencia_exp">
-                <mat-header-cell *matHeaderCellDef mat-sort-header>Exp. Licencia</mat-header-cell>
-                <mat-cell *matCellDef="let row">
-                  <div class="column">
-                    <p>
-                      {{row.licencia_mes}} / {{row.licencia_ano}}
+                      {{row.precio_renta | currency}}
                     </p>
                   </div>
                 </mat-cell>
@@ -122,13 +90,13 @@
                 <mat-cell *matCellDef="let row">
                   <div class="column">
                     <div class="action-btn-container">
-                      <ion-button fill="clear" (click)="openClienteForm(row)">
+                      <ion-button fill="clear" (click)="openTarifaCatForm(row)">
                         <ion-icon  name="create-outline"></ion-icon>
                       </ion-button>
-                      <ion-button fill="clear" (click)="inactiveCliente(row)" *ngIf="row.activo === 1" title="Deshabilitar registro">
+                      <ion-button fill="clear" (click)="inactiveTarifaCat(row)" *ngIf="row.activo === 1" title="Deshabilitar registro">
                         <ion-icon name="close-circle-outline" color="danger" ></ion-icon>
                       </ion-button>
-                      <ion-button fill="clear" (click)="activeCliente(row)" *ngIf="row.activo === 0" title="Habilitar registro">
+                      <ion-button fill="clear" (click)="activeTarifaCat(row)" *ngIf="row.activo === 0" title="Habilitar registro">
                         <ion-icon name="checkmark-circle-outline" color="medium"></ion-icon>
                       </ion-button>
                     </div>
@@ -152,7 +120,7 @@
               </ng-container>
 
               <ng-container matColumnDef="noData">
-                <mat-footer-cell *matFooterCellDef colspan="7" style="color: #2196F3">
+                <mat-footer-cell *matFooterCellDef colspan="8" style="color: #2196F3">
                   No data was found
                 </mat-footer-cell>
               </ng-container>
@@ -163,13 +131,13 @@
               <!--                  <mat-row *matRowDef="let row; columns: displayedColumns;" (click)="editAction(row)" [ngClass]="{hovered: row.hovered, highlighted: row.id === editEmpresa.id}" (mouseover)="row.hovered = true" (mouseout)="row.hovered = false"></mat-row>-->
               <!--                </ng-container>-->
               <ng-container *ngIf="isModal === false || !isModal">
-                <mat-row *matRowDef="let row; columns: displayedColumns;" [ngClass]="{hovered: row.hovered, highlighted: row.id === editCliente.id}" (mouseover)="row.hovered = true" (mouseout)="row.hovered = false"></mat-row>
+                <mat-row *matRowDef="let row; columns: displayedColumns;" [ngClass]="{hovered: row.hovered, highlighted: row.id === editTarifa.id}" (mouseover)="row.hovered = true" (mouseout)="row.hovered = false"></mat-row>
               </ng-container>
 
               <mat-footer-row *matFooterRowDef="['loading']" [ngClass]="{hide: spinner === false}"></mat-footer-row>
-              <mat-footer-row *matFooterRowDef="['init']" [ngClass]="{'hide':listClientes!=null || spinner === true}"></mat-footer-row>
+              <mat-footer-row *matFooterRowDef="['init']" [ngClass]="{'hide':listTarifas!=null || spinner === true}"></mat-footer-row>
               <mat-footer-row *matFooterRowDef="['noData']"
-                              [ngClass]="{hide:!(listClientes!=null && listClientes.data.length==0)}">
+                              [ngClass]="{hide:!(listTarifas!=null && listTarifas.data.length==0)}">
               </mat-footer-row>
             </mat-table>
 
@@ -181,7 +149,7 @@
       </ion-card>
     </ion-col>
 
-    <ion-col size="12" *ngIf="clientes && clientes.length === 0">
+    <ion-col size="12" *ngIf="tarifas && tarifas.length === 0">
       <div class="empty-container">
         <ion-icon name="alert-circle"></ion-icon>
         <p>

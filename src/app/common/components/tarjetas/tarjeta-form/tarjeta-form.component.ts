@@ -10,6 +10,7 @@ import {CardI} from "../../../../interfaces/cards/card.interface";
 import {TarjetaService} from "../../../../services/tarjeta.service";
 import {GeneralService} from "../../../../services/general.service";
 import {ToastMessageService} from "../../../../services/toast-message.service";
+import {CobranzaTipoE} from '../../../../enums/cobranza-tipo.enum';
 
 @Component({
   selector: 'app-tarjeta-form',
@@ -30,6 +31,14 @@ export class TarjetaFormComponent implements OnInit {
   @Input() card_id: number;
   @Input() cliente_id: number;
   @Input() loadLoading = true;
+
+  @Input() needCaptureAmount = false;
+  @Input() cod_banco: string;
+  @Input() monto: number;
+  @Input() tipoPago = null;
+  @Input() titularTarj = null;
+  @Input() montoCobrar: number;
+
   public title = 'Formulario Tarjeta';
 
   public cardForm: FormGroup;
@@ -41,6 +50,7 @@ export class TarjetaFormComponent implements OnInit {
   public saveBtnText = 'Add Card';
 
   public minValidDate = moment().format('YYYY-MM-DD');
+
 
   constructor(
     private formBuilder: FormBuilder,
@@ -84,8 +94,16 @@ export class TarjetaFormComponent implements OnInit {
       c_year: ['', [Validators.required, Validators.pattern('^[0-9]*$')]],
       c_code: ['', [Validators.required, Validators.pattern('^[0-9]*$')]],
       c_type: ['', [Validators.required]],
-      c_method: ['']
+      c_charge_method: [''],
+
+      cod_banco: [null],
+      monto: [null]
     });
+
+    if (this.needCaptureAmount) {
+      this.cardForm.controls.cod_banco.setValidators(Validators.required);
+      this.cardForm.controls.monto.setValidators(Validators.required);
+    }
   }
 
   async fillCardForm(data?) {
@@ -97,7 +115,7 @@ export class TarjetaFormComponent implements OnInit {
     }
     // await this.getCountries();
     this.cardForm.setValue({
-      c_name: data && data.c_name ? data.c_name : null,
+      c_name: data && data.c_name ? data.c_name : this.titularTarj,
       c_cn1: data && data.c_cn1 ? parseInt(data.c_cn1, 10)  : null,
       c_cn2: data && data.c_cn2 ? parseInt(data.c_cn2, 10) : null,
       c_cn3: data && data.c_cn3 ? parseInt(data.c_cn3, 10) : null,
@@ -106,7 +124,10 @@ export class TarjetaFormComponent implements OnInit {
       c_year: data && data.c_year ? data.c_year : null,
       c_code: data && data.c_code ? data.c_code : null,
       c_type: data && data.c_type ? data.c_type : null,
-      c_method: (data && data.c_method) ? data.c_method : null
+      c_charge_method: (data && data.c_charge_method) ? data.c_charge_method : this.tipoPago,
+
+      cod_banco: this.cod_banco ? this.cod_banco : null,
+      monto: this.monto ? this.monto : null
     });
   }
 
@@ -210,9 +231,15 @@ export class TarjetaFormComponent implements OnInit {
   saveUpdate() {
 
     if (this.cardForm.invalid) {
-      this.messageService.printStatus('Review the form, some input are required to procced', 'warning');
+      this.messageService.printStatus('Revisa el formulario, hay campos por validar', 'warning');
       this.cardForm.markAllAsTouched();
       return;
+    }
+    if (this.cardForm.controls.c_charge_method.value === CobranzaTipoE.PAGOTARJETA) {
+      if (!this.card_id && this.cardForm.controls.monto.value > this.montoCobrar){
+        this.messageService.printStatus('El monto es mayor al saldo a cobrar', 'warning');
+        return;
+      }
     }
     const cardData = this.cardForm.value;
     const c_number =
@@ -233,13 +260,15 @@ export class TarjetaFormComponent implements OnInit {
       c_year: cardData.c_year,
       c_code: cardData.c_code,
       c_type: cardData.c_type,
-      c_method: cardData.c_method,
+      c_charge_method: cardData.c_charge_method,
       c_address: (cardData.c_address) ? cardData.c_address : null,
       c_country: (cardData.c_country) ? cardData.c_country : null,
       c_state: (cardData.c_state) ? cardData.c_state : null,
       c_city: (cardData.c_city) ? cardData.c_city : null,
       c_zip: (cardData.c_zip) ? cardData.c_zip : null,
       cliente_id: (this.cliente_id) ? this.cliente_id : null,
+      cod_banco: cardData.cod_banco,
+      monto: cardData.monto
     };
 
 
