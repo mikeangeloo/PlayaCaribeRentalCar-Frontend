@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {CdkDragDrop} from '@angular/cdk/drag-drop';
+import {CdkDragDrop, CdkDragEnd} from '@angular/cdk/drag-drop';
 
 @Component({
   selector: 'app-checklist-inspector-zone',
@@ -12,7 +12,8 @@ export class ChecklistInspectorZoneComponent implements OnInit {
 
   ngOnInit() {}
 
-  catchEvent(event) {
-    console.log('catchDragEvent -->', event);
+  catchEvent(event: CdkDragEnd, element) {
+    console.log('catchDragEvent -->', event.source.getFreeDragPosition());
+    console.log('dragElement --->', element);
   }
 }
