@@ -3,6 +3,7 @@
      [style.height.px]="height"
      [style.transform]="'translate3d('+ left + 'px,' + top + 'px,' + '0px)'"
      [class.active]="status === 1 || status === 2"
+     (window:mousemove)="catchMouseMove($event)"
      (mousedown)="setStatus($event, 2)"
      (window:mouseup)="setStatus($event, 0)"
 >
