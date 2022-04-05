@@ -18,7 +18,7 @@ export class DraggableResizableComponent implements OnInit, AfterViewInit {
   @Input('height') public height: number;
   @Input('left') public left: number;
   @Input('top') public top: number;
-  @ViewChild("box", {static: false}) public box: ElementRef;
+  @ViewChild("box", {static: true}) public box: ElementRef;
   private boxPosition: { left: number, top: number };
   private containerPos: { left: number, top: number, right: number, bottom: number };
   public mouse: {x: number, y: number}
@@ -50,6 +50,7 @@ export class DraggableResizableComponent implements OnInit, AfterViewInit {
   }
 
   catchMouseMove(event) {
+
     this.mouse = { x: event.clientX, y: event.clientY };
     //console.log('mouse move coords', this.mouse)
 
@@ -63,13 +64,16 @@ export class DraggableResizableComponent implements OnInit, AfterViewInit {
     const right = left + 600;
     const bottom = top + 450;
     this.containerPos = { left, top, right, bottom };
+    console.log('containerPos --->', this.containerPos);
   }
 
   setStatus(event: MouseEvent, status: number){
-    if(status === 1) event.stopPropagation();
-    else if(status === 2) this.mouseClick = { x: event.clientX, y: event.clientY, left: this.left, top: this.top };
-    else this.loadBox();
+
+    event.stopPropagation();
+     if(status === 2) this.mouseClick = { x: event.clientX, y: event.clientY, left: this.left, top: this.top };
+    else this.loadBox();  this.loadContainer();
     this.status = status;
+
   }
 
 
@@ -77,9 +81,9 @@ export class DraggableResizableComponent implements OnInit, AfterViewInit {
   private resize(){
     if(this.resizeCondMeet()){
       this.width = Number(this.mouse.x > this.boxPosition.left) ? this.mouse.x - this.boxPosition.left : 0;
-      //this.height = Number(this.mouse.y > this.boxPosition.top) ? this.mouse.y - this.boxPosition.top : 0;
+      this.height = Number(this.mouse.y > this.boxPosition.top) ? this.mouse.y - this.boxPosition.top : 0;
 
-      this.height = this.width;
+      //this.height = this.width;
     }
 
     // if(this.resizeCondMeet()){
@@ -94,8 +98,9 @@ export class DraggableResizableComponent implements OnInit, AfterViewInit {
     console.log('containerPos right -->', this.containerPos.right);
     console.log('mouse y --->', this.mouse.y);
     console.log('containerPos botton -->', this.containerPos.bottom);
+    console.log('resizeCondMeet', (this.mouse.x < this.containerPos.right && this.mouse.y < this.containerPos.bottom));
 
-    return (this.mouse.x < this.containerPos.right && this.mouse.y > this.containerPos.bottom);
+    return (this.mouse.x < this.containerPos.right && this.mouse.y < this.containerPos.bottom);
 
   }
 
@@ -104,10 +109,11 @@ export class DraggableResizableComponent implements OnInit, AfterViewInit {
       this.left = this.mouseClick.left + (this.mouse.x - this.mouseClick.x);
       this.top = this.mouseClick.top + (this.mouse.y - this.mouseClick.y);
     }
+
   }
 
   private moveCondMeet(){
-    return true;
+    //return true;
     const offsetLeft = this.mouseClick.x - this.boxPosition.left;
     const offsetRight = this.width - offsetLeft;
     const offsetTop = this.mouseClick.y - this.boxPosition.top;
