@@ -37,9 +37,10 @@
 
 .box-container {
   position: relative;
-  width: 600px;
-  height: 450px;
+  //width: 600px;
+  //height: 450px;
   outline: 1px solid black;
+  overflow: scroll;
 
   //top: 50%;
   //left: 50%;
@@ -47,13 +48,13 @@
 
   span:first-of-type {
     position: absolute;
-    left: 50%;
-    transform: translate3d(-50%, -100%, 0);
+    left: 0%;
+    //transform: translate3d(-50%, -100%, 0);
   }
 
   span:nth-of-type(2) {
     position: absolute;
-    top: 50%;
-    transform: translate3d(-100%, -50%, 0);
+    bottom: 0%;
+    //transform: translate3d(-100%, -50%, 0);
   }
 }

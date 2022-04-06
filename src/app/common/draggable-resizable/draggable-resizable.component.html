@@ -1,7 +1,7 @@
 <div #box class="resizable-draggable"
-     [style.width.px]="width"
-     [style.height.px]="height"
-     [style.transform]="'translate3d('+ left + 'px,' + top + 'px,' + '0px)'"
+     [style.width.px]="objWidth"
+     [style.height.px]="objHeight"
+     [style.transform]="'translate3d('+ objLeft + 'px,' + objTop + 'px,' + '0px)'"
      [class.active]="status === 1 || status === 2"
      (window:mousemove)="catchMouseMove($event)"
      (mousedown)="setStatus($event, 2)"
@@ -14,7 +14,7 @@
     height: 100%;
 ">
   <div class="resize-action" (mousedown)="setStatus($event, 1)"></div>
-  <span>{{width | number:'1.0-0'}}px</span>
-  <span>{{height | number:'1.0-0'}}px</span>
-  <span>({{left}}, {{top}})</span>
+  <span>{{objWidth | number:'1.0-0'}}px</span>
+  <span>{{objHeight | number:'1.0-0'}}px</span>
+  <span>({{objLeft}}, {{objTop}})</span>
 </div>
