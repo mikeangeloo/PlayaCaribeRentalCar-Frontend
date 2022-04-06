@@ -7,6 +7,18 @@
      (mousedown)="setStatus($event, 2)"
      (window:mouseup)="setStatus($event, 0)"
 >
+  <div class="drag-action-buttons">
+    <div>
+      <ion-button size="small" color="danger">
+        <ion-icon slot="icon-only" name="trash-sharp"></ion-icon>
+      </ion-button>
+    </div>
+    <div>
+      <ion-button size="small" style="--background: var(--app-blue-light); --color: white;">
+        <ion-icon slot="icon-only" name="ellipsis-vertical-sharp"></ion-icon>
+      </ion-button>
+    </div>
+  </div>
   <img src="assets/icons/icon-512x512.png" alt="" style="
     position: absolute;
     pointer-events: none;

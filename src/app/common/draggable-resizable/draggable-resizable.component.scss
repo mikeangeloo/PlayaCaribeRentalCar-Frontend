@@ -1,5 +1,14 @@
 .resizable-draggable {
   outline: 1px dashed green;
+  color: var(--app-blue-light);
+  background-color: #FFFFFF;
+  position: relative;
+  &.warning {
+    color: var(--ion-color-primary);
+  }
+  &.danger {
+    color: var(--ion-color-danger);
+  }
   &.active {
     outline-style: solid;
     background-color: #80ff800d;
@@ -36,8 +45,23 @@
   transform: translate3d(-50%, -50%, 0) rotateZ(45deg);
   border-style: solid;
   border-width: 8px;
-  border-color: transparent transparent transparent #008000;
+  border-color: transparent transparent transparent var(--app-blue-light);
+  &.warning {
+    border-color: transparent transparent transparent var(--ion-color-primary);
+  }
+  &.danger {
+    border-color: transparent transparent transparent var(--ion-color-danger);
+  }
   &:hover, &:active {
     cursor: nwse-resize;
   }
+}
+
+.drag-action-buttons {
+  position: absolute;
+  top: 0;
+  transform: translate3d(0%, -130%, 0);
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
 }

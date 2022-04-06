@@ -822,3 +822,11 @@ mat-header-row {
   }
 }
 //#endregion
+
+
+//#region DRAG DROP RESIZE
+app-checklist-inspector-zone {
+  overflow: scroll;
+  outline: 1px solid black;
+}
+//#endregion
