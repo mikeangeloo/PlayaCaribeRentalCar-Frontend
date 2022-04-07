@@ -618,6 +618,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
   //#region REVIEW MANAGEMENT FUNCTIONS
   initReviewCanva() {
+    return;
     // @ts-ignore
     let canvas: HTMLCanvasElement = document.getElementById('revisionC');
     let ctx = canvas.getContext("2d");
@@ -631,7 +632,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
     console.log('_height', _height);
 
-    //canvas.width = _width;
+    canvas.width = _width;
     //canvas.height = 800;
 
 

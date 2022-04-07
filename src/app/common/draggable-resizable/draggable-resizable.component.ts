@@ -1,4 +1,5 @@
 import {AfterViewInit, Component, ElementRef, HostListener, Input, OnInit, ViewChild} from '@angular/core';
+import {ActionSheetController, PopoverController} from '@ionic/angular';
 
 const enum Status {
   OFF = 0,
@@ -48,6 +49,16 @@ export class DraggableResizableComponent implements OnInit, AfterViewInit {
 
   public draggableObj: DraggObjProperties = null;
   public draggObjKey = 'draggObj';
+
+  currentPopover: any;
+
+  constructor(
+    public actionSheetController: ActionSheetController
+  ) {
+
+  }
+
+
   ngOnInit() {
     if (localStorage.getItem(this.draggObjKey)) {
       this.draggableObj = JSON.parse(localStorage.getItem(this.draggObjKey));
@@ -105,12 +116,16 @@ export class DraggableResizableComponent implements OnInit, AfterViewInit {
       left: this.objLeft
     }
     localStorage.setItem('draggObj', JSON.stringify(this.draggableObj));
+    console.log('saved localStorage');
   }
 
 
 
   private resize(){
     if(this.resizeCondMeet()) {
+      if (this.mouse.x - this.boxPosition.left <= 40 || this.mouse.y - this.boxPosition.top <= 40 ) {
+        return true;
+      }
       this.objWidth = Number(this.mouse.x > this.boxPosition.left) ? this.mouse.x - this.boxPosition.left : 0;
       this.objHeight = Number(this.mouse.y > this.boxPosition.top) ? this.mouse.y - this.boxPosition.top : 0;
       this.saveCoords();
@@ -142,4 +157,48 @@ export class DraggableResizableComponent implements OnInit, AfterViewInit {
     );
   }
 
+  async damageLevelSheet() {
+    const actionSheet = await this.actionSheetController.create({
+      header: 'Opciones',
+      cssClass: 'my-custom-class',
+      backdropDismiss: false,
+      buttons: [
+        {
+          text: 'Normal',
+          cssClass: 'default',
+          handler: () => {
+            console.log('Nivel normal clicked');
+            //this.takePicture();
+          },
+        },
+        {
+          text: 'Medio',
+          cssClass: 'warning',
+          handler: () => {
+            console.log('Nivel medio clicked');
+          },
+        },
+        {
+          text: 'Grave',
+          cssClass: 'danger',
+          handler: () => {
+            console.log('Nivel grave clicked');
+          },
+        },
+        {
+          text: 'Cancelar',
+          icon: 'close',
+          role: 'cancel',
+          cssClass: 'action-sheet-cancel',
+          handler: () => {
+            console.log('Cancel clicked');
+          },
+        },
+      ],
+    });
+    await actionSheet.present();
+
+    const { role } = await actionSheet.onDidDismiss();
+    console.log('onDidDismiss resolved with role', role);
+  }
 }
