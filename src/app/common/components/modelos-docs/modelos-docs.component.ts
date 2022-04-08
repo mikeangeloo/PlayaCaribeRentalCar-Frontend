@@ -137,6 +137,10 @@ export class ModelosDocsComponent implements OnInit, OnChanges {
           return;
         }
 
+        if (this.docType === 'check-list') {
+          this.sweetMsgServ.printStatus('En desarrollo', 'warning');
+          return;
+        }
         let res = await this.filesServ.storeDocs(formData);
         let _lastIndex = 0;
         if (res.ok === true) {
