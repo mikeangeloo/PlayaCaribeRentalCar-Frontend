@@ -2,7 +2,7 @@ import {Component, EventEmitter, Input, OnChanges, OnInit, SimpleChanges} from '
 import {DocDataTransfer} from '../../../interfaces/shared/doc-data-tranfer.interface';
 import {SweetMessagesService} from '../../../services/sweet-messages.service';
 import {FilesService} from '../../../services/files.service';
-import {IonButtons} from '@ionic/angular';
+import {IonButtons, ModalController} from '@ionic/angular';
 
 @Component({
   selector: 'app-modelos-docs',
@@ -17,11 +17,12 @@ export class ModelosDocsComponent implements OnInit, OnChanges {
   public cobranza_docs: DocDataTransfer[] = [];
 
   @Input() model_id_value: number;
-  @Input() docType: 'licencia_conducir' | 'cupon' | 'voucher';
-  @Input() model: 'clientes' | 'contratos' | 'cobranza';
+  @Input() docType: 'licencia_conducir' | 'cupon' | 'voucher' | 'check-list';
+  @Input() model: 'clientes' | 'contratos' | 'cobranza' | 'check-list';
   @Input() justButton: boolean;
   @Input() btnSize: 'small' | 'default' | 'large' = 'default';
   @Input() fullSize: boolean;
+  @Input() asModal: boolean;
 
   saveProcess$ = new EventEmitter();
   //#endregion
@@ -30,11 +31,15 @@ export class ModelosDocsComponent implements OnInit, OnChanges {
   constructor(
       private sweetMsgServ: SweetMessagesService,
       public filesServ: FilesService,
+      public modalCtrl: ModalController,
   ) {
 
   }
 
-  ngOnInit() {
+  async ngOnInit() {
+    if (this.model_id_value && this.asModal) {
+      await this.getDocs(this.docType, this.model, this.model_id_value);
+    }
   }
 
   async ngOnChanges(changes: SimpleChanges) {
@@ -179,9 +184,6 @@ export class ModelosDocsComponent implements OnInit, OnChanges {
     });
   }
 
-  removeImg(index, model = this.model) {
-    this.docData_docs.splice(index, 1);
-  }
 
   async removeFromDisk(fileData: DocDataTransfer, index, model = this.model) {
     await this.sweetMsgServ.confirmRequest('¿Estás seguro de querer eliminar el archivo?').then(async (data) => {
@@ -203,6 +205,11 @@ export class ModelosDocsComponent implements OnInit, OnChanges {
         }
       }
     });
+  }
+
+
+  removeImg(index, model = this.model) {
+    this.docData_docs.splice(index, 1);
   }
 
   async getDocs(doc_type = this.docType, model = this.model, model_id: number) {
@@ -240,6 +247,12 @@ export class ModelosDocsComponent implements OnInit, OnChanges {
     let imgTypes = ['image/png', 'image/jpg', 'image/jpeg'];
     let find = imgTypes.find(x => x === fileType);
     return find && find !== 'unknown';
+  }
+
+  dismiss(reload?) {
+    this.modalCtrl.dismiss({
+      reload
+    });
   }
   //#endregion
 

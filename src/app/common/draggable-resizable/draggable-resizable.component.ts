@@ -9,7 +9,8 @@ import {
   Output,
   ViewChild
 } from '@angular/core';
-import {ActionSheetController, PopoverController} from '@ionic/angular';
+import {ActionSheetController, ModalController, PopoverController} from '@ionic/angular';
+import {ModelosDocsComponent} from '../components/modelos-docs/modelos-docs.component';
 
 const enum Status {
   OFF = 0,
@@ -64,7 +65,8 @@ export class DraggableResizableComponent implements OnInit, AfterViewInit {
   private mouseClick: {x: number, y: number, left: number, top: number}
 
   constructor(
-    public actionSheetController: ActionSheetController
+    public actionSheetController: ActionSheetController,
+    private modalCtr: ModalController
   ) {
 
   }
@@ -232,6 +234,25 @@ export class DraggableResizableComponent implements OnInit, AfterViewInit {
 
     const { role } = await actionSheet.onDidDismiss();
     console.log('onDidDismiss resolved with role', role);
+  }
+
+  async openModelosDocModal() {
+    const modal = await this.modalCtr.create({
+      component: ModelosDocsComponent,
+      componentProps: {
+        model: 'check-list',
+        docType: 'check-list',
+        justButton: true,
+        fullSize: true,
+        model_id_value: 1,
+        asModal: true
+      },
+      swipeToClose: true,
+      cssClass: 'edit-form',
+    });
+    await  modal.present();
+    const {data} = await modal.onWillDismiss();
+    console.log('openModelosDocsModal data -->', data);
   }
 
 }

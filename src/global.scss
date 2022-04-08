@@ -827,7 +827,7 @@ mat-header-row {
 //#region DRAG DROP RESIZE
 .checklist-inspector-zone {
   overflow: scroll;
-  outline: 1px solid black;
+  outline: 2px dashed #ededed;
   position: absolute;
   top: 0;
   width: 100%;

@@ -941,7 +941,7 @@
           <mat-expansion-panel (opened)="setStep(4)" [expanded]="step === 4" hideToggle>
             <mat-expansion-panel-header>
               <mat-panel-title>
-                Check List - Salida (Por desarrollar)
+                Check List - Salida (En desarrollo)
               </mat-panel-title>
               <mat-panel-description style="margin: 0; justify-content: flex-end;">
                 <ion-icon name="checkmark-circle"></ion-icon>
@@ -950,8 +950,6 @@
 
             <ion-card>
               <ion-card-content >
-                <h4 class="ion-text-center">Por diseñar vista ....</h4>
-
                 <ion-row  (loadeddata)="initReviewCanva()">
                   <ion-col size="12" id="revisionRowW" style="overflow:scroll;">
                     <button mat-raised-button class="button-secondary" [matMenuTriggerFor]="moreDragObj">
@@ -975,7 +973,8 @@
                         <span>Daño severo</span>
                       </button>
                     </mat-menu>
-
+                    <br>
+                    <br>
                     <div style="position: relative;" [style.width.px]="816">
                       <ion-img src="assets/img/svg/sedan.svg" [style.width.px]="816"></ion-img>
                       <div class="checklist-inspector-zone">
