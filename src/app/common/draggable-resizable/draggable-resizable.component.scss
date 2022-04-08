@@ -96,5 +96,11 @@
     color: var(--ion-color-danger) !important;
     outline-color: var(--ion-color-danger) !important;
   }
+
+  .add-note-container {
+    --min-width: 35%;
+  }
 }
+
+
 

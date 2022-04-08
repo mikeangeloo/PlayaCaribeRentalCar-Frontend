@@ -9,7 +9,7 @@ import {
   Output,
   ViewChild
 } from '@angular/core';
-import {ActionSheetController, ModalController, PopoverController} from '@ionic/angular';
+import {ActionSheetController, AlertController, ModalController, PopoverController} from '@ionic/angular';
 import {ModelosDocsComponent} from '../components/modelos-docs/modelos-docs.component';
 
 const enum Status {
@@ -66,7 +66,8 @@ export class DraggableResizableComponent implements OnInit, AfterViewInit {
 
   constructor(
     public actionSheetController: ActionSheetController,
-    private modalCtr: ModalController
+    private modalCtr: ModalController,
+    private alertController: AlertController
   ) {
 
   }
@@ -253,6 +254,38 @@ export class DraggableResizableComponent implements OnInit, AfterViewInit {
     await  modal.present();
     const {data} = await modal.onWillDismiss();
     console.log('openModelosDocsModal data -->', data);
+  }
+
+  async addNote() {
+    const alert = await this.alertController.create({
+      cssClass: 'add-note-container',
+      header: 'Comentarios',
+      inputs: [
+        {
+          name: 'note',
+          type: 'textarea',
+          placeholder: 'Comentarios ...'
+        },
+      ],
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          cssClass: 'secondary',
+          handler: () => {
+            console.log('Confirm Cancel');
+          }
+        }, {
+          text: 'Ok',
+          handler: (value) => {
+            console.log('Confirm Ok');
+            console.log('handler -->', value);
+          }
+        }
+      ]
+    });
+
+    await alert.present();
   }
 
 }
