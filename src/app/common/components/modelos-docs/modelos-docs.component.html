@@ -122,7 +122,7 @@
 
   </ng-container>
 </fieldset>
-<ion-footer>
+<ion-footer *ngIf="asModal">
   <ion-toolbar>
     <ion-buttons slot="end">
       <ion-button color="medium" (click)="dismiss()">

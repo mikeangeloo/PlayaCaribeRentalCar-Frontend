@@ -3,9 +3,9 @@
      [style.height.px]="objHeight"
      [style.transform]="'translate3d('+ objLeft + 'px,' + objTop + 'px,' + '0px)'"
      [class.active]="status === 1 || status === 2"
-     [class.default]="draggableObj.level === 'default'"
-     [class.warning]="draggableObj.level === 'warning'"
-     [class.danger]="draggableObj.level === 'danger'"
+     [class.default]="draggableObj.levelColor === 'default'"
+     [class.warning]="draggableObj.levelColor === 'warning'"
+     [class.danger]="draggableObj.levelColor === 'danger'"
      (window:mousemove)="catchMouseMove($event)"
      (mousedown)="setStatus($event, 2)"
      (window:mouseup)="setStatus($event, 0)"
@@ -30,7 +30,7 @@
         <mat-icon>text_snippet</mat-icon>
         <span>Agregar Nota</span>
       </button>
-      <button mat-menu-item>
+      <button mat-menu-item (click)="openFullView()">
         <mat-icon>visibility</mat-icon>
         <span>Ver mas</span>
       </button>

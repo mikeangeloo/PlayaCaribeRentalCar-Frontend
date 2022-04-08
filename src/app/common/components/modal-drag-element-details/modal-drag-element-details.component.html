@@ -1,0 +1,79 @@
+<ion-header translucent *ngIf="asModal">
+  <ion-toolbar>
+    <ion-title>Detalle indicencia</ion-title>
+    <ion-buttons slot="end">
+      <ion-button class="close-btn" (click)="dismiss()">
+        <ion-icon name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content fullscreen>
+  <ion-row>
+    <ion-col size="12">
+      <table class="complement-table">
+        <thead>
+          <tr>
+            <th>Tipo</th>
+            <th>Nivel daño</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <ion-chip
+                outline
+                [class.default]="dragObj.levelColor === 'default'"
+                [class.warning]="dragObj.levelColor === 'warning'"
+                [class.danger]="dragObj.levelColor === 'danger'"
+              >
+                {{dragObj.badge}} | {{dragObj.badgeTitle}}
+              </ion-chip>
+            </td>
+            <td>
+              <ion-chip
+                outline
+                [class.default]="dragObj.levelColor === 'default'"
+                [class.warning]="dragObj.levelColor === 'warning'"
+                [class.danger]="dragObj.levelColor === 'danger'"
+              >{{dragObj.levelTxt}}</ion-chip>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </ion-col>
+  </ion-row>
+  <ion-row>
+    <ion-col size="12">
+      <h3 style="text-align: center; font-weight: 500">Comentarios</h3>
+      <ng-container *ngFor="let comment of dragObj.notes">
+        <ion-textarea autoGrow readonly color="dark">
+          {{comment}}
+          <span style="float: right; color: #6b6969">08/04/2022</span>
+        </ion-textarea>
+
+        <mat-divider></mat-divider>
+      </ng-container>
+
+    </ion-col>
+  </ion-row>
+  <ion-row>
+    <ion-col size="12">
+      <app-modelos-docs model="cobranza" docType="voucher" btnSize="small"  [justButton]="true" [fullSize]="true" [model_id_value]="1">
+        <legend name="legend">Evidencia</legend>
+      </app-modelos-docs>
+    </ion-col>
+  </ion-row>
+
+</ion-content>
+
+<ion-footer>
+  <ion-toolbar>
+    <ion-buttons slot="end">
+      <ion-button color="medium" (click)="dismiss()">
+        Cerrar Ventana
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-footer>

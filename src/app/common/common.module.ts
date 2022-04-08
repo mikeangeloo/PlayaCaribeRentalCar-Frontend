@@ -43,6 +43,7 @@ import {FrecuenciaConfComponent} from './frecuencia-conf/frecuencia-conf.compone
 import {InputModalComponent} from './components/input-modal/input-modal.component';
 import {ChecklistInspectorZoneComponent} from './components/checklist-inspector-zone/checklist-inspector-zone.component';
 import {DraggableResizableComponent} from './draggable-resizable/draggable-resizable.component';
+import {ModalDragElementDetailsComponent} from './components/modal-drag-element-details/modal-drag-element-details.component';
 
 
 
@@ -85,7 +86,8 @@ import {DraggableResizableComponent} from './draggable-resizable/draggable-resiz
     FrecuenciaConfComponent,
     InputModalComponent,
     ChecklistInspectorZoneComponent,
-    DraggableResizableComponent
+    DraggableResizableComponent,
+    ModalDragElementDetailsComponent
   ],
   exports: [
     HotelesListComponent,
@@ -125,7 +127,8 @@ import {DraggableResizableComponent} from './draggable-resizable/draggable-resiz
     FrecuenciaConfComponent,
     InputModalComponent,
     ChecklistInspectorZoneComponent,
-    DraggableResizableComponent
+    DraggableResizableComponent,
+    ModalDragElementDetailsComponent
   ],
   entryComponents: [
     HotelesListComponent,
@@ -165,7 +168,8 @@ import {DraggableResizableComponent} from './draggable-resizable/draggable-resiz
     FrecuenciaConfComponent,
     InputModalComponent,
     ChecklistInspectorZoneComponent,
-    DraggableResizableComponent
+    DraggableResizableComponent,
+    ModalDragElementDetailsComponent
   ],
     imports: [
         CommonModule,

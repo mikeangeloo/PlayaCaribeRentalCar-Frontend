@@ -656,7 +656,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
     }
   }
 
-  addDraggedBtn(badge) {
+  addDraggedBtn(badge, title) {
     let randIndex = Math.floor(Math.random() * (100 - 1)) + 1;
     let position = 100 + Math.floor(Math.random() * (100 - 1));
     let draggableObj: DragObjProperties = {
@@ -668,8 +668,10 @@ export class ContratoPage implements OnInit, AfterViewInit {
       top: position,
       left: position,
       action: 'position',
-      level: 'default',
-      badge
+      levelColor: 'default',
+      levelTxt: 'Normal',
+      badge,
+      badgeTitle: title
     }
     this.dragObjs.push(draggableObj);
   }

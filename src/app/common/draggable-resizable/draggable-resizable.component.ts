@@ -11,6 +11,7 @@ import {
 } from '@angular/core';
 import {ActionSheetController, AlertController, ModalController, PopoverController} from '@ionic/angular';
 import {ModelosDocsComponent} from '../components/modelos-docs/modelos-docs.component';
+import {ModalDragElementDetailsComponent} from '../components/modal-drag-element-details/modal-drag-element-details.component';
 
 const enum Status {
   OFF = 0,
@@ -35,9 +36,11 @@ export interface DragObjProperties {
     bottom: number;
   },
   action?: 'position' | 'remove' | 'changeLevel' | 'photo' | 'addNote' | 'viewMore'
-  level?: 'default' | 'warning' | 'danger',
+  levelColor?: 'default' | 'warning' | 'danger',
+  levelTxt?: string;
   badge?: string;
-  note?: string;
+  badgeTitle?: string;
+  notes?: string[];
 }
 
 
@@ -176,7 +179,7 @@ export class DraggableResizableComponent implements OnInit, AfterViewInit {
         top: this.objTop,
         left: this.objLeft,
         action: 'position',
-        level: 'default'
+        levelColor: 'default'
       }
     }
 
@@ -199,7 +202,8 @@ export class DraggableResizableComponent implements OnInit, AfterViewInit {
           cssClass: 'default',
           handler: () => {
             console.log('Nivel normal clicked');
-            this.draggableObj.level = 'default';
+            this.draggableObj.levelColor = 'default';
+            this.draggableObj.levelTxt = 'Normal';
             this.dragObjSaved.emit(this.draggableObj);
           },
         },
@@ -208,7 +212,8 @@ export class DraggableResizableComponent implements OnInit, AfterViewInit {
           cssClass: 'warning',
           handler: () => {
             console.log('Nivel medio clicked');
-            this.draggableObj.level = 'warning';
+            this.draggableObj.levelColor = 'warning';
+            this.draggableObj.levelTxt = 'Medio';
             this.dragObjSaved.emit(this.draggableObj);
           },
         },
@@ -217,7 +222,8 @@ export class DraggableResizableComponent implements OnInit, AfterViewInit {
           cssClass: 'danger',
           handler: () => {
             console.log('Nivel grave clicked');
-            this.draggableObj.level = 'danger';
+            this.draggableObj.levelColor = 'danger';
+            this.draggableObj.levelTxt = 'Grave';
             this.dragObjSaved.emit(this.draggableObj);
           },
         },
@@ -280,7 +286,11 @@ export class DraggableResizableComponent implements OnInit, AfterViewInit {
           text: 'Ok',
           handler: (_dta) => {
             if (_dta && _dta.note) {
-              this.draggableObj.note = _dta.note;
+              if (this.draggableObj.notes && this.draggableObj.notes.length > 0) {
+                this.draggableObj.notes.push(_dta.note);
+              } else {
+                this.draggableObj.notes = [_dta.note];
+              }
               this.saveCoords();
             }
             console.log('Confirm Ok');
@@ -291,6 +301,21 @@ export class DraggableResizableComponent implements OnInit, AfterViewInit {
     });
 
     await alert.present();
+  }
+
+  async openFullView() {
+    const modal = await this.modalCtr.create({
+      component: ModalDragElementDetailsComponent,
+      componentProps: {
+        dragObj: this.draggableObj,
+        asModal: true
+      },
+      swipeToClose: true,
+      cssClass: 'edit-form',
+    });
+    await  modal.present();
+    const {data} = await modal.onWillDismiss();
+    console.log('openFullView data -->', data);
   }
 
 }

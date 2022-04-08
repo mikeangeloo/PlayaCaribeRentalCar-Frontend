@@ -22,7 +22,7 @@ export class ModelosDocsComponent implements OnInit, OnChanges {
   @Input() justButton: boolean;
   @Input() btnSize: 'small' | 'default' | 'large' = 'default';
   @Input() fullSize: boolean;
-  @Input() asModal: boolean;
+  @Input() asModal: boolean = false;
 
   saveProcess$ = new EventEmitter();
   //#endregion
