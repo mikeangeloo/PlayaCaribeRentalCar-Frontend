@@ -16,6 +16,10 @@ export class GeneralService {
   //#endregion
   isLoading = false;
   public dashURL = environment.dashUrl;
+  public apiUrl = environment.dashUrl;
+  public verifyEmail$ = new BehaviorSubject(null)
+  public dragObjStorageKey = 'dragObjs';
+  //#region Atributos
   constructor(
     public loadingController: LoadingController,
     public httpClient: HttpClient,
@@ -23,9 +27,8 @@ export class GeneralService {
     public sweetServ: SweetMessagesService,
     public toastServ: ToastMessageService,
     ) {}
-  //#region Atributos
-  public apiUrl = environment.dashUrl;
-  public verifyEmail$ = new BehaviorSubject(null);
+
+
 
   async presentLoading(message?) {
     const loading = await this.loadingController.create({

@@ -23,17 +23,19 @@ export interface DragObjProperties {
   height: number;
   left: number;
   top: number;
-  boxPosition: {
+  boxPosition?: {
     left: number;
     top: number;
   },
-  containerPost: {
+  containerPost?: {
     left: number;
     top: number;
     right: number;
     bottom: number;
   },
-  action: 'add' | 'remove' | 'changeLevel' | 'photo' | 'addNote' | 'viewMore'
+  action?: 'position' | 'remove' | 'changeLevel' | 'photo' | 'addNote' | 'viewMore'
+  level?: 'default' | 'warning' | 'danger',
+  badge?: string;
 }
 
 
@@ -114,20 +116,6 @@ export class DraggableResizableComponent implements OnInit, AfterViewInit {
 
   }
 
-  saveCoords() {
-    let randIndex = Math.floor(Math.random() * (100 - 1)) + 1;
-    this.draggableObj = {
-      width: this.objWidth,
-      height: this.objHeight,
-      containerPost: this.containerPos,
-      boxPosition: this.boxPosition,
-      id: randIndex,
-      top: this.objTop,
-      left: this.objLeft
-    }
-    this.dragObjSaved.emit(this.draggableObj);
-  }
-
   private resize(){
     if(this.resizeCondMeet()) {
       if (this.mouse.x - this.boxPosition.left <= 40 || this.mouse.y - this.boxPosition.top <= 40 ) {
@@ -164,8 +152,36 @@ export class DraggableResizableComponent implements OnInit, AfterViewInit {
     );
   }
 
-  addDraggedBtn() {
+  saveCoords() {
+    let randIndex = Math.floor(Math.random() * (100 - 1)) + 1;
+    if (this.draggableObj) {
+      this.draggableObj.width = this.objWidth;
+      this.draggableObj.height = this.objHeight;
+      this.draggableObj.containerPost = this.containerPos;
+      this.draggableObj.boxPosition = this.boxPosition;
+      this.draggableObj.top = this.objTop;
+      this.draggableObj.left = this.objLeft;
+      this.draggableObj.action = 'position';
+    } else {
+      this.draggableObj = {
+        width: this.objWidth,
+        height: this.objHeight,
+        containerPost: this.containerPos,
+        boxPosition: this.boxPosition,
+        id: randIndex,
+        top: this.objTop,
+        left: this.objLeft,
+        action: 'position',
+        level: 'default'
+      }
+    }
 
+    this.dragObjSaved.emit(this.draggableObj);
+  }
+
+  removeObj() {
+    this.draggableObj.action = 'remove';
+    this.dragObjSaved.emit(this.draggableObj);
   }
 
   async damageLevelSheet() {
@@ -179,7 +195,8 @@ export class DraggableResizableComponent implements OnInit, AfterViewInit {
           cssClass: 'default',
           handler: () => {
             console.log('Nivel normal clicked');
-            //this.takePicture();
+            this.draggableObj.level = 'default';
+            this.dragObjSaved.emit(this.draggableObj);
           },
         },
         {
@@ -187,6 +204,8 @@ export class DraggableResizableComponent implements OnInit, AfterViewInit {
           cssClass: 'warning',
           handler: () => {
             console.log('Nivel medio clicked');
+            this.draggableObj.level = 'warning';
+            this.dragObjSaved.emit(this.draggableObj);
           },
         },
         {
@@ -194,6 +213,8 @@ export class DraggableResizableComponent implements OnInit, AfterViewInit {
           cssClass: 'danger',
           handler: () => {
             console.log('Nivel grave clicked');
+            this.draggableObj.level = 'danger';
+            this.dragObjSaved.emit(this.draggableObj);
           },
         },
         {

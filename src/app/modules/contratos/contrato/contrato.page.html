@@ -954,17 +954,40 @@
 
                 <ion-row  (loadeddata)="initReviewCanva()">
                   <ion-col size="12" id="revisionRowW" style="overflow:scroll;">
-                    <button mat-raised-button class="button-secondary" (click)="addDraggedBtn()">
+                    <button mat-raised-button class="button-secondary" [matMenuTriggerFor]="moreDragObj">
                       <span style="font-size: 1.3rem;margin-right: 0.5rem;">+</span>&nbsp;Indicador
                     </button>
-                    <app-draggable-resizable (dragObjSaved)="catchDragObjSaved($event)"
-                                             [objLimitWidth]="816"
-                                             [objLimitHeight]="816"
-                                             [objWidth]="100"
-                                             [objHeight]="100"
-                                             [objLeft]="100"
-                                             [objTop]="100">
-                    </app-draggable-resizable>
+                    <mat-menu #moreDragObj="matMenu">
+                      <button class="more-drag-obj" mat-menu-item (click)="addDraggedBtn('G')">
+                        <span>G</span>
+                        <span>Golpe</span>
+                      </button>
+                      <button class="more-drag-obj" mat-menu-item (click)="addDraggedBtn('R')">
+                        <span>R</span>
+                        <span>Rayon</span>
+                      </button>
+                      <button class="more-drag-obj" mat-menu-item (click)="addDraggedBtn('D')">
+                        <span>D</span>
+                        <span>Daño</span>
+                      </button>
+                      <button class="more-drag-obj" mat-menu-item (click)="addDraggedBtn('DS')">
+                        <span>DS</span>
+                        <span>Daño severo</span>
+                      </button>
+                    </mat-menu>
+
+                    <div style="position: relative;" [style.width.px]="816">
+                      <ion-img src="assets/img/svg/sedan.svg" [style.width.px]="816"></ion-img>
+                      <div class="checklist-inspector-zone">
+                        <app-draggable-resizable *ngFor="let dragObj of dragObjs" (dragObjSaved)="catchDragObjSaved($event)"
+                                                 [draggableObj]="dragObj"
+                                                 [objLimitWidth]="816"
+                                                 [objLimitHeight]="816"
+                                                 >
+                        </app-draggable-resizable>
+                      </div>
+                    </div>
+
                   </ion-col>
                 </ion-row>
               </ion-card-content>

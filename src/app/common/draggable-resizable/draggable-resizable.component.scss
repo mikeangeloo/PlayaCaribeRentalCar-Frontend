@@ -2,7 +2,7 @@
   outline: 2px dashed var(--app-blue-light);
   color: var(--app-blue-light);
   background-color: #ffffffad;
-  position: relative;
+  position: absolute;
 
   min-width: 40px;
   min-height: 40px;
@@ -90,9 +90,11 @@
 
   .warning {
     color: var(--ion-color-primary) !important;
+    outline-color: var(--ion-color-primary) !important;
   }
   .danger {
     color: var(--ion-color-danger) !important;
+    outline-color: var(--ion-color-danger) !important;
   }
 }
 

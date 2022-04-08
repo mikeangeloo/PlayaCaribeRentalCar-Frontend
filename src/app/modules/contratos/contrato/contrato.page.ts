@@ -164,6 +164,10 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
   //#endregion
 
+  //#region CHECKLIST ATTRIBUTES
+  dragObjs: DragObjProperties[] = [];
+  //#endregion
+
   //#region SIGNATURE MANAGEMENT ATTRIBUTES
   public signature = '';
   //#endregion
@@ -231,6 +235,13 @@ export class ContratoPage implements OnInit, AfterViewInit {
   }
 
   async reloadAll() {
+    //TODO: quitar al guardar en DB
+    if (localStorage.getItem(this.generalServ.dragObjStorageKey)) {
+      let dragObjs = JSON.parse(localStorage.getItem(this.generalServ.dragObjStorageKey));
+      if (dragObjs && dragObjs.length > 0) {
+        this.dragObjs = dragObjs;
+      }
+    }
     console.log('execute reloadAll');
     // verificamos si tenemos guardado un contract_id en local storage para continuar con la edición
     if (this.contratosServ.getContractNumber()) {
@@ -645,12 +656,47 @@ export class ContratoPage implements OnInit, AfterViewInit {
     }
   }
 
-  addDraggedBtn() {
-
+  addDraggedBtn(badge) {
+    let randIndex = Math.floor(Math.random() * (100 - 1)) + 1;
+    let position = 100 + Math.floor(Math.random() * (100 - 1));
+    let draggableObj: DragObjProperties = {
+      width: 100,
+      height: 100,
+      containerPost: null,
+      boxPosition: null,
+      id: randIndex,
+      top: position,
+      left: position,
+      action: 'position',
+      level: 'default',
+      badge
+    }
+    this.dragObjs.push(draggableObj);
   }
 
   catchDragObjSaved(dragObj: DragObjProperties) {
-    console.log('catchDragObjSaved -->', dragObj);
+    if (dragObj) {
+      switch (dragObj.action) {
+        case 'position':
+          let findObj = this.dragObjs.find(x => x.id === dragObj.id);
+          if (findObj) {
+            findObj = dragObj;
+          } else {
+            this.dragObjs.push(dragObj);
+          }
+          break;
+        case 'remove':
+          let findIndexObj = this.dragObjs.findIndex(x => x.id === dragObj.id);
+          if (findIndexObj + 1) {
+            this.dragObjs.splice(findIndexObj, 1);
+          }
+          if (this.dragObjs.length === 0) {
+            localStorage.removeItem(this.generalServ.dragObjStorageKey);
+          }
+          break;
+      }
+      localStorage.setItem(this.generalServ.dragObjStorageKey, JSON.stringify(this.dragObjs));
+    }
   }
   //#endregion
 
