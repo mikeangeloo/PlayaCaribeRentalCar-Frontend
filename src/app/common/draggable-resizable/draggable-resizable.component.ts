@@ -1,4 +1,14 @@
-import {AfterViewInit, Component, ElementRef, HostListener, Input, OnInit, ViewChild} from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  EventEmitter,
+  HostListener,
+  Input,
+  OnInit,
+  Output,
+  ViewChild
+} from '@angular/core';
 import {ActionSheetController, PopoverController} from '@ionic/angular';
 
 const enum Status {
@@ -7,7 +17,7 @@ const enum Status {
   MOVE = 2
 }
 
-export interface DraggObjProperties {
+export interface DragObjProperties {
   id: number;
   width: number;
   height: number;
@@ -22,7 +32,8 @@ export interface DraggObjProperties {
     top: number;
     right: number;
     bottom: number;
-  }
+  },
+  action: 'add' | 'remove' | 'changeLevel' | 'photo' | 'addNote' | 'viewMore'
 }
 
 
@@ -40,17 +51,15 @@ export class DraggableResizableComponent implements OnInit, AfterViewInit {
   @Input() public objLimitWidth: number;
   @Input() public objLimitHeight: number;
 
+  @Input() draggableObj: DragObjProperties = null;
+  @Output() dragObjSaved = new EventEmitter();
+
   @ViewChild("box", {static: true}) public box: ElementRef;
   private boxPosition: { left: number, top: number };
   private containerPos: { left: number, top: number, right: number, bottom: number };
   public mouse: {x: number, y: number}
   public status: Status = Status.OFF;
   private mouseClick: {x: number, y: number, left: number, top: number}
-
-  public draggableObj: DraggObjProperties = null;
-  public draggObjKey = 'draggObj';
-
-  currentPopover: any;
 
   constructor(
     public actionSheetController: ActionSheetController
@@ -60,8 +69,8 @@ export class DraggableResizableComponent implements OnInit, AfterViewInit {
 
 
   ngOnInit() {
-    if (localStorage.getItem(this.draggObjKey)) {
-      this.draggableObj = JSON.parse(localStorage.getItem(this.draggObjKey));
+
+    if (this.draggableObj) {
       this.objWidth = this.draggableObj.width;
       this.objHeight = this.draggableObj.height;
       this.objLeft = this.draggableObj.left;
@@ -106,20 +115,18 @@ export class DraggableResizableComponent implements OnInit, AfterViewInit {
   }
 
   saveCoords() {
+    let randIndex = Math.floor(Math.random() * (100 - 1)) + 1;
     this.draggableObj = {
       width: this.objWidth,
       height: this.objHeight,
       containerPost: this.containerPos,
       boxPosition: this.boxPosition,
-      id: 1,
+      id: randIndex,
       top: this.objTop,
       left: this.objLeft
     }
-    localStorage.setItem('draggObj', JSON.stringify(this.draggableObj));
-    console.log('saved localStorage');
+    this.dragObjSaved.emit(this.draggableObj);
   }
-
-
 
   private resize(){
     if(this.resizeCondMeet()) {
@@ -155,6 +162,10 @@ export class DraggableResizableComponent implements OnInit, AfterViewInit {
       this.mouse.y > this.containerPos.top + offsetTop &&
       this.mouse.y < this.containerPos.bottom - offsetBottom
     );
+  }
+
+  addDraggedBtn() {
+
   }
 
   async damageLevelSheet() {
@@ -201,4 +212,5 @@ export class DraggableResizableComponent implements OnInit, AfterViewInit {
     const { role } = await actionSheet.onDidDismiss();
     console.log('onDidDismiss resolved with role', role);
   }
+
 }

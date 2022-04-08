@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {CdkDragDrop, CdkDragEnd} from '@angular/cdk/drag-drop';
 
 @Component({
@@ -8,6 +8,8 @@ import {CdkDragDrop, CdkDragEnd} from '@angular/cdk/drag-drop';
 })
 export class ChecklistInspectorZoneComponent implements OnInit {
 
+  @Input() width: number;
+  @Input() height: number;
   constructor() { }
 
   ngOnInit() {}

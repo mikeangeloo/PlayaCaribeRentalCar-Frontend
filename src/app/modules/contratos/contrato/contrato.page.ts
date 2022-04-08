@@ -40,6 +40,7 @@ import {TarifasCategoriasI} from '../../../interfaces/configuracion/tarifas-cate
 import {TarifasCategoriasService} from '../../../services/tarifas-categorias.service';
 import {CobranzaTipoE} from '../../../enums/cobranza-tipo.enum';
 import {InputModalComponent} from '../../../common/components/input-modal/input-modal.component';
+import {DragObjProperties} from '../../../common/draggable-resizable/draggable-resizable.component';
 
 
 @Component({
@@ -642,6 +643,14 @@ export class ContratoPage implements OnInit, AfterViewInit {
     background.onload = function(){
       ctx.drawImage(background,0,0);
     }
+  }
+
+  addDraggedBtn() {
+
+  }
+
+  catchDragObjSaved(dragObj: DragObjProperties) {
+    console.log('catchDragObjSaved -->', dragObj);
   }
   //#endregion
 

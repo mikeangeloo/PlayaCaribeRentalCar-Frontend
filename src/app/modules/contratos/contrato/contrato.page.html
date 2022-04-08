@@ -954,10 +954,18 @@
 
                 <ion-row  (loadeddata)="initReviewCanva()">
                   <ion-col size="12" id="revisionRowW" style="overflow:scroll;">
-<!--                    <canvas id="revisionC" width="1000" height="1000"></canvas>-->
-                    <ion-img src="assets/img/svg/sedan.svg" style="width: 1200px"></ion-img>
+                    <button mat-raised-button class="button-secondary" (click)="addDraggedBtn()">
+                      <span style="font-size: 1.3rem;margin-right: 0.5rem;">+</span>&nbsp;Indicador
+                    </button>
+                    <app-draggable-resizable (dragObjSaved)="catchDragObjSaved($event)"
+                                             [objLimitWidth]="816"
+                                             [objLimitHeight]="816"
+                                             [objWidth]="100"
+                                             [objHeight]="100"
+                                             [objLeft]="100"
+                                             [objTop]="100">
+                    </app-draggable-resizable>
                   </ion-col>
-                  <app-checklist-inspector-zone></app-checklist-inspector-zone>
                 </ion-row>
               </ion-card-content>
             </ion-card>

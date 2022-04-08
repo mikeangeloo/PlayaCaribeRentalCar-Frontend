@@ -9,8 +9,8 @@
 
 </div>-->
 
-<div class="box-container" style="width: 800px; height: 800px">
-  <span>800px</span>
-  <span>800px</span>
-  <app-draggable-resizable [objLimitWidth]="800" [objLimitHeight]="800" [objWidth]="300" [objHeight]="150" [objLeft]="100" [objTop]="100"></app-draggable-resizable>
+<div class="box-container" [style.width.px]="width" [style.height.px]="height">
+  <span>{{width}}px</span>
+  <span>{{height}}px</span>
+  <app-draggable-resizable [objLimitWidth]="width" [objLimitHeight]="height" [objWidth]="300" [objHeight]="150" [objLeft]="100" [objTop]="100"></app-draggable-resizable>
 </div>
