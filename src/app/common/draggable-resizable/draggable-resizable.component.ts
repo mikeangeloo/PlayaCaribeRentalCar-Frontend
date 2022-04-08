@@ -37,6 +37,7 @@ export interface DragObjProperties {
   action?: 'position' | 'remove' | 'changeLevel' | 'photo' | 'addNote' | 'viewMore'
   level?: 'default' | 'warning' | 'danger',
   badge?: string;
+  note?: string;
 }
 
 
@@ -277,9 +278,13 @@ export class DraggableResizableComponent implements OnInit, AfterViewInit {
           }
         }, {
           text: 'Ok',
-          handler: (value) => {
+          handler: (_dta) => {
+            if (_dta && _dta.note) {
+              this.draggableObj.note = _dta.note;
+              this.saveCoords();
+            }
             console.log('Confirm Ok');
-            console.log('handler -->', value);
+            console.log('handler -->', _dta);
           }
         }
       ]
