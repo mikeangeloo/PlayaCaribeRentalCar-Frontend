@@ -125,7 +125,7 @@ export class DraggableResizableComponent implements OnInit, AfterViewInit {
 
   private resize(){
     if(this.resizeCondMeet()) {
-      if (this.mouse.x - this.boxPosition.left <= 40 || this.mouse.y - this.boxPosition.top <= 40 ) {
+      if (this.mouse.x - this.boxPosition.left <= 20 || this.mouse.y - this.boxPosition.top <= 20 ) {
         return true;
       }
       this.objWidth = Number(this.mouse.x > this.boxPosition.left) ? this.mouse.x - this.boxPosition.left : 0;
