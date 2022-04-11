@@ -147,7 +147,7 @@
               </ion-card-content>
               <ion-card-title>
                 <div class="card-action-buttons">
-                  <ion-button color="success" (click)="saveProcess('datos_cliente')">GUARDAR</ion-button>
+                  <ion-button color="success" (click)="saveProcess('datos_cliente')">SIGUENTE</ion-button>
                 </div>
               </ion-card-title>
             </ion-card>
@@ -206,9 +206,9 @@
                             {{(ubicacion.alias) ? ubicacion.alias : ubicacion.direccion}}
                           </mat-option>
                         </mat-autocomplete>
-                        <!--                            <mat-select formControlName="ub_salida_id">-->
-                        <!--                              <mat-option *ngFor="let ubicacion of ubicaciones" [value]="ubicacion.id">{{(ubicacion.alias) ? ubicacion.alias : ubicacion.direccion}}</mat-option>-->
-                        <!--                            </mat-select>-->
+<!--                        <mat-select formControlName="ub_salida_id">-->
+<!--                          <mat-option *ngFor="let ubicacion of ubicaciones" [value]="ubicacion.id">{{(ubicacion.alias) ? ubicacion.alias : ubicacion.direccion}}</mat-option>-->
+<!--                        </mat-select>-->
                         <mat-error *ngIf="gf.ub_salida_id.errors?.required">Campo requerido</mat-error>
                       </mat-form-field>
                     </ion-col> <!-- Lugar de salida -->
@@ -467,7 +467,7 @@
 
                 </ion-card-content>
                 <div class="card-action-buttons">
-                  <ion-button  color="success" (click)="saveProcess('datos_generales')">GUARDAR</ion-button>
+                  <ion-button  color="success" (click)="saveProcess('datos_generales')">SIGUIENTE</ion-button>
                 </div>
               </ion-card>
 
@@ -630,7 +630,7 @@
                   </ion-row> <!-- No. Placas  No.Serie  Capacidad Tanque  -->
 
                   <div class="card-action-buttons">
-                    <ion-button  color="success" (click)="saveProcess('datos_vehiculo')">GUARDAR</ion-button>
+                    <ion-button  color="success" (click)="saveProcess('datos_vehiculo')">SIGUIENTE</ion-button>
                   </div>
                 </form>
                 <div *ngIf="!vehiculoData">
@@ -763,7 +763,7 @@
                                           </p>
                                         </div>
                                         <div class="info-row">
-                                          <span>Código Banco: </span>
+                                          <span>Aprobación Banco: </span>
                                           <p>
                                             {{cobranzaPago.cod_banco}}
                                           </p>
@@ -890,7 +890,7 @@
                                           </p>
                                         </div>
                                         <div class="info-row">
-                                          <span>Código Banco: </span>
+                                          <span>Aprobación Banco: </span>
                                           <p>
                                             {{cobranzaAuth.cod_banco}}
                                           </p>

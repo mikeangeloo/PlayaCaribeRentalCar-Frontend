@@ -1867,6 +1867,11 @@ export class ContratoPage implements OnInit, AfterViewInit {
     })
   }
 
+
+  catchEventTest(event) {
+    console.log(event);
+  }
+
   resetAll() {
     //this.clientes_docs = [];
   }
