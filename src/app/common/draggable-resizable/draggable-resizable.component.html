@@ -1,0 +1,56 @@
+<div #box class="resizable-draggable"
+     [style.width.px]="objWidth"
+     [style.height.px]="objHeight"
+     [style.transform]="'translate3d('+ objLeft + 'px,' + objTop + 'px,' + '0px)'"
+     [class.active]="status === 1 || status === 2"
+     [class.default]="draggableObj.levelColor === 'default'"
+     [class.warning]="draggableObj.levelColor === 'warning'"
+     [class.danger]="draggableObj.levelColor === 'danger'"
+     (window:mousemove)="catchMouseMove($event)"
+     (mousedown)="setStatus($event, 2)"
+     (window:mouseup)="setStatus($event, 0)"
+>
+  <div class="drag-action-buttons">
+    <ion-button size="small" color="danger" (click)="removeObj()">
+      <ion-icon slot="icon-only" name="trash-sharp"></ion-icon>
+    </ion-button>
+    <ion-button size="small" style="--background: var(--app-blue-light); --color: white;" [matMenuTriggerFor]="dragMoreOpts">
+      <ion-icon slot="icon-only" name="ellipsis-vertical-sharp"></ion-icon>
+    </ion-button>
+    <mat-menu #dragMoreOpts="matMenu">
+      <button mat-menu-item (click)="damageLevelSheet()">
+        <mat-icon>stacked_line_chart</mat-icon>
+        <span>Nivel daño</span>
+      </button>
+      <button mat-menu-item (click)="openModelosDocModal()">
+        <mat-icon>photo_camera</mat-icon>
+        <span>Capturar Foto(s)</span>
+      </button>
+      <button mat-menu-item (click)="addNote()">
+        <mat-icon>text_snippet</mat-icon>
+        <span>Agregar Nota</span>
+      </button>
+      <button mat-menu-item (click)="openFullView()">
+        <mat-icon>visibility</mat-icon>
+        <span>Ver mas</span>
+      </button>
+    </mat-menu>
+  </div>
+  <!--  <img src="assets/icons/icon-512x512.png" alt="" style="-->
+  <!--    position: absolute;-->
+  <!--    pointer-events: none;-->
+  <!--    width: 100%;-->
+  <!--    height: 100%;-->
+  <!--">-->
+  <div class="letter-identifier">
+    <p>{{draggableObj.badge}}</p>
+  </div>
+  <div class="resize-action" (mousedown)="setStatus($event, 1)"></div>
+  <ng-container *ngIf="false">
+    <span>{{objWidth | number:'1.0-0'}}px</span>
+    <span>{{objHeight | number:'1.0-0'}}px</span>
+    <span>({{objLeft}}, {{objTop}})</span>
+  </ng-container>
+
+</div>
+

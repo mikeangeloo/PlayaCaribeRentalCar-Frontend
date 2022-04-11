@@ -31,6 +31,7 @@ import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import { MAT_MOMENT_DATE_FORMATS } from '@angular/material-moment-adapter';
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
 import {MatMenuModule} from "@angular/material/menu";
+import {DragDropModule} from '@angular/cdk/drag-drop';
 
 
 @NgModule({
@@ -65,7 +66,8 @@ import {MatMenuModule} from "@angular/material/menu";
     MatPaginatorModule,
     MatAutocompleteModule,
     MatSlideToggleModule,
-    MatMenuModule
+    MatMenuModule,
+    DragDropModule
   ],
   exports: [
     MatButtonModule,
@@ -96,7 +98,8 @@ import {MatMenuModule} from "@angular/material/menu";
     MatPaginatorModule,
     MatAutocompleteModule,
     MatSlideToggleModule,
-    MatMenuModule
+    MatMenuModule,
+    DragDropModule
   ],
   providers: [
     { provide: MAT_DATE_LOCALE, useValue: 'en-GB' },

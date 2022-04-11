@@ -1,0 +1,16 @@
+<!--<div class="example-boundary">
+  <div class="example-box" cdkDragBoundary=".example-boundary" #dragElement [cdkDragFreeDragPosition]="{x: 185, y: 182}" cdkDrag (cdkDragEnded)="catchEvent($event, dragElement)">
+    I can only be dragged within the dotted container
+  </div>
+</div>
+<mat-divider></mat-divider>
+
+<div>
+
+</div>-->
+
+<div class="box-container" [style.width.px]="width" [style.height.px]="height">
+  <span>{{width}}px</span>
+  <span>{{height}}px</span>
+  <app-draggable-resizable [objLimitWidth]="width" [objLimitHeight]="height" [objWidth]="300" [objHeight]="150" [objLeft]="100" [objTop]="100"></app-draggable-resizable>
+</div>

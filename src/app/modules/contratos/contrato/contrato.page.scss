@@ -294,5 +294,21 @@ ion-card {
       flex: 1;
     }
   }
+}
 
+.more-drag-obj {
+  border-bottom: 1px solid #6a696936;
+  display: flex;
+  justify-content: space-between;
+  width: 200px;
+  color: var(--ion-color-dark);
+  span:first-of-type {
+      flex: 0 1 40%;
+      color: var(--app-blue-light);
+      font-size: 2em;
+      text-decoration: underline;
+    }
+  span:last-of-type {
+    flex: 0 1 60%;
+  }
 }
