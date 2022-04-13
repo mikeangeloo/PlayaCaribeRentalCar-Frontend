@@ -196,19 +196,18 @@
                       </ion-row>-->
                       <mat-form-field appearance="legacy">
                         <mat-label>Lugar de Salida</mat-label>
-                        <input type="text"
-                               placeholder="Pick one"
-                               matInput
-                               formControlName="ub_salida_id"
-                               [matAutocomplete]="ubSalidaAuto">
-                        <mat-autocomplete  #ubSalidaAuto="matAutocomplete"  [displayWith]="displayUb.bind(this)">
+                        <mat-select formControlName="ub_salida_id" (openedChange)="ubSalidaSearch.value = null">
+                          <mat-form-field appearance="legacy" style="padding: 0.8em;">
+                            <input (input)="gf.ub_salida_id.patchValue($event.target['value'])" matInput placeholder="Buscador" autocomplete="off" #ubSalidaSearch>
+                            <button mat-icon-button matSuffix (click)="ubSalidaSearch.value = null; gf.ub_salida_id.patchValue('')">
+                              <mat-icon>clear</mat-icon>
+                            </button>
+                          </mat-form-field>
                           <mat-option *ngFor="let ubicacion of exitPlacesOptions$ | async" [value]="ubicacion.id">
                             {{(ubicacion.alias) ? ubicacion.alias : ubicacion.direccion}}
                           </mat-option>
-                        </mat-autocomplete>
-<!--                        <mat-select formControlName="ub_salida_id">-->
-<!--                          <mat-option *ngFor="let ubicacion of ubicaciones" [value]="ubicacion.id">{{(ubicacion.alias) ? ubicacion.alias : ubicacion.direccion}}</mat-option>-->
-<!--                        </mat-select>-->
+                        </mat-select>
+
                         <mat-error *ngIf="gf.ub_salida_id.errors?.required">Campo requerido</mat-error>
                       </mat-form-field>
                     </ion-col> <!-- Lugar de salida -->
@@ -224,20 +223,17 @@
                       <!--                          </ion-row>-->
                       <mat-form-field appearance="legacy">
                         <mat-label>Lugar de retorno</mat-label>
-                        <input type="text"
-                               placeholder="Pick one"
-                               matInput
-                               formControlName="ub_retorno_id"
-                               [matAutocomplete]="ubRetornoAuto">
-                        <mat-autocomplete  #ubRetornoAuto="matAutocomplete"  [displayWith]="displayUb.bind(this)">
+                        <mat-select formControlName="ub_retorno_id" (openedChange)="ubRetornoSearch.value = null">
+                          <mat-form-field appearance="legacy" style="padding: 0.8em">
+                            <input type="text" matInput (input)="gf.ub_retorno_id.patchValue($event.target['value'])" placeholder="Buscador" autocomplete="off" #ubRetornoSearch>
+                            <button mat-icon-button matSuffix (click)="ubRetornoSearch.value = null; gf.ub_retorno_id.patchValue('')">
+                              <mat-icon>clear</mat-icon>
+                            </button>
+                          </mat-form-field>
                           <mat-option *ngFor="let ubicacion of returnPlacesOptions$ | async" [value]="ubicacion.id">
                             {{(ubicacion.alias) ? ubicacion.alias : ubicacion.direccion}}
                           </mat-option>
-                        </mat-autocomplete>
-                        <!--                            -->
-                        <!--                            <mat-select formControlName="ub_retorno_id">-->
-                        <!--                              <mat-option *ngFor="let ubicacion of ubicaciones" [value]="ubicacion.id">{{(ubicacion.alias) ? ubicacion.alias : ubicacion.direccion}}</mat-option>-->
-                        <!--                            </mat-select>-->
+                        </mat-select>
                         <mat-error *ngIf="gf.ub_retorno_id.errors?.required">Campo requerido</mat-error>
                       </mat-form-field>
                     </ion-col> <!-- Lugar de retorno -->
