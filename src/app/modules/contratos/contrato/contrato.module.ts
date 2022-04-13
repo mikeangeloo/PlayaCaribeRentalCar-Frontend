@@ -10,7 +10,6 @@ import { ContratoPage } from './contrato.page';
 import {MaterialModule} from "../../../material/material.module";
 import {NgxMaterialTimepickerModule} from "ngx-material-timepicker";
 import {AppCommonModule} from "../../../common/common.module";
-import {NgxMatSelectSearchModule} from 'ngx-mat-select-search';
 
 @NgModule({
     imports: [
@@ -22,7 +21,6 @@ import {NgxMatSelectSearchModule} from 'ngx-mat-select-search';
       NgxMaterialTimepickerModule,
       AppCommonModule,
       ReactiveFormsModule,
-      NgxMatSelectSearchModule
     ],
   declarations: [ContratoPage]
 })

@@ -33,7 +33,6 @@
     "@ionic/angular": "^5.9.1",
     "firebase-tools": "^9.23.0",
     "moment-timezone": "^0.5.34",
-    "ngx-mat-select-search": "^4.0.2",
     "ngx-material-timepicker": "^5.5.3",
     "rxjs": "~7.4.0",
     "signature_pad": "^3.0.0-beta.4",
