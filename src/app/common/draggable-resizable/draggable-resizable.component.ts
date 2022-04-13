@@ -41,6 +41,7 @@ export interface DragObjProperties {
   badge?: string;
   badgeTitle?: string;
   notes?: string[];
+  enable: boolean;
 }
 
 
@@ -60,6 +61,7 @@ export class DraggableResizableComponent implements OnInit, AfterViewInit {
 
   @Input() draggableObj: DragObjProperties = null;
   @Output() dragObjSaved = new EventEmitter();
+  @Output() dragObjSelected = new EventEmitter();
 
   @ViewChild("box", {static: true}) public box: ElementRef;
   private boxPosition: { left: number, top: number };
@@ -179,7 +181,8 @@ export class DraggableResizableComponent implements OnInit, AfterViewInit {
         top: this.objTop,
         left: this.objLeft,
         action: 'position',
-        levelColor: 'default'
+        levelColor: 'default',
+        enable: true
       }
     }
 
@@ -191,6 +194,7 @@ export class DraggableResizableComponent implements OnInit, AfterViewInit {
     this.dragObjSaved.emit(this.draggableObj);
   }
 
+  // @deprecated
   async damageLevelSheet() {
     const actionSheet = await this.actionSheetController.create({
       header: 'Opciones',
@@ -244,78 +248,6 @@ export class DraggableResizableComponent implements OnInit, AfterViewInit {
     console.log('onDidDismiss resolved with role', role);
   }
 
-  async openModelosDocModal() {
-    const modal = await this.modalCtr.create({
-      component: ModelosDocsComponent,
-      componentProps: {
-        model: 'check-list',
-        docType: 'check-list',
-        justButton: true,
-        fullSize: true,
-        model_id_value: 1,
-        asModal: true
-      },
-      swipeToClose: true,
-      cssClass: 'edit-form',
-    });
-    await  modal.present();
-    const {data} = await modal.onWillDismiss();
-    console.log('openModelosDocsModal data -->', data);
-  }
 
-  async addNote() {
-    const alert = await this.alertController.create({
-      cssClass: 'add-note-container',
-      header: 'Comentarios',
-      inputs: [
-        {
-          name: 'note',
-          type: 'textarea',
-          placeholder: 'Comentarios ...'
-        },
-      ],
-      buttons: [
-        {
-          text: 'Cancel',
-          role: 'cancel',
-          cssClass: 'secondary',
-          handler: () => {
-            console.log('Confirm Cancel');
-          }
-        }, {
-          text: 'Ok',
-          handler: (_dta) => {
-            if (_dta && _dta.note) {
-              if (this.draggableObj.notes && this.draggableObj.notes.length > 0) {
-                this.draggableObj.notes.push(_dta.note);
-              } else {
-                this.draggableObj.notes = [_dta.note];
-              }
-              this.saveCoords();
-            }
-            console.log('Confirm Ok');
-            console.log('handler -->', _dta);
-          }
-        }
-      ]
-    });
-
-    await alert.present();
-  }
-
-  async openFullView() {
-    const modal = await this.modalCtr.create({
-      component: ModalDragElementDetailsComponent,
-      componentProps: {
-        dragObj: this.draggableObj,
-        asModal: true
-      },
-      swipeToClose: true,
-      cssClass: 'edit-form',
-    });
-    await  modal.present();
-    const {data} = await modal.onWillDismiss();
-    console.log('openFullView data -->', data);
-  }
 
 }

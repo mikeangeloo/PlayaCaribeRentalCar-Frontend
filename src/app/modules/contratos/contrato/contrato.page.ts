@@ -5,7 +5,7 @@ import * as moment from 'moment';
 import {SweetMessagesService} from '../../../services/sweet-messages.service';
 import {CardI} from '../../../interfaces/cards/card.interface';
 import {TarjetaFormComponent} from '../../../common/components/tarjetas/tarjeta-form/tarjeta-form.component';
-import {ActionSheetController, ModalController} from '@ionic/angular';
+import {ActionSheetController, AlertController, ModalController} from '@ionic/angular';
 import {MultiTableFilterComponent} from '../../../common/components/multi-table-filter/multi-table-filter.component';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {DateConv} from '../../../helpers/date-conv';
@@ -41,6 +41,8 @@ import {TarifasCategoriasService} from '../../../services/tarifas-categorias.ser
 import {CobranzaTipoE} from '../../../enums/cobranza-tipo.enum';
 import {InputModalComponent} from '../../../common/components/input-modal/input-modal.component';
 import {DragObjProperties} from '../../../common/draggable-resizable/draggable-resizable.component';
+import {ModelosDocsComponent} from '../../../common/components/modelos-docs/modelos-docs.component';
+import {ModalDragElementDetailsComponent} from '../../../common/components/modal-drag-element-details/modal-drag-element-details.component';
 
 
 @Component({
@@ -166,6 +168,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
   //#region CHECKLIST ATTRIBUTES
   dragObjs: DragObjProperties[] = [];
+  selectedDragObj: DragObjProperties;
   //#endregion
 
   //#region SIGNATURE MANAGEMENT ATTRIBUTES
@@ -188,7 +191,8 @@ export class ContratoPage implements OnInit, AfterViewInit {
     public ubicacionesServ: UbicacionesService,
     public cobranzaServ: CobranzaService,
     public tarifasCatServ: TarifasCategoriasService,
-    public actionSheetController: ActionSheetController
+    public actionSheetController: ActionSheetController,
+    public alertController: AlertController
   ) { }
 
   ngOnInit() {
@@ -671,7 +675,8 @@ export class ContratoPage implements OnInit, AfterViewInit {
       levelColor: 'default',
       levelTxt: 'Normal',
       badge,
-      badgeTitle: title
+      badgeTitle: title,
+      enable: true
     }
     this.dragObjs.push(draggableObj);
   }
@@ -699,6 +704,83 @@ export class ContratoPage implements OnInit, AfterViewInit {
       }
       localStorage.setItem(this.generalServ.dragObjStorageKey, JSON.stringify(this.dragObjs));
     }
+  }
+
+  catchPickedObj(dragObj: DragObjProperties) {
+    this.selectedDragObj = dragObj;
+  }
+
+  async openModelosDocModal() {
+    const modal = await this.modalCtr.create({
+      component: ModelosDocsComponent,
+      componentProps: {
+        model: 'check-list',
+        docType: 'check-list',
+        justButton: true,
+        fullSize: true,
+        model_id_value: 1,
+        asModal: true
+      },
+      swipeToClose: true,
+      cssClass: 'edit-form',
+    });
+    await  modal.present();
+    const {data} = await modal.onWillDismiss();
+    console.log('openModelosDocsModal data -->', data);
+  }
+
+  async addNote() {
+    const alert = await this.alertController.create({
+      cssClass: 'add-note-container',
+      header: 'Comentarios',
+      inputs: [
+        {
+          name: 'note',
+          type: 'textarea',
+          placeholder: 'Comentarios ...'
+        },
+      ],
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          cssClass: 'secondary',
+          handler: () => {
+            console.log('Confirm Cancel');
+          }
+        }, {
+          text: 'Ok',
+          handler: (_dta) => {
+            if (_dta && _dta.note) {
+              if (this.selectedDragObj.notes && this.selectedDragObj.notes.length > 0) {
+                this.selectedDragObj.notes.push(_dta.note);
+              } else {
+                this.selectedDragObj.notes = [_dta.note];
+              }
+            }
+            console.log('Confirm Ok');
+            console.log('handler -->', _dta);
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+
+  async openFullView() {
+    const modal = await this.modalCtr.create({
+      component: ModalDragElementDetailsComponent,
+      componentProps: {
+        dragObj: this.selectedDragObj,
+        asModal: true
+      },
+      swipeToClose: true,
+      cssClass: 'edit-form',
+    });
+    await  modal.present();
+    const {data} = await modal.onWillDismiss();
+    console.log('openFullView data -->', data);
   }
   //#endregion
 

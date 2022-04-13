@@ -971,18 +971,41 @@
                     </mat-menu>
                     <br>
                     <br>
+                  </ion-col>
+                  <ion-col size="12" size-md="2">
+                    <div *ngIf="selectedDragObj">
+                      <button mat-menu-item (click)="selectedDragObj.action = 'remove'; catchDragObjSaved(selectedDragObj)">
+                        <mat-icon>trash</mat-icon>
+                        <span>Quitar</span>
+                      </button>
+                      <button mat-menu-item (click)="openModelosDocModal()">
+                        <mat-icon>photo_camera</mat-icon>
+                        <span>Capturar Foto(s)</span>
+                      </button>
+                      <button mat-menu-item (click)="addNote()">
+                        <mat-icon>text_snippet</mat-icon>
+                        <span>Agregar Nota</span>
+                      </button>
+                      <button mat-menu-item (click)="openFullView()">
+                        <mat-icon>visibility</mat-icon>
+                        <span>Ver mas</span>
+                      </button>
+                    </div>
+                  </ion-col>
+                  <ion-col size="12" size-md="10" style="overflow: scroll">
                     <div style="position: relative; margin: 0 auto" [style.width.px]="816">
                       <ion-img src="assets/img/svg/sedan.svg" [style.width.px]="816"></ion-img>
                       <div class="checklist-inspector-zone">
-                        <app-draggable-resizable *ngFor="let dragObj of dragObjs" (dragObjSaved)="catchDragObjSaved($event)"
+                        <app-draggable-resizable *ngFor="let dragObj of dragObjs"
+                                                 (dragObjSaved)="catchDragObjSaved($event)"
+                                                 (dragObjSelected)="catchPickedObj($event)"
                                                  [draggableObj]="dragObj"
                                                  [objLimitWidth]="816"
                                                  [objLimitHeight]="816"
-                                                 >
+                        >
                         </app-draggable-resizable>
                       </div>
                     </div>
-
                   </ion-col>
                 </ion-row>
               </ion-card-content>
