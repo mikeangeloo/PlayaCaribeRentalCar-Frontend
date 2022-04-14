@@ -973,22 +973,21 @@
                     <br>
                   </ion-col>
                   <ion-col size="12" size-md="2">
-                    <div *ngIf="selectedDragObj">
-                      <button mat-menu-item (click)="selectedDragObj.action = 'remove'; catchDragObjSaved(selectedDragObj)">
-                        <mat-icon>trash</mat-icon>
-                        <span>Quitar</span>
+                    <div class="checklist-left-buttons" *ngIf="selectedDragObj && selectedDragObj.enable === true">
+                      <button mat-raised-button class="button-cancel" title="Cancelar" (click)="cancelActionDragObj(this.selectedDragObj)">
+                        <mat-icon>highlight_off</mat-icon>
                       </button>
-                      <button mat-menu-item (click)="openModelosDocModal()">
+                      <button mat-raised-button color="warn" title="Quitar" (click)="selectedDragObj.action = 'remove'; catchDragObjSaved(selectedDragObj)">
+                        <mat-icon>delete_outline</mat-icon>
+                      </button>
+                      <button mat-raised-button class="button-blue-light" title="Capturar foto" (click)="openModelosDocModal()">
                         <mat-icon>photo_camera</mat-icon>
-                        <span>Capturar Foto(s)</span>
                       </button>
-                      <button mat-menu-item (click)="addNote()">
+                      <button mat-raised-button class="button-blue-light" title="Agregar nota" (click)="addNote()">
                         <mat-icon>text_snippet</mat-icon>
-                        <span>Agregar Nota</span>
                       </button>
-                      <button mat-menu-item (click)="openFullView()">
+                      <button mat-raised-button class="button-blue-light" title="Ver más" (click)="openFullView()">
                         <mat-icon>visibility</mat-icon>
-                        <span>Ver mas</span>
                       </button>
                     </div>
                   </ion-col>

@@ -243,7 +243,11 @@ export class ContratoPage implements OnInit, AfterViewInit {
     if (localStorage.getItem(this.generalServ.dragObjStorageKey)) {
       let dragObjs = JSON.parse(localStorage.getItem(this.generalServ.dragObjStorageKey));
       if (dragObjs && dragObjs.length > 0) {
-        this.dragObjs = dragObjs;
+        for (let i = 0; i < dragObjs.length; i++) {
+          dragObjs[i].enable = false;
+          this.dragObjs = dragObjs;
+        }
+
       }
     }
     console.log('execute reloadAll');
@@ -707,7 +711,18 @@ export class ContratoPage implements OnInit, AfterViewInit {
   }
 
   catchPickedObj(dragObj: DragObjProperties) {
+    if (this.selectedDragObj && (this.selectedDragObj != dragObj)) {
+      let findLastDragObj = this.dragObjs.find(x => x.id === this.selectedDragObj.id);
+      if (findLastDragObj) {
+        findLastDragObj.enable = false;
+      }
+    } 
+
     this.selectedDragObj = dragObj;
+  }
+
+  cancelActionDragObj(dragObj: DragObjProperties) {
+    dragObj.enable = false;
   }
 
   async openModelosDocModal() {

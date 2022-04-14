@@ -50,8 +50,8 @@
   border-style: solid;
   border-width: 8px;
   border-color: transparent transparent transparent var(--app-blue-light);
-  &.warning {
-    border-color: transparent transparent transparent var(--ion-color-primary);
+  &.disable-drag {
+    border: none;
   }
   &.danger {
     border-color: transparent transparent transparent var(--ion-color-danger);
@@ -95,6 +95,12 @@
   .danger {
     color: var(--ion-color-danger) !important;
     outline-color: var(--ion-color-danger) !important;
+  }
+
+  .disable-drag {
+    color: var(--ion-color-medium-shade) !important;
+    outline: none !important;
+    background: none !important;
   }
 
   .add-note-container {

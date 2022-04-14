@@ -296,6 +296,7 @@ ion-card {
   }
 }
 
+//#region CHECK LIST
 .more-drag-obj {
   border-bottom: 1px solid #6a696936;
   display: flex;
@@ -312,3 +313,12 @@ ion-card {
     flex: 0 1 60%;
   }
 }
+
+.checklist-left-buttons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  justify-content: space-evenly;
+}
+//#endregion

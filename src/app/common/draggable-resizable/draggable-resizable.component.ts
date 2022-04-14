@@ -41,7 +41,7 @@ export interface DragObjProperties {
   badge?: string;
   badgeTitle?: string;
   notes?: string[];
-  enable: boolean;
+  enable?: boolean;
 }
 
 
@@ -182,11 +182,17 @@ export class DraggableResizableComponent implements OnInit, AfterViewInit {
         left: this.objLeft,
         action: 'position',
         levelColor: 'default',
-        enable: true
+        enable: null
+
       }
     }
 
-    this.dragObjSaved.emit(this.draggableObj);
+    this.emitSelected(true);
+  }
+
+  emitSelected(enable: boolean) {
+    this.draggableObj.enable = enable;
+    this.dragObjSelected.emit(this.draggableObj);
   }
 
   removeObj() {
