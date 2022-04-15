@@ -45,7 +45,7 @@
   </div>-->
 
   <div class="letter-identifier">
-    <p>{{draggableObj.indicatorIcon}}</p>
+    <mat-icon>{{draggableObj.indicatorIcon}}</mat-icon>
   </div>
   <div class="resize-action" [class.disable-drag]="draggableObj.enable === false" (mousedown)="setStatus($event, 1)"></div>
   <ng-container *ngIf="false">

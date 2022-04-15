@@ -948,23 +948,36 @@
               <ion-card-content >
                 <ion-row  (loadeddata)="initReviewCanva()">
                   <ion-col size="12" id="revisionRowW" style="overflow:scroll;">
-                    <div>
-                      <button class="more-drag-obj" mat-menu-item (click)="addDraggedBtn('circle', 'Abolladura')">
-                        <mat-icon>circle</mat-icon>
+
+                    <div class="checklist-top-buttons">
+
+                      <div class="top-button">
+                        <button class="button-blue-light" mat-raised-button (click)="addDraggedBtn('radio_button_unchecked', 'Abolladura')">
+                          <mat-icon>radio_button_unchecked</mat-icon>
+                        </button>
                         <span>Abolladura</span>
-                      </button>
-                      <button class="more-drag-obj" mat-menu-item (click)="addDraggedBtn('R', 'Rayon')">
-                        <span>R</span>
+                      </div>
+
+                      <div class="top-button">
+                        <button class="button-blue-light" mat-raised-button (click)="addDraggedBtn('horizontal_rule', 'Rayon')">
+                          <mat-icon>horizontal_rule</mat-icon>
+                        </button>
                         <span>Rayon</span>
-                      </button>
-                      <button class="more-drag-obj" mat-menu-item (click)="addDraggedBtn('D', 'Daño')">
-                        <span>D</span>
-                        <span>Daño</span>
-                      </button>
-                      <button class="more-drag-obj" mat-menu-item (click)="addDraggedBtn('DS', 'Daño severo')">
-                        <span>DS</span>
-                        <span>Daño severo</span>
-                      </button>
+                      </div>
+
+                      <div class="top-button">
+                        <button class="button-blue-light" mat-raised-button (click)="addDraggedBtn('close', 'Golpes')">
+                          <mat-icon>close</mat-icon>
+                        </button>
+                        <span>Golpes</span>
+                      </div>
+
+                      <div class="top-button">
+                        <button class="button-blue-light" mat-raised-button (click)="addDraggedBtn('change_history', 'Rotura')">
+                          <mat-icon>change_history</mat-icon>
+                        </button>
+                        <span>Rotura</span>
+                      </div>
                     </div>
                     <br>
                     <br>

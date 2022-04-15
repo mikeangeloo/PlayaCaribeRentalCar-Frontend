@@ -791,6 +791,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
             }
             console.log('Confirm Ok');
             console.log('handler -->', _dta);
+            this.saveDragObj(this.selectedDragObj);
           }
         }
       ]

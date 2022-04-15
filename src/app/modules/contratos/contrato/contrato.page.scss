@@ -314,6 +314,22 @@ ion-card {
   }
 }
 
+.checklist-top-buttons {
+  display: flex;
+  justify-content: space-between;
+
+  .top-button {
+    display: flex;
+    flex-direction: column;
+
+    span {
+      font-size: 0.8em;
+      text-align: center;
+      margin-top: 5px;
+    }
+  }
+}
+
 .checklist-left-buttons {
   display: flex;
   flex-direction: row;
