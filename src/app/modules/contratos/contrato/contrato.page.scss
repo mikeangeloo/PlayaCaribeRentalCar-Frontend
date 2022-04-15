@@ -317,6 +317,8 @@ ion-card {
 .checklist-top-buttons {
   display: flex;
   justify-content: space-between;
+  width: calc(calc(11 / var(--ion-grid-columns, 12)) * 98%);
+  margin: 0 auto;
 
   .top-button {
     display: flex;

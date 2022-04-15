@@ -49,7 +49,7 @@
     <ion-card-content>
       <ion-row>
         <ion-col size="12">
-          <div style="display: flex;flex-direction: column;">
+          <div style="display: flex; flex-direction: column;border-left: 4px solid var(--ion-color-primary);padding-left: 12px;margin-left: 1rem;">
             <span style="font-weight: 600">Tipo</span>
             <span style="display: flex;margin-top: 10px;"><mat-icon>{{dragObj.indicatorIcon}}</mat-icon>&nbsp; {{dragObj.indicatorTitle}}</span>
           </div>
@@ -63,11 +63,11 @@
               <h3 style="text-align: left; font-weight: 500">Comentarios</h3>
               <ng-container *ngFor="let comment of dragObj.notes">
                 <div style="background: #f1f1f1;border-radius: 10px;padding: 1rem;margin-bottom: 1rem;">
-                  <ion-textarea autoGrow readonly [value]="comment">
+                  <ion-textarea autoGrow readonly [value]="comment.note">
                   </ion-textarea>
                   <div style="display: flex; flex-direction: column; text-align: right;">
-                    <span style="color: #6b6969">Mike</span>
-                    <span style="color: #6b6969">08/04/2022</span>
+                    <span style="color: #6b6969">{{comment.agente}}</span>
+                    <span style="color: #6b6969">{{comment.date}}</span>
                   </div>
 
                 </div>

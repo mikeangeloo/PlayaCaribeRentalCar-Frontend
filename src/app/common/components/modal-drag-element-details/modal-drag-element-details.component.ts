@@ -14,6 +14,8 @@ export class ModalDragElementDetailsComponent implements OnInit {
   @Input() dragObj: DragObjProperties;
   @Input() asModal: boolean;
 
+  @Input() dragId: number;
+
   constructor(
     private sweetMsgServ: SweetMessagesService,
     public filesServ: FilesService,

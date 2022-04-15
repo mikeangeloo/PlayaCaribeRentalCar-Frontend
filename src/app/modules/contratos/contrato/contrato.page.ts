@@ -784,9 +784,13 @@ export class ContratoPage implements OnInit, AfterViewInit {
           handler: (_dta) => {
             if (_dta && _dta.note) {
               if (this.selectedDragObj.notes && this.selectedDragObj.notes.length > 0) {
-                this.selectedDragObj.notes.push(_dta.note);
+                this.selectedDragObj.notes.push({
+                  note: _dta.note
+                });
               } else {
-                this.selectedDragObj.notes = [_dta.note];
+                this.selectedDragObj.notes = [{
+                  note: _dta.note
+                }];
               }
             }
             console.log('Confirm Ok');

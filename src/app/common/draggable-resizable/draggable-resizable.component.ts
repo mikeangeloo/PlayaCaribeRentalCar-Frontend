@@ -9,7 +9,7 @@ import {
   Output,
   ViewChild
 } from '@angular/core';
-import {ActionSheetController, AlertController, ModalController, PopoverController} from '@ionic/angular';
+import {ActionSheetController, AlertController, ModalController, Platform, PopoverController} from '@ionic/angular';
 import {ModelosDocsComponent} from '../components/modelos-docs/modelos-docs.component';
 import {ModalDragElementDetailsComponent} from '../components/modal-drag-element-details/modal-drag-element-details.component';
 
@@ -40,7 +40,11 @@ export interface DragObjProperties {
   levelTxt?: string;
   indicatorIcon?: string;
   indicatorTitle?: string;
-  notes?: string[];
+  notes?: [{
+    note: string;
+    date?: string;
+    agente?: string
+  }];
   enable?: boolean;
   lock?: boolean;
 }
@@ -74,7 +78,8 @@ export class DraggableResizableComponent implements OnInit, AfterViewInit {
   constructor(
     public actionSheetController: ActionSheetController,
     private modalCtr: ModalController,
-    private alertController: AlertController
+    private alertController: AlertController,
+    public platform: Platform
   ) {
 
   }
@@ -100,7 +105,7 @@ export class DraggableResizableComponent implements OnInit, AfterViewInit {
   private loadBox(){
     const {left, top} = this.box.nativeElement.getBoundingClientRect();
     this.boxPosition = {left, top};
-    console.log('boxPosition', this.boxPosition);
+    //console.log('boxPosition', this.boxPosition);
   }
 
   private loadContainer(){
@@ -109,23 +114,58 @@ export class DraggableResizableComponent implements OnInit, AfterViewInit {
     const right = left + this.objLimitWidth;
     const bottom = top + this.objLimitHeight;
     this.containerPos = { left, top, right, bottom };
-    console.log('containerPos --->', this.containerPos);
+    //console.log('containerPos --->', this.containerPos);
   }
 
   setStatus(event: MouseEvent, status: number){
-    event.stopPropagation();
-    if (this.draggableObj.lock === true) {
-      return;
+    console.log(status);
+    if (this.platform.is('desktop')) {
+      event.stopPropagation();
+      if (this.draggableObj.lock === true) {
+        return;
+      }
+      this.setStatusDesktop(event, status)
     }
+  }
+
+  setStatusDesktop(event: MouseEvent, status: number) {
     if(status === 2) this.mouseClick = { x: event.clientX, y: event.clientY, left: this.objLeft, top: this.objTop };
     else this.loadBox();  this.loadContainer();
     this.status = status;
   }
 
+  setStatusMobile(event: TouchEvent, status) {
+    event.stopPropagation();
+    if (this.draggableObj.lock === true) {
+      return;
+    }
+    if (!this.platform.is('desktop')) {
+      console.log('setStatusMobile --->', event);
+      if(status === 2) this.mouseClick = { x: event.touches[0].clientX, y: event.touches[0].clientY, left: this.objLeft, top: this.objTop };
+      else this.loadBox();  this.loadContainer();
+      this.status = status;
+    }
+
+  }
+
   catchMouseMove(event) {
-    this.mouse = { x: event.clientX, y: event.clientY };
-    if(this.status === Status.RESIZE) this.resize();
-    else if(this.status === Status.MOVE) this.move();
+    if (this.platform.is('desktop')) {
+      console.log('catchMouseMove execute');
+      this.mouse = { x: event.clientX, y: event.clientY };
+      if(this.status === Status.RESIZE) this.resize();
+      else if(this.status === Status.MOVE) this.move();
+    }
+
+  }
+
+  catchToucheMoves(event: TouchEvent) {
+    if (!this.platform.is('desktop')) {
+      event.stopPropagation();
+      console.log('catchToucheMoves --->', event);
+      this.mouse = { x: event.touches[0].clientX, y: event.touches[0].clientY};
+      if(this.status === Status.RESIZE) this.resize();
+      else if(this.status === Status.MOVE) this.move();
+    }
 
   }
 
