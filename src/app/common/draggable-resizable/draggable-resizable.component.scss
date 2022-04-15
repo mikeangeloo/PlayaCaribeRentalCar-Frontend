@@ -1,6 +1,6 @@
 .resizable-draggable {
-  outline: 2px dashed var(--app-blue-light);
-  color: var(--app-blue-light);
+  outline: 2px dashed var(--ion-color-primary);
+  color: var(--ion-color-primary);
   background-color: #ffffffad;
   position: absolute;
 
@@ -49,7 +49,7 @@
   transform: translate3d(-50%, -50%, 0) rotateZ(45deg);
   border-style: solid;
   border-width: 8px;
-  border-color: transparent transparent transparent var(--app-blue-light);
+  border-color: transparent transparent transparent var(--ion-color-primary);
   &.disable-drag {
     border: none;
   }
@@ -85,7 +85,7 @@
 }
 ::ng-deep {
   .default {
-    color: var(--app-blue-light) !important;
+    color: var(--ion-color-primary) !important;
   }
 
   .warning {
@@ -98,13 +98,20 @@
   }
 
   .disable-drag {
-    color: var(--ion-color-medium-shade) !important;
+    color: var(--ion-color-dark-tint) !important;
     outline: none !important;
     background: none !important;
   }
 
   .add-note-container {
     --min-width: 35%;
+  }
+  .lock {
+    opacity: 0.6;
+    color: black !important;
+  }
+  .unlock {
+    opacity: inherit;
   }
 }
 

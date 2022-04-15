@@ -38,10 +38,11 @@ export interface DragObjProperties {
   action?: 'position' | 'remove' | 'changeLevel' | 'photo' | 'addNote' | 'viewMore'
   levelColor?: 'default' | 'warning' | 'danger',
   levelTxt?: string;
-  badge?: string;
-  badgeTitle?: string;
+  indicatorIcon?: string;
+  indicatorTitle?: string;
   notes?: string[];
   enable?: boolean;
+  lock?: boolean;
 }
 
 
@@ -113,6 +114,9 @@ export class DraggableResizableComponent implements OnInit, AfterViewInit {
 
   setStatus(event: MouseEvent, status: number){
     event.stopPropagation();
+    if (this.draggableObj.lock === true) {
+      return;
+    }
     if(status === 2) this.mouseClick = { x: event.clientX, y: event.clientY, left: this.objLeft, top: this.objTop };
     else this.loadBox();  this.loadContainer();
     this.status = status;
@@ -126,6 +130,9 @@ export class DraggableResizableComponent implements OnInit, AfterViewInit {
   }
 
   private resize(){
+    if (this.draggableObj.lock === true) {
+      return;
+    }
     if(this.resizeCondMeet()) {
       if (this.mouse.x - this.boxPosition.left <= 20 || this.mouse.y - this.boxPosition.top <= 20 ) {
         return true;
@@ -141,6 +148,9 @@ export class DraggableResizableComponent implements OnInit, AfterViewInit {
   }
 
   private move(){
+    if (this.draggableObj.lock === true) {
+      return;
+    }
     if(this.moveCondMeet()) {
       this.objLeft = this.mouseClick.left + (this.mouse.x - this.mouseClick.x);
       this.objTop = this.mouseClick.top + (this.mouse.y - this.mouseClick.y);
@@ -186,8 +196,8 @@ export class DraggableResizableComponent implements OnInit, AfterViewInit {
 
       }
     }
-
     this.emitSelected(true);
+    this.dragObjSaved.emit(this.draggableObj);
   }
 
   emitSelected(enable: boolean) {

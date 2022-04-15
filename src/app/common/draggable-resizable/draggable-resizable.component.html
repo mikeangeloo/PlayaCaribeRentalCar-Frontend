@@ -7,11 +7,16 @@
      [class.warning]="draggableObj.levelColor === 'warning'"
      [class.disable-drag]="draggableObj.enable === false"
      [class.danger]="draggableObj.levelColor === 'danger'"
+     [class.lock]="draggableObj.lock === true"
+     [class.unlock]="draggableObj.lock === false || !draggableObj.lock"
      (window:mousemove)="catchMouseMove($event)"
      (mousedown)="setStatus($event, 2)"
      (window:mouseup)="setStatus($event, 0)"
      (click)="emitSelected(true)"
 >
+  <div *ngIf="draggableObj.enable === true" style="transform: translate3d(0px, -35px, 0px); width: 80px">
+    <span style="width: 100%;"><b>Id: {{draggableObj.id}}</b></span>
+  </div>
 <!--  <div class="drag-action-buttons">
     <ion-button size="small" color="danger" (click)="removeObj()">
       <ion-icon slot="icon-only" name="trash-sharp"></ion-icon>
@@ -40,7 +45,7 @@
   </div>-->
 
   <div class="letter-identifier">
-    <p>{{draggableObj.badge}}</p>
+    <p>{{draggableObj.indicatorIcon}}</p>
   </div>
   <div class="resize-action" [class.disable-drag]="draggableObj.enable === false" (mousedown)="setStatus($event, 1)"></div>
   <ng-container *ngIf="false">

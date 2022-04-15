@@ -948,13 +948,10 @@
               <ion-card-content >
                 <ion-row  (loadeddata)="initReviewCanva()">
                   <ion-col size="12" id="revisionRowW" style="overflow:scroll;">
-                    <button mat-raised-button class="button-secondary" [matMenuTriggerFor]="moreDragObj">
-                      <span style="font-size: 1.3rem;margin-right: 0.5rem;">+</span>&nbsp;Indicador
-                    </button>
-                    <mat-menu #moreDragObj="matMenu">
-                      <button class="more-drag-obj" mat-menu-item (click)="addDraggedBtn('G', 'Golpe')">
-                        <span>G</span>
-                        <span>Golpe</span>
+                    <div>
+                      <button class="more-drag-obj" mat-menu-item (click)="addDraggedBtn('circle', 'Abolladura')">
+                        <mat-icon>circle</mat-icon>
+                        <span>Abolladura</span>
                       </button>
                       <button class="more-drag-obj" mat-menu-item (click)="addDraggedBtn('R', 'Rayon')">
                         <span>R</span>
@@ -968,16 +965,27 @@
                         <span>DS</span>
                         <span>Daño severo</span>
                       </button>
-                    </mat-menu>
+                    </div>
                     <br>
                     <br>
                   </ion-col>
                   <ion-col size="12" size-md="2">
                     <div class="checklist-left-buttons" *ngIf="selectedDragObj && selectedDragObj.enable === true">
+                      <div class="draggid">
+                        <span><b>Check Id:</b></span>
+                        &nbsp;
+                        <span>{{selectedDragObj.id}}</span>
+                      </div>
                       <button mat-raised-button class="button-cancel" title="Cancelar" (click)="cancelActionDragObj(this.selectedDragObj)">
                         <mat-icon>highlight_off</mat-icon>
                       </button>
-                      <button mat-raised-button color="warn" title="Quitar" (click)="selectedDragObj.action = 'remove'; catchDragObjSaved(selectedDragObj)">
+                      <button *ngIf="!selectedDragObj.lock" mat-raised-button class="button-blue-light" title="Bloquear" (click)="blockUnblockDragObj(this.selectedDragObj, true)">
+                        <mat-icon>lock_open</mat-icon>
+                      </button>
+                      <button *ngIf="selectedDragObj.lock" mat-raised-button class="button-blue-light" title="Desbloquear" (click)="blockUnblockDragObj(this.selectedDragObj, false)">
+                        <mat-icon>lock</mat-icon>
+                      </button>
+                      <button mat-raised-button color="warn" title="Quitar" (click)="removeDragObj(selectedDragObj)">
                         <mat-icon>delete_outline</mat-icon>
                       </button>
                       <button mat-raised-button class="button-blue-light" title="Capturar foto" (click)="openModelosDocModal()">
@@ -996,7 +1004,7 @@
                       <ion-img src="assets/img/svg/sedan.svg" [style.width.px]="816"></ion-img>
                       <div class="checklist-inspector-zone">
                         <app-draggable-resizable *ngFor="let dragObj of dragObjs"
-                                                 (dragObjSaved)="catchDragObjSaved($event)"
+                                                 (dragObjSaved)="saveDragObj($event)"
                                                  (dragObjSelected)="catchPickedObj($event)"
                                                  [draggableObj]="dragObj"
                                                  [objLimitWidth]="816"

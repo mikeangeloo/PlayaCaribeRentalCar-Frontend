@@ -664,12 +664,12 @@ export class ContratoPage implements OnInit, AfterViewInit {
     }
   }
 
-  addDraggedBtn(badge, title) {
+  addDraggedBtn(indicatorIcon, indicatorTitle) {
     let randIndex = Math.floor(Math.random() * (100 - 1)) + 1;
     let position = 100 + Math.floor(Math.random() * (100 - 1));
     let draggableObj: DragObjProperties = {
-      width: 100,
-      height: 100,
+      width: 20,
+      height: 20,
       containerPost: null,
       boxPosition: null,
       id: randIndex,
@@ -678,14 +678,15 @@ export class ContratoPage implements OnInit, AfterViewInit {
       action: 'position',
       levelColor: 'default',
       levelTxt: 'Normal',
-      badge,
-      badgeTitle: title,
+      indicatorIcon: indicatorIcon,
+      indicatorTitle: indicatorTitle,
       enable: true
     }
     this.dragObjs.push(draggableObj);
   }
 
-  catchDragObjSaved(dragObj: DragObjProperties) {
+  saveDragObj(dragObj: DragObjProperties) {
+    console.log('catchDragObjSaved --->', dragObj);
     if (dragObj) {
       switch (dragObj.action) {
         case 'position':
@@ -699,6 +700,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
         case 'remove':
           let findIndexObj = this.dragObjs.findIndex(x => x.id === dragObj.id);
           if (findIndexObj + 1) {
+            this.cancelActionDragObj(dragObj);
             this.dragObjs.splice(findIndexObj, 1);
           }
           if (this.dragObjs.length === 0) {
@@ -716,13 +718,27 @@ export class ContratoPage implements OnInit, AfterViewInit {
       if (findLastDragObj) {
         findLastDragObj.enable = false;
       }
-    } 
+    }
 
     this.selectedDragObj = dragObj;
   }
 
   cancelActionDragObj(dragObj: DragObjProperties) {
     dragObj.enable = false;
+  }
+
+  removeDragObj(dragObj: DragObjProperties) {
+    this.sweetMsgServ.confirmRequest('¿Estás seguro de querer eliminar este elemento?').then((data)  => {
+      if (data.value) {
+        dragObj.action = 'remove';
+        this.saveDragObj(dragObj);
+      }
+    });
+  }
+
+  blockUnblockDragObj(dragObj: DragObjProperties, lock: boolean) {
+    dragObj.lock = lock;
+    this.saveDragObj(dragObj);
   }
 
   async openModelosDocModal() {
