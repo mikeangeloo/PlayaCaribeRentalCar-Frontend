@@ -79,7 +79,7 @@ export class DraggableResizableComponent implements OnInit, AfterViewInit {
     public actionSheetController: ActionSheetController,
     private modalCtr: ModalController,
     private alertController: AlertController,
-    public platform: Platform
+    public platform: Platform,
   ) {
 
   }
@@ -105,7 +105,7 @@ export class DraggableResizableComponent implements OnInit, AfterViewInit {
   private loadBox(){
     const {left, top} = this.box.nativeElement.getBoundingClientRect();
     this.boxPosition = {left, top};
-    //console.log('boxPosition', this.boxPosition);
+    console.log('boxPosition', this.boxPosition);
   }
 
   private loadContainer(){
@@ -114,60 +114,56 @@ export class DraggableResizableComponent implements OnInit, AfterViewInit {
     const right = left + this.objLimitWidth;
     const bottom = top + this.objLimitHeight;
     this.containerPos = { left, top, right, bottom };
-    //console.log('containerPos --->', this.containerPos);
+    console.log('containerPos --->', this.containerPos);
   }
 
-  setStatus(event: MouseEvent, status: number){
-    console.log(status);
+  catchMouseMove(event) {
     if (this.platform.is('desktop')) {
-      event.stopPropagation();
-      if (this.draggableObj.lock === true) {
-        return;
-      }
-      this.setStatusDesktop(event, status)
+      console.log('catchMouseMove -->',event);
+      this.mouse = { x: event.clientX, y: event.clientY };
+      if(this.status === Status.RESIZE) this.resize();
+      else if(this.status === Status.MOVE) this.move();
     }
   }
 
-  setStatusDesktop(event: MouseEvent, status: number) {
+  catchTouchMove(event: TouchEvent) {
+    if (!this.platform.is('desktop')) {
+      console.log('catchTouchMove -->',event);
+      console.log('catchTouchMove status --->', this.status);
+
+
+
+      this.mouse = { x: event.touches[0].clientX, y: event.touches[0].clientY };
+      if(this.status === Status.RESIZE) this.resize();
+      else if(this.status === Status.MOVE) this.move();
+    }
+  }
+
+  setStatus(event: MouseEvent, status: number){
+    //event.stopPropagation();
     if(status === 2) this.mouseClick = { x: event.clientX, y: event.clientY, left: this.objLeft, top: this.objTop };
     else this.loadBox();  this.loadContainer();
     this.status = status;
   }
 
-  setStatusMobile(event: TouchEvent, status) {
+  setTouchStatus(event: TouchEvent, status: number){
     event.stopPropagation();
-    if (this.draggableObj.lock === true) {
-      return;
-    }
-    if (!this.platform.is('desktop')) {
-      console.log('setStatusMobile --->', event);
-      if(status === 2) this.mouseClick = { x: event.touches[0].clientX, y: event.touches[0].clientY, left: this.objLeft, top: this.objTop };
-      else this.loadBox();  this.loadContainer();
-      this.status = status;
+
+    if (status === 0) {
+      document.getElementById('drag-container').style.overflow = 'scroll';
+      document.getElementById('revisionRowH').style.cssText = '--overflow: auto;'
+
+    } else {
+      document.getElementById('drag-container').style.overflow = 'hidden';
+      document.getElementById('revisionRowH').style.cssText = '--overflow: hidden;'
     }
 
+    if(status === 2) this.mouseClick = { x: event.touches[0].clientX, y: event.touches[0].clientY, left: this.objLeft, top: this.objTop };
+    else this.loadBox();  this.loadContainer();
+    this.status = status;
   }
 
-  catchMouseMove(event) {
-    if (this.platform.is('desktop')) {
-      console.log('catchMouseMove execute');
-      this.mouse = { x: event.clientX, y: event.clientY };
-      if(this.status === Status.RESIZE) this.resize();
-      else if(this.status === Status.MOVE) this.move();
-    }
 
-  }
-
-  catchToucheMoves(event: TouchEvent) {
-    if (!this.platform.is('desktop')) {
-      event.stopPropagation();
-      console.log('catchToucheMoves --->', event);
-      this.mouse = { x: event.touches[0].clientX, y: event.touches[0].clientY};
-      if(this.status === Status.RESIZE) this.resize();
-      else if(this.status === Status.MOVE) this.move();
-    }
-
-  }
 
   private resize(){
     if (this.draggableObj.lock === true) {
@@ -236,6 +232,7 @@ export class DraggableResizableComponent implements OnInit, AfterViewInit {
 
       }
     }
+
     this.emitSelected(true);
     this.dragObjSaved.emit(this.draggableObj);
   }

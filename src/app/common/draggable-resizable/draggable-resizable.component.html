@@ -10,14 +10,14 @@
      [class.lock]="draggableObj.lock === true"
      [class.unlock]="draggableObj.lock === false || !draggableObj.lock"
      (window:mousemove)="catchMouseMove($event)"
-     (window:touchmove)="catchToucheMoves($event)"
+     (window:touchmove)="catchTouchMove($event)"
+
 
      (mousedown)="setStatus($event, 2)"
-     (touchstart)="setStatusMobile($event, 2)"
-
+     (touchstart)="setTouchStatus($event, 2)"
 
      (window:mouseup)="setStatus($event, 0)"
-     (window:touchend)="setStatusMobile($event, 0)"
+     (window:touchend)="setTouchStatus($event, 0)"
 
 
      (click)="emitSelected(true)"
@@ -55,7 +55,7 @@
   <div class="letter-identifier">
     <mat-icon>{{draggableObj.indicatorIcon}}</mat-icon>
   </div>
-  <div *ngIf="draggableObj.lock === false || !draggableObj.lock" class="resize-action" [class.disable-drag]="draggableObj.enable === false" (mousedown)="setStatus($event, 1)" (touchmove)="setStatusMobile($event, 1)"></div>
+  <div *ngIf="draggableObj.lock === false || !draggableObj.lock" class="resize-action" [class.disable-drag]="draggableObj.enable === false" (mousedown)="setStatus($event, 1)" (touchstart)="setTouchStatus($event, 1)" ></div>
   <ng-container *ngIf="false">
     <span>{{objWidth | number:'1.0-0'}}px</span>
     <span>{{objHeight | number:'1.0-0'}}px</span>
