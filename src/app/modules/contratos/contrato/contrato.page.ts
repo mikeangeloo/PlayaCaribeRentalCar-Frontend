@@ -43,6 +43,7 @@ import {InputModalComponent} from '../../../common/components/input-modal/input-
 import {DragObjProperties} from '../../../common/draggable-resizable/draggable-resizable.component';
 import {ModelosDocsComponent} from '../../../common/components/modelos-docs/modelos-docs.component';
 import {ModalDragElementDetailsComponent} from '../../../common/components/modal-drag-element-details/modal-drag-element-details.component';
+import {CheckListTypeEnum} from '../../../enums/check-list-type.enum';
 
 
 @Component({
@@ -240,16 +241,16 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
   async reloadAll() {
     //TODO: quitar al guardar en DB
-    if (localStorage.getItem(this.generalServ.dragObjStorageKey)) {
-      let dragObjs = JSON.parse(localStorage.getItem(this.generalServ.dragObjStorageKey));
-      if (dragObjs && dragObjs.length > 0) {
-        for (let i = 0; i < dragObjs.length; i++) {
-          dragObjs[i].enable = false;
-          this.dragObjs = dragObjs;
-        }
-
-      }
-    }
+    // if (localStorage.getItem(this.generalServ.dragObjStorageKey)) {
+    //   let dragObjs = JSON.parse(localStorage.getItem(this.generalServ.dragObjStorageKey));
+    //   if (dragObjs && dragObjs.length > 0) {
+    //     for (let i = 0; i < dragObjs.length; i++) {
+    //       dragObjs[i].enable = false;
+    //       this.dragObjs = dragObjs;
+    //     }
+    //
+    //   }
+    // }
     console.log('execute reloadAll');
     // verificamos si tenemos guardado un contract_id en local storage para continuar con la edición
     if (this.contratosServ.getContractNumber()) {
@@ -299,6 +300,37 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
             } else {
               this.cobranzaProgData = [];
+            }
+
+            let _checkListSalidaData = this.contractData.etapas_guardadas.find(x => x === 'check_list_salida');
+            if (_checkListSalidaData) {
+              console.log('check_list_salida');
+
+              this.dragObjs = this.contractData.check_list_salida;
+              console.log('dragObjs', this.dragObjs);
+
+              let _dataFromStorage: DragObjProperties[] = this.returnIfCheckListInStorage();
+
+              if (_dataFromStorage.length === 0){
+                localStorage.removeItem(this.generalServ.dragObjStorageKey);
+                for (let i = 0; i < this.dragObjs.length; i++) {
+                  this.dragObjs[i].enable = false;
+                }
+              }
+
+              if (_dataFromStorage.length > 0) {
+
+                console.log('localstorage', _dataFromStorage);
+                let _firstUnSaved = _dataFromStorage.find(x => x.saved == false);
+                this.catchPickedObj(_firstUnSaved ? _firstUnSaved : _dataFromStorage[0]);
+                // for (let i = 0; i < _dataFromStorage.length; i++) {
+                //   this.saveDragObj(_dataFromStorage[i]);
+                // }
+                this.dragObjs = [... _dataFromStorage];
+
+                console.log('dragObjs', this.dragObjs);
+              }
+
             }
           }
           if (this.generalDataForm.controls.total.value) {
@@ -668,11 +700,14 @@ export class ContratoPage implements OnInit, AfterViewInit {
     let randIndex = Math.floor(Math.random() * (100 - 1)) + 1;
     let position = 100 + Math.floor(Math.random() * (100 - 1));
     let draggableObj: DragObjProperties = {
+      id: null,
+      contrato_id: this.contract_id,
+      tipo: CheckListTypeEnum.SALIDA,
       width: 20,
       height: 20,
       containerPost: null,
       boxPosition: null,
-      id: randIndex,
+      objId: randIndex,
       top: position,
       left: position,
       action: 'position',
@@ -680,17 +715,19 @@ export class ContratoPage implements OnInit, AfterViewInit {
       levelTxt: 'Normal',
       indicatorIcon: indicatorIcon,
       indicatorTitle: indicatorTitle,
-      enable: true
+      enable: true,
+      saved: false
     }
     this.dragObjs.push(draggableObj);
   }
 
   saveDragObj(dragObj: DragObjProperties) {
-    console.log('catchDragObjSaved --->', dragObj);
+    //console.log('catchDragObjSaved --->', dragObj);
     if (dragObj) {
       switch (dragObj.action) {
         case 'position':
-          let findObj = this.dragObjs.find(x => x.id === dragObj.id);
+          dragObj.saved = false;
+          let findObj = this.dragObjs.find(x => x.objId === dragObj.objId);
           if (findObj) {
             findObj = dragObj;
           } else {
@@ -698,7 +735,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
           }
           break;
         case 'remove':
-          let findIndexObj = this.dragObjs.findIndex(x => x.id === dragObj.id);
+          let findIndexObj = this.dragObjs.findIndex(x => x.objId === dragObj.objId);
           if (findIndexObj + 1) {
             this.cancelActionDragObj(dragObj);
             this.dragObjs.splice(findIndexObj, 1);
@@ -714,17 +751,19 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
   catchPickedObj(dragObj: DragObjProperties) {
     if (this.selectedDragObj && (this.selectedDragObj != dragObj)) {
-      let findLastDragObj = this.dragObjs.find(x => x.id === this.selectedDragObj.id);
+      let findLastDragObj = this.dragObjs.find(x => x.objId === this.selectedDragObj.objId);
       if (findLastDragObj) {
         findLastDragObj.enable = false;
       }
     }
 
+    dragObj.enable = true;
     this.selectedDragObj = dragObj;
   }
 
   cancelActionDragObj(dragObj: DragObjProperties) {
     dragObj.enable = false;
+    this.selectedDragObj = null;
   }
 
   removeDragObj(dragObj: DragObjProperties) {
@@ -783,13 +822,13 @@ export class ContratoPage implements OnInit, AfterViewInit {
           text: 'Ok',
           handler: (_dta) => {
             if (_dta && _dta.note) {
-              if (this.selectedDragObj.notes && this.selectedDragObj.notes.length > 0) {
-                this.selectedDragObj.notes.push({
-                  note: _dta.note
+              if (this.selectedDragObj.notas && this.selectedDragObj.notas.length > 0) {
+                this.selectedDragObj.notas.push({
+                  nota: _dta.note
                 });
               } else {
-                this.selectedDragObj.notes = [{
-                  note: _dta.note
+                this.selectedDragObj.notas = [{
+                  nota: _dta.note
                 }];
               }
             }
@@ -817,6 +856,41 @@ export class ContratoPage implements OnInit, AfterViewInit {
     await  modal.present();
     const {data} = await modal.onWillDismiss();
     console.log('openFullView data -->', data);
+  }
+
+
+  saveCheckListDB() {
+    let _payload = {
+      payload: this.dragObjs
+    }
+    this.saveProcess('check_in_salida', null, _payload);
+  }
+
+  returnIfCheckListInStorage() {
+    let _unSavedObjs = [];
+    if (localStorage.getItem(this.generalServ.dragObjStorageKey)) {
+      let localDragObjs = JSON.parse(localStorage.getItem(this.generalServ.dragObjStorageKey));
+      if (localDragObjs && localDragObjs.length > 0) {
+        for (let i = 0; i < localDragObjs.length; i++) {
+          localDragObjs[i].enable = false;
+          let _unSavedDragObj = this.dragObjs.find(x => x.objId == localDragObjs[i].objId);
+          if (!_unSavedDragObj) {
+            localDragObjs[i].saved = false;
+            _unSavedObjs.push(localDragObjs[i]);
+          } else if (_unSavedDragObj && localDragObjs[i].saved == false) {
+            //_unSavedDragObj = localDragObjs[i];
+            _unSavedObjs.push(localDragObjs[i]);
+            //console.log('entre --->', _unSavedDragObj);
+          } else if (_unSavedDragObj) {
+            _unSavedDragObj.enable = false;
+            _unSavedObjs.push(_unSavedDragObj);
+          }
+
+        }
+      }
+    }
+    return _unSavedObjs;
+
   }
   //#endregion
 
@@ -1911,7 +1985,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
   //#endregion
 
-  saveProcess(section: 'datos_generales' | 'datos_cliente' | 'datos_vehiculo' | 'cobranza', ignoreMsg?: boolean, payload?) {
+  saveProcess(section: 'datos_generales' | 'datos_cliente' | 'datos_vehiculo' | 'cobranza' | 'check_in_salida', ignoreMsg?: boolean, payload?) {
     //this.sweetMsgServ.printStatus('Acción en desarrollo', 'warning');
     console.log('section', section);
     let _payload;
@@ -1964,15 +2038,25 @@ export class ContratoPage implements OnInit, AfterViewInit {
         _payload = payload;
         //_payload.cobranza_id = payload.id;
         break;
+      case 'check_in_salida':
+        if (this.dragObjs.length === 0) {
+          this.sweetMsgServ.printStatus('Agrega un elemento de verificación', 'warning');
+          return;
+        }
+        _payload = payload
+        break;
     }
 
     _payload.seccion = section;
     _payload.num_contrato = this.num_contrato;
     console.log(section + '--->', _payload);
-    //return;
+    return;
 
     this.contratosServ.saveProgress(_payload).subscribe(async res => {
       if (res.ok) {
+        if (section === 'check_in_salida') {
+          localStorage.removeItem(this.generalServ.dragObjStorageKey);
+        }
         this.sweetMsgServ.printStatus(res.message, 'success');
         this.contract_id = res.id;
         this.num_contrato = res.contract_number;

@@ -980,14 +980,18 @@
                       </div>
                     </div>
                     <br>
-                    <br>
                   </ion-col>
-                  <ion-col size="12" size-md="2">
+                  <ion-col size="12" class="ion-text-center">
+                    <mat-error *ngIf="selectedDragObj && !selectedDragObj.saved">** Recuerde guardar su avance **</mat-error>
+                  </ion-col>
+                  <ion-col size="12" size-md="2" class="ion-text-center">
+                    <button *ngIf="selectedDragObj && !selectedDragObj.saved" mat-raised-button class="button-success" (click)="saveCheckListDB()">Guardar</button>
+
                     <div class="checklist-left-buttons" *ngIf="selectedDragObj && selectedDragObj.enable === true">
+
                       <div class="draggid">
-                        <span><b>Check Id:</b></span>
-                        &nbsp;
-                        <span>{{selectedDragObj.id}}</span>
+                        <span><b>Check Id:</b></span>                        &nbsp;
+                        <span>{{selectedDragObj.objId}}</span>
                       </div>
                       <button mat-raised-button class="button-cancel" title="Cancelar" (click)="cancelActionDragObj(this.selectedDragObj)">
                         <mat-icon>highlight_off</mat-icon>
@@ -1022,6 +1026,8 @@
                                                  [draggableObj]="dragObj"
                                                  [objLimitWidth]="816"
                                                  [objLimitHeight]="816"
+                                                 [contract_id]="contract_id"
+                                                 [type]="0"
                         >
                         </app-draggable-resizable>
                       </div>

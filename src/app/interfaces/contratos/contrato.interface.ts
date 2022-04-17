@@ -3,6 +3,7 @@ import {VehiculosI} from '../catalogo-vehiculos/vehiculos.interface';
 import {TarifasExtrasI} from '../configuracion/tarifas-extras.interface';
 import {CobranzaCalcI} from '../cobranza/cobranza-calc.interface';
 import {CobranzaProgI} from '../cobranza/cobranza-prog.interface';
+import {DragObjProperties} from '../../common/draggable-resizable/draggable-resizable.component';
 
 export interface ContratoI
 {
@@ -59,4 +60,6 @@ export interface ContratoI
   vehiculo: VehiculosI;
 
   cobranza: CobranzaProgI[];
+
+  check_list_salida?: DragObjProperties[];
 }
