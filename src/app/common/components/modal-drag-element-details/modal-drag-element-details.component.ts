@@ -6,9 +6,7 @@ import {DragObjProperties} from '../../draggable-resizable/draggable-resizable.c
 import {CheckListService} from '../../../services/check-list.service';
 import {NotasService} from '../../../services/notas.service';
 import {ToastMessageService} from '../../../services/toast-message.service';
-import {UsersService} from '../../../services/users.service';
 import {SessionService} from '../../../services/session.service';
-import {UsersI} from '../../../interfaces/users.interface';
 import {ProfileDataI} from '../../../interfaces/profile/profile-data.interface';
 
 @Component({

@@ -51,7 +51,7 @@ export interface DragObjProperties {
     agente?: string;
     edit?: boolean;
   }];
-  enable?: boolean;
+  enable?: boolean | number;
   lock?: boolean | number;
   saved?: boolean;
   created_at?: string;
