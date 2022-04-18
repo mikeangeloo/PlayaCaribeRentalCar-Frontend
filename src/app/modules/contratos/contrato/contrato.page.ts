@@ -57,7 +57,7 @@ import {CheckListService} from '../../../services/check-list.service';
 export class ContratoPage implements OnInit, AfterViewInit {
 
   //#region STEP CONTROLLER ATTRIBUTES
-  step = 4;
+  step = 0;
   //#endregion
 
   //#region DATOS GENERALES ATTRIBUTES
