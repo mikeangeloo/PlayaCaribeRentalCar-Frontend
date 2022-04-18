@@ -463,7 +463,7 @@
 
                 </ion-card-content>
                 <div class="card-action-buttons">
-                  <ion-button  color="success" (click)="saveProcess('datos_generales')">SIGUIENTE</ion-button>
+                  <ion-button  color="success" (click)="saveProcess('datos_generales')">GUARDAR</ion-button>
                 </div>
               </ion-card>
 
@@ -626,7 +626,7 @@
                   </ion-row> <!-- No. Placas  No.Serie  Capacidad Tanque  -->
 
                   <div class="card-action-buttons">
-                    <ion-button  color="success" (click)="saveProcess('datos_vehiculo')">SIGUIENTE</ion-button>
+                    <ion-button  color="success" (click)="saveProcess('datos_vehiculo')">GUARDAR</ion-button>
                   </div>
                 </form>
                 <div *ngIf="!vehiculoData">
@@ -937,7 +937,7 @@
           <mat-expansion-panel (opened)="setStep(4)" [expanded]="step === 4" hideToggle>
             <mat-expansion-panel-header>
               <mat-panel-title>
-                Check List - Salida (En desarrollo)
+                Check List - Salida
               </mat-panel-title>
               <mat-panel-description style="margin: 0; justify-content: flex-end;">
                 <ion-icon name="checkmark-circle"></ion-icon>
@@ -1018,7 +1018,8 @@
                   </ion-col>
                   <ion-col size="12" size-md="10" style="overflow: scroll" id="drag-container">
                     <div style="position: relative; margin: 0 auto" [style.width.px]="816">
-                      <ion-img src="assets/img/svg/sedan.svg" [style.width.px]="816"></ion-img>
+                      <ion-img src="assets/img/svg/vehicle-outline/sedan.svg" *ngIf="!vehicleOutlineBackground"[style.width.px]="816"></ion-img>
+                      <ion-img *ngIf="vehicleOutlineBackground" src="assets/img/svg/vehicle-outline/{{vehicleOutlineBackground}}.svg" [style.width.px]="816"></ion-img>
                       <div class="checklist-inspector-zone">
                         <app-draggable-resizable *ngFor="let dragObj of dragObjs"
                                                  (dragObjSaved)="saveDragObj($event)"

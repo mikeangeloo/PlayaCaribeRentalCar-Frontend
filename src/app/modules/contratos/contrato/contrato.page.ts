@@ -172,6 +172,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
   //#region CHECKLIST ATTRIBUTES
   dragObjs: DragObjProperties[] = [];
   selectedDragObj: DragObjProperties;
+  vehicleOutlineBackground: string;
   //#endregion
 
   //#region SIGNATURE MANAGEMENT ATTRIBUTES
@@ -280,6 +281,8 @@ export class ContratoPage implements OnInit, AfterViewInit {
               console.log('datos_vehiculo');
               if (this.contractData.vehiculo) {
                 this.vehiculoData = this.contractData.vehiculo;
+                this.vehicleOutlineBackground = this.vehiculoData.categoria.categoria.toLowerCase();
+                console.log(this.vehicleOutlineBackground);
                 this.initVehiculoForm(this.contractData);
               }
 
@@ -902,6 +905,10 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
 
   saveCheckListDB() {
+    if (!this.contract_id) {
+      this.sweetMsgServ.printStatus('Debe primero capturar información en datos generales o datos del cliente y guardar su avance para continuar', 'warning');
+      return;
+    }
     let _payload = {
       payload: this.dragObjs
     }
@@ -1347,6 +1354,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
           break;
         case 'vehiculo':
           this.vehiculoData = data;
+          this.vehicleOutlineBackground = this.vehiculoData.categoria.categoria.toLowerCase();
           this.initVehiculoForm(this.vehiculoData);
           //this.gf.vehiculo_id.patchValue(this.vehiculoData.id);
           //this.gf.vehiculo_clase_id.patchValue(this.vehiculoData.clase_id);
@@ -2098,6 +2106,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
       if (res.ok) {
         if (section === 'check_in_salida') {
           localStorage.removeItem(this.generalServ.dragObjStorageKey);
+          this.selectedDragObj = null;
         }
         this.sweetMsgServ.printStatus(res.message, 'success');
         this.contract_id = res.id;

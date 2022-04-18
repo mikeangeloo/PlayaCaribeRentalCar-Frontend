@@ -27,8 +27,9 @@ export class NotasService {
   // endregion
 
 
-  saveUpdate(note, model_id, model): Observable<any> {
+  saveUpdate(note, model_id, model, id?): Observable<any> {
     let payload = {
+      id,
       nota: note,
       modelo_id: model_id,
       modelo: model

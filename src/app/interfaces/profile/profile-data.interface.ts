@@ -4,6 +4,7 @@ import {SucursalesI} from "../sucursales.interface";
 
 export interface ProfileDataI
 {
+  id?: string;
   nombre: string;
   apellidos: string;
   email: string;

@@ -3,12 +3,12 @@
      [style.height.px]="objHeight"
      [style.transform]="'translate3d('+ objLeft + 'px,' + objTop + 'px,' + '0px)'"
      [class.active]="status === 1 || status === 2"
-     [class.default]="draggableObj.enable === true"
+     [class.default]="draggableObj.enable === true || draggableObj.enable == 1"
      [class.warning]="draggableObj.levelColor === 'warning'"
-     [class.disable-drag]="draggableObj.enable === false"
+     [class.disable-drag]="draggableObj.enable === false || draggableObj.enable == 0"
      [class.danger]="draggableObj.levelColor === 'danger'"
-     [class.lock]="draggableObj.lock === true"
-     [class.unlock]="draggableObj.lock === false || !draggableObj.lock"
+     [class.lock]="draggableObj.lock === true || draggableObj.lock == 1"
+     [class.unlock]="(draggableObj.lock === false || draggableObj.lock == 0) || !draggableObj.lock"
      (window:mousemove)="catchMouseMove($event)"
      (window:touchmove)="catchTouchMove($event)"
 
@@ -22,7 +22,7 @@
 
      (click)="emitSelected(true)"
 >
-  <div *ngIf="draggableObj.enable === true" style="transform: translate3d(0px, -35px, 0px); width: 80px">
+  <div *ngIf="draggableObj.enable === true || draggableObj.enable == 1" style="transform: translate3d(0px, -35px, 0px); width: 80px">
     <span style="width: 100%;"><b>Id: {{draggableObj.objId}}</b></span>
   </div>
 <!--  <div class="drag-action-buttons">
@@ -55,7 +55,7 @@
   <div class="letter-identifier">
     <mat-icon>{{draggableObj.indicatorIcon}}</mat-icon>
   </div>
-  <div *ngIf="draggableObj.lock === false || !draggableObj.lock" class="resize-action" [class.disable-drag]="draggableObj.enable === false" (mousedown)="setStatus($event, 1)" (touchstart)="setTouchStatus($event, 1)" ></div>
+  <div *ngIf="(draggableObj.lock === false || draggableObj.lock == 0) || !draggableObj.lock" class="resize-action" [class.disable-drag]="draggableObj.enable === false || draggableObj.enable == 0" (mousedown)="setStatus($event, 1)" (touchstart)="setTouchStatus($event, 1)" ></div>
   <ng-container *ngIf="false">
     <span>{{objWidth | number:'1.0-0'}}px</span>
     <span>{{objHeight | number:'1.0-0'}}px</span>

@@ -44,13 +44,15 @@ export interface DragObjProperties {
   indicatorIcon?: string;
   indicatorTitle?: string;
   notas?: [{
+    id?: number;
     nota: string;
     created_at?: string;
     agente_id?: number;
-    agente?: string
+    agente?: string;
+    edit?: boolean;
   }];
   enable?: boolean;
-  lock?: boolean;
+  lock?: boolean | number;
   saved?: boolean;
   created_at?: string;
   updated_at?: string
@@ -178,7 +180,7 @@ export class DraggableResizableComponent implements OnInit, AfterViewInit {
 
 
   private resize(){
-    if (this.draggableObj.lock === true) {
+    if (this.draggableObj.lock === true || this.draggableObj.lock == 1) {
       return;
     }
     if(this.resizeCondMeet()) {
@@ -196,7 +198,7 @@ export class DraggableResizableComponent implements OnInit, AfterViewInit {
   }
 
   private move(){
-    if (this.draggableObj.lock === true) {
+    if (this.draggableObj.lock === true || this.draggableObj.lock == 1) {
       return;
     }
     if(this.moveCondMeet()) {

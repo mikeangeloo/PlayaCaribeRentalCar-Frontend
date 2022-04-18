@@ -31,9 +31,22 @@
           <ion-row>
             <ion-col size="12">
               <h3 style="text-align: left; font-weight: 500">Comentarios</h3>
-              <ng-container *ngFor="let comment of dragObj.notas">
+              <div *ngFor="let comment of dragObj.notas" style="position: relative; margin-top: 1.5rem">
+                <div *ngIf="userProfile && userProfile.id && userProfile.id === comment.agente_id" style="display: flex; text-align: right; justify-content: right; transform: translate(0px, -15px);position: absolute;top: 0;right: 0;">
+                  <button mat-raised-button color="accent" (click)="editComment(comment)" *ngIf="!comment.edit">
+                    <mat-icon>edit</mat-icon>
+                  </button>
+                  &nbsp;
+                  <button mat-raised-button class="button-success" *ngIf="comment.edit" (click)="saveComment(comment)">
+                    <mat-icon>save</mat-icon>
+                  </button>
+                  &nbsp;
+                  <button mat-raised-button class="button-cancel" *ngIf="comment.edit" (click)="cancelComment(comment)">
+                    <mat-icon>cancel</mat-icon>
+                  </button>
+                </div>
                 <div style="background: #f1f1f1;border-radius: 10px;padding: 1rem;margin-bottom: 1rem;">
-                  <ion-textarea autoGrow readonly [value]="comment.nota">
+                  <ion-textarea autoGrow [readonly]="!comment.edit" [(ngModel)]="comment.nota">
                   </ion-textarea>
                   <div style="display: flex; flex-direction: column; text-align: right;">
                     <span style="color: #6b6969">{{comment.agente}}</span>
@@ -42,7 +55,7 @@
 
                 </div>
 
-              </ng-container>
+              </div>
             </ion-col>
           </ion-row>
         </ion-card-content>
