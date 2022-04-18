@@ -1005,10 +1005,10 @@
                       <button mat-raised-button color="warn" title="Quitar" (click)="removeDragObj(selectedDragObj)">
                         <mat-icon>delete_outline</mat-icon>
                       </button>
-                      <button mat-raised-button class="button-blue-light" title="Capturar foto" (click)="openModelosDocModal()">
+                      <button mat-raised-button class="button-blue-light" title="Capturar foto" (click)="openModelosDocModal(selectedDragObj)">
                         <mat-icon>photo_camera</mat-icon>
                       </button>
-                      <button mat-raised-button class="button-blue-light" title="Agregar nota" (click)="addNote()">
+                      <button mat-raised-button class="button-blue-light" title="Agregar nota" (click)="addNote(selectedDragObj)">
                         <mat-icon>text_snippet</mat-icon>
                       </button>
                       <button mat-raised-button class="button-blue-light" title="Ver más" (click)="openFullView()">

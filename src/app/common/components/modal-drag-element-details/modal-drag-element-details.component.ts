@@ -3,6 +3,7 @@ import {SweetMessagesService} from '../../../services/sweet-messages.service';
 import {FilesService} from '../../../services/files.service';
 import {ModalController} from '@ionic/angular';
 import {DragObjProperties} from '../../draggable-resizable/draggable-resizable.component';
+import {CheckListService} from '../../../services/check-list.service';
 
 @Component({
   selector: 'app-modal-drag-element-details',
@@ -20,9 +21,24 @@ export class ModalDragElementDetailsComponent implements OnInit {
     private sweetMsgServ: SweetMessagesService,
     public filesServ: FilesService,
     public modalCtrl: ModalController,
+    public checkListServ: CheckListService
   ) { }
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.getInfo();
+  }
+
+  getInfo() {
+    this.checkListServ.showInfo(this.dragId).subscribe(res => {
+      if (res.ok) {
+        this.dragObj = res.data;
+      }
+    }, error => {
+      console.log(error);
+      this.sweetMsgServ.printStatusArray(error.error.errors, 'error');
+      this.dismiss();
+    })
+  }
 
   dismiss(reload?) {
     this.modalCtrl.dismiss({

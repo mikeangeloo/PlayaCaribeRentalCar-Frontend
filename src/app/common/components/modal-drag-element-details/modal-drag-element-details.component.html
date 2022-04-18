@@ -10,43 +10,13 @@
 </ion-header>
 
 <ion-content fullscreen>
-  <!--<ion-row>
-    <ion-col size="12">
-      <table class="complement-table">
-        <thead>
-          <tr>
-            <th>Tipo</th>
-            <th>Nivel daño</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>
-              <ion-chip
-                outline
-                [class.default]="dragObj.levelColor === 'default'"
-                [class.warning]="dragObj.levelColor === 'warning'"
-                [class.danger]="dragObj.levelColor === 'danger'"
-              >
-                {{dragObj.indicatorIcon}} | {{dragObj.indicatorTitle}}
-              </ion-chip>
-            </td>
-            <td>
-              <ion-chip
-                outline
-                [class.default]="dragObj.levelColor === 'default'"
-                [class.warning]="dragObj.levelColor === 'warning'"
-                [class.danger]="dragObj.levelColor === 'danger'"
-              >{{dragObj.levelTxt}}</ion-chip>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </ion-col>
-  </ion-row>-->
-
   <ion-card>
-    <ion-card-content>
+    <ion-card-content *ngIf="!dragObj">
+      <div style="display: flex; justify-content: center; align-content: center; height: 200px">
+        <ion-spinner></ion-spinner>
+      </div>
+    </ion-card-content>
+    <ion-card-content *ngIf="dragObj">
       <ion-row>
         <ion-col size="12">
           <div style="display: flex; flex-direction: column;border-left: 4px solid var(--ion-color-primary);padding-left: 12px;margin-left: 1rem;">
@@ -67,7 +37,7 @@
                   </ion-textarea>
                   <div style="display: flex; flex-direction: column; text-align: right;">
                     <span style="color: #6b6969">{{comment.agente}}</span>
-                    <span style="color: #6b6969">{{comment.date}}</span>
+                    <span style="color: #6b6969">{{comment.created_at | date: 'short'}}</span>
                   </div>
 
                 </div>
@@ -83,7 +53,7 @@
       <br>
       <ion-row>
         <ion-col size="12">
-          <app-modelos-docs model="cobranza" docType="voucher" btnSize="small"  [justButton]="true" [fullSize]="true" [model_id_value]="1">
+          <app-modelos-docs model="check_list" [model_id_value]="dragObj.id" docType="check_indicator" btnSize="small"  [justButton]="true" [fullSize]="true">
             <legend name="legend">Evidencia</legend>
           </app-modelos-docs>
         </ion-col>

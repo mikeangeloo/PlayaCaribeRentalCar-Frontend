@@ -44,6 +44,8 @@ import {DragObjProperties} from '../../../common/draggable-resizable/draggable-r
 import {ModelosDocsComponent} from '../../../common/components/modelos-docs/modelos-docs.component';
 import {ModalDragElementDetailsComponent} from '../../../common/components/modal-drag-element-details/modal-drag-element-details.component';
 import {CheckListTypeEnum} from '../../../enums/check-list-type.enum';
+import {NotasService} from '../../../services/notas.service';
+import {CheckListService} from '../../../services/check-list.service';
 
 
 @Component({
@@ -193,7 +195,9 @@ export class ContratoPage implements OnInit, AfterViewInit {
     public cobranzaServ: CobranzaService,
     public tarifasCatServ: TarifasCategoriasService,
     public actionSheetController: ActionSheetController,
-    public alertController: AlertController
+    public alertController: AlertController,
+    public notasServ: NotasService,
+    public checkListServ: CheckListService
   ) { }
 
   ngOnInit() {
@@ -735,14 +739,36 @@ export class ContratoPage implements OnInit, AfterViewInit {
           }
           break;
         case 'remove':
-          let findIndexObj = this.dragObjs.findIndex(x => x.objId === dragObj.objId);
-          if (findIndexObj + 1) {
-            this.cancelActionDragObj(dragObj);
-            this.dragObjs.splice(findIndexObj, 1);
-          }
-          if (this.dragObjs.length === 0) {
-            localStorage.removeItem(this.generalServ.dragObjStorageKey);
-          }
+          this.checkListServ.remove(dragObj.id).subscribe(res => {
+            if (res.ok) {
+
+              let localObjs = null;
+              if (localStorage.getItem(this.generalServ.dragObjStorageKey)) {
+                localObjs = JSON.parse(localStorage.getItem(this.generalServ.dragObjStorageKey));
+              }
+              if (localObjs) {
+                let findIndexLocalObj = localObjs.findIndex(x => x.objId == dragObj.objId);
+                if (findIndexLocalObj + 1) {
+                  localObjs.splice(findIndexLocalObj, 1);
+                  localStorage.setItem(this.generalServ.dragObjStorageKey, JSON.stringify(localObjs));
+                }
+              }
+
+              let findIndexObj = this.dragObjs.findIndex(x => x.objId === dragObj.objId);
+              if (findIndexObj + 1) {
+                this.cancelActionDragObj(dragObj);
+                this.dragObjs.splice(findIndexObj, 1);
+              }
+              if (this.dragObjs.length === 0) {
+                localStorage.removeItem(this.generalServ.dragObjStorageKey);
+              }
+              this.toastServ.presentToast('success', res.message, 'top');
+            }
+          }, error => {
+            console.log(error);
+            this.sweetMsgServ.printStatusArray(error.error.errors, 'error');
+          })
+
           break;
       }
       localStorage.setItem(this.generalServ.dragObjStorageKey, JSON.stringify(this.dragObjs));
@@ -780,15 +806,19 @@ export class ContratoPage implements OnInit, AfterViewInit {
     this.saveDragObj(dragObj);
   }
 
-  async openModelosDocModal() {
+  async openModelosDocModal(dragObj: DragObjProperties) {
+    if (!dragObj.id) {
+      this.sweetMsgServ.printStatus('Debes guardar primero los cambios del indicador', 'warning');
+      return;
+    }
     const modal = await this.modalCtr.create({
       component: ModelosDocsComponent,
       componentProps: {
-        model: 'check-list',
-        docType: 'check-list',
+        model: 'check_list',
+        docType: 'check_indicator',
         justButton: true,
         fullSize: true,
-        model_id_value: 1,
+        model_id_value: dragObj.id,
         asModal: true
       },
       swipeToClose: true,
@@ -799,7 +829,11 @@ export class ContratoPage implements OnInit, AfterViewInit {
     console.log('openModelosDocsModal data -->', data);
   }
 
-  async addNote() {
+  async addNote(draggObj: DragObjProperties) {
+    if (!draggObj.id) {
+      this.sweetMsgServ.printStatus('Debes guardar primero los cambios del indicador', 'warning');
+      return;
+    }
     const alert = await this.alertController.create({
       cssClass: 'add-note-container',
       header: 'Comentarios',
@@ -822,19 +856,27 @@ export class ContratoPage implements OnInit, AfterViewInit {
           text: 'Ok',
           handler: (_dta) => {
             if (_dta && _dta.note) {
-              if (this.selectedDragObj.notas && this.selectedDragObj.notas.length > 0) {
-                this.selectedDragObj.notas.push({
-                  nota: _dta.note
-                });
-              } else {
-                this.selectedDragObj.notas = [{
-                  nota: _dta.note
-                }];
-              }
+              // if (this.selectedDragObj.notas && this.selectedDragObj.notas.length > 0) {
+              //   this.selectedDragObj.notas.push({
+              //     nota: _dta.note
+              //   });
+              // } else {
+              //   this.selectedDragObj.notas = [{
+              //     nota: _dta.note
+              //   }];
+              // }
+              this.notasServ.saveUpdate(_dta.note, draggObj.id, 'check_list').subscribe(res => {
+                if (res.ok) {
+                  this.toastServ.presentToast('success', res.message, 'top');
+                }
+              }, error => {
+                console.log(error);
+                this.sweetMsgServ.printStatusArray(error.error.errors, 'error');
+              })
             }
-            console.log('Confirm Ok');
-            console.log('handler -->', _dta);
-            this.saveDragObj(this.selectedDragObj);
+            // console.log('Confirm Ok');
+            // console.log('handler -->', _dta);
+            // this.saveDragObj(this.selectedDragObj);
           }
         }
       ]
@@ -847,7 +889,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
     const modal = await this.modalCtr.create({
       component: ModalDragElementDetailsComponent,
       componentProps: {
-        dragObj: this.selectedDragObj,
+        dragId: this.selectedDragObj.id,
         asModal: true
       },
       swipeToClose: true,
@@ -2050,7 +2092,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
     _payload.seccion = section;
     _payload.num_contrato = this.num_contrato;
     console.log(section + '--->', _payload);
-    return;
+    //return;
 
     this.contratosServ.saveProgress(_payload).subscribe(async res => {
       if (res.ok) {

@@ -17,8 +17,8 @@ export class ModelosDocsComponent implements OnInit, OnChanges {
   public cobranza_docs: DocDataTransfer[] = [];
 
   @Input() model_id_value: number;
-  @Input() docType: 'licencia_conducir' | 'cupon' | 'voucher' | 'check-list';
-  @Input() model: 'clientes' | 'contratos' | 'cobranza' | 'check-list';
+  @Input() docType: 'licencia_conducir' | 'cupon' | 'voucher' | 'check_indicator';
+  @Input() model: 'clientes' | 'contratos' | 'cobranza' | 'check_list';
   @Input() justButton: boolean;
   @Input() btnSize: 'small' | 'default' | 'large' = 'default';
   @Input() fullSize: boolean;
@@ -137,10 +137,6 @@ export class ModelosDocsComponent implements OnInit, OnChanges {
           return;
         }
 
-        if (this.docType === 'check-list') {
-          this.sweetMsgServ.printStatus('En desarrollo', 'warning');
-          return;
-        }
         let res = await this.filesServ.storeDocs(formData);
         let _lastIndex = 0;
         if (res.ok === true) {
