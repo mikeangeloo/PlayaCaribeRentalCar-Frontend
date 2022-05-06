@@ -381,6 +381,19 @@ export class ContratoPage implements OnInit, AfterViewInit {
   }
   //#endregion
 
+  detectIOS(): boolean {
+    return [
+        'iPad Simulator',
+        'iPhone Simulator',
+        'iPod Simulator',
+        'iPad',
+        'iPhone',
+        'iPod'
+      ].includes(navigator.platform)
+      // iPad on iOS 13 detection
+      || (navigator.userAgent.includes('Mac') && 'ontouchend' in document);
+  }
+
   //#region GENERAL FORM FUNCTIONS
   initGeneralForm(data?: ContratoI) {
     let _todayHour = DateConv.transFormDate(moment.now(), 'time');
@@ -613,6 +626,25 @@ export class ContratoPage implements OnInit, AfterViewInit {
     return this.vehiculoForm.controls;
   }
 
+  async viewPDF() {
+    this.contratosServ.generatePDF().subscribe(res => {
+      const url = URL.createObjectURL(res);
+
+      if (this.detectIOS() === true) {
+        window.location.assign(url);
+      } else {
+        window.open(url, '_blank');
+      }
+    }, error => {
+      const fr = new FileReader();
+      fr.addEventListener('loadend', (e: any) => {
+        const errors = JSON.parse(e.srcElement.result);
+        this.sweetMsgServ.printStatusArray(errors.errors, 'error');
+      });
+      fr.readAsText(error.error);
+    });
+  }
+
   checkVehiculoFormDisableFields() {
     if (this.vehiculoData && this.vehiculoData.km_recorridos) {
       this.vehiculoForm.controls.km_anterior.patchValue(this.vehiculoData.km_recorridos);
@@ -701,6 +733,10 @@ export class ContratoPage implements OnInit, AfterViewInit {
     background.onload = function(){
       ctx.drawImage(background,0,0);
     }
+  }
+
+  generatePDF() {
+
   }
 
   addDraggedBtn(indicatorIcon, indicatorTitle) {

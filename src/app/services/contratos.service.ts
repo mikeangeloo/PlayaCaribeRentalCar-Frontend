@@ -40,6 +40,13 @@ export class ContratosService {
     }));
   }
 
+  public generatePDF() {
+    // @ts-ignore
+    return this.httpClient.get<any>(`${this.dashURL}/test/pdf`, {responseType: 'blob'}).pipe(map(response => {
+      return response;
+  }));
+  }
+
   public async _getContractData(_id) {
     try {
       let res = await this.httpClient.get<any>(`${this.dashURL}/contratos/${_id}`).toPromise();
