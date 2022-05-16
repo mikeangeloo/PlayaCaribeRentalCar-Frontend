@@ -47,6 +47,12 @@ export class ContratosService {
   }));
   }
 
+  public cancelContract(_id) {
+    return this.httpClient.delete<any>(`${this.dashURL}/contratos/cancel/${_id}`).pipe(map(response => {
+      return response;
+    }))
+  }
+
   public async _getContractData(_id) {
     try {
       let res = await this.httpClient.get<any>(`${this.dashURL}/contratos/${_id}`).toPromise();

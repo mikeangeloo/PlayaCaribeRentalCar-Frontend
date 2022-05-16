@@ -2176,6 +2176,27 @@ export class ContratoPage implements OnInit, AfterViewInit {
     })
   }
 
+  cancelContract() {
+    this.sweetMsgServ.confirmRequest('¿Estas seguro de querer cancelar este contrato?').then((data) => {
+      if (data.value) {
+       this.contratosServ.cancelContract(this.contract_id).subscribe(res => {
+         if (res.ok) {
+           this.sweetMsgServ.printStatus(res.message, 'success');
+           this.contratosServ.flushContractData();
+           localStorage.removeItem(this.generalServ.dragObjStorageKey);
+           setTimeout(() => {
+             window.location.reload();
+           }, 1000);
+
+         }
+       }, error => {
+         console.log(error);
+         this.sweetMsgServ.printStatusArray(error.error.errors, 'error');
+       })
+      }
+    });
+  }
+
 
   catchEventTest(event) {
     console.log(event);
