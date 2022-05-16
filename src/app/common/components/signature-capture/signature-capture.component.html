@@ -10,6 +10,7 @@
     <div class="signature-buttons">
       <button mat-raised-button class="btn-clear-sign" (click)="clear()"><mat-icon>change_circle</mat-icon></button>
       <button mat-raised-button class="btn-undo-sign" (click)="undo()"><mat-icon>reply</mat-icon></button>
+      <button mat-raised-button class="btn-undo-sign" (click)="emitSignature()"><mat-icon></mat-icon>Firmar</button>
     </div>
     <div style="position: relative">
       <canvas class="signature-pad canvas-signature" id="canva-signature1" #canvas1 width="900" height="200"

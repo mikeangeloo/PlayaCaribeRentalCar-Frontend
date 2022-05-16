@@ -41,7 +41,7 @@
     <ion-col size="12">
       <mat-accordion>
         <div class="accordion-margin">
-          <mat-expansion-panel (opened)="setStep(0)" [expanded]="step === 0" hideToggle>
+          <mat-expansion-panel [expanded]="step === 0" hideToggle>
             <mat-expansion-panel-header>
               <mat-panel-title>
                 Datos del Cliente
@@ -147,7 +147,7 @@
               </ion-card-content>
               <ion-card-title>
                 <div class="card-action-buttons">
-                  <ion-button color="success" (click)="saveProcess('datos_cliente')">GUARDAR</ion-button>
+                  <ion-button color="success" (click)="saveProcess('datos_cliente')">SIGUIENTE</ion-button>
                 </div>
               </ion-card-title>
             </ion-card>
@@ -167,7 +167,7 @@
       </mat-accordion> <!-- Datos Cliente -->
       <mat-accordion>
         <div class="accordion-margin" [formGroup]="generalDataForm" *ngIf="generalDataForm">
-          <mat-expansion-panel (opened)="setStep(1)" [expanded]="step === 1" hideToggle>
+          <mat-expansion-panel [expanded]="step === 1" hideToggle [disabled] = "step == 0">
             <mat-expansion-panel-header>
               <mat-panel-title>
                 Datos Generales
@@ -463,7 +463,7 @@
 
                 </ion-card-content>
                 <div class="card-action-buttons">
-                  <ion-button  color="success" (click)="saveProcess('datos_generales')">GUARDAR</ion-button>
+                  <ion-button  color="success" (click)="saveProcess('datos_generales')">SIGUIENTE</ion-button>
                 </div>
               </ion-card>
 
@@ -484,7 +484,7 @@
       </mat-accordion> <!-- Datos Generales -->
       <mat-accordion>
         <div class="accordion-margin">
-          <mat-expansion-panel (opened)="setStep(2)" [expanded]="step === 2" hideToggle>
+          <mat-expansion-panel [expanded]="step === 2" hideToggle  [disabled] = "step == 1 || step == 0">
             <mat-expansion-panel-header>
               <mat-panel-title>
                 Datos Vehículo
@@ -626,7 +626,7 @@
                   </ion-row> <!-- No. Placas  No.Serie  Capacidad Tanque  -->
 
                   <div class="card-action-buttons">
-                    <ion-button  color="success" (click)="saveProcess('datos_vehiculo')">GUARDAR</ion-button>
+                    <ion-button  color="success" (click)="saveProcess('datos_vehiculo')">SIGUIENTE</ion-button>
                   </div>
                 </form>
                 <div *ngIf="!vehiculoData">
@@ -660,7 +660,7 @@
       </mat-accordion> <!-- Datos vehiculo -->
       <mat-accordion>
         <div class="accordion-margin">
-          <mat-expansion-panel (opened)="setStep(3)" [expanded]="step === 3" hideToggle>
+          <mat-expansion-panel [expanded]="step === 3" hideToggle [disabled] = "step == 0 || step == 1 || step == 2">
             <mat-expansion-panel-header>
               <mat-panel-title>
                 Cobranza
@@ -934,7 +934,7 @@
       </mat-accordion> <!-- COBRANZA Detalle cargos y pre-autorizaciones -->
       <mat-accordion>
         <div class="accordion-margin">
-          <mat-expansion-panel (opened)="setStep(4)" [expanded]="step === 4" hideToggle>
+          <mat-expansion-panel [expanded]="step === 4" hideToggle [disabled] = "step == 0 || step == 1 || step == 2 || step == 3">
             <mat-expansion-panel-header>
               <mat-panel-title>
                 Check List - Salida
@@ -1051,10 +1051,10 @@
       </mat-accordion> <!--   Check List - Salida -->
       <mat-accordion>
         <div class="accordion-margin">
-          <mat-expansion-panel (opened)="setStep(5)" [expanded]="step === 5" hideToggle>
+          <mat-expansion-panel [expanded]="step === 5" hideToggle hideToggle [disabled] = "step == 0 || step == 1 || step == 2 || step == 3 || step == 4">
             <mat-expansion-panel-header>
               <mat-panel-title>
-                Firma (Por desarrollar)
+                Firma
               </mat-panel-title>
               <mat-panel-description style="margin: 0; justify-content: flex-end;">
                 <ion-icon name="pencil"></ion-icon>
@@ -1064,16 +1064,24 @@
             <ion-card>
               <ion-card-content>
                 <ion-row>
-                  <ion-col size="12">
-                    <p>Acepto que texto de aceptación --> Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aperiam autem deserunt dignissimos dolore doloremque ducimus error, eveniet, id magnam minus, odio optio qui quisquam quod repudiandae sequi sint suscipit ullam.</p>
+                  <ion-col size="12" style="display:inline">
+                    <mat-checkbox  size="6" [(ngModel)]="terminos">   </mat-checkbox>
+                    <div size="6">Acepto que texto de aceptación --> Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aperiam autem deserunt dignissimos dolore doloremque ducimus error, eveniet, id magnam minus, odio optio qui quisquam quod repudiandae sequi sint suscipit ullam.</div>
                   </ion-col>
                 </ion-row>
                 <hr style="background: var(--ion-color-secondary)">
-
-                <app-signature-capture (signatureEmit)="captureSignature($event)"
+                <ng-container >
+                  <app-signature-capture (signatureEmit)="captureSignature($event)" [ngClass]="{'disable': !terminos}"
                                        [instanceType]="'plain'"></app-signature-capture>
+                </ng-container>
+
               </ion-card-content>
             </ion-card>
+            <ion-card-title>
+              <div class="card-action-buttons">
+                <ion-button color="success" (click)="saveProcess('firma')">Terminar</ion-button>
+              </div>
+            </ion-card-title>
 
             <mat-action-row>
               <button (click)="prevStep()" mat-flat-button style="font-size: 1.5rem;">

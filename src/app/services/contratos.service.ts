@@ -40,9 +40,9 @@ export class ContratosService {
     }));
   }
 
-  public generatePDF() {
+  public generatePDF(_id) {
     // @ts-ignore
-    return this.httpClient.get<any>(`${this.dashURL}/test/pdf`, {responseType: 'blob'}).pipe(map(response => {
+    return this.httpClient.get<any>(`${this.dashURL}/contratos/pdf/${_id}`, {responseType: 'blob'}).pipe(map(response => {
       return response;
   }));
   }

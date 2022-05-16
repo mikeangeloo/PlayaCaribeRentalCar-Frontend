@@ -75,7 +75,14 @@ export class SignatureCaptureComponent implements OnInit, AfterViewInit, AfterVi
     if (!this.signaturePad1) {
       this.signaturePad1 = new SignaturePad(this.signaturePadElement1.nativeElement);
       this.signaturePad1.penColor = 'rgb(0,0,0)';
+
+
+
+
     }
+
+    console.log(this.signaturePad1)
+
 
 
     setTimeout(() => {

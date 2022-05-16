@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, OnInit} from '@angular/core';
+import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
 import {NgxMaterialTimepickerTheme} from 'ngx-material-timepicker';
 import {Months} from '../../../interfaces/shared/months';
 import * as moment from 'moment';
@@ -46,6 +46,8 @@ import {ModalDragElementDetailsComponent} from '../../../common/components/modal
 import {CheckListTypeEnum} from '../../../enums/check-list-type.enum';
 import {NotasService} from '../../../services/notas.service';
 import {CheckListService} from '../../../services/check-list.service';
+import { SignatureCaptureComponent } from 'src/app/common/components/signature-capture/signature-capture.component';
+
 
 
 @Component({
@@ -55,6 +57,7 @@ import {CheckListService} from '../../../services/check-list.service';
 })
 
 export class ContratoPage implements OnInit, AfterViewInit {
+  @ViewChild(SignatureCaptureComponent) signatureComponent;
 
   //#region STEP CONTROLLER ATTRIBUTES
   step = 0;
@@ -177,6 +180,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
   //#region SIGNATURE MANAGEMENT ATTRIBUTES
   public signature = '';
+  public terminos=false;
   //#endregion
 
   constructor(
@@ -627,7 +631,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
   }
 
   async viewPDF() {
-    this.contratosServ.generatePDF().subscribe(res => {
+    this.contratosServ.generatePDF(this.num_contrato).subscribe(res => {
       const url = URL.createObjectURL(res);
 
       if (this.detectIOS() === true) {
@@ -2071,7 +2075,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
   //#endregion
 
-  saveProcess(section: 'datos_generales' | 'datos_cliente' | 'datos_vehiculo' | 'cobranza' | 'check_in_salida', ignoreMsg?: boolean, payload?) {
+  saveProcess(section: 'datos_generales' | 'datos_cliente' | 'datos_vehiculo' | 'cobranza' | 'check_in_salida' | 'firma', ignoreMsg?: boolean, payload?) {
     //this.sweetMsgServ.printStatus('Acción en desarrollo', 'warning');
     console.log('section', section);
     let _payload;
@@ -2090,6 +2094,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
         if (moment.isMoment(_payload.rango_fechas.fecha_retorno)) {
           _payload.rango_fechas.fecha_retorno = DateConv.transFormDate(_payload.rango_fechas.fecha_retorno, 'regular');
         }
+
         //_payload.hora_elaboracion = DateConv.transFormDate(moment.now(), 'time');
         break;
       case 'datos_vehiculo':
@@ -2098,6 +2103,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
           this.vehiculoForm.markAllAsTouched();
           return;
         }
+
         this.vehiculoForm.enable();
         _payload = this.vehiculoForm.value;
         this.checkVehiculoFormDisableFields();
@@ -2111,6 +2117,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
           this.clienteDataForm.markAllAsTouched();
           return;
         }
+
         _payload = this.clienteDataForm.value;
         break;
       case 'cobranza':
@@ -2121,6 +2128,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
         if (payload.tarjeta) {
           delete payload.tarjeta;
         }
+
         _payload = payload;
         //_payload.cobranza_id = payload.id;
         break;
@@ -2129,7 +2137,18 @@ export class ContratoPage implements OnInit, AfterViewInit {
           this.sweetMsgServ.printStatus('Agrega un elemento de verificación', 'warning');
           return;
         }
+
         _payload = payload
+        break;
+      case 'firma':
+
+        if (this.signature == '') {
+          this.sweetMsgServ.printStatus('Es necesesario la firma para terminar el proceso', 'warning');
+          return;
+        }
+
+        console.log(this.signature)
+        _payload = this.signature;
         break;
     }
 
@@ -2145,6 +2164,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
           this.selectedDragObj = null;
         }
         this.sweetMsgServ.printStatus(res.message, 'success');
+        this.step++;
         this.contract_id = res.id;
         this.num_contrato = res.contract_number;
         this.contratosServ.setContractData(this.num_contrato);
