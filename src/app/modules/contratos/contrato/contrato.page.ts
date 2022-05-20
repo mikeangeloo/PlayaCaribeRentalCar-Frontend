@@ -2129,10 +2129,10 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
           this.clienteDataForm.markAllAsTouched();
           return;
-        } else if (this.clientes_docs.length == 0) {
+        } /*else if (this.clientes_docs.length == 0) {
           this.sweetMsgServ.printStatus('Es necesesario adjuntar la licencia del cliente', 'warning');
           return;
-        }
+        }*/
 
         _payload = this.clienteDataForm.value;
         break;
