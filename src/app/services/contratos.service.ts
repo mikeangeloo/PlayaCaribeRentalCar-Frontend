@@ -42,7 +42,7 @@ export class ContratosService {
 
   public generatePDF(_id) {
     // @ts-ignore
-    return this.httpClient.get<any>(`${this.dashURL}/contratos/pdf/${_id}`, {responseType: 'blob'}).pipe(map(response => {
+    return this.httpClient.get<any>(`${this.globalURL}/contratos/pdf/${_id}`, {responseType: 'blob'}).pipe(map(response => {
       return response;
   }));
   }

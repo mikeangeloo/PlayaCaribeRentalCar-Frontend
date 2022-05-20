@@ -164,7 +164,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
   public comisiones: number[];
 
   public cobranzaProgData: CobranzaProgI[] = [];
-  public balancePorPagar: number;
+  public balancePorPagar: number = 0.00;
   public cobranzaTipos = CobranzaTipoE;
 
   public pagadoTotal = 0;
@@ -270,12 +270,23 @@ export class ContratoPage implements OnInit, AfterViewInit {
           this.contractData = res.data;
 
           if (this.contractData.etapas_guardadas && this.contractData.etapas_guardadas.length > 0) {
+            let _datosClienteEtapa = this.contractData.etapas_guardadas.find(x => x === 'datos_cliente');
+            if (_datosClienteEtapa) {
+              console.log('datos_cliente');
+              let _clientesPayload = this.contractData.cliente;
+              this.initClientForm(_clientesPayload);
+              this.getDocs('licencia_conducir', 'clientes', _clientesPayload.id);
+              this.step = 1;
+            } else {
+              this.initClientForm();
+            }
+
             let _datosGeneralesEtapa = this.contractData.etapas_guardadas.find(x => x === 'datos_generales');
             if (_datosGeneralesEtapa) {
               console.log('datos_generales');
               this.initGeneralForm(this.contractData);
               this.getDocs('cupon', 'contratos', this.contractData.id);
-
+              this.step = 2;
             } else {
               this.initGeneralForm();
             }
@@ -284,30 +295,27 @@ export class ContratoPage implements OnInit, AfterViewInit {
             if (_datosVehiculo) {
               console.log('datos_vehiculo');
               if (this.contractData.vehiculo) {
+                this.step = 3;
                 this.vehiculoData = this.contractData.vehiculo;
                 this.vehicleOutlineBackground = this.vehiculoData.categoria.categoria.toLowerCase();
                 console.log(this.vehicleOutlineBackground);
                 this.initVehiculoForm(this.contractData);
+
               }
 
             } else {
               this.initVehiculoForm();
             }
 
-            let _datosClienteEtapa = this.contractData.etapas_guardadas.find(x => x === 'datos_cliente');
-            if (_datosClienteEtapa) {
-              console.log('datos_cliente');
-              let _clientesPayload = this.contractData.cliente;
-              this.initClientForm(_clientesPayload);
-              this.getDocs('licencia_conducir', 'clientes', _clientesPayload.id);
-            } else {
-              this.initClientForm();
-            }
-
             let _cobranzaData = this.contractData.etapas_guardadas.find(x => x === 'cobranza');
             if (_cobranzaData && (this.contractData.cobranza && this.contractData.cobranza.length > 0)) {
               console.log('cobranza');
               this.cobranzaProgData = this.contractData.cobranza;
+              console.log(this.cobranzaProgData)
+              if (this.balancePorPagar == 0) {
+                this.step = 4;
+              }
+
 
             } else {
               this.cobranzaProgData = [];
@@ -316,7 +324,6 @@ export class ContratoPage implements OnInit, AfterViewInit {
             let _checkListSalidaData = this.contractData.etapas_guardadas.find(x => x === 'check_list_salida');
             if (_checkListSalidaData) {
               console.log('check_list_salida');
-
               this.dragObjs = this.contractData.check_list_salida;
               console.log('dragObjs', this.dragObjs);
 
@@ -342,12 +349,18 @@ export class ContratoPage implements OnInit, AfterViewInit {
                 console.log('dragObjs', this.dragObjs);
               }
 
+
+            }
+            let _firma = this.contractData.etapas_guardadas.find(x => x === 'firma');
+            if (_firma) {
+              this.step = 6;
             }
           }
           if (this.generalDataForm.controls.total.value) {
 
             this.recalBalancePorCobrar();
           }
+          console.log(this.step);
         } else {
           console.log(res.errors);
           this.sweetMsgServ.printStatusArray(res.errors.error.errors, 'error');
@@ -631,7 +644,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
   }
 
   async viewPDF() {
-    this.contratosServ.generatePDF(this.num_contrato).subscribe(res => {
+    this.contratosServ.generatePDF(this.contract_id).subscribe(res => {
       const url = URL.createObjectURL(res);
 
       if (this.detectIOS() === true) {
@@ -2049,7 +2062,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
       }
     }
     if (this.balancePorPagar < total) {
-      this.sweetMsgServ.printStatus('El monto acumado de cobro es mayor al balance por cobrar', 'warning');
+      this.sweetMsgServ.printStatus('El monto aculamado de cobro es mayor al balance por cobrar', 'warning');
     }
     this.balancePorPagar = Number(this.balancePorPagar -  total);
 
@@ -2116,6 +2129,9 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
           this.clienteDataForm.markAllAsTouched();
           return;
+        } else if (this.clientes_docs.length == 0) {
+          this.sweetMsgServ.printStatus('Es necesesario adjuntar la licencia del cliente', 'warning');
+          return;
         }
 
         _payload = this.clienteDataForm.value;
@@ -2164,7 +2180,11 @@ export class ContratoPage implements OnInit, AfterViewInit {
           this.selectedDragObj = null;
         }
         this.sweetMsgServ.printStatus(res.message, 'success');
-        this.step++;
+        if (section == 'cobranza' || section == 'check_in_salida') {
+          this.step = this.step;
+        } else {
+          this.step++;
+        }
         this.contract_id = res.id;
         this.num_contrato = res.contract_number;
         this.contratosServ.setContractData(this.num_contrato);

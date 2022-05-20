@@ -32,7 +32,7 @@
     </ion-col>
 
     <ion-col size="6" class="ion-text-end">
-      <button mat-raised-button class="button-success" (click)="viewPDF()">Crear Contrato</button>
+      <button mat-raised-button class="button-success" [disabled]="step < 6" (click)="viewPDF()">Crear Contrato</button>
       &nbsp;
       <button mat-raised-button class="button-cancel" (click)="cancelContract()">Cancelar Contrato</button>
     </ion-col>
@@ -153,15 +153,15 @@
             </ion-card>
 
 
-            <mat-action-row>
-<!--              <button (click)="prevStep()" mat-flat-button style="font-size: 1.5rem;">-->
-<!--                <ion-icon name="chevron-back-outline" style="color: var(&#45;&#45;ion-color-medium);"></ion-icon>-->
-<!--              </button> &nbsp; &nbsp;-->
+            <!-- <mat-action-row>
+             <button (click)="prevStep()" mat-flat-button style="font-size: 1.5rem;">
+               <ion-icon name="chevron-back-outline" style="color: var(&#45;&#45;ion-color-medium);"></ion-icon>
+             </button> &nbsp; &nbsp;
 
               <button (click)="nextStep()" mat-flat-button style="font-size: 1.5rem;">
                 <ion-icon name="chevron-forward-outline" style="color: var(--ion-color-medium);"></ion-icon>
               </button>
-            </mat-action-row>
+            </mat-action-row> -->
           </mat-expansion-panel>
         </div>
       </mat-accordion> <!-- Datos Cliente -->
@@ -470,7 +470,7 @@
             </form>
 
 
-            <mat-action-row>
+            <!-- <mat-action-row>
               <button (click)="prevStep()" mat-flat-button style="font-size: 1.5rem;">
                 <ion-icon name="chevron-back-outline" style="color: var(--ion-color-medium);"></ion-icon>
               </button> &nbsp; &nbsp;
@@ -478,7 +478,7 @@
               <button (click)="nextStep()" mat-flat-button style="font-size: 1.5rem;">
                 <ion-icon name="chevron-forward-outline" style="color: var(--ion-color-medium);"></ion-icon>
               </button>
-            </mat-action-row>
+            </mat-action-row> -->
           </mat-expansion-panel>
         </div>
       </mat-accordion> <!-- Datos Generales -->
@@ -646,7 +646,7 @@
             </ion-row>
 
 
-            <mat-action-row>
+            <!-- <mat-action-row>
               <button (click)="prevStep()" mat-flat-button style="font-size: 1.5rem;">
                 <ion-icon name="chevron-back-outline" style="color: var(--ion-color-medium);"></ion-icon>
               </button> &nbsp; &nbsp;
@@ -654,7 +654,7 @@
               <button (click)="nextStep()" mat-flat-button style="font-size: 1.5rem;">
                 <ion-icon name="chevron-forward-outline" style="color: var(--ion-color-medium);"></ion-icon>
               </button>
-            </mat-action-row>
+            </mat-action-row> -->
           </mat-expansion-panel>
         </div>
       </mat-accordion> <!-- Datos vehiculo -->
@@ -912,15 +912,20 @@
 
                         </mat-accordion>
                       </ion-card-content>
+
                     </ion-card>
 
                   </ion-col>
                 </ion-row> <!-- Pagado | PreAutorización -->
 
               </ion-card-content>
+              <div class="card-action-buttons">
+                <ion-button  color="success" *ngIf="balancePorCobrar == 0.00" (click)="nextStep()">SIGUIENTE</ion-button>
+              </div>
+
             </ion-card>
 
-            <mat-action-row>
+            <!-- <mat-action-row>
               <button (click)="prevStep()" mat-flat-button style="font-size: 1.5rem;">
                 <ion-icon name="chevron-back-outline" style="color: var(--ion-color-medium);"></ion-icon>
               </button> &nbsp; &nbsp;
@@ -928,7 +933,7 @@
               <button (click)="nextStep()" mat-flat-button style="font-size: 1.5rem;">
                 <ion-icon name="chevron-forward-outline" style="color: var(--ion-color-medium);"></ion-icon>
               </button>
-            </mat-action-row>
+            </mat-action-row> -->
           </mat-expansion-panel>
         </div>
       </mat-accordion> <!-- COBRANZA Detalle cargos y pre-autorizaciones -->
@@ -1036,8 +1041,11 @@
                   </ion-col>
                 </ion-row>
               </ion-card-content>
+              <div class="card-action-buttons">
+                <ion-button  color="success" *ngIf="this.dragObjs.length > 0" (click)="nextStep()">SIGUIENTE</ion-button>
+              </div>
             </ion-card>
-            <mat-action-row>
+            <!-- <mat-action-row>
               <button (click)="prevStep()" mat-flat-button style="font-size: 1.5rem;">
                 <ion-icon name="chevron-back-outline" style="color: var(--ion-color-medium);"></ion-icon>
               </button> &nbsp; &nbsp;
@@ -1045,7 +1053,7 @@
               <button (click)="nextStep()" mat-flat-button style="font-size: 1.5rem;">
                 <ion-icon name="chevron-forward-outline" style="color: var(--ion-color-medium);"></ion-icon>
               </button>
-            </mat-action-row>
+            </mat-action-row> -->
           </mat-expansion-panel>
         </div>
       </mat-accordion> <!--   Check List - Salida -->
@@ -1083,7 +1091,7 @@
               </div>
             </ion-card-title>
 
-            <mat-action-row>
+            <!-- <mat-action-row>
               <button (click)="prevStep()" mat-flat-button style="font-size: 1.5rem;">
                 <ion-icon name="chevron-back-outline" style="color: var(--ion-color-medium);"></ion-icon>
               </button> &nbsp; &nbsp;
@@ -1091,7 +1099,7 @@
               <button (click)="nextStep()" mat-flat-button style="font-size: 1.5rem;">
                 <ion-icon name="chevron-forward-outline" style="color: var(--ion-color-medium);"></ion-icon>
               </button>
-            </mat-action-row>
+            </mat-action-row> -->
           </mat-expansion-panel>
         </div>
       </mat-accordion> <!-- Captura Firma -->
