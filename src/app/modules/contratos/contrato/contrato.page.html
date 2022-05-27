@@ -1040,9 +1040,117 @@
                     </div>
                   </ion-col>
                 </ion-row>
+                <ion-row >
+                  <ion-col size="12" >
+                    <form [formGroup]="checkListForm" *ngIf="checkListForm">
+                      <ion-row >
+                        <ion-col>
+                          <mat-form-field appearance="legacy">
+                            <input type="text" matInput formControlName="tarjeta_circulacion" autocomplete="off">
+                            <mat-label>Tarjeta de circulación</mat-label>
+                          </mat-form-field>
+                        </ion-col>
+                        <ion-col>
+                          <mat-form-field appearance="legacy">
+                            <input type="text" matInput formControlName="tapetes" autocomplete="off">
+                            <mat-label>Tapetes</mat-label>
+                          </mat-form-field>
+                        </ion-col>
+                        <ion-col>
+                          <mat-form-field appearance="legacy">
+                            <input type="text" matInput formControlName="silla_bebes" autocomplete="off">
+                            <mat-label>Silla para bebes</mat-label>
+                          </mat-form-field>
+                        </ion-col>
+                      </ion-row>
+                      <ion-row >
+                        <ion-col>
+                          <mat-form-field appearance="legacy">
+                            <input type="text" matInput formControlName="espejos" autocomplete="off">
+                            <mat-label>Espejos</mat-label>
+                          </mat-form-field>
+                        </ion-col>
+                        <ion-col>
+                          <mat-form-field appearance="legacy">
+                            <input type="text" matInput formControlName="tapones_rueda" autocomplete="off">
+                            <mat-label>Tapones de ruedas</mat-label>
+                          </mat-form-field>
+                        </ion-col>
+                        <ion-col>
+                          <mat-form-field appearance="legacy">
+                            <input type="text" matInput formControlName="tapon_gas" autocomplete="off">
+                            <mat-label>Tapón de gas</mat-label>
+                          </mat-form-field>
+                        </ion-col>
+                      </ion-row>
+                      <ion-row >
+                        <ion-col>
+                          <mat-form-field appearance="legacy">
+                            <input type="text" matInput formControlName="senalamientos" autocomplete="off">
+                            <mat-label>Señalamientos</mat-label>
+                          </mat-form-field>
+                        </ion-col>
+                        <ion-col>
+                          <mat-form-field appearance="legacy">
+                            <input type="text" matInput formControlName="gato" autocomplete="off">
+                            <mat-label>Gato</mat-label>
+                          </mat-form-field>
+                        </ion-col>
+                        <ion-col>
+                          <mat-form-field appearance="legacy">
+                            <input type="text" matInput formControlName="llave_rueda" autocomplete="off">
+                            <mat-label>Llave de ruedas</mat-label>
+                          </mat-form-field>
+                        </ion-col>
+                      </ion-row>
+
+                      <ion-row >
+                        <ion-col>
+                          <mat-form-field appearance="legacy">
+                            <input type="text" matInput formControlName="limpiadores" autocomplete="off">
+                            <mat-label>Limpiadores</mat-label>
+                          </mat-form-field>
+                        </ion-col>
+                        <ion-col>
+                          <mat-form-field appearance="legacy">
+                            <input type="text" matInput formControlName="antena" autocomplete="off">
+                            <mat-label>Antena</mat-label>
+                          </mat-form-field>
+                        </ion-col>
+                        <ion-col>
+                          <mat-form-field appearance="legacy">
+                            <input type="text" matInput formControlName="navegador" autocomplete="off">
+                            <mat-label>Navegador</mat-label>
+                          </mat-form-field>
+                        </ion-col>
+                      </ion-row>
+                      <ion-row >
+                        <ion-col>
+                          <mat-form-field appearance="legacy">
+                            <input type="text" matInput formControlName="placas" autocomplete="off">
+                            <mat-label>Placas</mat-label>
+                          </mat-form-field>
+                        </ion-col>
+                        <ion-col>
+                          <mat-form-field appearance="legacy">
+                            <input type="text" matInput formControlName="radio" autocomplete="off">
+                            <mat-label>Radio</mat-label>
+                          </mat-form-field>
+                        </ion-col>
+                        <ion-col>
+                          <mat-form-field appearance="legacy">
+                            <input type="text" matInput formControlName="llantas" autocomplete="off">
+                            <mat-label>Llantas</mat-label>
+                          </mat-form-field>
+                        </ion-col>
+                      </ion-row>
+
+                    </form>
+                  </ion-col>
+                </ion-row>
               </ion-card-content>
               <div class="card-action-buttons">
-                <ion-button  color="success" *ngIf="this.dragObjs.length > 0" (click)="nextStep()">SIGUIENTE</ion-button>
+                <ion-button  color="success" *ngIf="dragObjs.length > 0" (click)="saveProcess('check_form_list')">SIGUIENTE</ion-button>
               </div>
             </ion-card>
             <!-- <mat-action-row>

@@ -176,6 +176,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
   dragObjs: DragObjProperties[] = [];
   selectedDragObj: DragObjProperties;
   vehicleOutlineBackground: string;
+  checkListForm: FormGroup;
   //#endregion
 
   //#region SIGNATURE MANAGEMENT ATTRIBUTES
@@ -351,6 +352,19 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
 
             }
+            let _checkFormListData = this.contractData.etapas_guardadas.find(x => x === 'check_form_list');
+            if (_checkFormListData) {
+              console.log('check_form_list');
+
+              if (this.contractData.check_form_list) {
+                this.step = 5;
+                this.initCheckListForm(this.contractData.check_form_list);
+
+              }
+
+            } else {
+              this.initCheckListForm()
+            }
             let _firma = this.contractData.etapas_guardadas.find(x => x === 'firma');
             if (_firma) {
               this.step = 6;
@@ -369,12 +383,14 @@ export class ContratoPage implements OnInit, AfterViewInit {
           this.initGeneralForm();
           this.initClientForm();
           this.initVehiculoForm();
+          this.initCheckListForm();
           this.cobranzaProgData = [];
         }
     } else {
       this.initGeneralForm();
       this.initClientForm();
       this.initVehiculoForm();
+      this.initCheckListForm();
       this.cobranzaProgData = [];
     }
   }
@@ -622,6 +638,34 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
   get cf() {
     return this.clienteDataForm.controls;
+  }
+
+  //#endregion
+
+  //#region CHECKLIST FORM FUNCTIONS
+  initCheckListForm(data?) {
+    this.checkListForm = this.fb.group({
+      check_form_list_id: [(data && data.id ? data.id : null)],
+      tarjeta_circulacion: [(data && data.tarjeta_circulacion ? data.tarjeta_circulacion : null)],
+      tapetes: [(data && data.tapetes ? data.tapetes: null),],
+      silla_bebes: [(data && data.silla_bebes ? data.silla_bebes: null), ],
+      espejos: [(data && data.espejos ? data.espejos: null), ],
+      tapones_rueda: [(data && data.tapones_rueda ? data.tapones_rueda: null), ],
+      tapon_gas: [(data && data.tapon_gas ? data.tapon_gas: null), ],
+      senalamientos: [(data && data.senalamientos ? data.senalamientos: null), ],
+      gato: [(data && data.gato ? data.gato: null), ],
+      llave_rueda: [(data && data.llave_rueda ? data.llave_rueda: null), ],
+      limpiadores: [(data && data.limpiadores ? data.limpiadores: null), ],
+      antena: [(data && data.antena ? data.antena: null), ],
+      navegador: [(data && data.navegador ? data.navegador: null), ],
+      placas: [(data && data.placas ? data.placas: null), ],
+      radio: [(data && data.radio ? data.radio: null), ],
+      llantas: [(data && data.llantas ? data.llantas: null), ],
+    });
+  }
+
+  get checkListf() {
+    return this.checkListForm.controls;
   }
 
   //#endregion
@@ -2088,7 +2132,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
   //#endregion
 
-  saveProcess(section: 'datos_generales' | 'datos_cliente' | 'datos_vehiculo' | 'cobranza' | 'check_in_salida' | 'firma', ignoreMsg?: boolean, payload?) {
+  saveProcess(section: 'datos_generales' | 'datos_cliente' | 'datos_vehiculo' | 'cobranza' | 'check_in_salida' | 'check_form_list' |  'firma', ignoreMsg?: boolean, payload?) {
     //this.sweetMsgServ.printStatus('Acción en desarrollo', 'warning');
     console.log('section', section);
     let _payload;
@@ -2156,6 +2200,11 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
         _payload = payload
         break;
+      case 'check_form_list':
+
+        _payload = this.checkListForm.value
+        _payload.contrato_id = this.contract_id
+        break;
       case 'firma':
 
         if (this.signature == '') {
@@ -2170,6 +2219,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
     _payload.seccion = section;
     _payload.num_contrato = this.num_contrato;
+
     console.log(section + '--->', _payload);
     //return;
 

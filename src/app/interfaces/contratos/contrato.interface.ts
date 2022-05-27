@@ -4,6 +4,7 @@ import {TarifasExtrasI} from '../configuracion/tarifas-extras.interface';
 import {CobranzaCalcI} from '../cobranza/cobranza-calc.interface';
 import {CobranzaProgI} from '../cobranza/cobranza-prog.interface';
 import {DragObjProperties} from '../../common/draggable-resizable/draggable-resizable.component';
+import { CheckListI } from "../check-list/check-list.interface";
 
 export interface ContratoI
 {
@@ -53,6 +54,7 @@ export interface ContratoI
   etapas_completas?: any;
   estatus: number;
   cliente_id?: number;
+  check_form_list_id?: number;
   user_create_id: number;
   created_at: Date;
   updated_at: Date;
@@ -62,4 +64,5 @@ export interface ContratoI
   cobranza: CobranzaProgI[];
 
   check_list_salida?: DragObjProperties[];
+  check_form_list?: CheckListI;
 }
