@@ -47,8 +47,7 @@ import {CheckListTypeEnum} from '../../../enums/check-list-type.enum';
 import {NotasService} from '../../../services/notas.service';
 import {CheckListService} from '../../../services/check-list.service';
 import { SignatureCaptureComponent } from 'src/app/common/components/signature-capture/signature-capture.component';
-
-
+import html2canvas from 'html2canvas';
 
 @Component({
   selector: 'app-contrato',
@@ -661,6 +660,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
       placas: [(data && data.placas ? data.placas: null), ],
       radio: [(data && data.radio ? data.radio: null), ],
       llantas: [(data && data.llantas ? data.llantas: null), ],
+      observaciones: [(data && data.observaciones ? data.observaciones: null), ],
     });
   }
 
@@ -2201,9 +2201,15 @@ export class ContratoPage implements OnInit, AfterViewInit {
         _payload = payload
         break;
       case 'check_form_list':
+        html2canvas(document.querySelector("#check-list-canvas"), { logging: true, allowTaint: false , useCORS: true }).then(function(canvas) {
+
+          let check_list_img = canvas.toDataURL();
+          _payload.check_list_img = check_list_img;
+        });
 
         _payload = this.checkListForm.value
         _payload.contrato_id = this.contract_id
+        console.log(_payload)
         break;
       case 'firma':
 

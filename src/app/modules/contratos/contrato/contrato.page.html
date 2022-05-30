@@ -1022,9 +1022,9 @@
                     </div>
                   </ion-col>
                   <ion-col size="12" size-md="10" style="overflow: scroll" id="drag-container">
-                    <div style="position: relative; margin: 0 auto" [style.width.px]="816">
-                      <ion-img src="assets/img/svg/vehicle-outline/sedan.svg" *ngIf="!vehicleOutlineBackground"[style.width.px]="816"></ion-img>
-                      <ion-img *ngIf="vehicleOutlineBackground" src="assets/img/svg/vehicle-outline/{{vehicleOutlineBackground}}.svg" [style.width.px]="816"></ion-img>
+                    <div style="position: relative; margin: 0 auto" [style.width.px]="816"  id="check-list-canvas">
+                      <ion-img src="assets/img/svg/vehicle-outline/sedan.png" *ngIf="!vehicleOutlineBackground"[style.width.px]="816"></ion-img>
+                      <ion-img *ngIf="vehicleOutlineBackground" src="assets/img/svg/vehicle-outline/{{vehicleOutlineBackground}}.png" [style.width.px]="816"></ion-img>
                       <div class="checklist-inspector-zone">
                         <app-draggable-resizable *ngFor="let dragObj of dragObjs"
                                                  (dragObjSaved)="saveDragObj($event)"
@@ -1062,14 +1062,14 @@
                             <mat-label>Silla para bebes</mat-label>
                           </mat-form-field>
                         </ion-col>
-                      </ion-row>
-                      <ion-row >
                         <ion-col>
                           <mat-form-field appearance="legacy">
                             <input type="text" matInput formControlName="espejos" autocomplete="off">
                             <mat-label>Espejos</mat-label>
                           </mat-form-field>
                         </ion-col>
+                      </ion-row>
+                      <ion-row >
                         <ion-col>
                           <mat-form-field appearance="legacy">
                             <input type="text" matInput formControlName="tapones_rueda" autocomplete="off">
@@ -1082,8 +1082,6 @@
                             <mat-label>Tapón de gas</mat-label>
                           </mat-form-field>
                         </ion-col>
-                      </ion-row>
-                      <ion-row >
                         <ion-col>
                           <mat-form-field appearance="legacy">
                             <input type="text" matInput formControlName="senalamientos" autocomplete="off">
@@ -1096,15 +1094,14 @@
                             <mat-label>Gato</mat-label>
                           </mat-form-field>
                         </ion-col>
+                      </ion-row>
+                      <ion-row >
                         <ion-col>
                           <mat-form-field appearance="legacy">
                             <input type="text" matInput formControlName="llave_rueda" autocomplete="off">
                             <mat-label>Llave de ruedas</mat-label>
                           </mat-form-field>
                         </ion-col>
-                      </ion-row>
-
-                      <ion-row >
                         <ion-col>
                           <mat-form-field appearance="legacy">
                             <input type="text" matInput formControlName="limpiadores" autocomplete="off">
@@ -1141,6 +1138,14 @@
                           <mat-form-field appearance="legacy">
                             <input type="text" matInput formControlName="llantas" autocomplete="off">
                             <mat-label>Llantas</mat-label>
+                          </mat-form-field>
+                        </ion-col>
+                      </ion-row>
+                      <ion-row >
+                        <ion-col>
+                          <mat-form-field appearance="legacy">
+                            <input type="text" maxlength="200" matInput formControlName="observaciones" autocomplete="off">
+                            <mat-label>Observaciones</mat-label>
                           </mat-form-field>
                         </ion-col>
                       </ion-row>

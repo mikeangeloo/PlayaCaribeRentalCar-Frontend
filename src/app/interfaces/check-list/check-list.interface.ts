@@ -16,4 +16,5 @@ export interface CheckListI
   placas?: string;
   radio?: string;
   llantas?: string;
+  observaciones?: string;
 }
