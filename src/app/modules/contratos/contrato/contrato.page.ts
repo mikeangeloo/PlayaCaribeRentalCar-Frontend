@@ -1508,6 +1508,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
         this.gf.modelo.patchValue(ModelsEnum.HOTELES);
         this.gf.precio_unitario_final.patchValue(null);
         this.selectedTarifaCat = null;
+        this.gf.con_descuento.patchValue(null);
         //this.resetTarifasData();
         break;
       case 'COMISIONISTA':
@@ -1729,14 +1730,14 @@ export class ContratoPage implements OnInit, AfterViewInit {
     this.gf.modelo_id.removeValidators(Validators.required);
     this.gf.comision.removeValidators(Validators.required);
 
-    if (!this.gf.con_descuento.value) {
+    if (!this.gf.con_descuento.value || this.gf.tipo_tarifa.value == 'Hotel') {
       this.gf.tarifa_apollo_id.patchValue(null);
       this.gf.tarifa_apollo_id.removeValidators(Validators.required);
     } else {
       if (!this.gf.tarifa_apollo_id.value) {
         this.gf.tarifa_apollo_id.setValidators(Validators.required);
         this.gf.tarifa_apollo_id.markAllAsTouched();
-        return;
+        //return;
       }
     }
 
