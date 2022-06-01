@@ -60,6 +60,8 @@ export interface ContratoI
   updated_at: Date;
   cliente?: any;
   vehiculo: VehiculosI;
+  firma_cliente: string;
+  firma_matrix: string;
 
   cobranza: CobranzaProgI[];
 

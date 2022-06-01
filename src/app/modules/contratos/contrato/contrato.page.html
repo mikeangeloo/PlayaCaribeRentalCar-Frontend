@@ -331,15 +331,17 @@
                       </ion-col>
 
                       <ion-col size="12" size-md="4" class="ion-text-center">
+                        <ion-col size="12" name="extra-form">
+                          <mat-form-field appearance="legacy">
+                            <mat-label>Folio Cupón</mat-label>
+                            <input matInput type="text" autocomplete="off" formControlName="folio_cupon">
+                            <mat-error></mat-error>
+                          </mat-form-field>
+                        </ion-col>
                         <app-modelos-docs model="contratos" docType="cupon" btnSize="small" [fullSize]="true" [justButton]="true" [model_id_value]="contract_id">
-                          <ion-col size="12" name="extra-form">
-                            <mat-form-field appearance="legacy">
-                              <mat-label>Folio Cupón</mat-label>
-                              <input matInput type="text" autocomplete="off" formControlName="folio_cupon">
-                              <mat-error></mat-error>
-                            </mat-form-field>
-                          </ion-col>
+
                         </app-modelos-docs>
+
                       </ion-col>  <!-- Folio cupón -->
                     </ng-container>  <!-- Hotel | Folio cupón -->
 
@@ -392,6 +394,7 @@
                               [labelPosition]="'after'"
                               (change)="makeCalc()"
                               formControlName="con_descuento"
+                              *ngIf="gf.tipo_tarifa.value !== 'Hotel'"
                             >
                               Aplicar Descuento ?
                             </mat-checkbox>
@@ -679,7 +682,7 @@
                 <ion-row>
                   <ion-col size="6">
                     <h4 style="margin: 0; padding: 0;">Total: <span style="color: var(--ion-color-success)">{{(generalDataForm && generalDataForm.controls.total.value) ? (generalDataForm.controls.total.value | currency) : '--'}}</span></h4>
-                    <h4 style="margin: 0; padding: 0;">Balance por saldar: <span [ngClass]="{'danger-color': balancePorPagar > 0}">{{(balancePorPagar) ? (balancePorPagar | currency) : ('0' | currency)}}</span></h4>
+                    <h4 *ngIf="(generalDataForm && generalDataForm.controls.tipo_tarifa.value !== 'Hotel')" style="margin: 0; padding: 0;">Balance por saldar: <span [ngClass]="{'danger-color': balancePorPagar > 0}">{{(balancePorPagar) ? (balancePorPagar | currency) : ('0' | currency)}}</span></h4>
                   </ion-col>
                   <ion-col size="6" class="ion-text-end">
                     <button mat-raised-button class="button-secondary" (click)="agregarPagoOpt()">
@@ -689,7 +692,7 @@
                 </ion-row>
                 <br>
                 <ion-row>
-                  <ion-col size="12" size-md="6">
+                  <ion-col  *ngIf="(generalDataForm && generalDataForm.controls.tipo_tarifa.value !== 'Hotel')" size="12" size-md="6">
                     <ion-card style="margin: 0;">
                       <ion-card-content>
                         <div class="accordion-title">
@@ -1192,7 +1195,7 @@
                 </ion-row>
                 <hr style="background: var(--ion-color-secondary)">
                 <ng-container >
-                  <app-signature-capture (signatureEmit)="captureSignature($event)" [ngClass]="{'disable': !terminos}"
+                  <app-signature-capture [signature_matrix]="signature" (signatureEmit)="captureSignature($event)" [ngClass]="{'disable': !terminos}"
                                        [instanceType]="'plain'"></app-signature-capture>
                 </ng-container>
 

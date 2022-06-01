@@ -176,6 +176,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
   selectedDragObj: DragObjProperties;
   vehicleOutlineBackground: string;
   checkListForm: FormGroup;
+  public check_list_img;
   //#endregion
 
   //#region SIGNATURE MANAGEMENT ATTRIBUTES
@@ -366,12 +367,17 @@ export class ContratoPage implements OnInit, AfterViewInit {
             }
             let _firma = this.contractData.etapas_guardadas.find(x => x === 'firma');
             if (_firma) {
+              this.terminos = true;
+              this.signature = this.contractData.firma_matrix;
               this.step = 6;
             }
           }
           if (this.generalDataForm.controls.total.value) {
 
             this.recalBalancePorCobrar();
+          }
+          if (this.gf.tipo_tarifa.value === 'Hotel'){
+            this.balancePorPagar = 0;
           }
           console.log(this.step);
         } else {
@@ -1252,6 +1258,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
   //#region CARDS MANAGEMENT
   async agregarPagoOpt() {
+
     const actionSheet = await this.actionSheetController.create({
       header: 'Opciones',
       cssClass: 'my-custom-class',
@@ -2132,7 +2139,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
   //#endregion
 
-  saveProcess(section: 'datos_generales' | 'datos_cliente' | 'datos_vehiculo' | 'cobranza' | 'check_in_salida' | 'check_form_list' |  'firma', ignoreMsg?: boolean, payload?) {
+  async saveProcess(section: 'datos_generales' | 'datos_cliente' | 'datos_vehiculo' | 'cobranza' | 'check_in_salida' | 'check_form_list' |  'firma', ignoreMsg?: boolean, payload?) {
     //this.sweetMsgServ.printStatus('Acción en desarrollo', 'warning');
     console.log('section', section);
     let _payload;
@@ -2201,14 +2208,15 @@ export class ContratoPage implements OnInit, AfterViewInit {
         _payload = payload
         break;
       case 'check_form_list':
-        html2canvas(document.querySelector("#check-list-canvas"), { logging: true, allowTaint: false , useCORS: true }).then(function(canvas) {
+        let canvas = await html2canvas(document.querySelector("#check-list-canvas"), { logging: true, allowTaint: false , useCORS: true });
 
-          let check_list_img = canvas.toDataURL();
-          _payload.check_list_img = check_list_img;
-        });
+        let check_img = canvas.toDataURL();
+        this.check_list_img = check_img;
+
 
         _payload = this.checkListForm.value
         _payload.contrato_id = this.contract_id
+        _payload.check_list_img  = this.check_list_img;
         console.log(_payload)
         break;
       case 'firma':

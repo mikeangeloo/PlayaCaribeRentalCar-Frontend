@@ -1,4 +1,4 @@
-import { AfterViewChecked, AfterViewInit, ChangeDetectorRef, EventEmitter, HostListener, Input, Output, ViewChild } from '@angular/core';
+import { AfterViewChecked, AfterViewInit, ChangeDetectorRef, EventEmitter, HostListener, Input, OnChanges, Output, ViewChild } from '@angular/core';
 import { Component, OnInit } from '@angular/core';
 import SignaturePad from 'signature_pad';
 import {SweetMessagesService} from '../../../services/sweet-messages.service';
@@ -10,7 +10,7 @@ import {SignatureI} from "../../../interfaces/shared/signature.interface";
   templateUrl: './signature-capture.component.html',
   styleUrls: ['./signature-capture.component.scss']
 })
-export class SignatureCaptureComponent implements OnInit, AfterViewInit, AfterViewChecked {
+export class SignatureCaptureComponent implements OnInit, AfterViewInit, AfterViewChecked, OnChanges {
 
   //#region ATTRIBUTES
   @ViewChild('canvas1', { static: false }) signaturePadElement1;
@@ -21,6 +21,7 @@ export class SignatureCaptureComponent implements OnInit, AfterViewInit, AfterVi
   @Output() signatureRefresh = new EventEmitter();
   public signatureCaptured: SignatureI;
   @Input() instanceType: 'accordion' | 'plain' = 'accordion';
+  @Input() signature_matrix: string;
   //#endregion
 
   constructor(
@@ -58,6 +59,14 @@ export class SignatureCaptureComponent implements OnInit, AfterViewInit, AfterVi
     }
   }
 
+  ngOnChanges () {
+    if(this.signature_matrix != ''){
+      console.log(this.signature_matrix)
+      this.signaturePad1.fromData(JSON.parse(this.signature_matrix));
+    }
+
+  }
+
   ngAfterViewInit(): void {
     this.initSignature(true);
   }
@@ -74,21 +83,16 @@ export class SignatureCaptureComponent implements OnInit, AfterViewInit, AfterVi
 
     if (!this.signaturePad1) {
 
+
+
       this.signaturePad1 = new SignaturePad(this.signaturePadElement1.nativeElement);
       this.signaturePad1.penColor = 'rgb(0,0,0)';
+
 
       this.signaturePad1.onEnd= () => {
           this.emitSignature();
       }
-
-
-
     }
-
-    console.log(this.signaturePad1)
-
-
-
     setTimeout(() => {
       const width1 = document.getElementById('signature-container1').offsetWidth;
 
