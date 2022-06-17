@@ -12,6 +12,7 @@ import {JwtInterceptor} from "../interceptors/jwt-interceptor";
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
 import {NgxMaterialTimepickerModule} from "ngx-material-timepicker";
+import { NgxLoadingModule } from 'ngx-loading';
 
 @NgModule({
   declarations: [
@@ -32,7 +33,8 @@ import {NgxMaterialTimepickerModule} from "ngx-material-timepicker";
       // or after 30 seconds (whichever comes first).
       registrationStrategy: 'registerWhenStable:30000',
     }),
-    NgxMaterialTimepickerModule
+    NgxMaterialTimepickerModule,
+    NgxLoadingModule.forRoot({}),
   ],
   providers: [
     {

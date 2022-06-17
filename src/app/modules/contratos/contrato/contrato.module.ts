@@ -10,6 +10,7 @@ import { ContratoPage } from './contrato.page';
 import {MaterialModule} from "../../../material/material.module";
 import {NgxMaterialTimepickerModule} from "ngx-material-timepicker";
 import {AppCommonModule} from "../../../common/common.module";
+import { NgxLoadingModule } from 'ngx-loading';
 
 @NgModule({
     imports: [
@@ -19,6 +20,7 @@ import {AppCommonModule} from "../../../common/common.module";
       ContratoPageRoutingModule,
       MaterialModule,
       NgxMaterialTimepickerModule,
+      NgxLoadingModule.forRoot({}),
       AppCommonModule,
       ReactiveFormsModule,
     ],

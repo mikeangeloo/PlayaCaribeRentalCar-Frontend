@@ -17,6 +17,7 @@ export interface VehiculosI
   km_recorridos?: number;
   prox_servicio?: string;
   categoria_vehiculo_id?: number;
+  cant_combustible_anterior?: string;
   cant_combustible?: string;
   color?: string;
   cap_tanque?: string;

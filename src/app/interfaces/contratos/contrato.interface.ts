@@ -5,6 +5,7 @@ import {CobranzaCalcI} from '../cobranza/cobranza-calc.interface';
 import {CobranzaProgI} from '../cobranza/cobranza-prog.interface';
 import {DragObjProperties} from '../../common/draggable-resizable/draggable-resizable.component';
 import { CheckListI } from "../check-list/check-list.interface";
+import { CargosExtrasI } from "../configuracion/cargos-extras.interface";
 
 export interface ContratoI
 {
@@ -67,4 +68,15 @@ export interface ContratoI
 
   check_list_salida?: DragObjProperties[];
   check_form_list?: CheckListI;
+
+  km_final: number;
+  cant_combustible_retorno:string;
+  cargos_retorno_extras_ids?: number[];
+  cargos_retorno_extras: CargosExtrasI[];
+  subtotal_retorno: number;
+  con_iva_retorno: number;
+  iva_retorno: number;
+  iva_monto_retorno: number;
+  total_retorno: number;
+  cobranza_calc_retorno: CobranzaCalcI[];
 }

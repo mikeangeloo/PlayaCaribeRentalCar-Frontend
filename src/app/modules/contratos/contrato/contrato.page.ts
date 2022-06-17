@@ -33,7 +33,7 @@ import {ModelsEnum} from '../../../enums/models.enum';
 import {ToastMessageService} from '../../../services/toast-message.service';
 import {UbicacionesI} from '../../../interfaces/configuracion/ubicaciones.interface';
 import {UbicacionesService} from '../../../services/ubicaciones.service';
-import {map, Observable, startWith} from 'rxjs';
+import {map, Observable, single, startWith} from 'rxjs';
 import {CobranzaProgI} from '../../../interfaces/cobranza/cobranza-prog.interface';
 import {CobranzaService} from '../../../services/cobranza.service';
 import {TarifasCategoriasI} from '../../../interfaces/configuracion/tarifas-categorias.interface';
@@ -48,6 +48,8 @@ import {NotasService} from '../../../services/notas.service';
 import {CheckListService} from '../../../services/check-list.service';
 import { SignatureCaptureComponent } from 'src/app/common/components/signature-capture/signature-capture.component';
 import html2canvas from 'html2canvas';
+import { CargosExtrasI } from 'src/app/interfaces/configuracion/cargos-extras.interface';
+import { CargosRetornoExtrasService } from 'src/app/services/cargos-retorno-extras.service';
 
 @Component({
   selector: 'app-contrato',
@@ -58,6 +60,7 @@ import html2canvas from 'html2canvas';
 export class ContratoPage implements OnInit, AfterViewInit {
   @ViewChild(SignatureCaptureComponent) signatureComponent;
 
+  public loading = false;
   //#region STEP CONTROLLER ATTRIBUTES
   step = 0;
   //#endregion
@@ -180,8 +183,20 @@ export class ContratoPage implements OnInit, AfterViewInit {
   //#endregion
 
   //#region SIGNATURE MANAGEMENT ATTRIBUTES
-  public signature = '';
+  public signature: any | string;
+  public signature_matrix = '';
   public terminos=false;
+  //#endregion
+
+  //#region RETORNO ATTRIBUTES
+  retornoDataForm: FormGroup;
+  cargos_extras_toggle = false;
+  dias_extras_toggle = false;
+  cargosExtras: CargosExtrasI[];
+  public cobranzaRetornoI: CobranzaCalcI[] = [];
+  public balanceRetornoPorPagar: number = 0.00;
+  public pagadoRetornoTotal = 0;
+  public pagadoRetornoAutTotal = 0;
   //#endregion
 
   constructor(
@@ -194,6 +209,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
     public filesServ: FilesService,
     public tiposTarifasServ: TiposTarifasService,
     public tarifasExtrasServ: TarifasExtrasService,
+    public cargosRetornoExtrasServ: CargosRetornoExtrasService,
     public hotelesServ: HotelesService,
     public comisionistasServ: ComisionistasService,
     public toastServ: ToastMessageService,
@@ -211,6 +227,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
   }
 
   async ionViewWillEnter() {
+    this.loading = true;
     console.log('view enter');
     await this.loadTiposTarifas();
     await this.loadTarifasCat();
@@ -218,6 +235,8 @@ export class ContratoPage implements OnInit, AfterViewInit {
     await this.loadHoteles();
     await this.loadComisionistas();
     await this.loadUbicaciones();
+    await this.loadCargosExtras();
+
     await this.reloadAll();
 
     this.exitPlacesOptions$ = this.gf.ub_salida_id.valueChanges.pipe(
@@ -263,6 +282,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
     // }
     console.log('execute reloadAll');
     // verificamos si tenemos guardado un contract_id en local storage para continuar con la edición
+
     if (this.contratosServ.getContractNumber()) {
       this.num_contrato = this.contratosServ.getContractNumber();
 
@@ -367,19 +387,33 @@ export class ContratoPage implements OnInit, AfterViewInit {
             }
             let _firma = this.contractData.etapas_guardadas.find(x => x === 'firma');
             if (_firma) {
+              console.log('firma');
               this.terminos = true;
-              this.signature = this.contractData.firma_matrix;
+              this.signature_matrix = this.contractData.firma_matrix;
+              this.signature = {
+                signature_matrix: JSON.parse(this.contractData.firma_matrix),
+                signature_img: this.contractData.firma_cliente
+              }
               this.step = 6;
             }
+            let _retorno = this.contractData.etapas_guardadas.find(x => x === 'retorno');
+            if (_retorno) {
+              if(this.contractData.cargos_retorno_extras){
+                this.showRetornoExtras();
+              }
+              console.log('retorno');
+              this.initRetornoForm(this.contractData);
+            }else {
+              this.initRetornoForm();
+            }
+
           }
           if (this.generalDataForm.controls.total.value) {
 
             this.recalBalancePorCobrar();
           }
-          if (this.gf.tipo_tarifa.value === 'Hotel'){
-            this.balancePorPagar = 0;
-          }
           console.log(this.step);
+          this.loading = false;
         } else {
           console.log(res.errors);
           this.sweetMsgServ.printStatusArray(res.errors.error.errors, 'error');
@@ -387,16 +421,20 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
           this.initGeneralForm();
           this.initClientForm();
+          this.initRetornoForm();
           this.initVehiculoForm();
           this.initCheckListForm();
           this.cobranzaProgData = [];
+          this.loading = false;
         }
     } else {
       this.initGeneralForm();
       this.initClientForm();
       this.initVehiculoForm();
       this.initCheckListForm();
+      this.initRetornoForm();
       this.cobranzaProgData = [];
+      this.loading = false;
     }
   }
 
@@ -596,6 +634,15 @@ export class ContratoPage implements OnInit, AfterViewInit {
     })
   }
 
+  async loadCargosExtras() {
+    let res = await this.cargosRetornoExtrasServ.getActive();
+    if (res.ok) {
+      this.cargosExtras = res.data;
+    } else {
+      console.log('error loadCargos extras err --->', res);
+    }
+  }
+
   get gf() {
     return this.generalDataForm.controls;
   }
@@ -647,13 +694,40 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
   //#endregion
 
+  //#region RETORNO FORM FUNCTIONS
+  initRetornoForm(data?) {
+    this.retornoDataForm = this.fb.group({
+      cant_combustible_retorno: [(data && data.cant_combustible_retorno ? data.cant_combustible_retorno : null), Validators.required],
+      km_final: [(data && data.km_final ? data.km_final: null), Validators.required],
+      cargos_extras_retorno_ids: [(data && data.cargos_retorno_extras_ids ? data.cargos_retorno_extras_ids : null)],
+      cargos_extras_retorno: [(data && data.cargos_retorno_extras ? data.cargos_retorno_extras : null)],
+      dias_extras: [(data && data.dias_extras ? data.dias_extras : null)],
+      subtotal_retorno: [(data && data.subtotal_retorno ? data.subtotal_retorno : null), Validators.required],
+      con_iva_retorno: [(data && data.con_iva_retorno ? data.con_iva_retorno : null)],
+      iva_retorno: [(data && data.iva_retorno ? data.iva_retorno : null)],
+      iva_monto_retorno: [(data && data.iva_monto_retorno ? data.iva_monto_retorno : null)],
+      total_retorno: [(data && data.total_retorno ? data.total_retorno : null), Validators.required],
+      cobranza_calc_retorno: [(data && data.cobranza_calc_retorno ? data.cobranza_calc_retorno : null), Validators.required],
+    });
+
+    if (data && data.cobranza_calc && data.cobranza_calc.length) {
+      this.cobranzaRetornoI = data.cobranza_calc_retorno;
+    }
+  }
+
+  get rf() {
+    return this.retornoDataForm.controls;
+  }
+
+  //#endregion
+
   //#region CHECKLIST FORM FUNCTIONS
   initCheckListForm(data?) {
     this.checkListForm = this.fb.group({
       check_form_list_id: [(data && data.id ? data.id : null)],
       tarjeta_circulacion: [(data && data.tarjeta_circulacion ? data.tarjeta_circulacion : null)],
       tapetes: [(data && data.tapetes ? data.tapetes: null),],
-      silla_bebes: [(data && data.silla_bebes ? data.silla_bebes: null), ],
+      //silla_bebes: [(data && data.silla_bebes ? data.silla_bebes: null), ],
       espejos: [(data && data.espejos ? data.espejos: null), ],
       tapones_rueda: [(data && data.tapones_rueda ? data.tapones_rueda: null), ],
       tapon_gas: [(data && data.tapon_gas ? data.tapon_gas: null), ],
@@ -683,6 +757,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
       km_anterior: [(data && data.km_anterior ? data.km_anterior : (data && data.km_recorridos) ? data.km_recorridos : null), Validators.required],
       km_inicial: [(data && data.km_inicial ? data.km_inicial : null), Validators.required],
       km_final: [(data && data.km_final ? data.km_final : null)],
+      cant_combustible_anterior: [(data && data.cant_combustible_anterior ? data.cant_combustible_anterior : null)],
       cant_combustible_salida: [(data && data.cant_combustible_salida ? data.cant_combustible_salida : null), Validators.required],
       cant_combustible_retorno: [(data && data.cant_combustible_retorno ? data.cant_combustible_retorno : null)],
     });
@@ -691,6 +766,14 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
   get vf() {
     return this.vehiculoForm.controls;
+  }
+
+  showRetornoExtras() {
+    this.cargos_extras_toggle = !this.cargos_extras_toggle
+  }
+
+  showRetornoDiasExtras() {
+    this.dias_extras_toggle = !this.dias_extras_toggle
   }
 
   async viewPDF() {
@@ -716,6 +799,12 @@ export class ContratoPage implements OnInit, AfterViewInit {
     if (this.vehiculoData && this.vehiculoData.km_recorridos) {
       this.vehiculoForm.controls.km_anterior.patchValue(this.vehiculoData.km_recorridos);
     }
+
+    if (this.vehiculoData && this.vehiculoData.cant_combustible_anterior) {
+      this.vehiculoForm.controls.cant_combustible_anterior.patchValue(this.vehiculoData.cant_combustible_anterior);
+    }
+
+    this.vehiculoForm.controls.cant_combustible_anterior.disable();
     this.vehiculoForm.controls.km_anterior.disable();
 
     if (this.contractData && this.contractData.estatus) {
@@ -800,10 +889,6 @@ export class ContratoPage implements OnInit, AfterViewInit {
     background.onload = function(){
       ctx.drawImage(background,0,0);
     }
-  }
-
-  generatePDF() {
-
   }
 
   addDraggedBtn(indicatorIcon, indicatorTitle) {
@@ -1963,7 +2048,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
     for (let i = 0; i < this.cobranzaI.length; i++) {
       _subtotal = _subtotal + ((this.cobranzaI[i].amount * (this.cobranzaI[i].number_sign === 'positive' ? 1 : -1)));
     }
-    _subtotal = parseFloat(Number(_subtotal).toFixed(2));
+    _subtotal = parseFloat(Number(_subtotal).toFixed(2)) - parseFloat(Number(this.gf.precio_unitario_final.value * _totalDias).toFixed(2));
     if (this.gf.con_iva.value) {
       _iva = parseFloat(Number(_subtotal * this.iva).toFixed(2));
       _total = (_subtotal + _iva);
@@ -2027,6 +2112,123 @@ export class ContratoPage implements OnInit, AfterViewInit {
     this.gf.cobranza_calc.patchValue(this.cobranzaI);
   }
 
+  async makeCalcRetorno(elementType?: string, cobro?: CobranzaCalcI) {
+    if (this.rf.cargos_extras_retorno_ids.value.length == 0) {
+      this.sweetMsgServ.printStatus('Selecciona los cargos extras', 'warning');
+      return;
+    }
+    // if (this.gf.vehiculo_id.invalid) {
+    //   this.sweetMsgServ.printStatus('Selecciona un vehículo primero', 'warning');
+    //   this.gf.vehiculo_id.markAllAsTouched();
+    //   return;
+    // }
+
+    //console.log('precio inicial vehiculo --->', this.vehiculoData.precio_renta);
+    let _tempExtrasCalc = this.cobranzaRetornoI.filter(x => x.element === 'cargoExtra');
+    console.log('tempExtrasCalc', _tempExtrasCalc);
+    this.cobranzaRetornoI = [];
+
+    let _totalDiasExtra = this.rf.dias_extras.value;
+
+    let _tarifas;
+    let _tarifa;
+
+    // Verificamos si tenemos extras
+    if (this.rf.cargos_extras_retorno.value && this.rf.cargos_extras_retorno.value.length > 0) {
+
+      if (elementType && elementType === 'extra' && cobro) {
+        console.log(elementType, cobro);
+        this.cobranzaRetornoI.push(... _tempExtrasCalc);
+
+        let _singleCobro = this.cobranzaRetornoI.find(x => x.element_label === cobro.element_label);
+        let _extraInForm = this.rf.cargos_extras_retorno.value.find(x => x.nombre === cobro.element_label);
+        let _index = this.cobranzaRetornoI.findIndex(x => x.element_label === cobro.element_label);
+        console.log(_index)
+        if (_singleCobro && _extraInForm && (_index + 1)) {
+          console.log(_singleCobro,_extraInForm,_index)
+          _singleCobro.quantity = cobro.quantity;
+          _singleCobro.amount = parseFloat(Number(_extraInForm.precio * cobro.quantity ).toFixed(2))
+          this.cobranzaRetornoI[_index] = _singleCobro;
+        }
+      } else {
+        for (let i = 0; i < this.rf.cargos_extras_retorno.value.length; i++) {
+
+          this.cobranzaRetornoI.push({
+            element:  'cargoExtra',
+            value:  this.rf.cargos_extras_retorno.value[i].precio,
+            quantity:   1,
+            quantity_type:  '',
+            element_label:  this.rf.cargos_extras_retorno.value[i].nombre,
+            number_sign:  'positive',
+            amount:  parseFloat(Number(this.rf.cargos_extras_retorno.value[i].precio * 1 ).toFixed(2)),
+            currency: this.baseCurrency
+          })
+
+
+        }
+      }
+    }
+
+    let _subtotal = 0;
+    let _iva = 0;
+    let _total = 0;
+    for (let i = 0; i < this.cobranzaRetornoI.length; i++) {
+      _subtotal = _subtotal + ((this.cobranzaRetornoI[i].amount * (this.cobranzaRetornoI[i].number_sign === 'positive' ? 1 : -1)));
+    }
+    _subtotal = parseFloat(Number(_subtotal).toFixed(2))
+    if (this.rf.con_iva_retorno.value) {
+      _iva = parseFloat(Number(_subtotal * this.iva).toFixed(2));
+      _total = (_subtotal + _iva);
+    } else {
+      _total = (_subtotal);
+    }
+
+
+    // subtotal
+    this.cobranzaRetornoI.push({
+      element: 'subtotal',
+      value: null,
+      quantity: null,
+      quantity_type: null,
+      element_label: 'Subtotal',
+      number_sign: 'positive',
+      amount: _subtotal,
+      currency: this.baseCurrency
+    });
+    this.rf.subtotal_retorno.patchValue(_subtotal);
+
+    // iva
+    if (this.rf.con_iva_retorno.value) {
+      this.cobranzaRetornoI.push({
+        element: 'iva',
+        value: null,
+        quantity: this.iva * 100,
+        quantity_type: '%',
+        element_label: 'IVA',
+        number_sign: 'positive',
+        amount: _iva,
+        currency: this.baseCurrency
+      });
+      this.rf.con_iva_retorno.patchValue(true);
+      this.rf.iva_retorno.patchValue(this.iva);
+      this.rf.iva_monto_retorno.patchValue(_iva);
+    }
+
+    // total
+    this.cobranzaRetornoI.push({
+      element: 'total',
+      value: null,
+      quantity: null,
+      quantity_type: null,
+      element_label: 'Total',
+      number_sign: 'positive',
+      amount: _total,
+      currency: this.baseCurrency
+    });
+    this.rf.total_retorno.patchValue(_total);
+    this.rf.cobranza_calc_retorno.patchValue(this.cobranzaRetornoI);
+  }
+
   async pushSelectedExtras() {
     let _ids = this.gf.cobros_extras_ids.value;
     this.gf.cobros_extras.setValue(null);
@@ -2043,6 +2245,24 @@ export class ContratoPage implements OnInit, AfterViewInit {
     this.toastServ.presentToast('info','Revise la información de los cargos extra en especial la cantidad unitaria', 'top');
     console.log('cobros extras --->', _extrasObj);
     await this.makeCalc();
+  }
+
+  async pushSelectedCargosExtras() {
+    let _ids = this.rf.cargos_extras_retorno_ids.value;
+    this.rf.cargos_extras_retorno.setValue(null);
+    let _extrasObj = []
+    for (let i = 0; i < _ids.length; i++) {
+      let _extra = this.cargosExtras.find(x => x.id == _ids[i]);
+      if (_extra) {
+        _extrasObj.push(_extra);
+      }
+    }
+    if (_extrasObj && _extrasObj.length > 0) {
+      this.rf.cargos_extras_retorno.setValue(_extrasObj);
+    }
+    this.toastServ.presentToast('info','Revise la información de los cargos extra en especial la cantidad unitaria', 'top');
+    console.log('cargos retorno extras --->', _extrasObj);
+    await this.makeCalcRetorno();
   }
 
   getExtraRows() {
@@ -2140,7 +2360,16 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
   //#endregion
 
-  async saveProcess(section: 'datos_generales' | 'datos_cliente' | 'datos_vehiculo' | 'cobranza' | 'check_in_salida' | 'check_form_list' |  'firma', ignoreMsg?: boolean, payload?) {
+  saveAndGenerate() {
+    this.sweetMsgServ.confirmRequest('¿Estás seguro de desea guardar el contrato?, ya que no podra ser editable').then(async (data) => {
+      if (data.value) {
+        this.saveProcess('firma');
+        this.viewPDF();
+      }
+    })
+  }
+
+  async saveProcess(section: 'datos_generales' | 'datos_cliente' | 'datos_vehiculo' | 'cobranza' | 'check_in_salida' | 'check_form_list' |  'firma' | 'retorno', ignoreMsg?: boolean, payload?) {
     //this.sweetMsgServ.printStatus('Acción en desarrollo', 'warning');
     console.log('section', section);
     let _payload;
@@ -2226,10 +2455,17 @@ export class ContratoPage implements OnInit, AfterViewInit {
           this.sweetMsgServ.printStatus('Es necesesario la firma para terminar el proceso', 'warning');
           return;
         }
-
         console.log(this.signature)
-        _payload = this.signature;
+        _payload = this.signature
         break;
+      case 'retorno':
+        if (this.retornoDataForm.invalid) {
+          this.sweetMsgServ.printStatus('Verifica que los datos solicitados esten completos', 'warning');
+          console.log(this.retornoDataForm);
+          return;
+        }
+        _payload = this.retornoDataForm.value;
+      break;
     }
 
     _payload.seccion = section;
