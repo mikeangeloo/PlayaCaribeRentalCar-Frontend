@@ -250,6 +250,14 @@ export class AppComponent implements OnDestroy {
                   route: '/administracion/catalogos/precios/tarifas-extras',
                   level: 3,
                   active: false,
+                },
+                {
+                  module: 'catalogos',
+                  icon: 'pricetags',
+                  label: 'Cargos Extras',
+                  route: '/administracion/catalogos/precios/cargos-extras',
+                  level: 3,
+                  active: false,
                 }
               ]
             },

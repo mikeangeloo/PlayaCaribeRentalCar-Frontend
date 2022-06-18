@@ -69,6 +69,10 @@ export interface ContratoI
 
   check_list_salida?: DragObjProperties[];
   check_form_list?: CheckListI;
+  frecuencia_extra: number;
+  cobranzaExtraPor: string;
+  // cargo_frecuencia_extra: number;
+  // total_frecuencia_extra: number;
 
   km_final: number;
   cant_combustible_retorno:string;

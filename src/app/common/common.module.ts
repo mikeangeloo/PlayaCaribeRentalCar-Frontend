@@ -44,7 +44,8 @@ import {InputModalComponent} from './components/input-modal/input-modal.componen
 import {ChecklistInspectorZoneComponent} from './components/checklist-inspector-zone/checklist-inspector-zone.component';
 import {DraggableResizableComponent} from './draggable-resizable/draggable-resizable.component';
 import {ModalDragElementDetailsComponent} from './components/modal-drag-element-details/modal-drag-element-details.component';
-
+import {CargosExtrasTableComponent} from './components/configuracion/precios/cargos-extras-table/cargos-extras-table.component';
+import { CargosExtrasFormComponent } from './components/configuracion/precios/cargos-extras-form/cargos-extras-form.component';
 
 
 @NgModule({
@@ -87,7 +88,9 @@ import {ModalDragElementDetailsComponent} from './components/modal-drag-element-
     InputModalComponent,
     ChecklistInspectorZoneComponent,
     DraggableResizableComponent,
-    ModalDragElementDetailsComponent
+    ModalDragElementDetailsComponent,
+    CargosExtrasTableComponent,
+    CargosExtrasFormComponent
   ],
   exports: [
     HotelesListComponent,
@@ -128,7 +131,9 @@ import {ModalDragElementDetailsComponent} from './components/modal-drag-element-
     InputModalComponent,
     ChecklistInspectorZoneComponent,
     DraggableResizableComponent,
-    ModalDragElementDetailsComponent
+    ModalDragElementDetailsComponent,
+    CargosExtrasTableComponent,
+    CargosExtrasFormComponent
   ],
   entryComponents: [
     HotelesListComponent,
@@ -169,7 +174,9 @@ import {ModalDragElementDetailsComponent} from './components/modal-drag-element-
     InputModalComponent,
     ChecklistInspectorZoneComponent,
     DraggableResizableComponent,
-    ModalDragElementDetailsComponent
+    ModalDragElementDetailsComponent,
+    CargosExtrasTableComponent,
+    CargosExtrasFormComponent
   ],
     imports: [
         CommonModule,

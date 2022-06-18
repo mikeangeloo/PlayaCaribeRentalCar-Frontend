@@ -9,13 +9,14 @@ import {ConfiguracionRoutingModule} from './configuracion-routing.module';
 import {TarifasExtrasPage} from './precios/tarifas-extras/tarifas-extras.page';
 import {UbicacionesComponent} from './ubicaciones/ubicaciones.component';
 import {TarifasCategoriasComponent} from './precios/tarifas-categorias/tarifas-categorias.component';
-
+import { CargosExtrasPage } from './precios/cargos-extras/cargos-extras.page';
 
 @NgModule({
   declarations: [
     TarifasExtrasPage,
     UbicacionesComponent,
-    TarifasCategoriasComponent
+    TarifasCategoriasComponent,
+    CargosExtrasPage
   ],
   imports: [
     CommonModule,

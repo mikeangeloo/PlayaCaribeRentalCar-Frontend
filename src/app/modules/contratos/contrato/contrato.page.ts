@@ -197,7 +197,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
   public cobranzaRetornoI: CobranzaCalcI[] = [];
 
 
-  cobranzaExtraPor: string = 'days | hours';
+  cobranzaExtraPor: string = 'dias | horas';
   horaExtraMax = 2;
   hora_actual: string;
   hora_retorno: string;
@@ -409,11 +409,16 @@ export class ContratoPage implements OnInit, AfterViewInit {
             }
             let _retorno = this.contractData.etapas_guardadas.find(x => x === 'retorno');
             if (_retorno) {
-              if(this.contractData.cargos_retorno_extras){
-                this.showRetornoExtras();
-              }
               console.log('retorno');
               this.initRetornoForm(this.contractData);
+              if(this.contractData.cargos_retorno_extras){
+                this.cargos_extras_toggle = true;
+              }
+              if (this.contractData.frecuencia_extra) {
+                this.frecuencia_extras_toggle = true;
+              }
+
+
             }else {
               this.initRetornoForm(this.contractData);
             }
@@ -713,6 +718,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
       cargos_extras_retorno_ids: [(data && data.cargos_retorno_extras_ids ? data.cargos_retorno_extras_ids : null)],
       cargos_extras_retorno: [(data && data.cargos_retorno_extras ? data.cargos_retorno_extras : null)],
       frecuencia_extra: [(data && data.frecuencia_extra ? data.frecuencia_extra : null)],
+      cobranzaExtraPor: [(data && data.cobranzaExtraPor) ? data.cobranzaExtraPor : null],
       subtotal_retorno: [(data && data.subtotal_retorno ? data.subtotal_retorno : null), Validators.required],
       con_iva_retorno: [(data && data.con_iva_retorno ? data.con_iva_retorno : null)],
       iva_retorno: [(data && data.iva_retorno ? data.iva_retorno : null)],
@@ -739,7 +745,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
   }
 
   checkExtraChargeFrecuency() {
-    this.cobranzaExtraPor = 'hours';
+    this.cobranzaExtraPor = 'horas';
     this.hora_actual = DateConv.transFormDate(moment.now(), 'time');
     this.fecha_actual = DateConv.transFormDate(moment.now(), 'regular');
 
@@ -749,7 +755,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
     this.extraFrecuency = _dateDiffM.asHours();
 
     if (this.extraFrecuency > this.horaExtraMax) {
-      this.cobranzaExtraPor = 'days';
+      this.cobranzaExtraPor = 'dias';
       this.extraFrecuency = _dateDiffM.asDays();
     }
 
@@ -818,25 +824,24 @@ export class ContratoPage implements OnInit, AfterViewInit {
       this.rf.cargos_extras_retorno_ids.patchValue(null);
       this.rf.cargos_extras_retorno.patchValue(null);
       this.cobranzaRetornoI = [];
+      return;
     }
-    this.makeCalcRetorno();
+    //this.makeCalcRetorno();
     //this.cargos_extras_toggle = !this.cargos_extras_toggle
   }
 
-  showRetornoDiasExtras() {
-    this.frecuencia_extras_toggle = !this.frecuencia_extras_toggle
-  }
-
   async viewPDF() {
+    this.loading = true;
     this.contratosServ.generatePDF(this.contract_id).subscribe(res => {
       const url = URL.createObjectURL(res);
-
+      this.loading = false;
       if (this.detectIOS() === true) {
         window.location.assign(url);
       } else {
         window.open(url, '_blank');
       }
     }, error => {
+       this.loading = false;
       const fr = new FileReader();
       fr.addEventListener('loadend', (e: any) => {
         const errors = JSON.parse(e.srcElement.result);
@@ -2169,42 +2174,23 @@ export class ContratoPage implements OnInit, AfterViewInit {
       return;
     }
 
-    // if (this.gf.vehiculo_id.invalid) {
-    //   this.sweetMsgServ.printStatus('Selecciona un vehículo primero', 'warning');
-    //   this.gf.vehiculo_id.markAllAsTouched();
-    //   return;
-    // }
-
-    //console.log('precio inicial vehiculo --->', this.vehiculoData.precio_renta);
-
+    let cobranza_temp = this.cobranzaRetornoI;
     this.cobranzaRetornoI = [];
     this.checkExtraChargeFrecuency();
 
-    let _totalDiasExtra = this.rf.frecuencia_extra.value;
+    let _totalFrecuenciaExtra = this.rf.frecuencia_extra.value;
+    let _precioUnitario = (this.cobranzaExtraPor == 'horas') ? this.gf.precio_unitario_final.value / 24 : this.gf.precio_unitario_final.value;
+    let _precioExtraDia = this.gf.precio_unitario_final.value;
+    let _precioExtraHora = parseFloat(Number(this.gf.precio_unitario_final.value / 24).toFixed(2));
+    console.log("Precio Dia----->", _precioExtraDia);
+    console.log("Precio Hora----->", _precioExtraHora);
 
-    let _tarifas;
-    let _tarifa;
-
-    let _precioUnitario = this.gf.precio_unitario_final.value;
-
-    if (this.frecuencia_extras_toggle && _totalDiasExtra && _totalDiasExtra > 0) {
-      this.cobranzaRetornoI.push({
-        element:  'dias_extra',
-        value:  _precioUnitario,
-        quantity:   _totalDiasExtra,
-        quantity_type:  'dias',
-        element_label:  'Dias extras',
-        number_sign:  'positive',
-        amount:  parseFloat(Number(_precioUnitario * _totalDiasExtra ).toFixed(2)),
-        currency: this.baseCurrency
-      })
-    }
 
     // Verificamos si tenemos extras
     if (this.rf.cargos_extras_retorno.value && this.rf.cargos_extras_retorno.value.length > 0) {
-      let _tempExtrasCalc = this.cobranzaRetornoI.filter(x => x.element === 'cargoExtra');
-      console.log('tempExtrasCalc', _tempExtrasCalc);
 
+      let _tempExtrasCalc = cobranza_temp.filter(x => x.element === 'cargoExtra');
+      console.log('tempExtrasCalc', _tempExtrasCalc);
       if (elementType && elementType === 'extra' && cobro) {
         console.log(elementType, cobro);
         this.cobranzaRetornoI.push(... _tempExtrasCalc);
@@ -2236,6 +2222,20 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
         }
       }
+    }
+
+    if (this.frecuencia_extras_toggle && _totalFrecuenciaExtra && _totalFrecuenciaExtra > 0) {
+      this.cobranzaRetornoI.push({
+        element: (this.cobranzaExtraPor == 'horas') ? 'horas_extra' : 'dias_extra',
+        value:  _precioUnitario,
+        quantity:   _totalFrecuenciaExtra,
+        quantity_type: (this.cobranzaExtraPor == 'horas') ? 'horas' : 'dias',
+        element_label: (this.cobranzaExtraPor == 'horas') ? 'Horas extras' :'Dias extras',
+        number_sign:  'positive',
+        amount:  parseFloat(Number(_precioUnitario * _totalFrecuenciaExtra ).toFixed(2)),
+        currency: this.baseCurrency
+      })
+      this.rf.cobranzaExtraPor.patchValue(this.cobranzaExtraPor);
     }
 
     let _subtotal = 0;
@@ -2328,7 +2328,10 @@ export class ContratoPage implements OnInit, AfterViewInit {
     }
     if (_extrasObj && _extrasObj.length > 0) {
       this.rf.cargos_extras_retorno.setValue(_extrasObj);
+    } else {
+      this.cobranzaRetornoI = [];
     }
+
     this.toastServ.presentToast('info','Revise la información de los cargos extra en especial la cantidad unitaria', 'top');
     console.log('cargos retorno extras --->', _extrasObj);
     await this.makeCalcRetorno();
@@ -2429,10 +2432,11 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
   //#endregion
 
-  saveAndGenerate() {
-    this.sweetMsgServ.confirmRequest('¿Estás seguro de desea guardar el contrato?, ya que no podra ser editable').then(async (data) => {
+  saveAndGenerate(section: 'firma' | 'retorno') {
+    let mensaje: string = (section == 'firma') ? '¿Estás seguro de desea guardar el contrato?, ya que no podra ser editable' : '¿Estás seguro de desea guardar las cargos extras al contrato?'
+    this.sweetMsgServ.confirmRequest(mensaje).then(async (data) => {
       if (data.value) {
-        this.saveProcess('firma');
+        this.saveProcess(section);
         this.viewPDF();
       }
     })
