@@ -196,6 +196,10 @@ export class ContratoPage implements OnInit, AfterViewInit {
   extraFrecuency: number;
   public cobranzaRetornoI: CobranzaCalcI[] = [];
 
+  public cobranzaProgRetornoData: CobranzaProgI[] = [];
+  public balancePorPagarRetorno: number = 0.00;
+  public pagadoRetornoTotal = 0;
+
 
   cobranzaExtraPor: string = 'dias | horas';
   horaExtraMax = 2;
@@ -205,9 +209,6 @@ export class ContratoPage implements OnInit, AfterViewInit {
   fecha_actual: string;
   fecha_retorno: string;
 
-  public balanceRetornoPorPagar: number = 0.00;
-  public pagadoRetornoTotal = 0;
-  public pagadoRetornoAutTotal = 0;
   //#endregion
 
   constructor(
@@ -2100,13 +2101,16 @@ export class ContratoPage implements OnInit, AfterViewInit {
     }
 
     // sacamos subtotal, iva y total final
+    console.log('cobranzaI -->', this.cobranzaI);
     let _subtotal = 0;
     let _iva = 0;
     let _total = 0;
     for (let i = 0; i < this.cobranzaI.length; i++) {
       _subtotal = _subtotal + ((this.cobranzaI[i].amount * (this.cobranzaI[i].number_sign === 'positive' ? 1 : -1)));
+      console.log('_subtotal --->', _subtotal);
     }
-    _subtotal = parseFloat(Number(_subtotal).toFixed(2)) - parseFloat(Number(this.gf.precio_unitario_final.value * _totalDias).toFixed(2));
+    //_subtotal = parseFloat(Number(_subtotal).toFixed(2)) - parseFloat(Number(this.gf.precio_unitario_final.value * _totalDias).toFixed(2));
+
     if (this.gf.con_iva.value) {
       _iva = parseFloat(Number(_subtotal * this.iva).toFixed(2));
       _total = (_subtotal + _iva);
@@ -2176,7 +2180,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
       return;
     }
 
-    let cobranza_temp = this.cobranzaRetornoI;
+    let cobranza_temp = JSON.parse(JSON.stringify(this.cobranzaRetornoI));
     this.cobranzaRetornoI = [];
     this.checkExtraChargeFrecuency();
 
@@ -2210,7 +2214,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
       } else {
         for (let i = 0; i < this.rf.cargos_extras_retorno.value.length; i++) {
 
-          let _quantity = (this.rf.cargos_extras_retorno.value[i].tipo == 'gasolina') ? this.convertFractionToLiters(this.rf.cant_combustible_retorno.value) : 1;
+          let _quantity = (this.rf.cargos_extras_retorno.value[i].tipo == 'gasolina') ? (this.convertFractionToLiters(this.vf.cant_combustible_salida.value) - this.convertFractionToLiters(this.rf.cant_combustible_retorno.value)) : 1;
           this.cobranzaRetornoI.push({
             element:  'cargoExtra',
             value:  this.rf.cargos_extras_retorno.value[i].precio,
@@ -2331,13 +2335,14 @@ export class ContratoPage implements OnInit, AfterViewInit {
     }
     if (_extrasObj && _extrasObj.length > 0) {
       this.rf.cargos_extras_retorno.setValue(_extrasObj);
+      this.cobranzaRetornoI = _extrasObj;
     } else {
       this.cobranzaRetornoI = [];
     }
 
     this.toastServ.presentToast('info','Revise la información de los cargos extra en especial la cantidad unitaria', 'top');
     console.log('cargos retorno extras --->', _extrasObj);
-    await this.makeCalcRetorno();
+    this.makeCalcRetorno();
   }
 
   getExtraRows() {
