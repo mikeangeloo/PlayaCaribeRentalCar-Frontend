@@ -1236,6 +1236,22 @@
                   <ion-row>
                     <ion-col size="12" size-md="12">
                       <ion-row>
+                        <ion-col size="6">
+                          <mat-form-field appearance="legacy">
+                            <mat-label>Combustible Salida</mat-label>
+                            <input matInput readonly [value]="vf.cant_combustible_salida.value">
+                            <mat-hint>Solo lectura</mat-hint>
+                          </mat-form-field>
+                        </ion-col>
+                        <ion-col size="6">
+                          <mat-form-field appearance="legacy">
+                            <mat-label>Km. Salida</mat-label>
+                            <input matInput readonly [value]="vf.km_inicial.value">
+                            <mat-hint>Solo lectura</mat-hint>
+                          </mat-form-field>
+                        </ion-col>
+                      </ion-row>
+                      <ion-row>
                         <ion-col size size-md="6">
                           <mat-form-field appearance="legacy">
                             <mat-label>Cant. Combustible retorno</mat-label>
@@ -1263,11 +1279,16 @@
                         </ion-col>
                       </ion-row>
                       <ion-row>
-                        <ion-col size="12" size-md="6" >
-                          <ion-item>
-                            <ion-label>Cargos Extras?</ion-label>
-                            <ion-toggle (click)="showRetornoExtras()" [checked]="cargos_extras_toggle"></ion-toggle>
-                          </ion-item>
+                        <ion-col size="12" size-md="6">
+                          <ion-row class="ion-no-margin ion-no-padding">
+                            <ion-col size="12">
+                              <ion-item>
+                                <ion-label>Cargos Extras?</ion-label>
+                                <ion-toggle (ionChange)="showRetornoExtras();" [(ngModel)]="cargos_extras_toggle" [ngModelOptions]="{standalone: true}"></ion-toggle>
+                              </ion-item>
+                            </ion-col>
+                          </ion-row>
+
                         </ion-col>
                         <ion-col size="12" size-md="6" *ngIf="cargos_extras_toggle">
                           <mat-form-field appearance="legacy">
@@ -1280,15 +1301,40 @@
                       </ion-row>
                       <ion-row>
                         <ion-col size="12" size-md="6" >
-                          <ion-item>
-                            <ion-label>Días Extras?</ion-label>
-                            <ion-toggle (click)="showRetornoDiasExtras()"></ion-toggle>
-                          </ion-item>
+                          <ion-row>
+                            <ion-col size="12" size-md="4">
+                              <div style="display:flex; flex-direction: column; justify-content: space-between; text-align: center; font-size: 12px">
+                                <ng-container *ngIf="cobranzaExtraPor === 'hours'; else cobroXFecha">
+                                  <div>
+                                    Hora retorno: {{hora_retorno}}
+                                  </div>
+                                  <div>
+                                    Hora actual: {{hora_actual}}
+                                  </div>
+                                </ng-container>
+                                <ng-template #cobroXFecha>
+                                  <div>
+                                    Fecha retorno: <br> {{fecha_retorno}}
+                                  </div>
+                                  <hr>
+                                  <div>
+                                    Fecha actual: <br> {{fecha_actual}}
+                                  </div>
+                                </ng-template>
+                              </div>
+                            </ion-col>
+                            <ion-col size="12" size-md="8">
+                              <ion-item>
+                                <ion-label>Aplicar {{cobranzaExtraPor === 'hours' ? 'horas' : 'dias'}} Extras?</ion-label>
+                                <ion-toggle [(ngModel)]="frecuencia_extras_toggle" (ionChange)="makeCalcRetorno()" [ngModelOptions]="{standalone: true}"></ion-toggle>
+                              </ion-item>
+                            </ion-col>
+                          </ion-row>
                         </ion-col>
-                        <ion-col size="12" size-md="6" *ngIf="dias_extras_toggle">
+                        <ion-col size="12" size-md="6" *ngIf="frecuencia_extras_toggle">
                           <mat-form-field appearance="legacy">
-                            <mat-label> Días Extras</mat-label>
-                            <input matInput type="number" autocomplete="off" formControlName="dias_extras">
+                            <mat-label> {{cobranzaExtraPor === 'hours' ? 'Horas' : 'Días'}} Extras</mat-label>
+                            <input matInput type="number" autocomplete="off" formControlName="frecuencia_extra" (change)="makeCalcRetorno()">
                           </mat-form-field>
                         </ion-col>
                       </ion-row>

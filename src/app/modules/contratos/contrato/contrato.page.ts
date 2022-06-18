@@ -191,9 +191,20 @@ export class ContratoPage implements OnInit, AfterViewInit {
   //#region RETORNO ATTRIBUTES
   retornoDataForm: FormGroup;
   cargos_extras_toggle = false;
-  dias_extras_toggle = false;
+  frecuencia_extras_toggle = false;
   cargosExtras: CargosExtrasI[];
+  extraFrecuency: number;
   public cobranzaRetornoI: CobranzaCalcI[] = [];
+
+
+  cobranzaExtraPor: string = 'days | hours';
+  horaExtraMax = 2;
+  hora_actual: string;
+  hora_retorno: string;
+
+  fecha_actual: string;
+  fecha_retorno: string;
+
   public balanceRetornoPorPagar: number = 0.00;
   public pagadoRetornoTotal = 0;
   public pagadoRetornoAutTotal = 0;
@@ -576,6 +587,34 @@ export class ContratoPage implements OnInit, AfterViewInit {
       this.setBaseRentFrequency();
     }
 
+    if (data && data.hora_retorno) {
+      this.hora_retorno = data.hora_retorno;
+      this.fecha_retorno = data.fecha_retorno;
+
+      this.cobranzaExtraPor = 'hours';
+      this.hora_actual = DateConv.transFormDate(moment.now(), 'time');
+      this.fecha_actual = DateConv.transFormDate(moment.now(), 'regular');
+
+      let _fechaRetornoM = moment(moment(`${data.fecha_salida} ${data.hora_retorno}`).format('YYYY-MM-DD HH:mm'));
+      let _fechaActualM = moment(moment(`${this.fecha_actual} ${this.hora_actual}`));
+      let _dateDiffM = moment.duration(_fechaActualM.diff(_fechaRetornoM));
+      this.extraFrecuency = _dateDiffM.asHours();
+
+      if (this.extraFrecuency > this.horaExtraMax) {
+        this.cobranzaExtraPor = 'days';
+        this.extraFrecuency = _dateDiffM.asDays();
+      }
+
+      this.extraFrecuency = parseInt(this.extraFrecuency.toFixed(0));
+
+      this.rf.frecuencia_extra.patchValue(this.extraFrecuency);
+
+      console.log('_fechaRetornoM -->', _fechaRetornoM);
+      console.log('_fechaActualM -->', _fechaActualM);
+      console.log('cobranzaExtraPor --->', this.cobranzaExtraPor);
+      console.log('extraFrecuency -->', this.extraFrecuency);
+    }
+
   }
 
   initRentOfData(data) {
@@ -701,7 +740,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
       km_final: [(data && data.km_final ? data.km_final: null), Validators.required],
       cargos_extras_retorno_ids: [(data && data.cargos_retorno_extras_ids ? data.cargos_retorno_extras_ids : null)],
       cargos_extras_retorno: [(data && data.cargos_retorno_extras ? data.cargos_retorno_extras : null)],
-      dias_extras: [(data && data.dias_extras ? data.dias_extras : null)],
+      frecuencia_extra: [(data && data.frecuencia_extra ? data.frecuencia_extra : null)],
       subtotal_retorno: [(data && data.subtotal_retorno ? data.subtotal_retorno : null), Validators.required],
       con_iva_retorno: [(data && data.con_iva_retorno ? data.con_iva_retorno : null)],
       iva_retorno: [(data && data.iva_retorno ? data.iva_retorno : null)],
@@ -769,11 +808,18 @@ export class ContratoPage implements OnInit, AfterViewInit {
   }
 
   showRetornoExtras() {
-    this.cargos_extras_toggle = !this.cargos_extras_toggle
+    console.log('showRetornoExtras --->', this.cargos_extras_toggle);
+    if (this.cargos_extras_toggle === false) {
+      this.rf.cargos_extras_retorno_ids.patchValue(null);
+      this.rf.cargos_extras_retorno.patchValue(null);
+      this.cobranzaRetornoI = [];
+    }
+    this.makeCalcRetorno();
+    //this.cargos_extras_toggle = !this.cargos_extras_toggle
   }
 
   showRetornoDiasExtras() {
-    this.dias_extras_toggle = !this.dias_extras_toggle
+    this.frecuencia_extras_toggle = !this.frecuencia_extras_toggle
   }
 
   async viewPDF() {
@@ -2113,10 +2159,11 @@ export class ContratoPage implements OnInit, AfterViewInit {
   }
 
   async makeCalcRetorno(elementType?: string, cobro?: CobranzaCalcI) {
-    if (this.rf.cargos_extras_retorno_ids.value.length == 0) {
+    if (this.rf.cargos_extras_retorno_ids.value && this.rf.cargos_extras_retorno_ids.value.length == 0) {
       this.sweetMsgServ.printStatus('Selecciona los cargos extras', 'warning');
       return;
     }
+
     // if (this.gf.vehiculo_id.invalid) {
     //   this.sweetMsgServ.printStatus('Selecciona un vehículo primero', 'warning');
     //   this.gf.vehiculo_id.markAllAsTouched();
@@ -2128,10 +2175,25 @@ export class ContratoPage implements OnInit, AfterViewInit {
     console.log('tempExtrasCalc', _tempExtrasCalc);
     this.cobranzaRetornoI = [];
 
-    let _totalDiasExtra = this.rf.dias_extras.value;
+    let _totalDiasExtra = this.rf.frecuencia_extra.value;
 
     let _tarifas;
     let _tarifa;
+
+    let _precioUnitario = this.gf.precio_unitario_final.value;
+
+    if (_totalDiasExtra && _totalDiasExtra > 0) {
+      this.cobranzaRetornoI.push({
+        element:  'dias_extra',
+        value:  _precioUnitario,
+        quantity:   _totalDiasExtra,
+        quantity_type:  'dias',
+        element_label:  'Dias extras',
+        number_sign:  'positive',
+        amount:  parseFloat(Number(_precioUnitario * _totalDiasExtra ).toFixed(2)),
+        currency: this.baseCurrency
+      })
+    }
 
     // Verificamos si tenemos extras
     if (this.rf.cargos_extras_retorno.value && this.rf.cargos_extras_retorno.value.length > 0) {

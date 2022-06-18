@@ -51,6 +51,7 @@ export interface ContratoI
 
   cobranza_calc: CobranzaCalcI[];
   hora_elaboracion: string;
+  hora_retorno?: string;
   etapas_guardadas: string[];
   etapas_completas?: any;
   estatus: number;
