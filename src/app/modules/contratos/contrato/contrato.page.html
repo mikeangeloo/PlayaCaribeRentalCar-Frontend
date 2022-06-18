@@ -1223,7 +1223,7 @@
           <mat-expansion-panel [expanded]="step === 6" hideToggle hideToggle [disabled] = "step == 0 || step == 1 || step == 2 || step == 3 || step == 4 || step == 5">
             <mat-expansion-panel-header>
               <mat-panel-title>
-                Retorno del vehículo
+                Datos Retorno
               </mat-panel-title>
               <mat-panel-description style="margin: 0; justify-content: flex-end;">
                 <ion-icon name="car-sport-outline"></ion-icon>
@@ -1236,23 +1236,22 @@
                   <ion-row>
                     <ion-col size="12" size-md="12">
                       <ion-row>
-                        <ion-col size="6">
+                        <ion-col size="12" size-md="4">
                           <mat-form-field appearance="legacy">
+                            <mat-label>Capacidad Tanque</mat-label>
+                            <input type="number" matInput [disabled]="true" [value]="vehiculoData && vehiculoData.cap_tanque ? vehiculoData.cap_tanque : null" style="text-align: right;">
+                            <span matSuffix>LT</span>
+                            <mat-hint>Solo lectura</mat-hint>
+                          </mat-form-field>
+                        </ion-col>
+                        <ion-col size="12" size-md="4">
+                          <mat-form-field appearance="legacy" hintLabel="Solo Lectura">
                             <mat-label>Combustible Salida</mat-label>
                             <input matInput readonly [value]="vf.cant_combustible_salida.value">
-                            <mat-hint>Solo lectura</mat-hint>
+                            <mat-hint align="end">{{convertFractionToLiters(vf.cant_combustible_salida.value)}} Litros</mat-hint>
                           </mat-form-field>
                         </ion-col>
-                        <ion-col size="6">
-                          <mat-form-field appearance="legacy">
-                            <mat-label>Km. Salida</mat-label>
-                            <input matInput readonly [value]="vf.km_inicial.value">
-                            <mat-hint>Solo lectura</mat-hint>
-                          </mat-form-field>
-                        </ion-col>
-                      </ion-row>
-                      <ion-row>
-                        <ion-col size size-md="6">
+                        <ion-col size="12" size-md="4">
                           <mat-form-field appearance="legacy">
                             <mat-label>Cant. Combustible retorno</mat-label>
                             <mat-select formControlName="cant_combustible_retorno">
@@ -1266,14 +1265,25 @@
                               <mat-option value="8/8">8/8</mat-option>
                             </mat-select>
                             <mat-error *ngIf="rf.cant_combustible_retorno.errors?.required">Campo requerido</mat-error>
-                            <mat-hint *ngIf="rf.cant_combustible_retorno.disabled">Solo lectura</mat-hint>
+                            <mat-hint [ngStyle]="{'color': faltanLitros() ? 'red': 'none'}" align="end">{{convertFractionToLiters(rf.cant_combustible_retorno.value)}} Litros</mat-hint>
+                            <mat-icon *ngIf="faltanLitros()" matSuffix color="warn">warning</mat-icon>
                           </mat-form-field> <!-- Cant. Combustible salida -->
+                        </ion-col>
+                      </ion-row>
+                      <ion-row>
+                        <ion-col size="6">
+                          <mat-form-field appearance="legacy">
+                            <mat-label>Km. Salida</mat-label>
+                            <input matInput readonly [value]="vf.km_inicial.value">
+                            <mat-hint>Solo lectura</mat-hint>
+                          </mat-form-field>
                         </ion-col>
                         <ion-col size size-md="6">
                           <mat-form-field appearance="legacy">
                             <mat-label>Km. Final</mat-label>
                             <input matInput type="number" formControlName="km_final">
                             <mat-error *ngIf="rf.km_final.errors?.required">Campo requerido</mat-error>
+                            <mat-error *ngIf="rf.km_final.errors?.min">El km final debe ser mayor al km inicial.</mat-error>
                             <mat-hint *ngIf="rf.km_final.disabled">Solo lectura</mat-hint>
                           </mat-form-field> <!-- Km. Final-->
                         </ion-col>

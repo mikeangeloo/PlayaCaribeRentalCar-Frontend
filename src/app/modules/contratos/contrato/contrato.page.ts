@@ -7,7 +7,7 @@ import {CardI} from '../../../interfaces/cards/card.interface';
 import {TarjetaFormComponent} from '../../../common/components/tarjetas/tarjeta-form/tarjeta-form.component';
 import {ActionSheetController, AlertController, ModalController} from '@ionic/angular';
 import {MultiTableFilterComponent} from '../../../common/components/multi-table-filter/multi-table-filter.component';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {FormBuilder, FormGroup, Validator, Validators} from '@angular/forms';
 import {DateConv} from '../../../helpers/date-conv';
 import {SessionService} from '../../../services/session.service';
 import {SucursalesI} from '../../../interfaces/sucursales.interface';
@@ -240,6 +240,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
   async ionViewWillEnter() {
     this.loading = true;
     console.log('view enter');
+
     await this.loadTiposTarifas();
     await this.loadTarifasCat();
     this.loadTarifasExtras();
@@ -714,7 +715,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
   initRetornoForm(data?) {
     this.retornoDataForm = this.fb.group({
       cant_combustible_retorno: [(data && data.cant_combustible_retorno ? data.cant_combustible_retorno : null), Validators.required],
-      km_final: [(data && data.km_final ? data.km_final: null), Validators.required],
+      km_final: [(data && data.km_final ? data.km_final: null), [Validators.required, Validators.min(this.vf.km_inicial.value)]],
       cargos_extras_retorno_ids: [(data && data.cargos_retorno_extras_ids ? data.cargos_retorno_extras_ids : null)],
       cargos_extras_retorno: [(data && data.cargos_retorno_extras ? data.cargos_retorno_extras : null)],
       frecuencia_extra: [(data && data.frecuencia_extra ? data.frecuencia_extra : null)],
@@ -830,26 +831,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
     //this.cargos_extras_toggle = !this.cargos_extras_toggle
   }
 
-  async viewPDF() {
-    this.loading = true;
-    this.contratosServ.generatePDF(this.contract_id).subscribe(res => {
-      const url = URL.createObjectURL(res);
-      this.loading = false;
-      if (this.detectIOS() === true) {
-        window.location.assign(url);
-      } else {
-        window.open(url, '_blank');
-      }
-    }, error => {
-       this.loading = false;
-      const fr = new FileReader();
-      fr.addEventListener('loadend', (e: any) => {
-        const errors = JSON.parse(e.srcElement.result);
-        this.sweetMsgServ.printStatusArray(errors.errors, 'error');
-      });
-      fr.readAsText(error.error);
-    });
-  }
+
 
   checkVehiculoFormDisableFields() {
     if (this.vehiculoData && this.vehiculoData.km_recorridos) {
@@ -880,6 +862,23 @@ export class ContratoPage implements OnInit, AfterViewInit {
           break;
       }
     }
+  }
+
+  convertFractionToLiters(fraction): number {
+    let _capTanque = parseInt(this.vehiculoData.cap_tanque);
+    let frac = eval(fraction);
+    let _fraccionDecimal = parseFloat(parseFloat(frac).toPrecision(2));
+    let _litros = _fraccionDecimal * _capTanque;
+    return _litros;
+  }
+
+  faltanLitros(): boolean {
+    if (!this.vf.cant_combustible_salida.value || !this.rf.cant_combustible_retorno.value) {
+      return null;
+    }
+    let _litrosSalida = this.convertFractionToLiters(this.vf.cant_combustible_salida.value);
+    let _litrosRetorno = this.convertFractionToLiters(this.rf.cant_combustible_retorno.value);
+    return _litrosRetorno < _litrosSalida;
   }
   //#endregion
 
@@ -2208,14 +2207,15 @@ export class ContratoPage implements OnInit, AfterViewInit {
       } else {
         for (let i = 0; i < this.rf.cargos_extras_retorno.value.length; i++) {
 
+          let _quantity = (this.rf.cargos_extras_retorno.value[i].tipo == 'gasolina') ? this.convertFractionToLiters(this.rf.cant_combustible_retorno.value) : 1;
           this.cobranzaRetornoI.push({
             element:  'cargoExtra',
             value:  this.rf.cargos_extras_retorno.value[i].precio,
-            quantity:   1,
+            quantity:  _quantity,
             quantity_type:  '',
             element_label:  this.rf.cargos_extras_retorno.value[i].nombre,
             number_sign:  'positive',
-            amount:  parseFloat(Number(this.rf.cargos_extras_retorno.value[i].precio * 1 ).toFixed(2)),
+            amount:  parseFloat(Number(this.rf.cargos_extras_retorno.value[i].precio * _quantity ).toFixed(2)),
             currency: this.baseCurrency
           })
 
@@ -2436,8 +2436,8 @@ export class ContratoPage implements OnInit, AfterViewInit {
     let mensaje: string = (section == 'firma') ? '¿Estás seguro de desea guardar el contrato?, ya que no podra ser editable' : '¿Estás seguro de desea guardar las cargos extras al contrato?'
     this.sweetMsgServ.confirmRequest(mensaje).then(async (data) => {
       if (data.value) {
-        this.saveProcess(section);
-        this.viewPDF();
+        await this.saveProcess(section);
+        await this.viewPDF();
       }
     })
   }
@@ -2570,6 +2570,27 @@ export class ContratoPage implements OnInit, AfterViewInit {
     })
   }
 
+  async viewPDF() {
+    this.loading = true;
+    this.contratosServ.generatePDF(this.contract_id).subscribe(res => {
+      const url = URL.createObjectURL(res);
+      this.loading = false;
+      if (this.detectIOS() === true) {
+        window.location.assign(url);
+      } else {
+        window.open(url, '_blank');
+      }
+    }, error => {
+      this.loading = false;
+      const fr = new FileReader();
+      fr.addEventListener('loadend', (e: any) => {
+        const errors = JSON.parse(e.srcElement.result);
+        this.sweetMsgServ.printStatusArray(errors.errors, 'error');
+      });
+      fr.readAsText(error.error);
+    });
+  }
+
   cancelContract() {
     this.sweetMsgServ.confirmRequest('¿Estas seguro de querer cancelar este contrato?').then((data) => {
       if (data.value) {
@@ -2596,8 +2617,25 @@ export class ContratoPage implements OnInit, AfterViewInit {
     console.log(event);
   }
 
+  ionViewWillLeave() {
+    this.resetAll();
+  }
   resetAll() {
-    //this.clientes_docs = [];
+    this.initGeneralForm();
+    this.initClientForm();
+    this.initVehiculoForm();
+    this.initCheckListForm();
+    this.initRetornoForm();
+
+    this.contractData = null;
+    this.step = 0;
+    this.vehiculoData = null;
+    this.cobranzaProgData = [];
+    this.dragObjs = [];
+    this.terminos = null;
+    this.signature_matrix = null;
+    this.signature = null;
+    this.num_contrato = null;
   }
 
 }

@@ -60,7 +60,7 @@ export class SignatureCaptureComponent implements OnInit, AfterViewInit, AfterVi
   }
 
   ngOnChanges () {
-    if(this.signature_matrix != ''){
+    if(this.signature_matrix && this.signature_matrix != ''){
       console.log(this.signature_matrix)
       this.signaturePad1.fromData(JSON.parse(this.signature_matrix));
     }
