@@ -1282,10 +1282,10 @@
                         <ion-col size="12" size-md="6">
                           <ion-row class="ion-no-margin ion-no-padding">
                             <ion-col size="12">
-                              <ion-item>
-                                <ion-label>Cargos Extras?</ion-label>
+                              <div style="display: flex; align-items: center; justify-content: flex-end;">
+                                <ion-label style="padding-right: 12px">Cargos Extras?</ion-label>
                                 <ion-toggle (ionChange)="showRetornoExtras();" [(ngModel)]="cargos_extras_toggle" [ngModelOptions]="{standalone: true}"></ion-toggle>
-                              </ion-item>
+                              </div>
                             </ion-col>
                           </ion-row>
 
@@ -1299,7 +1299,8 @@
                           </mat-form-field>
                         </ion-col> <!-- Extras -->
                       </ion-row>
-                      <ion-row>
+                      <hr>
+                      <ion-row *ngIf="this.extraFrecuency > 0">
                         <ion-col size="12" size-md="6" >
                           <ion-row>
                             <ion-col size="12" size-md="4">
@@ -1324,10 +1325,10 @@
                               </div>
                             </ion-col>
                             <ion-col size="12" size-md="8">
-                              <ion-item>
-                                <ion-label>Aplicar {{cobranzaExtraPor === 'hours' ? 'horas' : 'dias'}} Extras?</ion-label>
+                              <div style="display: flex; align-items: center; justify-content: flex-end;">
+                                <ion-label style="padding-right: 12px">Aplicar {{cobranzaExtraPor === 'hours' ? 'horas' : 'dias'}} Extras?</ion-label>
                                 <ion-toggle [(ngModel)]="frecuencia_extras_toggle" (ionChange)="makeCalcRetorno()" [ngModelOptions]="{standalone: true}"></ion-toggle>
-                              </ion-item>
+                              </div>
                             </ion-col>
                           </ion-row>
                         </ion-col>
