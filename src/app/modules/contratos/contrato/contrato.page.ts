@@ -761,13 +761,16 @@ export class ContratoPage implements OnInit, AfterViewInit {
     }
 
     this.extraFrecuency = parseInt(this.extraFrecuency.toFixed(0));
-
-    this.retornoDataForm.controls.frecuencia_extra.patchValue(this.extraFrecuency);
-
     console.log('_fechaRetornoM -->', _fechaRetornoM);
     console.log('_fechaActualM -->', _fechaActualM);
     console.log('cobranzaExtraPor --->', this.cobranzaExtraPor);
     console.log('extraFrecuency -->', this.extraFrecuency);
+    if (this.retornoDataForm.controls.frecuencia_extra.value < this.extraFrecuency) {
+      return;
+    }
+    this.retornoDataForm.controls.frecuencia_extra.patchValue(this.extraFrecuency);
+
+
   }
 
   //#endregion

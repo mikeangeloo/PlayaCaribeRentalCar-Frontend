@@ -1315,12 +1315,12 @@
                           <ion-row>
                             <ion-col size="12" size-md="4">
                               <div style="display:flex; flex-direction: column; justify-content: space-between; text-align: center; font-size: 12px">
-                                <ng-container *ngIf="cobranzaExtraPor === 'hours'; else cobroXFecha">
+                                <ng-container *ngIf="cobranzaExtraPor === 'horas'; else cobroXFecha">
                                   <div>
-                                    Hora retorno: {{hora_retorno}}
+                                    Hora retorno: <br> {{hora_retorno}}
                                   </div>
                                   <div>
-                                    Hora actual: {{hora_actual}}
+                                    Hora actual: <br> {{hora_actual}}
                                   </div>
                                 </ng-container>
                                 <ng-template #cobroXFecha>
@@ -1336,7 +1336,7 @@
                             </ion-col>
                             <ion-col size="12" size-md="8">
                               <div style="display: flex; align-items: center; justify-content: flex-end;">
-                                <ion-label style="padding-right: 12px">Aplicar {{cobranzaExtraPor === 'hours' ? 'horas' : 'dias'}} Extras?</ion-label>
+                                <ion-label style="padding-right: 12px">Aplicar {{cobranzaExtraPor === 'horas' ? 'horas' : 'dias'}} Extras?</ion-label>
                                 <ion-toggle [(ngModel)]="frecuencia_extras_toggle" (ionChange)="makeCalcRetorno()" [ngModelOptions]="{standalone: true}"></ion-toggle>
                               </div>
                             </ion-col>
@@ -1344,7 +1344,7 @@
                         </ion-col>
                         <ion-col size="12" size-md="6" *ngIf="frecuencia_extras_toggle">
                           <mat-form-field appearance="legacy">
-                            <mat-label> {{cobranzaExtraPor === 'hours' ? 'Horas' : 'Días'}} Extras</mat-label>
+                            <mat-label> {{cobranzaExtraPor === 'horas' ? 'Horas' : 'Días'}} Extras</mat-label>
                             <input matInput type="number" autocomplete="off" formControlName="frecuencia_extra" (change)="makeCalcRetorno()">
                           </mat-form-field>
                         </ion-col>
