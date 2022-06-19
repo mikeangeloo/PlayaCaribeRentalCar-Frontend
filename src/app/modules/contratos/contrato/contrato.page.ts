@@ -50,6 +50,7 @@ import { SignatureCaptureComponent } from 'src/app/common/components/signature-c
 import html2canvas from 'html2canvas';
 import { CargosExtrasI } from 'src/app/interfaces/configuracion/cargos-extras.interface';
 import { CargosRetornoExtrasService } from 'src/app/services/cargos-retorno-extras.service';
+import { zIndex } from 'html2canvas/dist/types/css/property-descriptors/z-index';
 
 @Component({
   selector: 'app-contrato',
@@ -197,8 +198,9 @@ export class ContratoPage implements OnInit, AfterViewInit {
   public cobranzaRetornoI: CobranzaCalcI[] = [];
 
   public cobranzaProgRetornoData: CobranzaProgI[] = [];
-  public balancePorPagarRetorno: number = 0.00;
+  public balanceRetornoPorPagar: number = 0.00;
   public pagadoRetornoTotal = 0;
+  public pagadoRetornoAutTotal = 0;
 
 
   cobranzaExtraPor: string = 'dias | horas';
@@ -344,7 +346,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
             let _cobranzaData = this.contractData.etapas_guardadas.find(x => x === 'cobranza');
             if (_cobranzaData && (this.contractData.cobranza && this.contractData.cobranza.length > 0)) {
               console.log('cobranza');
-              this.cobranzaProgData = this.contractData.cobranza;
+              this.cobranzaProgData = this.contractData.cobranza.filter(x => x.cobranza_seccion == 'salida' );
               console.log(this.cobranzaProgData)
               if (this.balancePorPagar == 0) {
                 this.step = 4;
@@ -425,10 +427,23 @@ export class ContratoPage implements OnInit, AfterViewInit {
               this.initRetornoForm(this.contractData);
             }
 
+            let _cobranzaRetornoData = this.contractData.etapas_guardadas.find(x => x === 'cobranza_retorno');
+            if (_cobranzaRetornoData && (this.contractData.cobranza && this.contractData.cobranza.length > 0)) {
+              console.log('cobranza_retorno');
+              this.cobranzaProgRetornoData = this.contractData.cobranza.filter(x => x.cobranza_seccion == 'retorno' );
+              console.log(this.cobranzaProgRetornoData)
+
+            } else {
+              this.cobranzaProgRetornoData = [];
+            }
+
           }
           if (this.generalDataForm.controls.total.value) {
 
             this.recalBalancePorCobrar();
+          }
+          if (this.retornoDataForm.controls.total_retorno.value) {
+            this.recalBalanceRetornoPorCobrar();
           }
           console.log(this.step);
           this.loading = false;
@@ -442,6 +457,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
           this.initRetornoForm();
           this.initVehiculoForm();
           this.initCheckListForm();
+          this.cobranzaProgRetornoData = [];
           this.cobranzaProgData = [];
           this.loading = false;
         }
@@ -451,6 +467,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
       this.initVehiculoForm();
       this.initCheckListForm();
       this.initRetornoForm();
+      this.cobranzaProgRetornoData = [];
       this.cobranzaProgData = [];
       this.loading = false;
     }
@@ -1401,58 +1418,103 @@ export class ContratoPage implements OnInit, AfterViewInit {
   //#endregion
 
   //#region CARDS MANAGEMENT
-  async agregarPagoOpt() {
+  async agregarPagoOpt(cobranza_seccion) {
+    if(cobranza_seccion == 'salida') {
+      const actionSheet = await this.actionSheetController.create({
+        header: 'Opciones',
+        cssClass: 'my-custom-class',
+        backdropDismiss: false,
+        buttons: [
+          {
+            text: 'Pago con Tarjeta',
+            icon: 'card',
+            cssClass:   this.balancePorPagar == 0 ? 'disable' : '',
+            handler: () => {
+              console.log('Capturar Pago con Tarjeta clicked');
+              this.agregarTarjetaForm(CobranzaTipoE.PAGOTARJETA,cobranza_seccion , null, true);
+            },
+          },
+          {
+            text: 'Pago Efectivo',
+            icon: 'cash',
+            cssClass: this.balancePorPagar == 0 ? 'disable' : '',
+            handler: () => {
+              console.log('Pago Efectivo clicked');
+              //this.attachFiles();
+              this.agregarEfectivo(null,cobranza_seccion);
+            },
+          },
+          {
+            text: 'Captura Pre-Autorización',
+            icon: 'card',
+            handler: () => {
+              console.log('Captura Pre-Autorización clicked');
+              this.agregarTarjetaForm(CobranzaTipoE.PREAUTHORIZACION, cobranza_seccion, null, true);
+            },
+          },
+          {
+            text: 'Cancelar',
+            icon: 'close',
+            role: 'cancel',
+            cssClass: 'action-sheet-cancel',
+            handler: () => {
+              console.log('Cancel clicked');
+            },
+          },
+        ],
+      });
 
-    const actionSheet = await this.actionSheetController.create({
-      header: 'Opciones',
-      cssClass: 'my-custom-class',
-      backdropDismiss: false,
-      buttons: [
-        {
-          text: 'Pago con Tarjeta',
-          icon: 'card',
-          cssClass: this.balancePorPagar == 0 ? 'disable' : '',
-          handler: () => {
-            console.log('Capturar Pago con Tarjeta clicked');
-            this.agregarTarjetaForm(CobranzaTipoE.PAGOTARJETA, null, true);
-          },
-        },
-        {
-          text: 'Pago Efectivo',
-          icon: 'cash',
-          cssClass: this.balancePorPagar == 0 ? 'disable' : '',
-          handler: () => {
-            console.log('Pago Efectivo clicked');
-            //this.attachFiles();
-            this.agregarEfectivo();
-          },
-        },
-        {
-          text: 'Captura Pre-Autorización',
-          icon: 'card',
-          handler: () => {
-            console.log('Captura Pre-Autorización clicked');
-            this.agregarTarjetaForm(CobranzaTipoE.PREAUTHORIZACION, null, true);
-          },
-        },
-        {
-          text: 'Cancelar',
-          icon: 'close',
-          role: 'cancel',
-          cssClass: 'action-sheet-cancel',
-          handler: () => {
-            console.log('Cancel clicked');
-          },
-        },
-      ],
-    });
-    await actionSheet.present();
+      await actionSheet.present();
 
-    const { role } = await actionSheet.onDidDismiss();
-    console.log('onDidDismiss resolved with role', role);
+      const { role } = await actionSheet.onDidDismiss();
+      console.log('onDidDismiss resolved with role', role);
+
+    } else {
+      const actionSheet = await this.actionSheetController.create({
+        header: 'Opciones',
+        cssClass: 'my-custom-class',
+        backdropDismiss: false,
+        buttons: [
+          {
+            text: 'Pago con Tarjeta',
+            icon: 'card',
+            cssClass:   this.balanceRetornoPorPagar == 0 ? 'disable' : '',
+            handler: () => {
+              console.log('Capturar Pago con Tarjeta clicked');
+              this.agregarTarjetaForm(CobranzaTipoE.PAGOTARJETA, cobranza_seccion, null, true);
+            },
+          },
+          {
+            text: 'Pago Efectivo',
+            icon: 'cash',
+            cssClass: this.balanceRetornoPorPagar == 0 ? 'disable' : '',
+            handler: () => {
+              console.log('Pago Efectivo clicked');
+              //this.attachFiles();
+              this.agregarEfectivo(null, cobranza_seccion);
+            },
+          },
+          {
+            text: 'Cancelar',
+            icon: 'close',
+            role: 'cancel',
+            cssClass: 'action-sheet-cancel',
+            handler: () => {
+              console.log('Cancel clicked');
+            },
+          },
+        ],
+      });
+      await actionSheet.present();
+
+      const { role } = await actionSheet.onDidDismiss();
+      console.log('onDidDismiss resolved with role', role);
+    }
+
+
   }
 
-  async agregarTarjetaForm(tipo: CobranzaTipoE.PAGOTARJETA | CobranzaTipoE.PREAUTHORIZACION, _data?: CardI, pushData?: boolean, cobranza: CobranzaProgI = null) {
+  async agregarTarjetaForm(tipo: CobranzaTipoE.PAGOTARJETA | CobranzaTipoE.PREAUTHORIZACION, cobranza_seccion ,_data?: CardI, pushData?: boolean, cobranza: CobranzaProgI = null) {
     //const pageEl: HTMLElement = document.querySelector('.ion-page');
     //this.generalService.presentLoading();
     let _titular = this.cf.nombre.value;
@@ -1469,7 +1531,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
         'monto': (cobranza && cobranza.monto) ? cobranza.monto : null,
         'tipoPago': tipo,
         'titularTarj': _titular,
-        'montoCobrar': this.balancePorPagar
+        'montoCobrar': (cobranza_seccion == 'salida') ? this.balancePorPagar : this.balanceRetornoPorPagar
       },
       swipeToClose: true,
       cssClass: 'edit-form',
@@ -1492,6 +1554,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
           fecha_cargo: null,
           fecha_procesado: null,
           fecha_reg: null,
+          cobranza_seccion: cobranza_seccion,
           moneda: this.baseCurrency,
           monto: data.info.monto,
           tipo: data.info.c_charge_method,
@@ -1500,7 +1563,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
           cobranza_id: (cobranza && cobranza.id) ? cobranza.id : null
         }
         //this.cobranzaProgData.push(_prepare);
-        this.saveProcess('cobranza', null, _prepare);
+        this.saveProcess((cobranza_seccion == 'salida') ? 'cobranza' : 'cobranza_retorno', null, _prepare);
       }
       return data.info
       //console.log('data.info --->', data);
@@ -1510,13 +1573,13 @@ export class ContratoPage implements OnInit, AfterViewInit {
     }
   }
 
-  async agregarEfectivo(cobranza: CobranzaProgI = null) {
+  async agregarEfectivo(cobranza: CobranzaProgI = null, cobranza_seccion) {
     const modal = await this.modalCtr.create({
       component: InputModalComponent,
       componentProps: {
         'asModal': true,
         'monto': (cobranza && cobranza.monto) ? cobranza.monto : null,
-        'balanceCobro': this.balancePorPagar,
+        'balanceCobro':(cobranza_seccion == 'salida') ?  this.balancePorPagar : this.balanceRetornoPorPagar,
         'cobranza_id': (cobranza && cobranza.id) ? cobranza.id : null
       },
       swipeToClose: true,
@@ -1536,6 +1599,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
         tarjeta_id: null,
         estatus: null,
         created_at: null,
+        cobranza_seccion: cobranza_seccion,
         fecha_cargo: null,
         fecha_procesado: null,
         fecha_reg: null,
@@ -1547,7 +1611,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
         cobranza_id: (cobranza && cobranza.id) ? cobranza.id : null
       }
       //this.cobranzaProgData.push(_prepare);
-      this.saveProcess('cobranza', null, _prepare);
+      this.saveProcess((cobranza_seccion == 'salida') ? 'cobranza' : 'cobranza_retorno', null, _prepare);
       return data.info
       //console.log('data.info --->', data);
       //this.loadClienteData();
@@ -2362,19 +2426,19 @@ export class ContratoPage implements OnInit, AfterViewInit {
   //#endregion
 
   //#region COBRANZAPROG FUNCTIONS
-  async editCobro(tipo: CobranzaTipoE.PAGOTARJETA | CobranzaTipoE.PREAUTHORIZACION | CobranzaTipoE.PAGOEFECTIVO, cobro: CobranzaProgI) {
+  async editCobro(tipo: CobranzaTipoE.PAGOTARJETA | CobranzaTipoE.PREAUTHORIZACION | CobranzaTipoE.PAGOEFECTIVO, cobranza_seccion, cobro: CobranzaProgI) {
     if (tipo === CobranzaTipoE.PREAUTHORIZACION || tipo === CobranzaTipoE.PAGOTARJETA) {
-      await this.agregarTarjetaForm(cobro.tipo, cobro.tarjeta, true, cobro);
+      await this.agregarTarjetaForm(cobro.tipo, cobro.tarjeta, cobranza_seccion, true, cobro);
     }
 
     if (tipo === CobranzaTipoE.PAGOEFECTIVO) {
-      await this.agregarEfectivo(cobro);
+      await this.agregarEfectivo(cobro, cobranza_seccion);
     }
   }
   enableDisableEditCobro(cobro: CobranzaProgI, enable: boolean) {
     cobro.edit = enable;
   }
-  cancelCobro(cobro: CobranzaProgI) {
+  cancelCobro(cobro: CobranzaProgI, cobranza_seccion) {
     this.sweetMsgServ.confirmRequest('¿Estás seguro de querer remover este elemento?', 'Esta acción no se puede revertir').then(async (data) => {
       if (data.value) {
         let _payload = {
@@ -2383,9 +2447,16 @@ export class ContratoPage implements OnInit, AfterViewInit {
         let res = await this.cobranzaServ.cancelCobro(_payload);
         if (res.ok) {
           this.toastServ.presentToast('success', res.message, 'top');
-          let cobroIndex = this.cobranzaProgData.findIndex(x => x.id === cobro.id);
-          this.cobranzaProgData.splice(cobroIndex, 1);
-          this.recalBalancePorCobrar();
+          if (cobranza_seccion == 'salida') {
+            let cobroIndex = this.cobranzaProgData.findIndex(x => x.id === cobro.id);
+            this.cobranzaProgData.splice(cobroIndex, 1);
+            this.recalBalancePorCobrar();
+          } else {
+            let cobroIndex = this.cobranzaProgRetornoData.findIndex(x => x.id === cobro.id);
+            this.cobranzaProgRetornoData.splice(cobroIndex, 1);
+            this.recalBalanceRetornoPorCobrar();
+          }
+
         } else {
           this.sweetMsgServ.printStatusArray(res.errors.error.errors, 'error');
         }
@@ -2421,6 +2492,40 @@ export class ContratoPage implements OnInit, AfterViewInit {
     this.setTotalPago();
   }
 
+  recalBalanceRetornoPorCobrar() {
+    let total = 0;
+    this.balanceRetornoPorPagar = this.retornoDataForm.controls.total_retorno.value;
+    let _data = this.cobranzaProgRetornoData.filter(x => x.tipo == 2 || x.tipo == 3);
+    if (_data && _data.length > 0) {
+      for (let i = 0; i < _data.length; i++) {
+        total =  parseFloat(Number(Number(total) + Number(_data[i].monto)).toFixed(2));
+      }
+    }
+    if (this.balanceRetornoPorPagar < total) {
+      this.sweetMsgServ.printStatus('El monto aculamado de cobro es mayor al balance por cobrar', 'warning');
+    }
+    this.balanceRetornoPorPagar = Number(this.balanceRetornoPorPagar -  total);
+
+    this.setTotalRetornoPago();
+  }
+
+  setTotalRetornoPago() {
+    this.pagadoRetornoAutTotal = 0;
+    this.pagadoRetornoTotal = 0;
+    let _dataPagado = this.cobranzaProgRetornoData.filter(x => x.tipo == CobranzaTipoE.PAGOTARJETA || x.tipo == CobranzaTipoE.PAGOEFECTIVO);
+    if (_dataPagado && _dataPagado.length > 0) {
+      for (let i = 0; i < _dataPagado.length; i++) {
+        this.pagadoRetornoTotal =  parseFloat(Number(Number(this.pagadoRetornoTotal) + Number(_dataPagado[i].monto)).toFixed(2));
+      }
+    }
+    let _dataPreAutorizado = this.cobranzaProgRetornoData.filter(x => x.tipo == (CobranzaTipoE.PREAUTHORIZACION));
+    if (_dataPreAutorizado && _dataPreAutorizado.length > 0) {
+      for (let i = 0; i < _dataPreAutorizado.length; i++) {
+        this.pagadoRetornoAutTotal =  parseFloat(Number(Number(this.pagadoRetornoAutTotal) + Number(_dataPreAutorizado[i].monto)).toFixed(2));
+      }
+    }
+  }
+
   setTotalPago() {
     this.pagadoAutTotal = 0;
     this.pagadoTotal = 0;
@@ -2450,7 +2555,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
     })
   }
 
-  async saveProcess(section: 'datos_generales' | 'datos_cliente' | 'datos_vehiculo' | 'cobranza' | 'check_in_salida' | 'check_form_list' |  'firma' | 'retorno', ignoreMsg?: boolean, payload?) {
+  async saveProcess(section: 'datos_generales' | 'datos_cliente' | 'datos_vehiculo' | 'cobranza' | 'check_in_salida' | 'check_form_list' |  'firma' | 'retorno' | 'cobranza_retorno', ignoreMsg?: boolean, payload?) {
     //this.sweetMsgServ.printStatus('Acción en desarrollo', 'warning');
     console.log('section', section);
     let _payload;
@@ -2546,7 +2651,19 @@ export class ContratoPage implements OnInit, AfterViewInit {
           return;
         }
         _payload = this.retornoDataForm.value;
-      break;
+        break;
+      case 'cobranza_retorno':
+          if (!payload) {
+            this.sweetMsgServ.printStatus('Verifica que los datos solicitados esten completos', 'warning');
+            return;
+          }
+          if (payload.tarjeta) {
+            delete payload.tarjeta;
+          }
+
+          _payload = payload;
+          //_payload.cobranza_id = payload.id;
+        break;
     }
 
     _payload.seccion = section;

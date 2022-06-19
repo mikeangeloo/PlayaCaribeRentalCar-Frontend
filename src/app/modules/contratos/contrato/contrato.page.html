@@ -673,7 +673,7 @@
                     <h4 style="margin: 0; padding: 0;">Balance por saldar: <span [ngClass]="{'danger-color': balancePorPagar > 0}">{{(balancePorPagar) ? (balancePorPagar | currency) : ('0' | currency)}}</span></h4>
                   </ion-col>
                   <ion-col size="6" class="ion-text-end">
-                    <button mat-raised-button class="button-secondary" (click)="agregarPagoOpt()">
+                    <button mat-raised-button class="button-secondary" (click)="agregarPagoOpt('salida')">
                       <span style="font-size: 1.3rem;margin-right: 0.5rem;">+</span>&nbsp;Cobro&nbsp;<ion-icon name="wallet"></ion-icon>
                     </button>
                   </ion-col>
@@ -721,10 +721,10 @@
                                   <ion-row>
                                     <ion-col size="fill">
                                       <div class="action-buttons">
-                                        <button *ngIf="cobranzaPago.id && cobranzaPago.edit !== true" (click)="cancelCobro(cobranzaPago)" class="mat-elevation-z0" mat-mini-fab color="warn">
+                                        <button *ngIf="cobranzaPago.id && cobranzaPago.edit !== true" (click)="cancelCobro(cobranzaPago, 'salida')" class="mat-elevation-z0" mat-mini-fab color="warn">
                                           <mat-icon>remove</mat-icon>
                                         </button>
-                                        <button *ngIf="cobranzaPago.edit !== true && cobranzaPago.id" (click)="editCobro(cobranzaTipos.PAGOTARJETA, cobranzaPago)" style="margin-top: 10px" class="mat-elevation-z0" mat-mini-fab color="accent">
+                                        <button *ngIf="cobranzaPago.edit !== true && cobranzaPago.id" (click)="editCobro(cobranzaTipos.PAGOTARJETA, 'salida', cobranzaPago)" style="margin-top: 10px" class="mat-elevation-z0" mat-mini-fab color="accent">
                                           <mat-icon>edit</mat-icon>
                                         </button>
                                       </div>
@@ -788,10 +788,10 @@
                               <ion-row>
                                 <ion-col size="12">
                                   <div style="display: flex; justify-content: space-evenly;">
-                                    <button *ngIf="cobranzaPago.id && cobranzaPago.edit !== true" (click)="cancelCobro(cobranzaPago)" class="mat-elevation-z0" mat-mini-fab color="warn">
+                                    <button *ngIf="cobranzaPago.id && cobranzaPago.edit !== true" (click)="cancelCobro(cobranzaPago, 'salida')" class="mat-elevation-z0" mat-mini-fab color="warn">
                                       <mat-icon>remove</mat-icon>
                                     </button>
-                                    <button *ngIf="cobranzaPago.edit !== true && cobranzaPago.id" (click)="editCobro(cobranzaTipos.PAGOEFECTIVO, cobranzaPago)" class="mat-elevation-z0" mat-mini-fab color="accent">
+                                    <button *ngIf="cobranzaPago.edit !== true && cobranzaPago.id" (click)="editCobro(cobranzaTipos.PAGOEFECTIVO, 'salida' ,cobranzaPago)" class="mat-elevation-z0" mat-mini-fab color="accent">
                                       <mat-icon>edit</mat-icon>
                                     </button>
                                   </div>
@@ -848,10 +848,10 @@
                                   <ion-row>
                                     <ion-col size="fill">
                                       <div class="action-buttons">
-                                        <button *ngIf="cobranzaAuth.id && cobranzaAuth.edit !== true" (click)="cancelCobro(cobranzaAuth)" class="mat-elevation-z0" mat-mini-fab color="warn">
+                                        <button *ngIf="cobranzaAuth.id && cobranzaAuth.edit !== true" (click)="cancelCobro(cobranzaAuth, 'salida')" class="mat-elevation-z0" mat-mini-fab color="warn">
                                           <mat-icon>remove</mat-icon>
                                         </button>
-                                        <button *ngIf="cobranzaAuth.edit !== true && cobranzaAuth.id" (click)="editCobro(cobranzaTipos.PREAUTHORIZACION, cobranzaAuth)" style="margin-top: 10px" class="mat-elevation-z0" mat-mini-fab color="accent">
+                                        <button *ngIf="cobranzaAuth.edit !== true && cobranzaAuth.id" (click)="editCobro(cobranzaTipos.PREAUTHORIZACION, 'salida', cobranzaAuth)" style="margin-top: 10px" class="mat-elevation-z0" mat-mini-fab color="accent">
                                           <mat-icon>edit</mat-icon>
                                         </button>
                                       </div>
@@ -1190,7 +1190,7 @@
               </ion-card-content>
             </ion-card>
             <ion-card-title>
-              <div class="card-action-buttons">
+              <div class="card-action-buttons" >
                 <ion-button color="success" (click)="saveAndGenerate('firma')">Terminar</ion-button>
               </div>
             </ion-card-title>
@@ -1429,6 +1429,9 @@
                       </table>
                     </ion-col> <!-- desbloce de cobro -->
                   </ion-row> <!-- precio unitario | aplicar IVA | aplicar descuento | desbloce de cobro -->
+                  <div class="card-action-buttons">
+                    <ion-button  color="success" (click)="saveProcess('retorno')">SIGUIENTE</ion-button>
+                  </div>
                 </ion-card-content>
               </ion-card>
             </form>
@@ -1442,10 +1445,10 @@
                 <ion-row>
                   <ion-col size="6">
                     <h4 style="margin: 0; padding: 0;">Total: <span style="color: var(--ion-color-success)">{{(retornoDataForm && retornoDataForm.controls.total_retorno.value) ? (retornoDataForm.controls.total_retorno.value | currency) : '--'}}</span></h4>
-                    <h4 style="margin: 0; padding: 0;">Balance por saldar: <span [ngClass]="{'danger-color': balancePorPagarRetorno > 0}">{{(balancePorPagarRetorno) ? (balancePorPagarRetorno | currency) : ('0' | currency)}}</span></h4>
+                    <h4 style="margin: 0; padding: 0;">Balance por saldar: <span [ngClass]="{'danger-color': balanceRetornoPorPagar > 0}">{{(balanceRetornoPorPagar) ? (balanceRetornoPorPagar | currency) : ('0' | currency)}}</span></h4>
                   </ion-col>
                   <ion-col size="6" class="ion-text-end">
-                    <button mat-raised-button class="button-secondary" (click)="agregarPagoOpt()">
+                    <button mat-raised-button class="button-secondary" (click)="agregarPagoOpt('retorno')">
                       <span style="font-size: 1.3rem;margin-right: 0.5rem;">+</span>&nbsp;Cobro&nbsp;<ion-icon name="wallet"></ion-icon>
                     </button>
                   </ion-col>
@@ -1457,18 +1460,18 @@
                       <ion-card-content>
                         <div class="accordion-title">
                           <span class="icon">
-                             <ion-icon name="checkmark-circle" [color]="(balancePorPagar == 0) ? 'success': ''"></ion-icon>
+                             <ion-icon name="checkmark-circle" [color]="(balanceRetornoPorPagar == 0) ? 'success': ''"></ion-icon>
                           </span>
                           <span>
                             Pagado
                           </span>
                           <span>
-                            {{pagadoTotal | currency}}
+                            {{pagadoRetornoTotal | currency}}
                           </span>
                         </div>
 
                         <mat-accordion>
-                          <ng-container *ngFor="let cobranzaPago of cobranzaProgData">
+                          <ng-container *ngFor="let cobranzaPago of cobranzaProgRetornoData">
                             <mat-expansion-panel style="margin-top: 1rem" *ngIf="cobranzaPago.tipo === cobranzaTipos.PAGOTARJETA">
                               <mat-expansion-panel-header >
                                 <mat-panel-title>
@@ -1493,10 +1496,10 @@
                                   <ion-row>
                                     <ion-col size="fill">
                                       <div class="action-buttons">
-                                        <button *ngIf="cobranzaPago.id && cobranzaPago.edit !== true" (click)="cancelCobro(cobranzaPago)" class="mat-elevation-z0" mat-mini-fab color="warn">
+                                        <button *ngIf="cobranzaPago.id && cobranzaPago.edit !== true" (click)="cancelCobro(cobranzaPago, 'retorno')" class="mat-elevation-z0" mat-mini-fab color="warn">
                                           <mat-icon>remove</mat-icon>
                                         </button>
-                                        <button *ngIf="cobranzaPago.edit !== true && cobranzaPago.id" (click)="editCobro(cobranzaTipos.PAGOTARJETA, cobranzaPago)" style="margin-top: 10px" class="mat-elevation-z0" mat-mini-fab color="accent">
+                                        <button *ngIf="cobranzaPago.edit !== true && cobranzaPago.id" (click)="editCobro(cobranzaTipos.PAGOTARJETA, 'retorno', cobranzaPago)" style="margin-top: 10px" class="mat-elevation-z0" mat-mini-fab color="accent">
                                           <mat-icon>edit</mat-icon>
                                         </button>
                                       </div>
@@ -1560,10 +1563,10 @@
                               <ion-row>
                                 <ion-col size="12">
                                   <div style="display: flex; justify-content: space-evenly;">
-                                    <button *ngIf="cobranzaPago.id && cobranzaPago.edit !== true" (click)="cancelCobro(cobranzaPago)" class="mat-elevation-z0" mat-mini-fab color="warn">
+                                    <button *ngIf="cobranzaPago.id && cobranzaPago.edit !== true" (click)="cancelCobro(cobranzaPago, 'retorno')" class="mat-elevation-z0" mat-mini-fab color="warn">
                                       <mat-icon>remove</mat-icon>
                                     </button>
-                                    <button *ngIf="cobranzaPago.edit !== true && cobranzaPago.id" (click)="editCobro(cobranzaTipos.PAGOEFECTIVO, cobranzaPago)" class="mat-elevation-z0" mat-mini-fab color="accent">
+                                    <button *ngIf="cobranzaPago.edit !== true && cobranzaPago.id" (click)="editCobro(cobranzaTipos.PAGOEFECTIVO, 'retorno', cobranzaPago)" class="mat-elevation-z0" mat-mini-fab color="accent">
                                       <mat-icon>edit</mat-icon>
                                     </button>
                                   </div>
@@ -1579,30 +1582,17 @@
                     </ion-card>
 
                   </ion-col>
-                </ion-row> <!-- Pagado | PreAutorización -->
+                </ion-row> <!-- Pagado  -->
 
               </ion-card-content>
-              <div class="card-action-buttons">
-                <ion-button  color="success" *ngIf="balancePorPagar == 0" (click)="nextStep()">SIGUIENTE</ion-button>
-              </div>
-
             </ion-card>
 
             <ion-card-title>
-              <div class="card-action-buttons">
-                <ion-button color="success" (click)="saveAndGenerate('retorno')">Terminar</ion-button>
+              <div class="card-action-buttons" *ngIf="balanceRetornoPorPagar == 0">
+                <ion-button color="success" (click)="viewPDF()">Terminar</ion-button>
               </div>
             </ion-card-title>
 
-            <!-- <mat-action-row>
-              <button (click)="prevStep()" mat-flat-button style="font-size: 1.5rem;">
-                <ion-icon name="chevron-back-outline" style="color: var(--ion-color-medium);"></ion-icon>
-              </button> &nbsp; &nbsp;
-
-              <button (click)="nextStep()" mat-flat-button style="font-size: 1.5rem;">
-                <ion-icon name="chevron-forward-outline" style="color: var(--ion-color-medium);"></ion-icon>
-              </button>
-            </mat-action-row> -->
           </mat-expansion-panel>
         </div>
       </mat-accordion> <!-- Retorno vehiculo -->
