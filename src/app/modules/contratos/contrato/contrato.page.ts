@@ -2557,6 +2557,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
   async saveProcess(section: 'datos_generales' | 'datos_cliente' | 'datos_vehiculo' | 'cobranza' | 'check_in_salida' | 'check_form_list' |  'firma' | 'retorno' | 'cobranza_retorno', ignoreMsg?: boolean, payload?) {
     //this.sweetMsgServ.printStatus('Acción en desarrollo', 'warning');
+    this.loading = true;
     console.log('section', section);
     let _payload;
     switch (section) {
@@ -2673,6 +2674,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
     //return;
 
     this.contratosServ.saveProgress(_payload).subscribe(async res => {
+      this.loading = false;
       if (res.ok) {
         if (section === 'check_in_salida') {
           localStorage.removeItem(this.generalServ.dragObjStorageKey);

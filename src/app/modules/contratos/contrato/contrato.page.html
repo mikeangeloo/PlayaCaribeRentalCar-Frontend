@@ -1254,7 +1254,7 @@
                         <ion-col size="12" size-md="4">
                           <mat-form-field appearance="legacy">
                             <mat-label>Cant. Combustible retorno</mat-label>
-                            <mat-select formControlName="cant_combustible_retorno">
+                            <mat-select formControlName="cant_combustible_retorno" (selectionChange)="makeCalcRetorno()">
                               <mat-option value="1/8">1/8</mat-option>
                               <mat-option value="2/8">2/8</mat-option>
                               <mat-option value="3/8">3/8</mat-option>
@@ -1265,8 +1265,8 @@
                               <mat-option value="8/8">8/8</mat-option>
                             </mat-select>
                             <mat-error *ngIf="rf.cant_combustible_retorno.errors?.required">Campo requerido</mat-error>
-                            <mat-hint [ngStyle]="{'color': faltanLitros() ? 'red': 'none'}" align="start">{{convertFractionToLiters(rf.cant_combustible_retorno.value)}} Litros retorno</mat-hint>
-                            <mat-hint [ngStyle]="{'color': faltanLitros() ? 'red': 'none'}" align="end">{{convertFractionToLiters(vf.cant_combustible_salida.value) - convertFractionToLiters(rf.cant_combustible_retorno.value) | number : '1.2-2'}} Litros x cobrar</mat-hint>
+                            <mat-hint [ngStyle]="{'color': faltanLitros() ? 'red': 'green'}" align="start">{{convertFractionToLiters(rf.cant_combustible_retorno.value)}} Litros retorno</mat-hint>
+                            <mat-hint [ngStyle]="{'color': faltanLitros() ? 'red': 'green'}" align="end">{{convertFractionToLiters(vf.cant_combustible_salida.value) - convertFractionToLiters(rf.cant_combustible_retorno.value) | number : '1.2-2'}} Litros x cobrar</mat-hint>
                             <mat-icon *ngIf="faltanLitros()" matSuffix color="warn">warning</mat-icon>
                           </mat-form-field> <!-- Cant. Combustible salida -->
                         </ion-col>
