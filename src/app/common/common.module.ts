@@ -46,6 +46,7 @@ import {DraggableResizableComponent} from './draggable-resizable/draggable-resiz
 import {ModalDragElementDetailsComponent} from './components/modal-drag-element-details/modal-drag-element-details.component';
 import {CargosExtrasTableComponent} from './components/configuracion/precios/cargos-extras-table/cargos-extras-table.component';
 import { CargosExtrasFormComponent } from './components/configuracion/precios/cargos-extras-form/cargos-extras-form.component';
+import { VehiculosListContractComponent } from './components/vehiculos/vehiculos-list-contract/vehiculos-list-contract.component';
 
 
 @NgModule({
@@ -90,7 +91,8 @@ import { CargosExtrasFormComponent } from './components/configuracion/precios/ca
     DraggableResizableComponent,
     ModalDragElementDetailsComponent,
     CargosExtrasTableComponent,
-    CargosExtrasFormComponent
+    CargosExtrasFormComponent,
+    VehiculosListContractComponent
   ],
   exports: [
     HotelesListComponent,
@@ -133,7 +135,8 @@ import { CargosExtrasFormComponent } from './components/configuracion/precios/ca
     DraggableResizableComponent,
     ModalDragElementDetailsComponent,
     CargosExtrasTableComponent,
-    CargosExtrasFormComponent
+    CargosExtrasFormComponent,
+    VehiculosListContractComponent
   ],
   entryComponents: [
     HotelesListComponent,
@@ -176,7 +179,8 @@ import { CargosExtrasFormComponent } from './components/configuracion/precios/ca
     DraggableResizableComponent,
     ModalDragElementDetailsComponent,
     CargosExtrasTableComponent,
-    CargosExtrasFormComponent
+    CargosExtrasFormComponent,
+    VehiculosListContractComponent
   ],
     imports: [
         CommonModule,

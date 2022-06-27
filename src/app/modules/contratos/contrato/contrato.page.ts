@@ -62,6 +62,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
   @ViewChild(SignatureCaptureComponent) signatureComponent;
 
   public loading = false;
+  public statusColor = "white";
   //#region STEP CONTROLLER ATTRIBUTES
   step = 0;
   //#endregion
@@ -299,11 +300,20 @@ export class ContratoPage implements OnInit, AfterViewInit {
     // verificamos si tenemos guardado un contract_id en local storage para continuar con la edición
 
     if (this.contratosServ.getContractNumber()) {
+
+
       this.num_contrato = this.contratosServ.getContractNumber();
 
       let res = await this.contratosServ._getContractData(this.num_contrato);
         if (res.ok) {
           this.contractData = res.data;
+          if (this.contractData.estatus == ContratosStatusE.BORRADOR) {
+            this.statusColor = "yellow";
+          } else if (this.contractData.estatus == ContratosStatusE.RENTADO) {
+            this.statusColor = "DeepSkyBlue";
+          } else if (this.contractData.estatus == ContratosStatusE.RETORNO) {
+            this.statusColor = "SpringGreen";
+          }
 
           if (this.contractData.etapas_guardadas && this.contractData.etapas_guardadas.length > 0) {
             let _datosClienteEtapa = this.contractData.etapas_guardadas.find(x => x === 'datos_cliente');
@@ -413,6 +423,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
             }
             let _retorno = this.contractData.etapas_guardadas.find(x => x === 'retorno');
             if (_retorno) {
+              this.step = 7;
               console.log('retorno');
               this.initRetornoForm(this.contractData);
               if(this.contractData.cargos_retorno_extras){
@@ -783,7 +794,9 @@ export class ContratoPage implements OnInit, AfterViewInit {
     console.log('_fechaActualM -->', _fechaActualM);
     console.log('cobranzaExtraPor --->', this.cobranzaExtraPor);
     console.log('extraFrecuency -->', this.extraFrecuency);
-    if (this.retornoDataForm.controls.frecuencia_extra.value < this.extraFrecuency) {
+    console.log(this.retornoDataForm.controls.frecuencia_extra.value, this.extraFrecuency );
+
+    if (this.retornoDataForm.controls.frecuencia_extra.value != null && this.retornoDataForm.controls.frecuencia_extra.value < this.extraFrecuency) {
       return;
     }
     this.retornoDataForm.controls.frecuencia_extra.patchValue(this.extraFrecuency);
@@ -873,13 +886,9 @@ export class ContratoPage implements OnInit, AfterViewInit {
           this.vehiculoForm.disable();
           break;
         case ContratosStatusE.BORRADOR:
-        case ContratosStatusE.RESERVADO:
+        case ContratosStatusE.RENTADO:
           this.vehiculoForm.controls.km_final.disable();
           this.vehiculoForm.controls.cant_combustible_retorno.disable();
-          break;
-        case ContratosStatusE.SALIDA:
-          this.vehiculoForm.controls.km_inicial.disable();
-          this.vehiculoForm.controls.cant_combustible_salida.disable();
           break;
       }
     }

@@ -2,9 +2,8 @@ export enum ContratosStatusE
 {
   ELIMINADO = 0,
   BORRADOR = 1,
-  RESERVADO = 2,
-  SALIDA = 3,
-  RETORNO = 4
+  RENTADO = 2,
+  RETORNO = 3
 }
 
 export class ContratosStatus
@@ -16,10 +15,8 @@ export class ContratosStatus
       case 1:
         return 'BORRADOR';
       case 2:
-        return 'RESERVADO';
+        return 'RENTADO';
       case 3:
-        return 'SALIDA';
-      case 4:
         return 'RETORNO';
       default:
         return '--'

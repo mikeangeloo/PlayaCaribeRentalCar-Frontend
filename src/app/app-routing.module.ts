@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 import {AuthGuard} from "./guards/auth.guard";
+import { VehiculosC } from './interfaces/catalogo-vehiculos/vehiculos.interface';
 
 const routes: Routes = [
   {
@@ -28,6 +29,10 @@ const routes: Routes = [
       {
         path: 'contratos/nuevo',
         loadChildren: () => import('./modules/contratos/contrato/contrato.module').then( m => m.ContratoPageModule)
+      },
+      {
+        path: 'vehiculos/list',
+        loadChildren: () => import('./modules/vehiculos/listado-vehiculos/listado-vehiculos.module').then(m=> m.ListadoVehiculosPageModule)
       },
       //region ADMINISTRACION
 

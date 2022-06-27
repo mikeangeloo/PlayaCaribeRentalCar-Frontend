@@ -63,7 +63,17 @@ export class AppComponent implements OnDestroy {
       label: 'Vehículos',
       route: null,
       level: 0,
-      active: false
+      active: false,
+      children: [
+        {
+          module: 'vehiculos',
+          icon: 'document-outline',
+          label: 'Lista de Vehiculos  | Estatus',
+          route: 'vehiculos/list',
+          level: 1,
+          active: false
+        },
+      ]
     },
     {
       module: 'reportes',
