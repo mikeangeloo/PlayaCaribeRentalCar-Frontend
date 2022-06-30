@@ -51,6 +51,8 @@ import html2canvas from 'html2canvas';
 import { CargosExtrasI } from 'src/app/interfaces/configuracion/cargos-extras.interface';
 import { CargosRetornoExtrasService } from 'src/app/services/cargos-retorno-extras.service';
 import { zIndex } from 'html2canvas/dist/types/css/property-descriptors/z-index';
+import { NgxSpinnerService } from "ngx-spinner";
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-contrato',
@@ -234,7 +236,11 @@ export class ContratoPage implements OnInit, AfterViewInit {
     public actionSheetController: ActionSheetController,
     public alertController: AlertController,
     public notasServ: NotasService,
-    public checkListServ: CheckListService
+    public checkListServ: CheckListService,
+    public spinner: NgxSpinnerService,
+    public router: Router,
+    public route: ActivatedRoute
+
   ) { }
 
   ngOnInit() {
@@ -242,7 +248,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
   }
 
   async ionViewWillEnter() {
-    this.loading = true;
+    this.spinner.show();
     console.log('view enter');
 
     await this.loadTiposTarifas();
@@ -252,6 +258,17 @@ export class ContratoPage implements OnInit, AfterViewInit {
     await this.loadComisionistas();
     await this.loadUbicaciones();
     await this.loadCargosExtras();
+
+    //TODO Validar si existe contrato en local y preguntar si quiere recuperar la info
+
+    let contract_number = this.route.snapshot.paramMap.get('contract_number');
+    console.log(contract_number);
+    if(contract_number) {
+      console.log("Si hay contrato")
+      this.contratosServ.setContractData(contract_number);
+    } else {
+      this.contratosServ.flushContractData();
+    }
 
     await this.reloadAll();
 
@@ -298,6 +315,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
     // }
     console.log('execute reloadAll');
     // verificamos si tenemos guardado un contract_id en local storage para continuar con la edición
+    console.log(this.contratosServ.getContractNumber());
 
     if (this.contratosServ.getContractNumber()) {
 
@@ -360,7 +378,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
               console.log(this.cobranzaProgData)
               if (this.balancePorPagar == 0) {
                 this.step = 4;
-              }
+              };
 
 
             } else {
@@ -457,20 +475,20 @@ export class ContratoPage implements OnInit, AfterViewInit {
             this.recalBalanceRetornoPorCobrar();
           }
           console.log(this.step);
-          this.loading = false;
+          this.spinner.hide();
         } else {
           console.log(res.errors);
           this.sweetMsgServ.printStatusArray(res.errors.error.errors, 'error');
           this.contratosServ.flushContractData();
-
-          this.initGeneralForm();
-          this.initClientForm();
-          this.initRetornoForm();
-          this.initVehiculoForm();
-          this.initCheckListForm();
-          this.cobranzaProgRetornoData = [];
-          this.cobranzaProgData = [];
-          this.loading = false;
+          this.router.navigateByUrl('/contratos/nuevo')
+          // this.initGeneralForm();
+          // this.initClientForm();
+          // this.initVehiculoForm();
+          // this.initCheckListForm();
+          // this.initRetornoForm();
+          // this.cobranzaProgRetornoData = [];
+          // this.cobranzaProgData = [];
+          // this.spinner.hide();
         }
     } else {
       this.initGeneralForm();
@@ -480,7 +498,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
       this.initRetornoForm();
       this.cobranzaProgRetornoData = [];
       this.cobranzaProgData = [];
-      this.loading = false;
+      this.spinner.hide();
     }
   }
 
@@ -2559,14 +2577,14 @@ export class ContratoPage implements OnInit, AfterViewInit {
     this.sweetMsgServ.confirmRequest(mensaje).then(async (data) => {
       if (data.value) {
         await this.saveProcess(section);
-        await this.viewPDF();
+        await this.sendAndGeneratePDF();
       }
     })
   }
 
   async saveProcess(section: 'datos_generales' | 'datos_cliente' | 'datos_vehiculo' | 'cobranza' | 'check_in_salida' | 'check_form_list' |  'firma' | 'retorno' | 'cobranza_retorno', ignoreMsg?: boolean, payload?) {
     //this.sweetMsgServ.printStatus('Acción en desarrollo', 'warning');
-    this.loading = true;
+    this.spinner.show();
     console.log('section', section);
     let _payload;
     switch (section) {
@@ -2683,7 +2701,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
     //return;
 
     this.contratosServ.saveProgress(_payload).subscribe(async res => {
-      this.loading = false;
+      this.spinner.hide();
       if (res.ok) {
         if (section === 'check_in_salida') {
           localStorage.removeItem(this.generalServ.dragObjStorageKey);
@@ -2706,18 +2724,40 @@ export class ContratoPage implements OnInit, AfterViewInit {
     })
   }
 
-  async viewPDF() {
-    this.loading = true;
-    this.contratosServ.generatePDF(this.contract_id).subscribe(res => {
+  async sendAndGeneratePDF() {
+    this.spinner.show();
+    this.contratosServ.sendAndGeneratePDF(this.contract_id).subscribe(res => {
       const url = URL.createObjectURL(res);
-      this.loading = false;
+      this.spinner.hide();
       if (this.detectIOS() === true) {
         window.location.assign(url);
       } else {
         window.open(url, '_blank');
       }
     }, error => {
-      this.loading = false;
+      this.spinner.hide();
+      const fr = new FileReader();
+      fr.addEventListener('loadend', (e: any) => {
+        const errors = JSON.parse(e.srcElement.result);
+        this.sweetMsgServ.printStatusArray(errors.errors, 'error');
+      });
+      fr.readAsText(error.error);
+    });
+  }
+
+
+  async viewPDF() {
+    this.spinner.show();
+    this.contratosServ.viewPDF(this.contract_id).subscribe(res => {
+      const url = URL.createObjectURL(res);
+      this.spinner.hide();
+      if (this.detectIOS() === true) {
+        window.location.assign(url);
+      } else {
+        window.open(url, '_blank');
+      }
+    }, error => {
+      this.spinner.hide();
       const fr = new FileReader();
       fr.addEventListener('loadend', (e: any) => {
         const errors = JSON.parse(e.srcElement.result);

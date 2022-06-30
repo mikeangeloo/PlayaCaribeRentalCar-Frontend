@@ -23,7 +23,7 @@ table {
 }
 
 .table-container, .footer-tables {
-  th, td {
+ th, td {
     &:first-of-type {
       padding-left: 0rem;
       max-width: calc(100vw / #{$cols-sm});
@@ -39,7 +39,7 @@ table {
         width: calc(100vw / #{$cols-lg});
       }
     }
-    justify-content: center;
+    justify-content: center !important;
     overflow: inherit;
     max-width: calc(100vw / #{$cols-sm});
     width: calc(100vw / #{$cols-sm});
@@ -61,13 +61,10 @@ table {
     justify-content: center;
   }
 }
-th{
-    background: #e8c58f42 !important;
-    position: relative;
-    color: var(--ion-color-primary) !important;
-    justify-content: space-between;
-    justify-content: center;
-   padding-left: 1rem !important;
+th {
+  background: #e8c58f42 !important;
+  color: var(--ion-color-primary) !important;
+  padding-left: 1rem !important;
 }
 
 .column {

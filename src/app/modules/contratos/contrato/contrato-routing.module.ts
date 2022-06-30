@@ -5,7 +5,11 @@ import { ContratoPage } from './contrato.page';
 
 const routes: Routes = [
   {
-    path: '',
+    path: 'nuevo',
+    component: ContratoPage
+  },
+  {
+    path: 'view/:contract_number',
     component: ContratoPage
   }
 ];

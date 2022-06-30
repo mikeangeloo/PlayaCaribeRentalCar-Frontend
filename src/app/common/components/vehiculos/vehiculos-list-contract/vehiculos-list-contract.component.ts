@@ -13,6 +13,9 @@ import {VehiculosC, VehiculosI} from "../../../../interfaces/catalogo-vehiculos/
 import {VehiculosService} from "../../../../services/vehiculos.service";
 import {VehiculoFormComponent} from "../vehiculo-form/vehiculo-form.component";
 import {TarifasApolloConfFormComponent} from '../../configuracion/precios/tarifas-apollo-conf-form/tarifas-apollo-conf-form.component';
+import { ContratosService } from 'src/app/services/contratos.service';
+import { NgxSpinnerService } from "ngx-spinner";
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-vehiculos-list-contract',
@@ -58,7 +61,10 @@ export class VehiculosListContractComponent implements OnInit {
     public navigateCtrl: NavController,
     public actionSheetController: ActionSheetController,
     public sweetServ: SweetMessagesService,
-    public toastServ: ToastMessageService
+    public toastServ: ToastMessageService,
+    public contractServ: ContratosService,
+    public ngxSpinner: NgxSpinnerService,
+    public router: Router,
   ) {
     this.initVehiculo();
    }
@@ -174,36 +180,73 @@ export class VehiculosListContractComponent implements OnInit {
     }
   }
 
-  inactiveVehiculo(_data: VehiculosI) {
-    this.sweetServ.confirmRequest('¿Estás seguro de querer deshabilitar este registro ?').then((data) => {
-      if (data.value) {
-        this.vehiculosServ.setInactive(_data.id).subscribe(res => {
-          if (res.ok === true) {
-            this.toastServ.presentToast('success', res.message, 'top');
-            this.loadVehiculosTable();
-          }
-        }, error => {
-          console.log(error);
-          this.sweetServ.printStatusArray(error.error.errors, 'error');
-        });
+  detectIOS(): boolean {
+    return [
+        'iPad Simulator',
+        'iPhone Simulator',
+        'iPod Simulator',
+        'iPad',
+        'iPhone',
+        'iPod'
+      ].includes(navigator.platform)
+      // iPad on iOS 13 detection
+      || (navigator.userAgent.includes('Mac') && 'ontouchend' in document);
+  }
+
+
+  nuevoContrato(data) {
+    this.router.navigateByUrl('/contratos/nuevo')
+  }
+
+  reservar() {
+    this.sweetServ.printStatus( "Accion en construccion, no disponible por el momento",
+    "warning");
+  }
+
+  retornar(data) {
+    this.router.navigateByUrl('/contratos/view/'+ data.contrato.num_contrato)
+
+  }
+
+  reimprimir(data) {
+    this.ngxSpinner.show();
+    this.contractServ.viewPDF(data.contrato.id).subscribe(res => {
+      const url = URL.createObjectURL(res);
+      this.ngxSpinner.hide();
+      if (this.detectIOS() === true) {
+        window.location.assign(url);
+      } else {
+        window.open(url, '_blank');
       }
+    }, error => {
+      this.ngxSpinner.hide();
+      const fr = new FileReader();
+      fr.addEventListener('loadend', (e: any) => {
+        const errors = JSON.parse(e.srcElement.result);
+        this.sweetServ.printStatusArray(errors.errors, 'error');
+      });
+      fr.readAsText(error.error);
     });
   }
 
-  activeVehiculo(_data: VehiculosI) {
-    this.sweetServ.confirmRequest('¿Estás seguro de querer habilitar este registro ?').then((data) => {
+  cancelar(vehiculo) {
+    this.sweetServ.confirmRequest('¿Estas seguro de querer cancelar este contrato?').then((data) => {
       if (data.value) {
-        this.vehiculosServ.setEnable(_data.id).subscribe(res => {
-          if (res.ok === true) {
-            this.toastServ.presentToast('success', res.message, 'top');
-            this.loadVehiculosTable();
-          }
-        }, error => {
-          console.log(error);
-          this.sweetServ.printStatusArray(error.error.errors, 'error');
-        });
+       this.contractServ.cancelContract(vehiculo.contrato.id).subscribe(res => {
+         if (res.ok) {
+           this.sweetServ.printStatus(res.message, 'success');
+           this.contractServ.flushContractData();
+           localStorage.removeItem(this.generalService.dragObjStorageKey);
+           setTimeout(() => {
+             window.location.reload();
+           }, 1000);
+
+         }
+       }, error => {
+         console.log(error);
+         this.sweetServ.printStatusArray(error.error.errors, 'error');
+       })
       }
     });
   }
-
 }

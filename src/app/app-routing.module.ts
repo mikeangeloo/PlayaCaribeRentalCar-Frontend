@@ -27,7 +27,7 @@ const routes: Routes = [
         loadChildren: () => import('./home/home.module').then( m => m.HomePageModule)
       },
       {
-        path: 'contratos/nuevo',
+        path: 'contratos',
         loadChildren: () => import('./modules/contratos/contrato/contrato.module').then( m => m.ContratoPageModule)
       },
       {

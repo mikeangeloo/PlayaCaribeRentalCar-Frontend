@@ -350,7 +350,7 @@ fieldset {
 
 .disponible {
   color: white;
-  background: var(--ion-color-success);
+  background: #29801C;
 
   ion-label {
     width: 100%;
@@ -361,8 +361,7 @@ fieldset {
 }
 .rentado {
   color: white;
-  background: var(--ion-color-danger);
-
+  background: #3780F9;
 
   ion-label {
     width: 100%;
@@ -397,8 +396,19 @@ fieldset {
 }
 .reservado {
   color: white;
-  background: var(--ion-color-warning);
+  background: #ebb215;
   width: 100%;
+
+  ion-label {
+    width: 100%;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    overflow-wrap: initial;
+  }
+}
+.atrasado {
+  color: white;
+  background: #AF060E;
 
   ion-label {
     width: 100%;

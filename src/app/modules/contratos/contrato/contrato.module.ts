@@ -10,7 +10,7 @@ import { ContratoPage } from './contrato.page';
 import {MaterialModule} from "../../../material/material.module";
 import {NgxMaterialTimepickerModule} from "ngx-material-timepicker";
 import {AppCommonModule} from "../../../common/common.module";
-import { NgxLoadingModule } from 'ngx-loading';
+import { NgxSpinnerModule } from 'ngx-spinner';
 
 @NgModule({
     imports: [
@@ -20,9 +20,9 @@ import { NgxLoadingModule } from 'ngx-loading';
       ContratoPageRoutingModule,
       MaterialModule,
       NgxMaterialTimepickerModule,
-      NgxLoadingModule.forRoot({}),
       AppCommonModule,
       ReactiveFormsModule,
+      NgxSpinnerModule,
     ],
   declarations: [ContratoPage]
 })
