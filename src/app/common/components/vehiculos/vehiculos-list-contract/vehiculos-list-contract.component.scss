@@ -1,14 +1,14 @@
 $cols-sm: 3;
 $cols-md: 5;
-$cols-lg: 12;
+$cols-lg: 10;
 
 table {
   overflow: auto;
-  width: 100%;
-  // display: grid;
+  width: 120%;
   text-align: center;
   @media (min-width: 1320px) {
     display: block;
+    width: 100%;
   }
 }
 
@@ -23,6 +23,7 @@ table {
 }
 
 .table-container, .footer-tables {
+  overflow: scroll;
  th, td {
     &:first-of-type {
       padding-left: 0rem;
@@ -65,6 +66,13 @@ th {
   background: #e8c58f42 !important;
   color: var(--ion-color-primary) !important;
   padding-left: 1rem !important;
+
+  ::ng-deep {
+    .mat-sort-header-container {
+      justify-content: center !important;
+    }
+  }
+
 }
 
 .column {
