@@ -194,7 +194,7 @@ export class VehiculosListContractComponent implements OnInit {
   }
 
 
-  nuevoContrato(data) {
+  nuevoContrato(data?) {
     this.router.navigateByUrl('/contratos/nuevo')
   }
 
