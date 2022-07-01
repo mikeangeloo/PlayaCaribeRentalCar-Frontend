@@ -232,6 +232,7 @@ export class VehiculosListContractComponent implements OnInit {
   cancelar(vehiculo) {
     this.sweetServ.confirmRequest('¿Estas seguro de querer cancelar este contrato?').then((data) => {
       if (data.value) {
+        console.log(data.value);
        this.contractServ.cancelContract(vehiculo.contrato.id).subscribe(res => {
          if (res.ok) {
            this.sweetServ.printStatus(res.message, 'success');

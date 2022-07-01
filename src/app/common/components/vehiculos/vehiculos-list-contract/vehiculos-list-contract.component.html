@@ -199,7 +199,7 @@
                       <ion-button fill="clear" (click)="reimprimir(row)" *ngIf="row.estatus == 'rentado' || row.estatus == 'reservado'" title="Reimprimir contrato">
                         <ion-icon name="print" color="secondary" ></ion-icon>
                       </ion-button>
-                      <ion-button fill="clear" (click)="cancelar(row)" *ngIf="row.estatus == 'rentado'" title="Cancelar contrato">
+                      <ion-button fill="clear" (click)="cancelar(row)" *ngIf="row.contrato && row.estatus == 'rentado'" title="Cancelar contrato">
                         <ion-icon name="close" color="danger"></ion-icon>
                       </ion-button>
 

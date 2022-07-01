@@ -261,16 +261,42 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
     //TODO Validar si existe contrato en local y preguntar si quiere recuperar la info
 
+
+
     let contract_number = this.route.snapshot.paramMap.get('contract_number');
     console.log(contract_number);
     if(contract_number) {
       console.log("Si hay contrato")
       this.contratosServ.setContractData(contract_number);
+      await this.reloadAll();
     } else {
-      this.contratosServ.flushContractData();
+      // revisamos si hay contrato en localstorage
+      if (this.contratosServ.getContractNumber()) {
+        this.sweetMsgServ.confirmRequest('Existe un contrato con el folio:' + this.contratosServ.getContractNumber() + ' guardado temporalmente', '¿Quieres reanudar tu avance?, si lo cancelas tu información se perdera', 'Continuar Editando', 'Nuevo Contrato').then((data) => {
+          if (data.value) {
+            this.reloadAll();
+          } else {
+            this.contratosServ.cancelContract(this.contract_id).subscribe(res => {
+              if (res.ok) {
+                this.sweetMsgServ.printStatus(res.message, 'success');
+                localStorage.removeItem(this.generalServ.dragObjStorageKey);
+                this.contratosServ.flushContractData();
+                this.reloadAll();
+              }
+            }, error => {
+              console.log(error);
+              this.sweetMsgServ.printStatusArray(error.error.errors, 'error');
+            })
+
+          }
+        })
+      } else {
+        await this.reloadAll();
+      }
+
     }
 
-    await this.reloadAll();
+    //await this.reloadAll();
 
     this.exitPlacesOptions$ = this.gf.ub_salida_id.valueChanges.pipe(
         startWith(''),
@@ -2715,6 +2741,11 @@ export class ContratoPage implements OnInit, AfterViewInit {
         }
         this.contract_id = res.id;
         this.num_contrato = res.contract_number;
+
+        if (section == 'firma') {
+          this.contratosServ.flushContractData();
+          this.router.navigateByUrl('vehiculos/list');
+        }
         this.contratosServ.setContractData(this.num_contrato);
         await this.reloadAll();
       }
