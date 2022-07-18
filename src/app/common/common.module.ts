@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import {CommonModule, CurrencyPipe} from '@angular/common';
+import {CommonModule, CurrencyPipe, isPlatformBrowser} from '@angular/common';
 import {HotelesListComponent} from "./components/hoteles/listado-hoteles/hoteles-list/hoteles-list.component";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {MaterialModule} from "../material/material.module";
@@ -47,6 +47,7 @@ import {ModalDragElementDetailsComponent} from './components/modal-drag-element-
 import {CargosExtrasTableComponent} from './components/configuracion/precios/cargos-extras-table/cargos-extras-table.component';
 import { CargosExtrasFormComponent } from './components/configuracion/precios/cargos-extras-form/cargos-extras-form.component';
 import { VehiculosListContractComponent } from './components/vehiculos/vehiculos-list-contract/vehiculos-list-contract.component';
+import { ReservasFormComponent } from './components/reservas/reservas-form/reservas-form.component';
 
 
 @NgModule({
@@ -92,7 +93,8 @@ import { VehiculosListContractComponent } from './components/vehiculos/vehiculos
     ModalDragElementDetailsComponent,
     CargosExtrasTableComponent,
     CargosExtrasFormComponent,
-    VehiculosListContractComponent
+    VehiculosListContractComponent,
+    ReservasFormComponent
   ],
   exports: [
     HotelesListComponent,
@@ -136,7 +138,8 @@ import { VehiculosListContractComponent } from './components/vehiculos/vehiculos
     ModalDragElementDetailsComponent,
     CargosExtrasTableComponent,
     CargosExtrasFormComponent,
-    VehiculosListContractComponent
+    VehiculosListContractComponent,
+    ReservasFormComponent
   ],
   entryComponents: [
     HotelesListComponent,
@@ -180,7 +183,8 @@ import { VehiculosListContractComponent } from './components/vehiculos/vehiculos
     ModalDragElementDetailsComponent,
     CargosExtrasTableComponent,
     CargosExtrasFormComponent,
-    VehiculosListContractComponent
+    VehiculosListContractComponent,
+    ReservasFormComponent
   ],
     imports: [
         CommonModule,

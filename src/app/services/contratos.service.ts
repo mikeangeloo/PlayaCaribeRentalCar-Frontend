@@ -47,6 +47,13 @@ export class ContratosService {
     }));
   }
 
+  public sendAndGenerateReservaPDF(_id) {
+    // @ts-ignore
+    return this.httpClient.get<any>(`${this.dashURL}/reservas/pdf/${_id}`, {responseType: 'blob'}).pipe(map(response => {
+      return response;
+    }));
+  }
+
   public viewPDF(_id) {
     // @ts-ignore
     return this.httpClient.get<any>(`${this.dashURL}/contratos/view/pdf/${_id}`, {responseType: 'blob'}).pipe(map(response => {
@@ -80,11 +87,28 @@ export class ContratosService {
     }
   }
 
+  public getReservaContractNumber(): string {
+    const _data = localStorage.getItem('num_reserva');
+    if (_data != 'undefined') {
+      return _data;
+    } else {
+      return null;
+    }
+  }
+
   public setContractData(num_contrato) {
     localStorage.setItem('num_contrato', num_contrato);
   }
 
+  public setReservaData(num_reserva) {
+    localStorage.setItem('num_reserva', num_reserva);
+  }
+
   public flushContractData() {
     localStorage.removeItem('num_contrato');
+  }
+
+  public flushReservaData() {
+    localStorage.removeItem('num_reserva');
   }
 }

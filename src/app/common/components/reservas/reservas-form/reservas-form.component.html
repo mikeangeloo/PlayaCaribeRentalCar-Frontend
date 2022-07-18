@@ -1,0 +1,596 @@
+<ion-header translucent *ngIf="asModal">
+  <ion-toolbar>
+    <ion-title>{{ title }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button class="close-btn" (click)="dismiss()">
+        <ion-icon name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-card class="app-card">
+    <ion-card-content>
+
+      <ion-row style="height: 100%; align-content: center; justify-content: center">
+        <ion-col size="12" style="height: 90%">
+
+          <mat-accordion>
+            <div class="accordion-margin">
+              <mat-expansion-panel [expanded]="step === 0" hideToggle>
+                <mat-expansion-panel-header>
+                  <mat-panel-title>
+                    Datos del Cliente
+                  </mat-panel-title>
+                  <mat-panel-description style="margin: 0; justify-content: flex-end;">
+                    <ion-icon name="person"></ion-icon>
+                  </mat-panel-description>
+                </mat-expansion-panel-header>
+
+                <ion-card [disabled]="step >= 4" >
+                  <ion-card-content>
+                    <form [formGroup]="clienteDataForm" *ngIf="clienteDataForm">
+                      <ion-row>
+                        <ion-col size="12">
+                          <div class="search-row-buttons">
+                            <ion-button size="small" color="secondary" (click)="openModalSearch('clientes', 'cliente')">
+                              <ion-icon name="search"></ion-icon>
+                            </ion-button>
+                          </div>
+                        </ion-col>
+                      </ion-row>
+                      <ion-row>
+                        <ion-col>
+                          <mat-form-field appearance="legacy">
+                            <mat-label>NOMBRE(S)</mat-label>
+                            <input type="text" matInput formControlName="nombre" autocomplete="off">
+                            <mat-error *ngIf="cf.nombre.errors?.required">Campo requerido</mat-error>
+                          </mat-form-field>
+                        </ion-col>
+    <!--                    <ion-col>-->
+    <!--                      <mat-form-field appearance="legacy">-->
+    <!--                        <mat-label>APELLIDO(S)</mat-label>-->
+    <!--                        <input type="text" matInput formControlName="apellidos" autocomplete="off">-->
+    <!--                        <mat-error *ngIf="cf.apellidos.errors?.required">Campo requerido</mat-error>-->
+    <!--                      </mat-form-field>-->
+    <!--                    </ion-col>-->
+                      </ion-row>
+
+                      <ion-row>
+                        <ion-col>
+                          <mat-form-field appearance="legacy">
+                            <mat-label>TELÉFONO</mat-label>
+                            <input type="tel" matInput formControlName="telefono" autocomplete="off">
+                            <mat-error *ngIf="cf.telefono.errors?.required">Campo requerido</mat-error>
+                          </mat-form-field>
+                        </ion-col>
+                        <ion-col>
+                          <mat-form-field appearance="legacy">
+                            <mat-label>E-Mail</mat-label>
+                            <input type="email" matInput formControlName="email" autocomplete="off">
+                            <mat-error *ngIf="cf.email.errors?.required">Campo requerido</mat-error>
+                            <mat-error *ngIf="cf.email.errors?.email">Email invalido</mat-error>
+                          </mat-form-field>
+                        </ion-col>
+                      </ion-row>
+
+                      <ion-row>
+                        <ion-col>
+                          <mat-form-field appearance="legacy">
+                            <mat-label>DIRECCIÓN</mat-label>
+                            <textarea matInput formControlName="direccion" autocomplete="off"></textarea>
+                            <mat-error *ngIf="cf.direccion.errors?.required">Campo requerido</mat-error>
+                          </mat-form-field>
+                        </ion-col>
+                      </ion-row>
+
+                      <ion-row>
+                        <ion-col>
+                          <mat-form-field appearance="legacy">
+                            <mat-label>Número de Licencia</mat-label>
+                            <input type="text" matInput formControlName="num_licencia" autocomplete="off">
+                            <mat-error *ngIf="cf.num_licencia.errors?.required">Campo requerido</mat-error>
+                          </mat-form-field>
+                        </ion-col>
+                        <ion-col>
+                          <mat-form-field appearance="legacy">
+                            <mat-label>Mes Exp.</mat-label>
+                            <mat-select formControlName="licencia_mes" autocomplete="off">
+                              <mat-option *ngFor="let month of months" value="{{month.digit}}">{{month.month}}</mat-option>
+                            </mat-select>
+                            <mat-icon matSuffix>date_range</mat-icon>
+                            <mat-error *ngIf="cf.licencia_mes.errors?.required">Campo requerido</mat-error>
+                          </mat-form-field>
+                        </ion-col>
+                        <ion-col>
+                          <mat-form-field appearance="legacy">
+                            <mat-label>Año expiración</mat-label>
+                            <mat-select formControlName="licencia_ano" autocomplete="off">
+                              <mat-option *ngFor="let year of validYears" value="{{year}}">{{year}}</mat-option>
+                            </mat-select>
+                            <mat-icon matSuffix>date_range</mat-icon>
+                            <mat-error *ngIf="cf.licencia_ano.errors?.required">Campo requerido</mat-error>
+                          </mat-form-field>
+                        </ion-col>
+                      </ion-row>
+
+                    </form>
+
+                    <app-modelos-docs model="clientes" docType="licencia_conducir" [fullSize]="true" [justButton]="true" [model_id_value]="clienteDataForm && clienteDataForm.controls.cliente_id.value ? clienteDataForm.controls.cliente_id.value : null">
+                      <legend name="legend">Doc. Cliente</legend>
+                    </app-modelos-docs>
+
+                  </ion-card-content>
+                  <ion-card-title>
+                    <div class="card-action-buttons">
+                      <ion-button color="success" (click)="saveProcess('datos_cliente')">SIGUIENTE</ion-button>
+                    </div>
+                  </ion-card-title>
+                </ion-card>
+
+
+                <!-- <mat-action-row>
+                  <button (click)="prevStep()" mat-flat-button style="font-size: 1.5rem;">
+                    <ion-icon name="chevron-back-outline" style="color: var(&#45;&#45;ion-color-medium);"></ion-icon>
+                  </button> &nbsp; &nbsp;
+
+                  <button (click)="nextStep()" mat-flat-button style="font-size: 1.5rem;">
+                    <ion-icon name="chevron-forward-outline" style="color: var(--ion-color-medium);"></ion-icon>
+                  </button>
+                </mat-action-row> -->
+              </mat-expansion-panel>
+            </div>
+          </mat-accordion> <!-- Datos Cliente -->
+
+          <mat-accordion>
+            <div class="accordion-margin" [formGroup]="generalDataForm" *ngIf="generalDataForm">
+              <mat-expansion-panel [expanded]="step === 1" hideToggle [disabled] = "step == 0">
+                <mat-expansion-panel-header>
+                  <mat-panel-title>
+                    Datos Generales
+                  </mat-panel-title>
+                  <mat-panel-description style="margin: 0; justify-content: flex-end;">
+                    <ion-icon name="calendar"></ion-icon>
+                  </mat-panel-description>
+                </mat-expansion-panel-header>
+                <form [formGroup]="generalDataForm">
+                  <ion-card [disabled]="step >= 4" >
+                    <ion-card-content>
+
+                      <ion-row>
+                        <ion-col size="12" size-md="6">
+                          <!--<ion-row>
+                            <ion-col size="6" class="ion-no-padding">
+                              <h4 style="margin: 0; padding: 0;">Ubicaciones</h4>
+                            </ion-col>
+                            <ion-col size="6">
+                              <div class="search-row-buttons">
+                                <ion-button size="small" color="secondary" (click)="openModalSearch('ubicaciones', 'ubicacionSalida')">
+                                  <ion-icon name="search"></ion-icon>
+                                </ion-button>
+                              </div>
+                            </ion-col>
+                          </ion-row>-->
+                          <mat-form-field appearance="legacy">
+                            <mat-label>Lugar de Salida</mat-label>
+                            <mat-select formControlName="ub_salida_id" (openedChange)="ubSalidaSearch.value = null">
+                              <mat-form-field appearance="legacy" style="padding: 0.8em;">
+                                <input (input)="gf.ub_salida_id.patchValue($event.target['value'])" matInput placeholder="Buscador" autocomplete="off" #ubSalidaSearch>
+                                <button mat-icon-button matSuffix (click)="ubSalidaSearch.value = null; gf.ub_salida_id.patchValue('')">
+                                  <mat-icon>clear</mat-icon>
+                                </button>
+                              </mat-form-field>
+                              <mat-option *ngFor="let ubicacion of exitPlacesOptions$ | async" [value]="ubicacion.id">
+                                {{(ubicacion.alias) ? ubicacion.alias : ubicacion.direccion}}
+                              </mat-option>
+                            </mat-select>
+
+                            <mat-error *ngIf="gf.ub_salida_id.errors?.required">Campo requerido</mat-error>
+                          </mat-form-field>
+                        </ion-col> <!-- Lugar de salida -->
+                        <ion-col size="12" size-md="6">
+                          <!--                          <ion-row>-->
+                          <!--                            <ion-col size="12">-->
+                          <!--                              <div class="search-row-buttons">-->
+                          <!--                                <ion-button size="small" color="secondary" (click)="openModalSearch('ubicaciones', 'ubicacionRetorno')">-->
+                          <!--                                  <ion-icon name="search"></ion-icon>-->
+                          <!--                                </ion-button>-->
+                          <!--                              </div>-->
+                          <!--                            </ion-col>-->
+                          <!--                          </ion-row>-->
+                          <mat-form-field appearance="legacy">
+                            <mat-label>Lugar de retorno</mat-label>
+                            <mat-select formControlName="ub_retorno_id" (openedChange)="ubRetornoSearch.value = null">
+                              <mat-form-field appearance="legacy" style="padding: 0.8em">
+                                <input type="text" matInput (input)="gf.ub_retorno_id.patchValue($event.target['value'])" placeholder="Buscador" autocomplete="off" #ubRetornoSearch>
+                                <button mat-icon-button matSuffix (click)="ubRetornoSearch.value = null; gf.ub_retorno_id.patchValue('')">
+                                  <mat-icon>clear</mat-icon>
+                                </button>
+                              </mat-form-field>
+                              <mat-option *ngFor="let ubicacion of returnPlacesOptions$ | async" [value]="ubicacion.id">
+                                {{(ubicacion.alias) ? ubicacion.alias : ubicacion.direccion}}
+                              </mat-option>
+                            </mat-select>
+                            <mat-error *ngIf="gf.ub_retorno_id.errors?.required">Campo requerido</mat-error>
+                          </mat-form-field>
+                        </ion-col> <!-- Lugar de retorno -->
+                      </ion-row> <!-- Ubicacion de salida y retorno -->
+                      <mat-divider></mat-divider>
+                      <ion-row>
+                        <ng-container>
+                          <ion-col size="12">
+                            <mat-slide-toggle [(ngModel)]="useCalendar" [ngModelOptions]="{standalone: true}">
+                              Usar calendario
+                            </mat-slide-toggle>
+                          </ion-col>  <!-- toogle usar calendario -->
+
+                          <ion-col size="12" size-md="4" *ngIf="useCalendar === false">
+                            <mat-form-field appearance="legacy">
+                              <mat-label>Días de renta</mat-label>
+                              <input type="number" max="30" #totalDays matInput formControlName="total_dias" (input)="setReturnDateChange(totalDays.value, true)">
+                              <span matSuffix>{{(gf.total_dias.value > 1 ? 'días' : 'día')}}</span>
+                              <mat-hint style="font-size: 1.1em" *ngIf="rangoFechas.fecha_retorno.value && rangoFechas.fecha_salida.value">
+                                <mat-icon style="font-size: 1.1em; vertical-align: middle;">event</mat-icon>
+                                {{dateConv.transFormDate(rangoFechas.fecha_salida.value, 'slash')}} -
+                                {{dateConv.transFormDate(rangoFechas.fecha_retorno.value, 'slash')}}
+                              </mat-hint>
+                            </mat-form-field>
+                          </ion-col> <!-- Días de renta -->
+
+                          <ion-col size="12" size-md="4" *ngIf="useCalendar === true">
+                            <mat-form-field appearance="legacy">
+                              <mat-label>Fecha salida - retorno</mat-label>
+                              <mat-date-range-input  [rangePicker]="fechaRetornoRegreso" [formGroup]="rangoFechasGroup" [min]="_today" [max]="_maxDate">
+                                <input matStartDate formControlName="fecha_salida" placeholder="Start date" readonly autocomplete="off" (dateChange)="startDateChange()">
+                                <input matEndDate formControlName="fecha_retorno" placeholder="End date" (dateChange)="setReturnDateChange()" readonly autocomplete="off">
+                              </mat-date-range-input>
+                              <mat-datepicker-toggle matSuffix [for]="fechaRetornoRegreso"></mat-datepicker-toggle>
+                              <mat-date-range-picker #fechaRetornoRegreso></mat-date-range-picker>
+                              <mat-hint>{{gf.total_dias.value}} {{(gf.total_dias.value > 1) ? 'días' : 'dia'}}</mat-hint>
+                              <mat-error *ngIf="rangoFechas.fecha_salida.errors?.required">La fecha de salida es obligatoria</mat-error>
+                              <mat-error *ngIf="rangoFechas.fecha_retorno.errors?.required">La fecha de retorno es obligatoria</mat-error>
+                            </mat-form-field>
+                          </ion-col> <!-- Dias de renta date range picker -->
+                        </ng-container> <!-- Días de renta group -->
+
+
+                        <ion-col size="12" size-md="4">
+                          <mat-form-field appearance="legacy" >
+                            <mat-label>Tipo Tarifa</mat-label>
+                            <mat-select #tipoTarifa (selectionChange)="initTipoTarifaRule();" formControlName="tipo_tarifa">
+                              <mat-option *ngFor="let tarifa of tiposTarifas" value="{{tarifa.tarifa}}">{{tarifa.tarifa}}</mat-option>
+                            </mat-select>
+                          </mat-form-field>
+                        </ion-col> <!-- tipo de tarifa picker -->
+
+                        <ion-col size="12" size-md="4">
+                          <mat-form-field appearance="legacy" *ngIf="gf.tipo_tarifa.value !== 'Hotel'">
+                            <mat-label>Categoría Vehículo</mat-label>
+                            <mat-select (selectionChange)="setTarifasCat(true)" formControlName="tarifa_modelo_id">
+                              <mat-option  *ngFor="let tarifaCat of tarifasCategorias" [value]="tarifaCat.id">{{tarifaCat.categoria}}</mat-option>
+                            </mat-select>
+                            <mat-error *ngIf="gf.tarifa_modelo_id.errors?.required">Este campo es requerido</mat-error>
+                          </mat-form-field> <!-- Tarifa x Categoría -->
+
+                        </ion-col> <!-- Categoría vehículo | clase vehiculo -->
+
+
+                      </ion-row> <!-- Días de renta | tarifa x categoría | tipo tarifa -->
+
+                      <!-- <ion-row>
+                        <ion-col size="12" size-md="4">
+                          <mat-form-field appearance="legacy">
+                            <mat-label>Extras</mat-label>
+                            <mat-select  [multiple]="true" (selectionChange)="pushSelectedExtras()" formControlName="cobros_extras_ids">
+                              <mat-option *ngFor="let extras of tarifasExtras" [value]="extras.id">{{extras.nombre}}</mat-option>
+                            </mat-select>
+                          </mat-form-field>
+                        </ion-col>
+
+                      </ion-row>  Extras-->
+
+                      <mat-divider></mat-divider>
+
+                      <ion-row>
+                        <ion-col size="12" size-md="6">
+                          <ion-row>
+                            <ion-col size="12" >
+                              <div class="datos-generales-precioU">
+                                <h2>Valor unitario x día</h2>
+                                <p>{{(gf.precio_unitario_final && gf.precio_unitario_final.value ? (gf.precio_unitario_final.value | currency) : '--')}}</p>
+                              </div>
+                            </ion-col> <!-- precio unitario -->
+                            <ion-col size="12"  class="ion-text-center ion-align-self-center">
+                              <div style="display: flex; flex-direction: column; align-items: flex-start; padding-left: 12px">
+                                <mat-checkbox
+                                  class="example-margin"
+                                  [labelPosition]="'after'"
+                                  (change)="makeCalc()"
+                                  formControlName="con_iva"
+                                >
+                                  Aplicar IVA ?
+                                </mat-checkbox>
+                                <mat-checkbox
+                                  class="example-margin"
+                                  [labelPosition]="'after'"
+                                  (change)="makeCalc()"
+                                  formControlName="con_descuento"
+                                  *ngIf="gf.tipo_tarifa.value !== 'Hotel'"
+                                >
+                                  Aplicar Descuento ?
+                                </mat-checkbox>
+                              </div>
+                              <mat-form-field *ngIf="gf.tipo_tarifa.value !== 'Hotel' && (gf.con_descuento.value == 1 || gf.con_descuento.value == true)">
+                                <mat-label>Descuento %</mat-label>
+                                <mat-select formControlName="tarifa_apollo_id" (selectionChange)="makeCalc()">
+                                  <ng-container *ngFor="let confDes of selectedTarifaCat.tarifas" >
+                                    <mat-option *ngIf="confDes.ap_descuento" [value]="confDes.id" [disabled]="confDes.enable === false">{{confDes.valor_descuento}}</mat-option>
+                                  </ng-container>
+
+                                </mat-select>
+                                <mat-error *ngIf="gf.tarifa_apollo_id.errors?.required">Este campo es requerido</mat-error>
+                              </mat-form-field> <!-- cantidad de descuento -->
+
+                            </ion-col> <!-- aplicar IVA | aplicar descuento -->
+                          </ion-row>
+                        </ion-col> <!-- precio unitario | aplicar IVA | aplicar descuento -->
+
+                        <ion-col size="12" size-md="6">
+                          <div style="text-align: center">
+                            <p style="margin: 0; padding: 1rem;">Desgloce Cobro</p>
+                            <small *ngIf="cobranzaI && cobranzaI.length === 0">En espera para iniciar calculo ....</small>
+                          </div>
+                          <table class="desgloce-cobro-table" *ngIf="cobranzaI && cobranzaI.length > 0">
+                            <thead>
+                            <tr>
+                              <th></th>
+                              <th>Monto</th>
+                              <th>Cantidad</th>
+                              <th>Costo MXN</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {{getExtraRows()}}
+                            <ng-container *ngFor="let cobranza of cobranzaI; let i = index">
+                              <tr *ngIf=" cobranza.element !== 'extra'" [ngClass]="{'total-row': cobranza.element === 'total'}">
+                                <td>{{cobranza.element_label}}</td>
+                                <td>{{cobranza.value | currency}}</td>
+                                <td>{{cobranza.quantity}} {{cobranza.quantity_type}}</td>
+                                <td>{{(cobranza.number_sign === 'negative' ? '-' : '')}} {{cobranza.amount | currency}}</td>
+                              </tr>
+                              <ng-container *ngIf="cobranza.element == 'extra'">
+                                <tr class="extra-row">
+                                  <td>Extras</td>
+                                  <td colspan="3"></td>
+                                </tr>
+                                <tr>
+                                  <td>{{cobranza.element_label}}</td>
+                                  <td>{{cobranza.value | currency}}</td>
+                                  <td>
+                                    <div class="table-input">
+                                      <div style="display: flex;align-items: center;">
+                                        <input type="number" autocomplete="off" [(ngModel)]="cobranza.quantity" (ngModelChange)="makeCalc('extra', cobranza)" [ngModelOptions]="{standalone: true}">
+                                        <span>x {{gf.total_dias.value}} días</span>
+                                      </div>
+
+                                    </div>
+                                  </td>
+                                  <td>{{(cobranza.number_sign === 'negative' ? '-' : '')}} {{cobranza.amount | currency}}</td>
+                                </tr>
+                              </ng-container>
+                            </ng-container>
+
+                            </tbody>
+                          </table>
+                        </ion-col> <!-- desbloce de cobro -->
+                      </ion-row> <!-- precio unitario | aplicar IVA | aplicar descuento | desbloce de cobro -->
+
+                    </ion-card-content>
+                    <div class="card-action-buttons">
+                      <ion-button  color="success" (click)="saveProcess('datos_generales')">SIGUIENTE</ion-button>
+                    </div>
+                  </ion-card>
+
+                </form>
+
+
+                <!-- <mat-action-row>
+                  <button (click)="prevStep()" mat-flat-button style="font-size: 1.5rem;">
+                    <ion-icon name="chevron-back-outline" style="color: var(--ion-color-medium);"></ion-icon>
+                  </button> &nbsp; &nbsp;
+
+                  <button (click)="nextStep()" mat-flat-button style="font-size: 1.5rem;">
+                    <ion-icon name="chevron-forward-outline" style="color: var(--ion-color-medium);"></ion-icon>
+                  </button>
+                </mat-action-row> -->
+              </mat-expansion-panel>
+            </div>
+          </mat-accordion> <!-- Datos Generales -->
+
+          <mat-accordion>
+            <div class="accordion-margin">
+              <mat-expansion-panel [expanded]="step === 2" hideToggle [disabled] = "step == 0 || step == 1">
+                <mat-expansion-panel-header>
+                  <mat-panel-title>
+                    Cobranza
+                  </mat-panel-title>
+                  <mat-panel-description style="margin: 0; justify-content: flex-end;">
+                    <ion-icon name="wallet"></ion-icon>
+                  </mat-panel-description>
+                </mat-expansion-panel-header>
+
+                <ion-card [disabled]="step >= 6" >
+                  <ion-card-content>
+                    <h4 style="font-weight: 500">DESCRIPCION DE LOS CARGOS</h4>
+                    <br>
+                    <mat-divider></mat-divider>
+                    <br>
+                    <ion-row>
+                      <ion-col size="6">
+                        <h4 style="margin: 0; padding: 0;">Total: <span style="color: var(--ion-color-success)">{{(generalDataForm && generalDataForm.controls.total.value) ? (generalDataForm.controls.total.value | currency) : '--'}}</span></h4>
+                        <h4 style="margin: 0; padding: 0;">Balance por saldar: <span [ngClass]="{'danger-color': balancePorPagar > 0}">{{(balancePorPagar) ? (balancePorPagar | currency) : ('0' | currency)}}</span></h4>
+                      </ion-col>
+                      <ion-col size="6" class="ion-text-end">
+                        <button mat-raised-button class="button-secondary" (click)="agregarPagoOpt('reserva')">
+                          <span style="font-size: 1.3rem;margin-right: 0.5rem;">+</span>&nbsp;Cobro&nbsp;<ion-icon name="wallet"></ion-icon>
+                        </button>
+                      </ion-col>
+                    </ion-row>
+                    <br>
+                    <ion-row>
+                      <ion-col size="12" size-md="6">
+                        <ion-card style="margin: 0;">
+                          <ion-card-content>
+                            <div class="accordion-title">
+                              <span class="icon">
+                                 <ion-icon name="checkmark-circle" [color]="(balancePorPagar == 0) ? 'success': ''"></ion-icon>
+                              </span>
+                              <span>
+                                Pagado
+                              </span>
+                              <span>
+                                {{pagadoTotal | currency}}
+                              </span>
+                            </div>
+
+                            <mat-accordion>
+                              <ng-container *ngFor="let cobranzaPago of cobranzaProgData">
+                                <mat-expansion-panel style="margin-top: 1rem" *ngIf="cobranzaPago.tipo === cobranzaTipos.PAGOTARJETA">
+                                  <mat-expansion-panel-header >
+                                    <mat-panel-title>
+                                      Tarjeta
+                                    </mat-panel-title>
+                                    <mat-panel-description>
+                                      <div class="tarjeta-resume">
+                                      <span class="tipo-tarjeta">
+                                        {{(cobranzaPago.tarjeta && cobranzaPago.tarjeta.c_type) ? cobranzaPago.tarjeta.c_type : '--'}}
+                                      </span>
+                                        <span>
+                                        {{(cobranzaPago.tarjeta && cobranzaPago.tarjeta.c_cn4) ? cobranzaPago.tarjeta.c_cn4 : '--'}}
+                                      </span>
+                                        <span>
+                                           {{(cobranzaPago.monto) ? (cobranzaPago.monto | currency) : ('0' | currency) }} {{cobranzaPago.moneda}}
+                                      </span>
+                                      </div>
+                                    </mat-panel-description>
+                                  </mat-expansion-panel-header>
+                                  <ion-row class="border-ion-row">
+                                    <ion-col size="12">
+                                      <ion-row>
+                                        <ion-col size="fill">
+                                          <div class="action-buttons">
+                                            <button *ngIf="cobranzaPago.id && cobranzaPago.edit !== true" (click)="cancelCobro(cobranzaPago, 'reserva')" class="mat-elevation-z0" mat-mini-fab color="warn">
+                                              <mat-icon>remove</mat-icon>
+                                            </button>
+                                            <button *ngIf="cobranzaPago.edit !== true && cobranzaPago.id" (click)="editCobro(cobranzaTipos.PAGOTARJETA, 'reserva', cobranzaPago)" style="margin-top: 10px" class="mat-elevation-z0" mat-mini-fab color="accent">
+                                              <mat-icon>edit</mat-icon>
+                                            </button>
+                                          </div>
+                                        </ion-col>
+                                        <ion-col size>
+                                          <div class="info-card">
+                                            <div class="info-row">
+                                              <span>Tipo Tarjeta: </span>
+                                              <p>
+                                                {{(cobranzaPago.tarjeta && cobranzaPago.tarjeta.c_type) ? cobranzaPago.tarjeta.c_type : '--'}}
+                                              </p>
+                                            </div>
+                                            <div class="info-row">
+                                              <span>Num. Tarjeta: </span>
+                                              <p>
+                                                {{(cobranzaPago.tarjeta && (cobranzaPago.tarjeta.c_cn1 && cobranzaPago.tarjeta.c_cn4)) ? cobranzaPago.tarjeta.c_cn1 + '*' + cobranzaPago.tarjeta.c_cn4: '--'}}
+                                              </p>
+                                            </div>
+                                            <div class="info-row">
+                                              <span>Mes / Año: </span>
+                                              <p>
+                                                {{(cobranzaPago.tarjeta && (cobranzaPago.tarjeta.c_month && cobranzaPago.tarjeta.c_year)) ? cobranzaPago.tarjeta.c_month + '/' + cobranzaPago.tarjeta.c_year: '--'}}
+                                              </p>
+                                            </div>
+                                            <div class="info-row">
+                                              <span>Aprobación Banco: </span>
+                                              <p>
+                                                {{cobranzaPago.cod_banco}}
+                                              </p>
+                                            </div>
+                                            <div class="info-row">
+                                              <span>Monto: </span>
+                                              <p>
+                                                {{cobranzaPago.monto | currency}} {{cobranzaPago.moneda}}
+                                              </p>
+                                            </div>
+                                          </div>
+                                        </ion-col>
+                                      </ion-row>
+                                    </ion-col>
+                                    <ion-col size="12" class="ion-no-padding">
+                                      <app-modelos-docs model="cobranza" docType="voucher" btnSize="small" [justButton]="true" [fullSize]="true" [model_id_value]="cobranzaPago.id">
+                                        <legend name="legend">Img. Voucher</legend>
+                                      </app-modelos-docs>
+                                    </ion-col>
+                                  </ion-row>
+                                </mat-expansion-panel>
+                                <mat-expansion-panel style="margin-top: 1rem"  *ngIf="cobranzaPago.tipo === cobranzaTipos.PAGOEFECTIVO" >
+                                  <mat-expansion-panel-header #panelH>
+                                    <mat-panel-title>
+                                      Efectivo
+                                    </mat-panel-title>
+                                    <mat-panel-description>
+                                      <div class="tarjeta-resume">
+                                    <span style="padding-right: 0.5em">
+                                      {{cobranzaPago.monto | currency}} {{cobranzaPago.moneda}}
+                                    </span>
+                                      </div>
+                                    </mat-panel-description>
+                                  </mat-expansion-panel-header>
+                                  <ion-row>
+                                    <ion-col size="12">
+                                      <div style="display: flex; justify-content: space-evenly;">
+                                        <button *ngIf="cobranzaPago.id && cobranzaPago.edit !== true" (click)="cancelCobro(cobranzaPago, 'salida')" class="mat-elevation-z0" mat-mini-fab color="warn">
+                                          <mat-icon>remove</mat-icon>
+                                        </button>
+                                        <button *ngIf="cobranzaPago.edit !== true && cobranzaPago.id" (click)="editCobro(cobranzaTipos.PAGOEFECTIVO, 'salida' ,cobranzaPago)" class="mat-elevation-z0" mat-mini-fab color="accent">
+                                          <mat-icon>edit</mat-icon>
+                                        </button>
+                                      </div>
+
+                                    </ion-col>
+                                  </ion-row>
+
+                                </mat-expansion-panel>
+                              </ng-container>
+
+                            </mat-accordion>
+                          </ion-card-content>
+                        </ion-card>
+
+                      </ion-col>
+                    </ion-row> <!-- Pagado | PreAutorización -->
+
+                  </ion-card-content>
+                  <div class="card-action-buttons">
+                    <ion-button  color="success" *ngIf="balancePorPagar == 0" (click)="sendAndGeneratePDF()">Procesar</ion-button>
+                  </div>
+
+                </ion-card>
+
+                <!-- <mat-action-row>
+                  <button (click)="prevStep()" mat-flat-button style="font-size: 1.5rem;">
+                    <ion-icon name="chevron-back-outline" style="color: var(--ion-color-medium);"></ion-icon>
+                  </button> &nbsp; &nbsp;
+
+                  <button (click)="nextStep()" mat-flat-button style="font-size: 1.5rem;">
+                    <ion-icon name="chevron-forward-outline" style="color: var(--ion-color-medium);"></ion-icon>
+                  </button>
+                </mat-action-row> -->
+              </mat-expansion-panel>
+            </div>
+          </mat-accordion> <!-- COBRANZA Detalle cargos y pre-autorizaciones -->
+        </ion-col>
+      </ion-row>
+    </ion-card-content>
+  </ion-card>
+</ion-content>
+
+

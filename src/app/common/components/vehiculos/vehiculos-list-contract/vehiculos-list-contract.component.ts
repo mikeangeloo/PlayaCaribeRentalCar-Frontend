@@ -16,6 +16,8 @@ import {TarifasApolloConfFormComponent} from '../../configuracion/precios/tarifa
 import { ContratosService } from 'src/app/services/contratos.service';
 import { NgxSpinnerService } from "ngx-spinner";
 import { Router } from '@angular/router';
+import { ReservaI } from 'src/app/interfaces/reservas/reserva.interface';
+import { ReservasFormComponent } from '../../reservas/reservas-form/reservas-form.component';
 
 @Component({
   selector: 'app-vehiculos-list-contract',
@@ -31,6 +33,7 @@ import { Router } from '@angular/router';
 })
 export class VehiculosListContractComponent implements OnInit {
   public spinner = false;
+  public editReserva;
   public editVehiculo: VehiculosI;
   @Input() public vehiculos: VehiculosI[] = [];
   @Input() isModal: boolean;
@@ -137,9 +140,6 @@ export class VehiculosListContractComponent implements OnInit {
     this.applyFilter();
   }
 
-  catchSelectedRow(_data: VehiculosI) {
-    this.editVehiculo = _data;
-  }
   // Método para editar
   async openVehiculoForm(_data?: VehiculosI) {
     if (_data) {
@@ -153,6 +153,28 @@ export class VehiculosListContractComponent implements OnInit {
       componentProps: {
         'asModal': true,
         'vehiculo_id': (_data && _data.id) ? _data.id : null
+      },
+      swipeToClose: true,
+      cssClass: 'edit-form'
+    });
+    await modal.present();
+    const {data} = await modal.onWillDismiss();
+    if (data.reload && data.reload === true) {
+      this.loadVehiculosTable();
+    }
+  }
+
+   // Método para editar
+   async openReservaForm(_data?: ReservaI) {
+    if (_data) {
+      this.editReserva = _data;
+    }
+    //this.generalService.presentLoading();
+    const modal = await this.modalCtr.create({
+      component: ReservasFormComponent,
+      componentProps: {
+        'asModal': true,
+        'reserva_id': (_data && _data.id) ? _data.id : null
       },
       swipeToClose: true,
       cssClass: 'edit-form'

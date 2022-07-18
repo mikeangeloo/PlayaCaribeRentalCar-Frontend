@@ -272,16 +272,16 @@ export class ContratoPage implements OnInit, AfterViewInit {
     } else {
       // revisamos si hay contrato en localstorage
       if (this.contratosServ.getContractNumber()) {
-        this.sweetMsgServ.confirmRequest('Existe un contrato con el folio:' + this.contratosServ.getContractNumber() + ' guardado temporalmente', '¿Quieres reanudar tu avance?, si lo cancelas tu información se perdera', 'Continuar Editando', 'Nuevo Contrato').then((data) => {
+        await this.sweetMsgServ.confirmRequest('Existe un contrato con el folio:' + this.contratosServ.getContractNumber() + ' guardado temporalmente', '¿Quieres reanudar tu avance?, si lo cancelas tu información se perdera', 'Continuar Editando', 'Nuevo Contrato').then(async (data) => {
           if (data.value) {
-            this.reloadAll();
+            await this.reloadAll();
           } else {
-            this.contratosServ.cancelContract(this.contract_id).subscribe(res => {
+            this.contratosServ.cancelContract(this.contract_id).subscribe(async res => {
               if (res.ok) {
                 this.sweetMsgServ.printStatus(res.message, 'success');
                 localStorage.removeItem(this.generalServ.dragObjStorageKey);
                 this.contratosServ.flushContractData();
-                this.reloadAll();
+                await this.reloadAll();
               }
             }, error => {
               console.log(error);
@@ -350,7 +350,9 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
       let res = await this.contratosServ._getContractData(this.num_contrato);
         if (res.ok) {
+
           this.contractData = res.data;
+          this.contract_id = this.contractData.id
           if (this.contractData.estatus == ContratosStatusE.BORRADOR) {
             this.statusColor = "yellow";
           } else if (this.contractData.estatus == ContratosStatusE.RENTADO) {
@@ -377,6 +379,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
               this.initGeneralForm(this.contractData);
               this.getDocs('cupon', 'contratos', this.contractData.id);
               this.step = 2;
+
             } else {
               this.initGeneralForm();
             }
@@ -478,9 +481,11 @@ export class ContratoPage implements OnInit, AfterViewInit {
               }
 
 
+
             }else {
               this.initRetornoForm(this.contractData);
             }
+
 
             let _cobranzaRetornoData = this.contractData.etapas_guardadas.find(x => x === 'cobranza_retorno');
             if (_cobranzaRetornoData && (this.contractData.cobranza && this.contractData.cobranza.length > 0)) {
@@ -492,6 +497,8 @@ export class ContratoPage implements OnInit, AfterViewInit {
               this.cobranzaProgRetornoData = [];
             }
 
+
+
           }
           if (this.generalDataForm.controls.total.value) {
 
@@ -500,6 +507,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
           if (this.retornoDataForm.controls.total_retorno.value) {
             this.recalBalanceRetornoPorCobrar();
           }
+
           console.log(this.step);
           this.spinner.hide();
         } else {
@@ -514,7 +522,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
           // this.initRetornoForm();
           // this.cobranzaProgRetornoData = [];
           // this.cobranzaProgData = [];
-          // this.spinner.hide();
+          this.spinner.hide();
         }
     } else {
       this.initGeneralForm();
@@ -2729,6 +2737,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
     this.contratosServ.saveProgress(_payload).subscribe(async res => {
       this.spinner.hide();
       if (res.ok) {
+
         if (section === 'check_in_salida') {
           localStorage.removeItem(this.generalServ.dragObjStorageKey);
           this.selectedDragObj = null;
@@ -2741,15 +2750,17 @@ export class ContratoPage implements OnInit, AfterViewInit {
         }
         this.contract_id = res.id;
         this.num_contrato = res.contract_number;
+        this.contratosServ.setContractData(this.num_contrato);
 
         if (section == 'firma') {
           this.contratosServ.flushContractData();
           this.router.navigateByUrl('vehiculos/list');
         }
-        this.contratosServ.setContractData(this.num_contrato);
+
         await this.reloadAll();
       }
     }, error => {
+      this.spinner.hide();
       console.log(error);
       this.sweetMsgServ.printStatusArray(error.error.errors, 'error');
     })
@@ -2812,6 +2823,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
          }
        }, error => {
+        this.spinner.hide();
          console.log(error);
          this.sweetMsgServ.printStatusArray(error.error.errors, 'error');
        })

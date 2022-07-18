@@ -39,24 +39,24 @@ export class AppComponent implements OnDestroy {
       level: 0,
       active: false
     },
-    {
-      module: 'contratos',
-      icon: 'clipboard-outline',
-      label: 'Contratos',
-      route: null,
-      level: 0,
-      active: false,
-      children: [
-        {
-          module: 'contratos',
-          icon: 'document-outline',
-          label: 'Nuevo Contrato',
-          route: '/contratos/nuevo',
-          level: 1,
-          active: false
-        },
-      ]
-    },
+    // {
+    //   module: 'contratos',
+    //   icon: 'clipboard-outline',
+    //   label: 'Contratos',
+    //   route: null,
+    //   level: 0,
+    //   active: false,
+    //   children: [
+    //     {
+    //       module: 'contratos',
+    //       icon: 'document-outline',
+    //       label: 'Nuevo Contrato',
+    //       route: '/contratos/nuevo',
+    //       level: 1,
+    //       active: false
+    //     },
+    //   ]
+    // },
     {
       module: 'vehiculos',
       icon: 'car-sport-outline',
