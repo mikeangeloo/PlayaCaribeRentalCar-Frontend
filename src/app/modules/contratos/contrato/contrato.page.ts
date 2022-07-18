@@ -276,18 +276,23 @@ export class ContratoPage implements OnInit, AfterViewInit {
           if (data.value) {
             await this.reloadAll();
           } else {
-            this.contratosServ.cancelContract(this.contract_id).subscribe(async res => {
-              if (res.ok) {
-                this.sweetMsgServ.printStatus(res.message, 'success');
-                localStorage.removeItem(this.generalServ.dragObjStorageKey);
-                this.contratosServ.flushContractData();
-                await this.reloadAll();
-              }
-            }, error => {
-              console.log(error);
-              this.sweetMsgServ.printStatusArray(error.error.errors, 'error');
-            })
-
+            let res = await this.contratosServ._getContractData(this.contratosServ.getContractNumber());
+            if (res.ok === true) {
+              this.contratosServ.cancelContract(res.data.id).subscribe(async res => {
+                if (res.ok) {
+                  this.sweetMsgServ.printStatus(res.message, 'success');
+                  localStorage.removeItem(this.generalServ.dragObjStorageKey);
+                  this.contratosServ.flushContractData();
+                  await this.reloadAll();
+                }
+              }, error => {
+                console.log(error);
+                this.sweetMsgServ.printStatusArray(error.error.errors, 'error');
+              })
+            } else {
+              this.contratosServ.flushContractData();
+              await this.reloadAll();
+            }
           }
         })
       } else {
