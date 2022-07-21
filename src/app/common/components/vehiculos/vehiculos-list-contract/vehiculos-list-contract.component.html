@@ -194,13 +194,13 @@
                       <ion-button fill="clear" (click)="reservar()" *ngIf="row.estatus == 'disponible'" title="Reservar">
                         <ion-icon name="ticket" color="secondary"></ion-icon>
                       </ion-button>
-                      <ion-button fill="clear" (click)="retornar(row)"  *ngIf="row.estatus == 'rentado' || row.estatus == 'reservado'" title="Retornar">
+                      <ion-button fill="clear" (click)="retornar(row)"  *ngIf="row.estatus == 'rentado' || row.estatus == 'reservado'" title="{{(row.estatus == 'reservado') ? 'Rentar' : 'Retornar'}}">
                         <ion-icon name="exit" color="secondary"></ion-icon>
                       </ion-button>
-                      <ion-button fill="clear" (click)="reimprimir(row)" *ngIf="row.estatus == 'rentado' || row.estatus == 'reservado'" title="Reimprimir contrato">
+                      <ion-button fill="clear" (click)="reimprimir(row)" *ngIf="row.estatus == 'rentado' || row.estatus == 'reservado'" title="{{(row.estatus == 'reservado') ? 'Reimprimir Reserva' : 'Reimprimir contrato'}}">
                         <ion-icon name="print" color="secondary" ></ion-icon>
                       </ion-button>
-                      <ion-button fill="clear" (click)="cancelar(row)" *ngIf="row.contrato && row.estatus == 'rentado'" title="Cancelar contrato">
+                      <ion-button fill="clear" (click)="cancelar(row)" *ngIf="row.contrato && (row.estatus == 'rentado' || row.estatus == 'reservado')" title="{{(row.estatus == 'reservado') ? 'Cancelar Reserva' : 'Cancelar contrato'}}">
                         <ion-icon name="close" color="danger"></ion-icon>
                       </ion-button>
 

@@ -54,11 +54,19 @@ export class ContratosService {
     }));
   }
 
-  public viewPDF(_id) {
-    // @ts-ignore
-    return this.httpClient.get<any>(`${this.dashURL}/contratos/view/pdf/${_id}`, {responseType: 'blob'}).pipe(map(response => {
-      return response;
-    }));
+  public viewPDF(_id, estatus) {
+    if(estatus == 4) {
+      // @ts-ignore
+      return this.httpClient.get<any>(`${this.dashURL}/reservas/view/pdf/${_id}`, {responseType: 'blob'}).pipe(map(response => {
+        return response;
+      }));
+    } else {
+      // @ts-ignore
+      return this.httpClient.get<any>(`${this.dashURL}/contratos/view/pdf/${_id}`, {responseType: 'blob'}).pipe(map(response => {
+        return response;
+      }));
+    }
+
   }
 
   public cancelContract(_id) {
@@ -72,6 +80,17 @@ export class ContratosService {
       let res = await this.httpClient.get<any>(`${this.dashURL}/contratos/${_id}`).toPromise();
       if (res.ok) {
         return {ok: true, data: res.data}
+      }
+    } catch (e) {
+      return {ok: false, errors: e}
+    }
+  }
+
+  public async getReservas() {
+    try {
+      let res = await this.httpClient.get<any>(`${this.dashURL}/reservas`).toPromise();
+      if (res.ok) {
+        return {ok: true, data: res.reservas}
       }
     } catch (e) {
       return {ok: false, errors: e}

@@ -5,6 +5,7 @@ import {TarifaApolloI} from '../tarifas/tarifa-apollo.interface';
 import {ClasesVehiculosI} from './clases-vehiculos.interface';
 import {TarifasCategoriasI} from '../configuracion/tarifas-categorias.interface';
 import { ContratoI } from "../contratos/contrato.interface";
+import { ReservaI } from "../reservas/reserva.interface";
 
 export interface VehiculosI
 {
@@ -22,7 +23,7 @@ export interface VehiculosI
   cant_combustible?: string;
   color?: string;
   cap_tanque?: string;
-  version?: number;
+  version?: number | string;
   created_at?: Date;
   updated_at?: Date;
   activo?: number;
@@ -32,10 +33,10 @@ export interface VehiculosI
   num_serie?: string;
   precio_renta?: number;
   tarifas?: TarifaApolloI[];
-  tarifa_categoria?: TarifasCategoriasI[];
+  tarifa_categoria?: TarifasCategoriasI;
   clase_id?: number;
   clase?: ClasesVehiculosI;
-  contrato?: ContratoI
+  contrato?: ContratoI | ReservaI
 }
 
 export class VehiculosC

@@ -408,7 +408,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
             let _cobranzaData = this.contractData.etapas_guardadas.find(x => x === 'cobranza');
             if (_cobranzaData && (this.contractData.cobranza && this.contractData.cobranza.length > 0)) {
               console.log('cobranza');
-              this.cobranzaProgData = this.contractData.cobranza.filter(x => x.cobranza_seccion == 'salida' );
+              this.cobranzaProgData = this.contractData.cobranza.filter(x => x.cobranza_seccion == 'salida' || x.cobranza_seccion == 'reserva');
               console.log(this.cobranzaProgData)
               if (this.balancePorPagar == 0) {
                 this.step = 4;
@@ -2795,7 +2795,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
   async viewPDF() {
     this.spinner.show();
-    this.contratosServ.viewPDF(this.contract_id).subscribe(res => {
+    this.contratosServ.viewPDF(this.contract_id, null).subscribe(res => {
       const url = URL.createObjectURL(res);
       this.spinner.hide();
       if (this.detectIOS() === true) {

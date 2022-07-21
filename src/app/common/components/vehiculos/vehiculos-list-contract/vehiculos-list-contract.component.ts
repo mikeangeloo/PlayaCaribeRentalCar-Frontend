@@ -18,6 +18,7 @@ import { NgxSpinnerService } from "ngx-spinner";
 import { Router } from '@angular/router';
 import { ReservaI } from 'src/app/interfaces/reservas/reserva.interface';
 import { ReservasFormComponent } from '../../reservas/reservas-form/reservas-form.component';
+import { threadId } from 'worker_threads';
 
 @Component({
   selector: 'app-vehiculos-list-contract',
@@ -33,7 +34,8 @@ import { ReservasFormComponent } from '../../reservas/reservas-form/reservas-for
 })
 export class VehiculosListContractComponent implements OnInit {
   public spinner = false;
-  public editReserva;
+  public reservaData: ReservaI[] = [];
+  public editReserva: ReservaI;
   public editVehiculo: VehiculosI;
   @Input() public vehiculos: VehiculosI[] = [];
   @Input() isModal: boolean;
@@ -94,8 +96,67 @@ export class VehiculosListContractComponent implements OnInit {
     };
   }
 
+  async loadReservas() {
+    console.log(this.vehiculos);
+      let res = await this.contractServ.getReservas();
+      if (res.ok) {
+        this.reservaData = res.data
+      } else {
+        console.log('error loading reservas');
+      }
+
+
+      let reservaI: VehiculosI[] =  [{
+        id: null,
+        codigo: null,
+        estatus: null,
+        marca: null,
+        modelo: null,
+        modelo_ano: null,
+        categoria: null,
+        version: null,
+        placas: null,
+        precio_renta: null,
+        contrato: null
+      }];
+
+      this.reservaData.forEach((reserva,index) => {
+
+        reservaI[index].id = reserva.id,
+        reservaI[index].codigo = reserva.num_contrato,
+        reservaI[index].estatus = 'reservado',
+        reservaI[index].marca = {
+          id: 0,
+          marca: '-'
+        },
+        reservaI[index].modelo = '-',
+        reservaI[index].modelo_ano = '-',
+        reservaI[index].categoria = {
+          id: 0,
+          categoria: '-'
+        },
+        reservaI[index].version = '-',
+        reservaI[index].placas = '-',
+        reservaI[index].tarifa_categoria = {
+          id: 0,
+          categoria: reserva.tarifa_modelo_label,
+          precio_renta: Number(reserva.tarifa_modelo_precio)
+
+        },
+        reservaI[index].contrato = reserva
+
+        reservaI.push({...reservaI[index]})
+
+      });
+      reservaI.pop();
+      this.vehiculos.push(...reservaI)
+      console.log(this.vehiculos)
+
+
+  }
+
   // Método para cargar datos de los campus
-  loadVehiculosTable(_data?: VehiculosI[]) {
+  async loadVehiculosTable(_data?: VehiculosI[]) {
     //this.listado-hoteles = null;
     this.listVehiculos = null;
     this.initVehiculo();
@@ -108,14 +169,18 @@ export class VehiculosListContractComponent implements OnInit {
       this.listVehiculos.sort = this.sort;
       this.listVehiculos.paginator = this.paginator3;
     } else {
-      console.log(this.vehiculos);
-      this.vehiculosServ.getAllWithContract().subscribe(response => {
+
+      this.vehiculosServ.getAllWithContract().subscribe(async response => {
         if (response.ok === true) {
           this.spinner = false;
-          this.listVehiculos = new MatTableDataSource(response.vehiculos);
+          this.vehiculos = response.vehiculos;
+          await this.loadReservas();
+
+
+          this.listVehiculos = new MatTableDataSource(this.vehiculos);
           this.listVehiculos.sort = this.sort;
           this.listVehiculos.paginator = this.paginator3;
-          this.vehiculos = response.vehiculos;
+
         }
       }, error => {
         this.spinner = false;
@@ -176,7 +241,8 @@ export class VehiculosListContractComponent implements OnInit {
         'asModal': true,
         'reserva_id': (_data && _data.id) ? _data.id : null
       },
-      swipeToClose: true,
+      swipeToClose: false,
+      backdropDismiss: false,
       cssClass: 'edit-form'
     });
     await modal.present();
@@ -232,7 +298,7 @@ export class VehiculosListContractComponent implements OnInit {
 
   reimprimir(data) {
     this.ngxSpinner.show();
-    this.contractServ.viewPDF(data.contrato.id).subscribe(res => {
+    this.contractServ.viewPDF(data.contrato.id, data.contrato.estatus).subscribe(res => {
       const url = URL.createObjectURL(res);
       this.ngxSpinner.hide();
       if (this.detectIOS() === true) {
