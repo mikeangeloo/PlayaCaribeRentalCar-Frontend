@@ -392,7 +392,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
             let _datosVehiculo = this.contractData.etapas_guardadas.find(x => x === 'datos_vehiculo');
             if (_datosVehiculo) {
               console.log('datos_vehiculo');
-              if (this.contractData.vehiculo) {
+              if (this.contractData.vehiculo || this.contractData.estatus === ContratosStatusE.RESERVA) {
                 this.step = 3;
                 this.vehiculoData = this.contractData.vehiculo;
                 this.vehicleOutlineBackground = this.vehiculoData.categoria.categoria.toLowerCase();
@@ -410,7 +410,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
               console.log('cobranza');
               this.cobranzaProgData = this.contractData.cobranza.filter(x => x.cobranza_seccion == 'salida' || x.cobranza_seccion == 'reserva');
               console.log(this.cobranzaProgData)
-              if (this.balancePorPagar == 0) {
+              if (this.balancePorPagar == 0 && this.contractData.estatus !== ContratosStatusE.RESERVA) {
                 this.step = 4;
               };
 

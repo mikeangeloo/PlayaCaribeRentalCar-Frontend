@@ -53,7 +53,7 @@
               </mat-panel-description>
             </mat-expansion-panel-header>
 
-            <ion-card [disabled]="step >= 4" >
+            <ion-card [disabled]="step >= 4 && contractData.estatus !== 4" >
               <ion-card-content>
                 <form [formGroup]="clienteDataForm" *ngIf="clienteDataForm">
                   <ion-row>
@@ -179,7 +179,7 @@
               </mat-panel-description>
             </mat-expansion-panel-header>
             <form [formGroup]="generalDataForm">
-              <ion-card [disabled]="step >= 4" >
+              <ion-card [disabled]="step >= 4 && contractData.estatus !== 4" >
                 <ion-card-content>
 
                   <ion-row>
@@ -499,7 +499,7 @@
               </mat-panel-description>
             </mat-expansion-panel-header>
 
-            <ion-card [disabled]="step >= 4">
+            <ion-card [disabled]="step >= 4 && contractData.estatus !== 4">
               <ion-card-content>
                 <ion-row>
                   <ion-col size="12">
@@ -663,7 +663,7 @@
               </mat-panel-description>
             </mat-expansion-panel-header>
 
-            <ion-card [disabled]="step >= 6" >
+            <ion-card [disabled]="step >= 6  && contractData.estatus !== 4">
               <ion-card-content>
                 <h4 style="font-weight: 500">DESCRIPCION DE LOS CARGOS Y PRE-AUTORIZACIONES</h4>
                 <br>

@@ -3,7 +3,8 @@ export enum ContratosStatusE
   ELIMINADO = 0,
   BORRADOR = 1,
   RENTADO = 2,
-  RETORNO = 3
+  RETORNO = 3,
+  RESERVA= 4
 }
 
 export class ContratosStatus
