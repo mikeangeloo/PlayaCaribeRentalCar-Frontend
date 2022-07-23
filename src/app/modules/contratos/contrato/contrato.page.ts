@@ -65,6 +65,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
   public loading = false;
   public statusColor = "white";
+  public contractTypePrefix: { type: string, prefix: string };
   //#region STEP CONTROLLER ATTRIBUTES
   step = 0;
   //#endregion
@@ -264,9 +265,9 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
 
     let contract_number = this.route.snapshot.paramMap.get('contract_number');
+
     console.log(contract_number);
     if(contract_number) {
-      console.log("Si hay contrato")
       this.contratosServ.setContractData(contract_number);
       await this.reloadAll();
     } else {
@@ -347,7 +348,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
     console.log('execute reloadAll');
     // verificamos si tenemos guardado un contract_id en local storage para continuar con la edición
     console.log(this.contratosServ.getContractNumber());
-
+    this.contractTypePrefix = this.contratosServ.getContractTypePrefix(this.contratosServ.getContractNumber());
     if (this.contratosServ.getContractNumber()) {
 
 
@@ -356,9 +357,15 @@ export class ContratoPage implements OnInit, AfterViewInit {
       let res = await this.contratosServ._getContractData(this.num_contrato);
         if (res.ok) {
 
+          if (this.num_contrato !== res.data.num_contrato) {
+            console.log('Fue reserva ahora es contrato')
+            await this.router.navigate(['contratos/view'], res.data.num_contrato);
+            return;
+          }
+
           this.contractData = res.data;
           this.contract_id = this.contractData.id
-          if (this.contractData.estatus == ContratosStatusE.BORRADOR) {
+          if (this.contractData.estatus == ContratosStatusE.BORRADOR || this.contractData.estatus === ContratosStatusE.RESERVA) {
             this.statusColor = "yellow";
           } else if (this.contractData.estatus == ContratosStatusE.RENTADO) {
             this.statusColor = "DeepSkyBlue";
@@ -410,7 +417,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
               console.log('cobranza');
               this.cobranzaProgData = this.contractData.cobranza.filter(x => x.cobranza_seccion == 'salida' || x.cobranza_seccion == 'reserva');
               console.log(this.cobranzaProgData)
-              if (this.balancePorPagar == 0 && this.contractData.estatus !== ContratosStatusE.RESERVA) {
+              if (this.balancePorPagar == 0) {
                 this.step = 4;
               };
 

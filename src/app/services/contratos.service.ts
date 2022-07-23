@@ -130,4 +130,15 @@ export class ContratosService {
   public flushReservaData() {
     localStorage.removeItem('num_reserva');
   }
+
+  public getContractTypePrefix(num_contrato: string): { type: string, prefix: string } {
+    let prefix = num_contrato.substr(0, 2);
+    let type = '';
+    if (prefix === 'AP') {
+      type = 'contrato'
+    } else if (prefix === 'RS') {
+      type = 'reserva'
+    }
+    return {type, prefix}
+  }
 }

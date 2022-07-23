@@ -19,7 +19,7 @@
         <ion-col size="12" class="ion-align-self-center ion-no-padding ion-no-margin">
           <div class="folio-copy" *ngIf="num_contrato">
             <ion-label style="font-size: 1.2rem; margin-right: 1rem;">
-              Num. Contrato: {{num_contrato}}
+              Num. {{this.contractTypePrefix.type === 'contrato' ? 'Contrato' : 'Reserva'}}: {{num_contrato}}
             </ion-label>
 <!--            <ion-button fill="outline" (click)="generalServ.copyClickBoard(num_contrato)">-->
 <!--              <ion-icon slot="icon-only" name="copy"></ion-icon>-->
