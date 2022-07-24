@@ -19,6 +19,8 @@ import { Router } from '@angular/router';
 import { ReservaI } from 'src/app/interfaces/reservas/reserva.interface';
 import { ReservasFormComponent } from '../../reservas/reservas-form/reservas-form.component';
 import { threadId } from 'worker_threads';
+import {ContratosStatus, ContratosStatusE} from '../../../../enums/contratos-status.enum';
+import {CobranzaTipoE} from '../../../../enums/cobranza-tipo.enum';
 
 @Component({
   selector: 'app-vehiculos-list-contract',
@@ -58,6 +60,8 @@ export class VehiculosListContractComponent implements OnInit {
   public searchKey: string;
   @ViewChild(MatPaginator, {static: false}) paginator3: MatPaginator;
   @ViewChild(MatSort, {static: true}) sort: MatSort;
+  public statusC = ContratosStatus;
+  public idioma: 'es' | 'en' = 'es';
 
   constructor(
     public generalService: GeneralService,
@@ -286,19 +290,24 @@ export class VehiculosListContractComponent implements OnInit {
     this.router.navigateByUrl('/contratos/nuevo')
   }
 
-  reservar() {
-    this.sweetServ.printStatus( "Accion en construccion, no disponible por el momento",
-    "warning");
-  }
 
   retornar(data) {
     this.router.navigateByUrl('/contratos/view/'+ data.contrato.num_contrato)
 
   }
 
-  reimprimir(data) {
+  async reimprimir(data) {
+    console.log(data)
+
+    if (data.contrato.estatus === ContratosStatusE.RESERVA) {
+      const {role} = await this.languageOpt();
+      if (role === 'cancel') {
+        return;
+      }
+    }
+
     this.ngxSpinner.show();
-    this.contractServ.viewPDF(data.contrato.id, data.contrato.estatus).subscribe(res => {
+    this.contractServ.viewPDF(data.contrato.id, data.contrato.estatus, this.idioma).subscribe(res => {
       const url = URL.createObjectURL(res);
       this.ngxSpinner.hide();
       if (this.detectIOS() === true) {
@@ -315,6 +324,68 @@ export class VehiculosListContractComponent implements OnInit {
       });
       fr.readAsText(error.error);
     });
+  }
+
+  async reimprimirReserva(id) {
+    const {role} = await this.languageOpt();
+    if (role === 'cancel') {
+      return;
+    }
+    this.ngxSpinner.show();
+    this.contractServ.viewReservaPDF(id, this.idioma).subscribe(res => {
+      const url = URL.createObjectURL(res);
+      this.ngxSpinner.hide();
+      if (this.detectIOS() === true) {
+        window.location.assign(url);
+      } else {
+        window.open(url, '_blank');
+      }
+    }, error => {
+      this.ngxSpinner.hide();
+      const fr = new FileReader();
+      fr.addEventListener('loadend', (e: any) => {
+        const errors = JSON.parse(e.srcElement.result);
+        this.sweetServ.printStatusArray(errors.errors, 'error');
+      });
+      fr.readAsText(error.error);
+    });
+  }
+
+  private async languageOpt(): Promise<any> {
+    const actionSheet = await this.actionSheetController.create({
+      header: 'Opciones',
+      cssClass: 'my-custom-class',
+      backdropDismiss: false,
+      buttons: [
+        {
+          text: 'Español',
+          icon: 'language-outline',
+          handler: () => {
+            this.idioma = 'es';
+          },
+        },
+        {
+          text: 'Ingles',
+          icon: 'language-outline',
+          handler: () => {
+           this.idioma = 'en';
+          },
+        },
+        {
+          text: 'Cancelar',
+          icon: 'close',
+          role: 'cancel',
+          cssClass: 'action-sheet-cancel',
+          handler: () => {
+            console.log('Cancel clicked');
+          },
+        },
+      ],
+    });
+
+    await actionSheet.present();
+
+    return actionSheet.onDidDismiss();
   }
 
   cancelar(vehiculo) {

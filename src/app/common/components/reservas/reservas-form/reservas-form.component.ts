@@ -51,6 +51,7 @@ export class ReservasFormComponent implements OnInit {
   @Input() asModal: boolean;
   @Input() vehiculo_id: number;
   public title: string;
+  public idioma: 'es' | 'en' = 'es';
 
   //#region STEP CONTROLLER ATTRIBUTES
   step = 0;
@@ -1521,7 +1522,7 @@ export class ReservasFormComponent implements OnInit {
   async sendAndGeneratePDF() {
     this.spinner.show();
     this.contratosServ.flushReservaData();
-    this.contratosServ.sendAndGenerateReservaPDF(this.contract_id).subscribe(res => {
+    this.contratosServ.sendAndGenerateReservaPDF(this.contract_id, this.idioma).subscribe(res => {
       const url = URL.createObjectURL(res);
       this.dismiss(true);
       this.spinner.hide();

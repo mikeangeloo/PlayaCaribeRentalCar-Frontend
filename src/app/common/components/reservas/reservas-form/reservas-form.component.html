@@ -12,7 +12,20 @@
 <ion-content>
   <ion-card class="app-card">
     <ion-card-content>
-
+      <div class="accordion-margin">
+        <ion-row>
+          <ion-col size="6">
+            <mat-form-field appearance="legacy">
+              <mat-label>Idioma del archivo</mat-label>
+              <mat-select  [(ngModel)]="idioma">
+                <mat-option value="es">Español</mat-option>
+                <mat-option value="en">Ingles</mat-option>
+              </mat-select>
+              <mat-icon matSuffix>language</mat-icon>
+            </mat-form-field>
+          </ion-col>
+        </ion-row>
+      </div>
       <ion-row style="height: 100%; align-content: center; justify-content: center">
         <ion-col size="12" style="height: 90%">
 

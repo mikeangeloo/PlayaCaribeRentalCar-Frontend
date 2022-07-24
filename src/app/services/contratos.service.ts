@@ -47,17 +47,17 @@ export class ContratosService {
     }));
   }
 
-  public sendAndGenerateReservaPDF(_id) {
+  public sendAndGenerateReservaPDF(_id, idioma: string) {
     // @ts-ignore
-    return this.httpClient.get<any>(`${this.dashURL}/reservas/pdf/${_id}`, {responseType: 'blob'}).pipe(map(response => {
+    return this.httpClient.get<any>(`${this.dashURL}/reservas/pdf/${_id}/${idioma}`, {responseType: 'blob'}).pipe(map(response => {
       return response;
     }));
   }
 
-  public viewPDF(_id, estatus) {
+  public viewPDF(_id, estatus, idioma?) {
     if(estatus == 4) {
       // @ts-ignore
-      return this.httpClient.get<any>(`${this.dashURL}/reservas/view/pdf/${_id}`, {responseType: 'blob'}).pipe(map(response => {
+      return this.httpClient.get<any>(`${this.dashURL}/reservas/view/pdf/${_id}/${idioma}`, {responseType: 'blob'}).pipe(map(response => {
         return response;
       }));
     } else {
@@ -66,7 +66,13 @@ export class ContratosService {
         return response;
       }));
     }
+  }
 
+  public viewReservaPDF(_id, idioma) {
+    // @ts-ignore
+    return this.httpClient.get<any>(`${this.dashURL}/reservas/view/pdf/${_id}/${idioma}`, {responseType: 'blob'}).pipe(map(response => {
+      return response;
+    }));
   }
 
   public cancelContract(_id) {

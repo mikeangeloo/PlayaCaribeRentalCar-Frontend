@@ -191,9 +191,6 @@
                       <ion-button fill="clear" (click)="nuevoContrato()" *ngIf="row.estatus == 'disponible'" title="Rentar">
                         <ion-icon  name="car" color="secondary"></ion-icon>
                       </ion-button>
-                      <ion-button fill="clear" (click)="reservar()" *ngIf="row.estatus == 'disponible'" title="Reservar">
-                        <ion-icon name="ticket" color="secondary"></ion-icon>
-                      </ion-button>
                       <ion-button fill="clear" (click)="retornar(row)"  *ngIf="row.estatus == 'rentado' || row.estatus == 'reservado'" title="{{(row.estatus == 'reservado') ? 'Rentar' : 'Retornar'}}">
                         <ion-icon name="exit" color="secondary"></ion-icon>
                       </ion-button>
@@ -226,8 +223,9 @@
                     <div style="width: 90%; display: table;">
                         <div style="display: table-row">
                           <div style="display: table-cell;  width:34%"><span style="font-weight: bold ; ">Folio Contrato:</span>  {{row.contrato.num_contrato}} </div>
+                          <div style="display: table-cell;  width:34%" *ngIf="row.contrato?.num_reserva && (contractServ.getContractTypePrefix(row.contrato.num_reserva).type === 'reserva')"><span style="font-weight: bold ; ">Folio Reserva: </span> <a style="text-decoration: underline; cursor: pointer; " (click)="reimprimirReserva(row.contrato.id)">{{row.contrato.num_reserva}}</a> </div>
                           <div style="display: table-cell;  width:34%" ><span style="font-weight: bold ;">Fecha Salida:</span> {{row.contrato.fecha_salida}}  </div>
-                          <div style="display: table-cell;  width:34%" ><span style="font-weight: bold ; ">Total:</span> {{row.contrato.total}}  </div>
+
                         </div>
                         <div style="display: table-row">
                           <div style="display: table-cell;  width:34%"><span style="font-weight: bold ;">Elaboró:</span> {{row.contrato.usuario.nombre}}  </div>
@@ -235,7 +233,8 @@
                           <div style="display: table-cell;  width:34%"><span style="font-weight: bold ;">Cliente:</span> {{row.contrato.cliente.nombre}}  </div>
                         </div>
                         <div style="display: table-row">
-                          <div style="display: table-cell;  width:50%"><span style="font-weight: bold ;">Estatus:</span> {{row.contrato.estatus}}  </div>
+                          <div style="display: table-cell;  width:34%"><span style="font-weight: bold ;">Estatus:</span> <ion-chip [outline]="true">{{statusC.labelStatus(row.contrato.estatus)}}</ion-chip></div>
+                          <div style="display: table-cell;  width:34%" ><span style="font-weight: bold ; ">Total:</span> {{row.contrato.total}}  </div>
                         </div>
                     </div>
                   </div>

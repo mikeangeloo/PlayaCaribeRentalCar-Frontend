@@ -84,4 +84,6 @@ export interface ContratoI
   iva_monto_retorno: number;
   total_retorno: number;
   cobranza_calc_retorno: CobranzaCalcI[];
+
+  idioma?: string;
 }

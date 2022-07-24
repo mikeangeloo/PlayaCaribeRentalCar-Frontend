@@ -50,7 +50,6 @@ import { SignatureCaptureComponent } from 'src/app/common/components/signature-c
 import html2canvas from 'html2canvas';
 import { CargosExtrasI } from 'src/app/interfaces/configuracion/cargos-extras.interface';
 import { CargosRetornoExtrasService } from 'src/app/services/cargos-retorno-extras.service';
-import { zIndex } from 'html2canvas/dist/types/css/property-descriptors/z-index';
 import { NgxSpinnerService } from "ngx-spinner";
 import { ActivatedRoute, Router } from '@angular/router';
 
@@ -348,9 +347,9 @@ export class ContratoPage implements OnInit, AfterViewInit {
     console.log('execute reloadAll');
     // verificamos si tenemos guardado un contract_id en local storage para continuar con la edición
     console.log(this.contratosServ.getContractNumber());
-    this.contractTypePrefix = this.contratosServ.getContractTypePrefix(this.contratosServ.getContractNumber());
-    if (this.contratosServ.getContractNumber()) {
 
+    if (this.contratosServ.getContractNumber()) {
+      this.contractTypePrefix = this.contratosServ.getContractTypePrefix(this.contratosServ.getContractNumber());
 
       this.num_contrato = this.contratosServ.getContractNumber();
 
