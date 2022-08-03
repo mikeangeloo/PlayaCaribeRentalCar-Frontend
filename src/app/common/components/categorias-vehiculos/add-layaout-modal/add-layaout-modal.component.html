@@ -1,0 +1,28 @@
+<ion-header translucent *ngIf="asModal">
+  <ion-toolbar>
+    <ion-title>{{ title }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button class="close-btn" (click)="dismiss()">
+        <ion-icon name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content fullscreen>
+  <ion-card class="app-card">
+    <ion-card-content>
+      <ion-row size-lg="12"  style="height: 100%; align-content: center; justify-content: center">
+
+        <app-modelos-docs model="categorias_vehiculos" docType="layout" [fullSize]="true" [justButton]="true" [model_id_value]="-100">
+          <legend name="legend">Doc. Categorias Vehiculos Layouts</legend>
+        </app-modelos-docs>
+
+      </ion-row>
+    </ion-card-content>
+    <div class="card-action-buttons">
+      <ion-button color="success" (click)="dismiss(true)">Terminar</ion-button>
+    </div>
+  </ion-card>
+
+</ion-content>

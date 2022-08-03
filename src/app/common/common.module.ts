@@ -48,6 +48,8 @@ import {CargosExtrasTableComponent} from './components/configuracion/precios/car
 import { CargosExtrasFormComponent } from './components/configuracion/precios/cargos-extras-form/cargos-extras-form.component';
 import { VehiculosListContractComponent } from './components/vehiculos/vehiculos-list-contract/vehiculos-list-contract.component';
 import { ReservasFormComponent } from './components/reservas/reservas-form/reservas-form.component';
+import { LayoutModalComponent } from './components/categorias-vehiculos/layout-modal/layout-modal.component';
+import { AddLayaoutModalComponent } from './components/categorias-vehiculos/add-layaout-modal/add-layaout-modal.component';
 
 
 @NgModule({
@@ -94,7 +96,9 @@ import { ReservasFormComponent } from './components/reservas/reservas-form/reser
     CargosExtrasTableComponent,
     CargosExtrasFormComponent,
     VehiculosListContractComponent,
-    ReservasFormComponent
+    ReservasFormComponent,
+    LayoutModalComponent,
+    AddLayaoutModalComponent
   ],
   exports: [
     HotelesListComponent,
@@ -139,7 +143,9 @@ import { ReservasFormComponent } from './components/reservas/reservas-form/reser
     CargosExtrasTableComponent,
     CargosExtrasFormComponent,
     VehiculosListContractComponent,
-    ReservasFormComponent
+    ReservasFormComponent,
+    LayoutModalComponent,
+    AddLayaoutModalComponent
   ],
   entryComponents: [
     HotelesListComponent,
@@ -184,7 +190,9 @@ import { ReservasFormComponent } from './components/reservas/reservas-form/reser
     CargosExtrasTableComponent,
     CargosExtrasFormComponent,
     VehiculosListContractComponent,
-    ReservasFormComponent
+    ReservasFormComponent,
+    LayoutModalComponent,
+    AddLayaoutModalComponent
   ],
     imports: [
         CommonModule,

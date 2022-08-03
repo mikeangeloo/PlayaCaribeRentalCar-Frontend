@@ -2635,6 +2635,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
     switch (section) {
       case 'datos_generales':
         if (this.generalDataForm.invalid) {
+          this.spinner.hide();
           this.sweetMsgServ.printStatus('Verifica que los datos solicitados esten completos', 'warning');
           this.generalDataForm.markAllAsTouched();
           console.log(this.generalDataForm);
@@ -2652,6 +2653,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
         break;
       case 'datos_vehiculo':
         if (this.vehiculoForm.invalid) {
+          this.spinner.hide();
           this.sweetMsgServ.printStatus('Verifica que los datos solicitados esten completos', 'warning');
           this.vehiculoForm.markAllAsTouched();
           return;
@@ -2663,6 +2665,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
         break;
       case 'datos_cliente':
         if (this.clienteDataForm.invalid) {
+          this.spinner.hide();
           if (!ignoreMsg) {
             this.sweetMsgServ.printStatus('Verifica que los datos solicitados esten completos', 'warning');
           }
@@ -2678,6 +2681,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
         break;
       case 'cobranza':
         if (!payload) {
+          this.spinner.hide();
           this.sweetMsgServ.printStatus('Verifica que los datos solicitados esten completos', 'warning');
           return;
         }
@@ -2690,6 +2694,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
         break;
       case 'check_in_salida':
         if (this.dragObjs.length === 0) {
+          this.spinner.hide();
           this.sweetMsgServ.printStatus('Agrega un elemento de verificación', 'warning');
           return;
         }
@@ -2711,6 +2716,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
       case 'firma':
 
         if (this.signature == '') {
+          this.spinner.hide();
           this.sweetMsgServ.printStatus('Es necesesario la firma para terminar el proceso', 'warning');
           return;
         }
@@ -2719,6 +2725,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
         break;
       case 'retorno':
         if (this.retornoDataForm.invalid) {
+          this.spinner.hide();
           this.sweetMsgServ.printStatus('Verifica que los datos solicitados esten completos', 'warning');
           console.log(this.retornoDataForm);
           return;
@@ -2727,6 +2734,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
         break;
       case 'cobranza_retorno':
           if (!payload) {
+            this.spinner.hide();
             this.sweetMsgServ.printStatus('Verifica que los datos solicitados esten completos', 'warning');
             return;
           }

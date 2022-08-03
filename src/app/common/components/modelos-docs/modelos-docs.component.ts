@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
 import {DocDataTransfer} from '../../../interfaces/shared/doc-data-tranfer.interface';
 import {SweetMessagesService} from '../../../services/sweet-messages.service';
 import {FilesService} from '../../../services/files.service';
@@ -17,8 +17,8 @@ export class ModelosDocsComponent implements OnInit, OnChanges {
   public cobranza_docs: DocDataTransfer[] = [];
 
   @Input() model_id_value: number;
-  @Input() docType: 'licencia_conducir' | 'cupon' | 'voucher' | 'check_indicator';
-  @Input() model: 'clientes' | 'contratos' | 'cobranza' | 'check_list';
+  @Input() docType: 'licencia_conducir' | 'cupon' | 'voucher' | 'check_indicator' | 'layout';
+  @Input() model: 'clientes' | 'contratos' | 'cobranza' | 'check_list' | 'categorias_vehiculos';
   @Input() justButton: boolean;
   @Input() btnSize: 'small' | 'default' | 'large' = 'default';
   @Input() fullSize: boolean;

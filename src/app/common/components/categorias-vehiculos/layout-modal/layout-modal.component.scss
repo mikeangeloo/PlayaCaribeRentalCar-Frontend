@@ -1,0 +1,30 @@
+// /* HIDE RADIO */
+// .radio_layout{
+//   position: absolute;
+//   opacity: 0;
+//   width: 0;
+//   height: 0;
+// }
+
+// /* IMAGE STYLES */
+// .radio_layout + img {
+//   cursor: pointer;
+// }
+
+// /* CHECKED STYLES */
+// .radio_layout:checked + img {
+//   outline: 2px solid rgb(0, 163, 228);
+// }
+:host ::ng-deep .mat-radio-container {
+  display: none;
+}
+
+.mat-radio-checked {
+  outline: 2px solid rgb(0, 163, 228);
+}
+
+.card-action-buttons {
+  display: flex;
+  justify-content: flex-end;
+  margin: 10px;
+}

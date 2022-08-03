@@ -1,0 +1,35 @@
+<ion-header translucent *ngIf="asModal">
+  <ion-toolbar>
+    <ion-title>{{ title }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button class="close-btn" (click)="dismiss()">
+        <ion-icon name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content fullscreen>
+  <ion-card class="app-card">
+    <ion-card-content>
+      <ion-row size-lg="12"  style="height: 100%; align-content: center; justify-content: center">
+        <mat-radio-group name="categoria_layout_grp" class="layout_grp" [(ngModel)]="layoutSeleccionado">
+          <ng-container *ngFor="let doc of categorias_vehiculos_docs" >
+            <ion-col >
+              <mat-label >
+                <mat-radio-button class="radio_layout"  name="categoria_layout" [value]="doc" >
+                  <img src="{{doc.url}}" style="width: 300px;">
+                </mat-radio-button>
+              </mat-label>
+            </ion-col>
+          </ng-container>
+        </mat-radio-group>
+      </ion-row>
+    </ion-card-content>
+    <div class="card-action-buttons">
+      <ion-button  [disabled]="layoutSeleccionado == null"  color="success" (click)="seleccionarLayout()">Seleccionar</ion-button>
+    </div>
+  </ion-card>
+
+</ion-content>
+
