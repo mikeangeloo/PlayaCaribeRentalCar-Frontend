@@ -699,6 +699,9 @@ mat-header-row {
     --width: 75%;
   }
 }
+.nested-modal {
+  --backdrop-opacity: 0.5;
+}
 //#endregion
 
 //#region CUSTOM LEGACY TABLES

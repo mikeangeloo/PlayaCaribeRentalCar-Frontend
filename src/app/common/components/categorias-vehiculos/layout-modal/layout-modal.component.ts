@@ -14,6 +14,7 @@ export class LayoutModalComponent implements OnInit {
   public categorias_vehiculos_docs = [];
   public title;
   public layoutSeleccionado: DocDataTransfer = null;
+  @Input() asModal = true
 
 
   constructor(

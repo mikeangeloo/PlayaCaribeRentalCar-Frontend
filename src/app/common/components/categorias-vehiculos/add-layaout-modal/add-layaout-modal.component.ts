@@ -12,6 +12,7 @@ export class AddLayaoutModalComponent implements OnInit {
   public title;
   public layoutSeleccionado: DocDataTransfer = null;
   @Input() modelo_id: number;
+  asModal = true
 
   constructor(
     public modalCtrl: ModalController,

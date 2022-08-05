@@ -120,7 +120,8 @@ export class CategoriaVehiculosFormComponent implements OnInit {
       },
       swipeToClose: true,
       backdropDismiss: false,
-      cssClass: 'medium-form'
+      showBackdrop: true,
+      cssClass: ['medium-form', 'nested-modal']
     });
     await modal.present();
     const {data} = await modal.onDidDismiss();

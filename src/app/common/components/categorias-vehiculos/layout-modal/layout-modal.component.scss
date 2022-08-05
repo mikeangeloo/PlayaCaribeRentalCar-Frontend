@@ -19,6 +19,27 @@
   display: none;
 }
 
+::ng-deep {
+  .layout_grp {
+    .radio_layout {
+      height: 100%;
+      .mat-radio-label-content {
+        height: 100%;
+      }
+      .mat-radio-label {
+        height: 100%;
+
+        img {
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
+        }
+      }
+    }
+  }
+
+}
+
 .mat-radio-checked {
   outline: 2px solid rgb(0, 163, 228);
 }
@@ -28,3 +49,5 @@
   justify-content: flex-end;
   margin: 10px;
 }
+
+
