@@ -9,6 +9,7 @@
     font-size: 1.5em;
   }
 }
+ngx-loading * {border-radius: 10px; text-align: center}
 .accordion-margin {
   margin: 1rem;
 
@@ -24,9 +25,9 @@ mat-datepicker-toggle {
 ion-card {
   margin: 7px;
 
-  ion-card-content {
-    //margin: 0.7em;
-  }
+  // ion-card-content {
+  //   //margin: 0.7em;
+  // }
 }
 
 .desgloce-table {
@@ -296,6 +297,7 @@ ion-card {
   }
 }
 
+//#region CHECK LIST
 .more-drag-obj {
   border-bottom: 1px solid #6a696936;
   display: flex;
@@ -312,3 +314,44 @@ ion-card {
     flex: 0 1 60%;
   }
 }
+
+.checklist-top-buttons {
+  display: flex;
+  justify-content: space-between;
+  width: calc(calc(11 / var(--ion-grid-columns, 12)) * 98%);
+  margin: 0 auto;
+
+  .top-button {
+    display: flex;
+    flex-direction: column;
+
+    span {
+      font-size: 0.8em;
+      text-align: center;
+      margin-top: 5px;
+    }
+  }
+}
+
+.checklist-left-buttons {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  height: 100%;
+  justify-content: space-evenly;
+
+  @media(min-width: 768px) {
+    flex-direction: column;
+  }
+
+  .draggid {
+    width: initial;
+    text-align: right;
+    @media(min-width: 768px) {
+      width: 100%;
+      text-align: center;
+
+    }
+  }
+}
+//#endregion

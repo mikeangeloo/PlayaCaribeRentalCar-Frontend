@@ -4,7 +4,7 @@ export interface CobranzaCalcI
     element_label: string;
     value: number;
     quantity: number;
-    quantity_type: 'dias' | '%' | '';
+    quantity_type: 'dias' | '%' | ''  | 'horas';
     number_sign: 'positive' | 'negative';
     amount: number;
     currency: string;

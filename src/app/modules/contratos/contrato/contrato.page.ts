@@ -1,13 +1,13 @@
-import {AfterViewInit, Component, OnInit} from '@angular/core';
+import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
 import {NgxMaterialTimepickerTheme} from 'ngx-material-timepicker';
 import {Months} from '../../../interfaces/shared/months';
 import * as moment from 'moment';
 import {SweetMessagesService} from '../../../services/sweet-messages.service';
 import {CardI} from '../../../interfaces/cards/card.interface';
 import {TarjetaFormComponent} from '../../../common/components/tarjetas/tarjeta-form/tarjeta-form.component';
-import {ActionSheetController, ModalController} from '@ionic/angular';
+import {ActionSheetController, AlertController, ModalController} from '@ionic/angular';
 import {MultiTableFilterComponent} from '../../../common/components/multi-table-filter/multi-table-filter.component';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {FormBuilder, FormGroup, Validator, Validators} from '@angular/forms';
 import {DateConv} from '../../../helpers/date-conv';
 import {SessionService} from '../../../services/session.service';
 import {SucursalesI} from '../../../interfaces/sucursales.interface';
@@ -33,7 +33,7 @@ import {ModelsEnum} from '../../../enums/models.enum';
 import {ToastMessageService} from '../../../services/toast-message.service';
 import {UbicacionesI} from '../../../interfaces/configuracion/ubicaciones.interface';
 import {UbicacionesService} from '../../../services/ubicaciones.service';
-import {map, Observable, startWith} from 'rxjs';
+import {map, Observable, single, startWith} from 'rxjs';
 import {CobranzaProgI} from '../../../interfaces/cobranza/cobranza-prog.interface';
 import {CobranzaService} from '../../../services/cobranza.service';
 import {TarifasCategoriasI} from '../../../interfaces/configuracion/tarifas-categorias.interface';
@@ -41,7 +41,17 @@ import {TarifasCategoriasService} from '../../../services/tarifas-categorias.ser
 import {CobranzaTipoE} from '../../../enums/cobranza-tipo.enum';
 import {InputModalComponent} from '../../../common/components/input-modal/input-modal.component';
 import {DragObjProperties} from '../../../common/draggable-resizable/draggable-resizable.component';
-
+import {ModelosDocsComponent} from '../../../common/components/modelos-docs/modelos-docs.component';
+import {ModalDragElementDetailsComponent} from '../../../common/components/modal-drag-element-details/modal-drag-element-details.component';
+import {CheckListTypeEnum} from '../../../enums/check-list-type.enum';
+import {NotasService} from '../../../services/notas.service';
+import {CheckListService} from '../../../services/check-list.service';
+import { SignatureCaptureComponent } from 'src/app/common/components/signature-capture/signature-capture.component';
+import html2canvas from 'html2canvas';
+import { CargosExtrasI } from 'src/app/interfaces/configuracion/cargos-extras.interface';
+import { CargosRetornoExtrasService } from 'src/app/services/cargos-retorno-extras.service';
+import { NgxSpinnerService } from "ngx-spinner";
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-contrato',
@@ -50,9 +60,13 @@ import {DragObjProperties} from '../../../common/draggable-resizable/draggable-r
 })
 
 export class ContratoPage implements OnInit, AfterViewInit {
+  @ViewChild(SignatureCaptureComponent) signatureComponent;
 
+  public loading = false;
+  public statusColor = "white";
+  public contractTypePrefix: { type: string, prefix: string };
   //#region STEP CONTROLLER ATTRIBUTES
-  step = 4;
+  step = 0;
   //#endregion
 
   //#region DATOS GENERALES ATTRIBUTES
@@ -156,7 +170,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
   public comisiones: number[];
 
   public cobranzaProgData: CobranzaProgI[] = [];
-  public balancePorPagar: number;
+  public balancePorPagar: number = 0.00;
   public cobranzaTipos = CobranzaTipoE;
 
   public pagadoTotal = 0;
@@ -166,10 +180,40 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
   //#region CHECKLIST ATTRIBUTES
   dragObjs: DragObjProperties[] = [];
+  selectedDragObj: DragObjProperties;
+  vehicleOutlineBackground: string;
+  checkListForm: FormGroup;
+  public check_list_img;
   //#endregion
 
   //#region SIGNATURE MANAGEMENT ATTRIBUTES
-  public signature = '';
+  public signature: any | string;
+  public signature_matrix = '';
+  public terminos=false;
+  //#endregion
+
+  //#region RETORNO ATTRIBUTES
+  retornoDataForm: FormGroup;
+  cargos_extras_toggle = false;
+  frecuencia_extras_toggle = false;
+  cargosExtras: CargosExtrasI[];
+  extraFrecuency: number;
+  public cobranzaRetornoI: CobranzaCalcI[] = [];
+
+  public cobranzaProgRetornoData: CobranzaProgI[] = [];
+  public balanceRetornoPorPagar: number = 0.00;
+  public pagadoRetornoTotal = 0;
+  public pagadoRetornoAutTotal = 0;
+
+
+  cobranzaExtraPor: string = 'dias | horas';
+  horaExtraMax = 2;
+  hora_actual: string;
+  hora_retorno: string;
+
+  fecha_actual: string;
+  fecha_retorno: string;
+
   //#endregion
 
   constructor(
@@ -182,13 +226,21 @@ export class ContratoPage implements OnInit, AfterViewInit {
     public filesServ: FilesService,
     public tiposTarifasServ: TiposTarifasService,
     public tarifasExtrasServ: TarifasExtrasService,
+    public cargosRetornoExtrasServ: CargosRetornoExtrasService,
     public hotelesServ: HotelesService,
     public comisionistasServ: ComisionistasService,
     public toastServ: ToastMessageService,
     public ubicacionesServ: UbicacionesService,
     public cobranzaServ: CobranzaService,
     public tarifasCatServ: TarifasCategoriasService,
-    public actionSheetController: ActionSheetController
+    public actionSheetController: ActionSheetController,
+    public alertController: AlertController,
+    public notasServ: NotasService,
+    public checkListServ: CheckListService,
+    public spinner: NgxSpinnerService,
+    public router: Router,
+    public route: ActivatedRoute
+
   ) { }
 
   ngOnInit() {
@@ -196,14 +248,60 @@ export class ContratoPage implements OnInit, AfterViewInit {
   }
 
   async ionViewWillEnter() {
+    this.spinner.show();
     console.log('view enter');
+
     await this.loadTiposTarifas();
     await this.loadTarifasCat();
     this.loadTarifasExtras();
     await this.loadHoteles();
     await this.loadComisionistas();
     await this.loadUbicaciones();
-    await this.reloadAll();
+    await this.loadCargosExtras();
+
+    //TODO Validar si existe contrato en local y preguntar si quiere recuperar la info
+
+
+
+    let contract_number = this.route.snapshot.paramMap.get('contract_number');
+
+    console.log(contract_number);
+    if(contract_number) {
+      this.contratosServ.setContractData(contract_number);
+      await this.reloadAll();
+    } else {
+      // revisamos si hay contrato en localstorage
+      if (this.contratosServ.getContractNumber()) {
+        await this.sweetMsgServ.confirmRequest('Existe un contrato con el folio:' + this.contratosServ.getContractNumber() + ' guardado temporalmente', '¿Quieres reanudar tu avance?, si lo cancelas tu información se perdera', 'Continuar Editando', 'Nuevo Contrato').then(async (data) => {
+          if (data.value) {
+            await this.reloadAll();
+          } else {
+            let res = await this.contratosServ._getContractData(this.contratosServ.getContractNumber());
+            if (res.ok === true) {
+              this.contratosServ.cancelContract(res.data.id).subscribe(async res => {
+                if (res.ok) {
+                  this.sweetMsgServ.printStatus(res.message, 'success');
+                  localStorage.removeItem(this.generalServ.dragObjStorageKey);
+                  this.contratosServ.flushContractData();
+                  await this.reloadAll();
+                }
+              }, error => {
+                console.log(error);
+                this.sweetMsgServ.printStatusArray(error.error.errors, 'error');
+              })
+            } else {
+              this.contratosServ.flushContractData();
+              await this.reloadAll();
+            }
+          }
+        })
+      } else {
+        await this.reloadAll();
+      }
+
+    }
+
+    //await this.reloadAll();
 
     this.exitPlacesOptions$ = this.gf.ub_salida_id.valueChanges.pipe(
         startWith(''),
@@ -236,27 +334,62 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
   async reloadAll() {
     //TODO: quitar al guardar en DB
-    if (localStorage.getItem(this.generalServ.dragObjStorageKey)) {
-      let dragObjs = JSON.parse(localStorage.getItem(this.generalServ.dragObjStorageKey));
-      if (dragObjs && dragObjs.length > 0) {
-        this.dragObjs = dragObjs;
-      }
-    }
+    // if (localStorage.getItem(this.generalServ.dragObjStorageKey)) {
+    //   let dragObjs = JSON.parse(localStorage.getItem(this.generalServ.dragObjStorageKey));
+    //   if (dragObjs && dragObjs.length > 0) {
+    //     for (let i = 0; i < dragObjs.length; i++) {
+    //       dragObjs[i].enable = false;
+    //       this.dragObjs = dragObjs;
+    //     }
+    //
+    //   }
+    // }
     console.log('execute reloadAll');
     // verificamos si tenemos guardado un contract_id en local storage para continuar con la edición
+    console.log(this.contratosServ.getContractNumber());
+
     if (this.contratosServ.getContractNumber()) {
+      this.contractTypePrefix = this.contratosServ.getContractTypePrefix(this.contratosServ.getContractNumber());
+
       this.num_contrato = this.contratosServ.getContractNumber();
 
       let res = await this.contratosServ._getContractData(this.num_contrato);
         if (res.ok) {
+
+          if (this.num_contrato !== res.data.num_contrato) {
+            console.log('Fue reserva ahora es contrato')
+            await this.router.navigate(['contratos/view'], res.data.num_contrato);
+            return;
+          }
+
           this.contractData = res.data;
+          this.contract_id = this.contractData.id
+          if (this.contractData.estatus == ContratosStatusE.BORRADOR || this.contractData.estatus === ContratosStatusE.RESERVA) {
+            this.statusColor = "yellow";
+          } else if (this.contractData.estatus == ContratosStatusE.RENTADO) {
+            this.statusColor = "DeepSkyBlue";
+          } else if (this.contractData.estatus == ContratosStatusE.CERRADO) {
+            this.statusColor = "SpringGreen";
+          }
 
           if (this.contractData.etapas_guardadas && this.contractData.etapas_guardadas.length > 0) {
+            let _datosClienteEtapa = this.contractData.etapas_guardadas.find(x => x === 'datos_cliente');
+            if (_datosClienteEtapa) {
+              console.log('datos_cliente');
+              let _clientesPayload = this.contractData.cliente;
+              this.initClientForm(_clientesPayload);
+              this.getDocs('licencia_conducir', 'clientes', _clientesPayload.id);
+              this.step = 1;
+            } else {
+              this.initClientForm();
+            }
+
             let _datosGeneralesEtapa = this.contractData.etapas_guardadas.find(x => x === 'datos_generales');
             if (_datosGeneralesEtapa) {
               console.log('datos_generales');
               this.initGeneralForm(this.contractData);
               this.getDocs('cupon', 'contratos', this.contractData.id);
+              this.step = 2;
 
             } else {
               this.initGeneralForm();
@@ -265,53 +398,152 @@ export class ContratoPage implements OnInit, AfterViewInit {
             let _datosVehiculo = this.contractData.etapas_guardadas.find(x => x === 'datos_vehiculo');
             if (_datosVehiculo) {
               console.log('datos_vehiculo');
-              if (this.contractData.vehiculo) {
+              if (this.contractData.vehiculo || this.contractData.estatus === ContratosStatusE.RESERVA) {
+                this.step = 3;
                 this.vehiculoData = this.contractData.vehiculo;
+                this.vehicleOutlineBackground = this.vehiculoData.categoria.categoria.toLowerCase();
+                console.log(this.vehicleOutlineBackground);
                 this.initVehiculoForm(this.contractData);
+
               }
 
             } else {
               this.initVehiculoForm();
             }
 
-            let _datosClienteEtapa = this.contractData.etapas_guardadas.find(x => x === 'datos_cliente');
-            if (_datosClienteEtapa) {
-              console.log('datos_cliente');
-              let _clientesPayload = this.contractData.cliente;
-              this.initClientForm(_clientesPayload);
-              this.getDocs('licencia_conducir', 'clientes', _clientesPayload.id);
-            } else {
-              this.initClientForm();
-            }
-
             let _cobranzaData = this.contractData.etapas_guardadas.find(x => x === 'cobranza');
             if (_cobranzaData && (this.contractData.cobranza && this.contractData.cobranza.length > 0)) {
               console.log('cobranza');
-              this.cobranzaProgData = this.contractData.cobranza;
+              this.cobranzaProgData = this.contractData.cobranza.filter(x => x.cobranza_seccion == 'salida' || x.cobranza_seccion == 'reserva');
+              console.log(this.cobranzaProgData)
+              if (this.balancePorPagar == 0) {
+                this.step = 4;
+              };
+
 
             } else {
               this.cobranzaProgData = [];
             }
+
+            let _checkListSalidaData = this.contractData.etapas_guardadas.find(x => x === 'check_list_salida');
+            if (_checkListSalidaData) {
+              console.log('check_list_salida');
+              this.dragObjs = this.contractData.check_list_salida;
+              console.log('dragObjs', this.dragObjs);
+
+              let _dataFromStorage: DragObjProperties[] = this.returnIfCheckListInStorage();
+
+              if (_dataFromStorage.length === 0){
+                localStorage.removeItem(this.generalServ.dragObjStorageKey);
+                for (let i = 0; i < this.dragObjs.length; i++) {
+                  this.dragObjs[i].enable = false;
+                }
+              }
+
+              if (_dataFromStorage.length > 0) {
+
+                console.log('localstorage', _dataFromStorage);
+                let _firstUnSaved = _dataFromStorage.find(x => x.saved == false);
+                this.catchPickedObj(_firstUnSaved ? _firstUnSaved : _dataFromStorage[0]);
+                // for (let i = 0; i < _dataFromStorage.length; i++) {
+                //   this.saveDragObj(_dataFromStorage[i]);
+                // }
+                this.dragObjs = [... _dataFromStorage];
+
+                console.log('dragObjs', this.dragObjs);
+              }
+
+
+            }
+            let _checkFormListData = this.contractData.etapas_guardadas.find(x => x === 'check_form_list');
+            if (_checkFormListData) {
+              console.log('check_form_list');
+
+              if (this.contractData.check_form_list) {
+                this.step = 5;
+                this.initCheckListForm(this.contractData.check_form_list);
+
+              }
+
+            } else {
+              this.initCheckListForm()
+            }
+            let _firma = this.contractData.etapas_guardadas.find(x => x === 'firma');
+            if (_firma) {
+              console.log('firma');
+              this.terminos = true;
+              this.signature_matrix = this.contractData.firma_matrix;
+              this.signature = {
+                signature_matrix: JSON.parse(this.contractData.firma_matrix),
+                signature_img: this.contractData.firma_cliente
+              }
+              this.step = 6;
+            }
+            let _retorno = this.contractData.etapas_guardadas.find(x => x === 'retorno');
+            if (_retorno) {
+              this.step = 7;
+              console.log('retorno');
+              this.initRetornoForm(this.contractData);
+              if(this.contractData.cargos_retorno_extras){
+                this.cargos_extras_toggle = true;
+              }
+              if (this.contractData.frecuencia_extra) {
+                this.frecuencia_extras_toggle = true;
+              }
+
+
+
+            }else {
+              this.initRetornoForm(this.contractData);
+            }
+
+
+            let _cobranzaRetornoData = this.contractData.etapas_guardadas.find(x => x === 'cobranza_retorno');
+            if (_cobranzaRetornoData && (this.contractData.cobranza && this.contractData.cobranza.length > 0)) {
+              console.log('cobranza_retorno');
+              this.cobranzaProgRetornoData = this.contractData.cobranza.filter(x => x.cobranza_seccion == 'retorno' );
+              console.log(this.cobranzaProgRetornoData)
+
+            } else {
+              this.cobranzaProgRetornoData = [];
+            }
+
+
+
           }
           if (this.generalDataForm.controls.total.value) {
 
             this.recalBalancePorCobrar();
           }
+          if (this.retornoDataForm.controls.total_retorno.value) {
+            this.recalBalanceRetornoPorCobrar();
+          }
+
+          console.log(this.step);
+          this.spinner.hide();
         } else {
           console.log(res.errors);
           this.sweetMsgServ.printStatusArray(res.errors.error.errors, 'error');
           this.contratosServ.flushContractData();
-
-          this.initGeneralForm();
-          this.initClientForm();
-          this.initVehiculoForm();
-          this.cobranzaProgData = [];
+          this.router.navigateByUrl('/contratos/nuevo')
+          // this.initGeneralForm();
+          // this.initClientForm();
+          // this.initVehiculoForm();
+          // this.initCheckListForm();
+          // this.initRetornoForm();
+          // this.cobranzaProgRetornoData = [];
+          // this.cobranzaProgData = [];
+          this.spinner.hide();
         }
     } else {
       this.initGeneralForm();
       this.initClientForm();
       this.initVehiculoForm();
+      this.initCheckListForm();
+      this.initRetornoForm();
+      this.cobranzaProgRetornoData = [];
       this.cobranzaProgData = [];
+      this.spinner.hide();
     }
   }
 
@@ -333,6 +565,19 @@ export class ContratoPage implements OnInit, AfterViewInit {
     return years;
   }
   //#endregion
+
+  detectIOS(): boolean {
+    return [
+        'iPad Simulator',
+        'iPhone Simulator',
+        'iPod Simulator',
+        'iPad',
+        'iPhone',
+        'iPod'
+      ].includes(navigator.platform)
+      // iPad on iOS 13 detection
+      || (navigator.userAgent.includes('Mac') && 'ontouchend' in document);
+  }
 
   //#region GENERAL FORM FUNCTIONS
   initGeneralForm(data?: ContratoI) {
@@ -498,6 +743,15 @@ export class ContratoPage implements OnInit, AfterViewInit {
     })
   }
 
+  async loadCargosExtras() {
+    let res = await this.cargosRetornoExtrasServ.getActive();
+    if (res.ok) {
+      this.cargosExtras = res.data;
+    } else {
+      console.log('error loadCargos extras err --->', res);
+    }
+  }
+
   get gf() {
     return this.generalDataForm.controls;
   }
@@ -549,6 +803,101 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
   //#endregion
 
+  //#region RETORNO FORM FUNCTIONS
+  initRetornoForm(data?) {
+    this.retornoDataForm = this.fb.group({
+      cant_combustible_retorno: [(data && data.cant_combustible_retorno ? data.cant_combustible_retorno : null), Validators.required],
+      km_final: [(data && data.km_final ? data.km_final: null), [Validators.required, Validators.min(this.vf.km_inicial.value)]],
+      cargos_extras_retorno_ids: [(data && data.cargos_retorno_extras_ids ? data.cargos_retorno_extras_ids : null)],
+      cargos_extras_retorno: [(data && data.cargos_retorno_extras ? data.cargos_retorno_extras : null)],
+      frecuencia_extra: [(data && data.frecuencia_extra ? data.frecuencia_extra : null)],
+      cobranzaExtraPor: [(data && data.cobranzaExtraPor) ? data.cobranzaExtraPor : null],
+      subtotal_retorno: [(data && data.subtotal_retorno ? data.subtotal_retorno : null), Validators.required],
+      con_iva_retorno: [(data && data.con_iva_retorno ? data.con_iva_retorno : null)],
+      iva_retorno: [(data && data.iva_retorno ? data.iva_retorno : null)],
+      iva_monto_retorno: [(data && data.iva_monto_retorno ? data.iva_monto_retorno : null)],
+      total_retorno: [(data && data.total_retorno ? data.total_retorno : null), Validators.required],
+      cobranza_calc_retorno: [(data && data.cobranza_calc_retorno ? data.cobranza_calc_retorno : null), Validators.required],
+    });
+
+    if (data && data.cobranza_calc && data.cobranza_calc.length) {
+      this.cobranzaRetornoI = data.cobranza_calc_retorno;
+    }
+
+    if (data && data.hora_retorno) {
+      this.hora_retorno = data.hora_retorno;
+      this.fecha_retorno = data.fecha_retorno;
+
+      this.checkExtraChargeFrecuency();
+
+    }
+  }
+
+  get rf() {
+    return this.retornoDataForm.controls;
+  }
+
+  checkExtraChargeFrecuency() {
+    this.cobranzaExtraPor = 'horas';
+    this.hora_actual = DateConv.transFormDate(moment.now(), 'time');
+    this.fecha_actual = DateConv.transFormDate(moment.now(), 'regular');
+
+    let _fechaRetornoM = moment(moment(`${this.fecha_retorno} ${this.hora_retorno}`).format('YYYY-MM-DD HH:mm'));
+    let _fechaActualM = moment(moment(`${this.fecha_actual} ${this.hora_actual}`));
+    let _dateDiffM = moment.duration(_fechaActualM.diff(_fechaRetornoM));
+    this.extraFrecuency = _dateDiffM.asHours();
+
+    if (this.extraFrecuency > this.horaExtraMax) {
+      this.cobranzaExtraPor = 'dias';
+      this.extraFrecuency = _dateDiffM.asDays();
+    }
+
+    this.extraFrecuency = parseInt(this.extraFrecuency.toFixed(0));
+    console.log('_fechaRetornoM -->', _fechaRetornoM);
+    console.log('_fechaActualM -->', _fechaActualM);
+    console.log('cobranzaExtraPor --->', this.cobranzaExtraPor);
+    console.log('extraFrecuency -->', this.extraFrecuency);
+    console.log(this.retornoDataForm.controls.frecuencia_extra.value, this.extraFrecuency );
+
+    if (this.retornoDataForm.controls.frecuencia_extra.value != null && this.retornoDataForm.controls.frecuencia_extra.value < this.extraFrecuency) {
+      return;
+    }
+    this.retornoDataForm.controls.frecuencia_extra.patchValue(this.extraFrecuency);
+
+
+  }
+
+  //#endregion
+
+  //#region CHECKLIST FORM FUNCTIONS
+  initCheckListForm(data?) {
+    this.checkListForm = this.fb.group({
+      check_form_list_id: [(data && data.id ? data.id : null)],
+      tarjeta_circulacion: [(data && data.tarjeta_circulacion ? data.tarjeta_circulacion : null)],
+      tapetes: [(data && data.tapetes ? data.tapetes: null),],
+      //silla_bebes: [(data && data.silla_bebes ? data.silla_bebes: null), ],
+      espejos: [(data && data.espejos ? data.espejos: null), ],
+      tapones_rueda: [(data && data.tapones_rueda ? data.tapones_rueda: null), ],
+      tapon_gas: [(data && data.tapon_gas ? data.tapon_gas: null), ],
+      senalamientos: [(data && data.senalamientos ? data.senalamientos: null), ],
+      gato: [(data && data.gato ? data.gato: null), ],
+      llave_rueda: [(data && data.llave_rueda ? data.llave_rueda: null), ],
+      limpiadores: [(data && data.limpiadores ? data.limpiadores: null), ],
+      antena: [(data && data.antena ? data.antena: null), ],
+      navegador: [(data && data.navegador ? data.navegador: null), ],
+      placas: [(data && data.placas ? data.placas: null), ],
+      radio: [(data && data.radio ? data.radio: null), ],
+      llantas: [(data && data.llantas ? data.llantas: null), ],
+      observaciones: [(data && data.observaciones ? data.observaciones: null), ],
+    });
+  }
+
+  get checkListf() {
+    return this.checkListForm.controls;
+  }
+
+  //#endregion
+
   //#region VEHICULO FORM FUNCTIONS
   initVehiculoForm(data?) {
     this.vehiculoForm = this.fb.group({
@@ -556,6 +905,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
       km_anterior: [(data && data.km_anterior ? data.km_anterior : (data && data.km_recorridos) ? data.km_recorridos : null), Validators.required],
       km_inicial: [(data && data.km_inicial ? data.km_inicial : null), Validators.required],
       km_final: [(data && data.km_final ? data.km_final : null)],
+      cant_combustible_anterior: [(data && data.cant_combustible_anterior ? data.cant_combustible_anterior : null)],
       cant_combustible_salida: [(data && data.cant_combustible_salida ? data.cant_combustible_salida : null), Validators.required],
       cant_combustible_retorno: [(data && data.cant_combustible_retorno ? data.cant_combustible_retorno : null)],
     });
@@ -566,29 +916,62 @@ export class ContratoPage implements OnInit, AfterViewInit {
     return this.vehiculoForm.controls;
   }
 
+  showRetornoExtras() {
+    console.log('showRetornoExtras --->', this.cargos_extras_toggle);
+    if (this.cargos_extras_toggle === false) {
+      this.rf.cargos_extras_retorno_ids.patchValue(null);
+      this.rf.cargos_extras_retorno.patchValue(null);
+      this.cobranzaRetornoI = [];
+      return;
+    }
+    //this.makeCalcRetorno();
+    //this.cargos_extras_toggle = !this.cargos_extras_toggle
+  }
+
+
+
   checkVehiculoFormDisableFields() {
     if (this.vehiculoData && this.vehiculoData.km_recorridos) {
       this.vehiculoForm.controls.km_anterior.patchValue(this.vehiculoData.km_recorridos);
     }
+
+    if (this.vehiculoData && this.vehiculoData.cant_combustible_anterior) {
+      this.vehiculoForm.controls.cant_combustible_anterior.patchValue(this.vehiculoData.cant_combustible_anterior);
+    }
+
+    this.vehiculoForm.controls.cant_combustible_anterior.disable();
     this.vehiculoForm.controls.km_anterior.disable();
 
     if (this.contractData && this.contractData.estatus) {
       switch (this.contractData.estatus) {
         case ContratosStatusE.ELIMINADO:
-        case ContratosStatusE.RETORNO:
+        case ContratosStatusE.CERRADO:
           this.vehiculoForm.disable();
           break;
         case ContratosStatusE.BORRADOR:
-        case ContratosStatusE.RESERVADO:
+        case ContratosStatusE.RENTADO:
           this.vehiculoForm.controls.km_final.disable();
           this.vehiculoForm.controls.cant_combustible_retorno.disable();
           break;
-        case ContratosStatusE.SALIDA:
-          this.vehiculoForm.controls.km_inicial.disable();
-          this.vehiculoForm.controls.cant_combustible_salida.disable();
-          break;
       }
     }
+  }
+
+  convertFractionToLiters(fraction): number {
+    let _capTanque = parseInt(this.vehiculoData.cap_tanque);
+    let frac = eval(fraction);
+    let _fraccionDecimal = parseFloat(parseFloat(frac).toPrecision(2));
+    let _litros = _fraccionDecimal * _capTanque;
+    return _litros;
+  }
+
+  faltanLitros(): boolean {
+    if (!this.vf.cant_combustible_salida.value || !this.rf.cant_combustible_retorno.value) {
+      return null;
+    }
+    let _litrosSalida = this.convertFractionToLiters(this.vf.cant_combustible_salida.value);
+    let _litrosRetorno = this.convertFractionToLiters(this.rf.cant_combustible_retorno.value);
+    return _litrosRetorno < _litrosSalida;
   }
   //#endregion
 
@@ -656,31 +1039,38 @@ export class ContratoPage implements OnInit, AfterViewInit {
     }
   }
 
-  addDraggedBtn(badge, title) {
+  addDraggedBtn(indicatorIcon, indicatorTitle) {
     let randIndex = Math.floor(Math.random() * (100 - 1)) + 1;
     let position = 100 + Math.floor(Math.random() * (100 - 1));
     let draggableObj: DragObjProperties = {
-      width: 100,
-      height: 100,
+      id: null,
+      contrato_id: this.contract_id,
+      tipo: CheckListTypeEnum.SALIDA,
+      width: 20,
+      height: 20,
       containerPost: null,
       boxPosition: null,
-      id: randIndex,
+      objId: randIndex,
       top: position,
       left: position,
       action: 'position',
       levelColor: 'default',
       levelTxt: 'Normal',
-      badge,
-      badgeTitle: title
+      indicatorIcon: indicatorIcon,
+      indicatorTitle: indicatorTitle,
+      enable: true,
+      saved: false
     }
     this.dragObjs.push(draggableObj);
   }
 
-  catchDragObjSaved(dragObj: DragObjProperties) {
+  saveDragObj(dragObj: DragObjProperties) {
+    //console.log('catchDragObjSaved --->', dragObj);
     if (dragObj) {
       switch (dragObj.action) {
         case 'position':
-          let findObj = this.dragObjs.find(x => x.id === dragObj.id);
+          dragObj.saved = false;
+          let findObj = this.dragObjs.find(x => x.objId === dragObj.objId);
           if (findObj) {
             findObj = dragObj;
           } else {
@@ -688,17 +1078,204 @@ export class ContratoPage implements OnInit, AfterViewInit {
           }
           break;
         case 'remove':
-          let findIndexObj = this.dragObjs.findIndex(x => x.id === dragObj.id);
-          if (findIndexObj + 1) {
-            this.dragObjs.splice(findIndexObj, 1);
-          }
-          if (this.dragObjs.length === 0) {
-            localStorage.removeItem(this.generalServ.dragObjStorageKey);
-          }
+          this.checkListServ.remove(dragObj.id).subscribe(res => {
+            if (res.ok) {
+
+              let localObjs = null;
+              if (localStorage.getItem(this.generalServ.dragObjStorageKey)) {
+                localObjs = JSON.parse(localStorage.getItem(this.generalServ.dragObjStorageKey));
+              }
+              if (localObjs) {
+                let findIndexLocalObj = localObjs.findIndex(x => x.objId == dragObj.objId);
+                if (findIndexLocalObj + 1) {
+                  localObjs.splice(findIndexLocalObj, 1);
+                  localStorage.setItem(this.generalServ.dragObjStorageKey, JSON.stringify(localObjs));
+                }
+              }
+
+              let findIndexObj = this.dragObjs.findIndex(x => x.objId === dragObj.objId);
+              if (findIndexObj + 1) {
+                this.cancelActionDragObj(dragObj);
+                this.dragObjs.splice(findIndexObj, 1);
+              }
+              if (this.dragObjs.length === 0) {
+                localStorage.removeItem(this.generalServ.dragObjStorageKey);
+              }
+              this.toastServ.presentToast('success', res.message, 'top');
+            }
+          }, error => {
+            console.log(error);
+            this.sweetMsgServ.printStatusArray(error.error.errors, 'error');
+          })
+
           break;
       }
       localStorage.setItem(this.generalServ.dragObjStorageKey, JSON.stringify(this.dragObjs));
     }
+  }
+
+  catchPickedObj(dragObj: DragObjProperties) {
+    if (this.selectedDragObj && (this.selectedDragObj != dragObj)) {
+      let findLastDragObj = this.dragObjs.find(x => x.objId === this.selectedDragObj.objId);
+      if (findLastDragObj) {
+        findLastDragObj.enable = false;
+      }
+    }
+
+    dragObj.enable = true;
+    this.selectedDragObj = dragObj;
+  }
+
+  cancelActionDragObj(dragObj: DragObjProperties) {
+    dragObj.enable = false;
+    this.selectedDragObj = null;
+  }
+
+  removeDragObj(dragObj: DragObjProperties) {
+    this.sweetMsgServ.confirmRequest('¿Estás seguro de querer eliminar este elemento?').then((data)  => {
+      if (data.value) {
+        dragObj.action = 'remove';
+        this.saveDragObj(dragObj);
+      }
+    });
+  }
+
+  blockUnblockDragObj(dragObj: DragObjProperties, lock: boolean) {
+    dragObj.lock = lock;
+    this.saveDragObj(dragObj);
+  }
+
+  async openModelosDocModal(dragObj: DragObjProperties) {
+    if (!dragObj.id) {
+      this.sweetMsgServ.printStatus('Debes guardar primero los cambios del indicador', 'warning');
+      return;
+    }
+    const modal = await this.modalCtr.create({
+      component: ModelosDocsComponent,
+      componentProps: {
+        model: 'check_list',
+        docType: 'check_indicator',
+        justButton: true,
+        fullSize: true,
+        model_id_value: dragObj.id,
+        asModal: true
+      },
+      swipeToClose: true,
+      cssClass: 'edit-form',
+    });
+    await  modal.present();
+    const {data} = await modal.onWillDismiss();
+    console.log('openModelosDocsModal data -->', data);
+  }
+
+  async addNote(draggObj: DragObjProperties) {
+    if (!draggObj.id) {
+      this.sweetMsgServ.printStatus('Debes guardar primero los cambios del indicador', 'warning');
+      return;
+    }
+    const alert = await this.alertController.create({
+      cssClass: 'add-note-container',
+      header: 'Comentarios',
+      inputs: [
+        {
+          name: 'note',
+          type: 'textarea',
+          placeholder: 'Comentarios ...'
+        },
+      ],
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          cssClass: 'secondary',
+          handler: () => {
+            console.log('Confirm Cancel');
+          }
+        }, {
+          text: 'Ok',
+          handler: (_dta) => {
+            if (_dta && _dta.note) {
+              // if (this.selectedDragObj.notas && this.selectedDragObj.notas.length > 0) {
+              //   this.selectedDragObj.notas.push({
+              //     nota: _dta.note
+              //   });
+              // } else {
+              //   this.selectedDragObj.notas = [{
+              //     nota: _dta.note
+              //   }];
+              // }
+              this.notasServ.saveUpdate(_dta.note, draggObj.id, 'check_list').subscribe(res => {
+                if (res.ok) {
+                  this.toastServ.presentToast('success', res.message, 'top');
+                }
+              }, error => {
+                console.log(error);
+                this.sweetMsgServ.printStatusArray(error.error.errors, 'error');
+              })
+            }
+            // console.log('Confirm Ok');
+            // console.log('handler -->', _dta);
+            // this.saveDragObj(this.selectedDragObj);
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+
+  async openFullView() {
+    const modal = await this.modalCtr.create({
+      component: ModalDragElementDetailsComponent,
+      componentProps: {
+        dragId: this.selectedDragObj.id,
+        asModal: true
+      },
+      swipeToClose: true,
+      cssClass: 'edit-form',
+    });
+    await  modal.present();
+    const {data} = await modal.onWillDismiss();
+    console.log('openFullView data -->', data);
+  }
+
+
+  saveCheckListDB() {
+    if (!this.contract_id) {
+      this.sweetMsgServ.printStatus('Debe primero capturar información en datos generales o datos del cliente y guardar su avance para continuar', 'warning');
+      return;
+    }
+    let _payload = {
+      payload: this.dragObjs
+    }
+    this.saveProcess('check_in_salida', null, _payload);
+  }
+
+  returnIfCheckListInStorage() {
+    let _unSavedObjs = [];
+    if (localStorage.getItem(this.generalServ.dragObjStorageKey)) {
+      let localDragObjs = JSON.parse(localStorage.getItem(this.generalServ.dragObjStorageKey));
+      if (localDragObjs && localDragObjs.length > 0) {
+        for (let i = 0; i < localDragObjs.length; i++) {
+          localDragObjs[i].enable = false;
+          let _unSavedDragObj = this.dragObjs.find(x => x.objId == localDragObjs[i].objId);
+          if (!_unSavedDragObj) {
+            localDragObjs[i].saved = false;
+            _unSavedObjs.push(localDragObjs[i]);
+          } else if (_unSavedDragObj && localDragObjs[i].saved == false) {
+            //_unSavedDragObj = localDragObjs[i];
+            _unSavedObjs.push(localDragObjs[i]);
+            //console.log('entre --->', _unSavedDragObj);
+          } else if (_unSavedDragObj) {
+            _unSavedDragObj.enable = false;
+            _unSavedObjs.push(_unSavedDragObj);
+          }
+
+        }
+      }
+    }
+    return _unSavedObjs;
+
   }
   //#endregion
 
@@ -913,57 +1490,103 @@ export class ContratoPage implements OnInit, AfterViewInit {
   //#endregion
 
   //#region CARDS MANAGEMENT
-  async agregarPagoOpt() {
-    const actionSheet = await this.actionSheetController.create({
-      header: 'Opciones',
-      cssClass: 'my-custom-class',
-      backdropDismiss: false,
-      buttons: [
-        {
-          text: 'Pago con Tarjeta',
-          icon: 'card',
-          cssClass: this.balancePorPagar == 0 ? 'disable' : '',
-          handler: () => {
-            console.log('Capturar Pago con Tarjeta clicked');
-            this.agregarTarjetaForm(CobranzaTipoE.PAGOTARJETA, null, true);
+  async agregarPagoOpt(cobranza_seccion) {
+    if(cobranza_seccion == 'salida') {
+      const actionSheet = await this.actionSheetController.create({
+        header: 'Opciones',
+        cssClass: 'my-custom-class',
+        backdropDismiss: false,
+        buttons: [
+          {
+            text: 'Pago con Tarjeta',
+            icon: 'card',
+            cssClass:   this.balancePorPagar == 0 ? 'disable' : '',
+            handler: () => {
+              console.log('Capturar Pago con Tarjeta clicked');
+              this.agregarTarjetaForm(CobranzaTipoE.PAGOTARJETA,cobranza_seccion , null, true);
+            },
           },
-        },
-        {
-          text: 'Pago Efectivo',
-          icon: 'cash',
-          cssClass: this.balancePorPagar == 0 ? 'disable' : '',
-          handler: () => {
-            console.log('Pago Efectivo clicked');
-            //this.attachFiles();
-            this.agregarEfectivo();
+          {
+            text: 'Pago Efectivo',
+            icon: 'cash',
+            cssClass: this.balancePorPagar == 0 ? 'disable' : '',
+            handler: () => {
+              console.log('Pago Efectivo clicked');
+              //this.attachFiles();
+              this.agregarEfectivo(null,cobranza_seccion);
+            },
           },
-        },
-        {
-          text: 'Captura Pre-Autorización',
-          icon: 'card',
-          handler: () => {
-            console.log('Captura Pre-Autorización clicked');
-            this.agregarTarjetaForm(CobranzaTipoE.PREAUTHORIZACION, null, true);
+          {
+            text: 'Captura Pre-Autorización',
+            icon: 'card',
+            handler: () => {
+              console.log('Captura Pre-Autorización clicked');
+              this.agregarTarjetaForm(CobranzaTipoE.PREAUTHORIZACION, cobranza_seccion, null, true);
+            },
           },
-        },
-        {
-          text: 'Cancelar',
-          icon: 'close',
-          role: 'cancel',
-          cssClass: 'action-sheet-cancel',
-          handler: () => {
-            console.log('Cancel clicked');
+          {
+            text: 'Cancelar',
+            icon: 'close',
+            role: 'cancel',
+            cssClass: 'action-sheet-cancel',
+            handler: () => {
+              console.log('Cancel clicked');
+            },
           },
-        },
-      ],
-    });
-    await actionSheet.present();
+        ],
+      });
 
-    const { role } = await actionSheet.onDidDismiss();
-    console.log('onDidDismiss resolved with role', role);
+      await actionSheet.present();
+
+      const { role } = await actionSheet.onDidDismiss();
+      console.log('onDidDismiss resolved with role', role);
+
+    } else {
+      const actionSheet = await this.actionSheetController.create({
+        header: 'Opciones',
+        cssClass: 'my-custom-class',
+        backdropDismiss: false,
+        buttons: [
+          {
+            text: 'Pago con Tarjeta',
+            icon: 'card',
+            cssClass:   this.balanceRetornoPorPagar == 0 ? 'disable' : '',
+            handler: () => {
+              console.log('Capturar Pago con Tarjeta clicked');
+              this.agregarTarjetaForm(CobranzaTipoE.PAGOTARJETA, cobranza_seccion, null, true);
+            },
+          },
+          {
+            text: 'Pago Efectivo',
+            icon: 'cash',
+            cssClass: this.balanceRetornoPorPagar == 0 ? 'disable' : '',
+            handler: () => {
+              console.log('Pago Efectivo clicked');
+              //this.attachFiles();
+              this.agregarEfectivo(null, cobranza_seccion);
+            },
+          },
+          {
+            text: 'Cancelar',
+            icon: 'close',
+            role: 'cancel',
+            cssClass: 'action-sheet-cancel',
+            handler: () => {
+              console.log('Cancel clicked');
+            },
+          },
+        ],
+      });
+      await actionSheet.present();
+
+      const { role } = await actionSheet.onDidDismiss();
+      console.log('onDidDismiss resolved with role', role);
+    }
+
+
   }
 
-  async agregarTarjetaForm(tipo: CobranzaTipoE.PAGOTARJETA | CobranzaTipoE.PREAUTHORIZACION, _data?: CardI, pushData?: boolean, cobranza: CobranzaProgI = null) {
+  async agregarTarjetaForm(tipo: CobranzaTipoE.PAGOTARJETA | CobranzaTipoE.PREAUTHORIZACION, cobranza_seccion ,_data?: CardI, pushData?: boolean, cobranza: CobranzaProgI = null) {
     //const pageEl: HTMLElement = document.querySelector('.ion-page');
     //this.generalService.presentLoading();
     let _titular = this.cf.nombre.value;
@@ -980,7 +1603,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
         'monto': (cobranza && cobranza.monto) ? cobranza.monto : null,
         'tipoPago': tipo,
         'titularTarj': _titular,
-        'montoCobrar': this.balancePorPagar
+        'montoCobrar': (cobranza_seccion == 'salida') ? this.balancePorPagar : this.balanceRetornoPorPagar
       },
       swipeToClose: true,
       cssClass: 'edit-form',
@@ -1003,6 +1626,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
           fecha_cargo: null,
           fecha_procesado: null,
           fecha_reg: null,
+          cobranza_seccion: cobranza_seccion,
           moneda: this.baseCurrency,
           monto: data.info.monto,
           tipo: data.info.c_charge_method,
@@ -1011,7 +1635,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
           cobranza_id: (cobranza && cobranza.id) ? cobranza.id : null
         }
         //this.cobranzaProgData.push(_prepare);
-        this.saveProcess('cobranza', null, _prepare);
+        this.saveProcess((cobranza_seccion == 'salida') ? 'cobranza' : 'cobranza_retorno', null, _prepare);
       }
       return data.info
       //console.log('data.info --->', data);
@@ -1021,13 +1645,13 @@ export class ContratoPage implements OnInit, AfterViewInit {
     }
   }
 
-  async agregarEfectivo(cobranza: CobranzaProgI = null) {
+  async agregarEfectivo(cobranza: CobranzaProgI = null, cobranza_seccion) {
     const modal = await this.modalCtr.create({
       component: InputModalComponent,
       componentProps: {
         'asModal': true,
         'monto': (cobranza && cobranza.monto) ? cobranza.monto : null,
-        'balanceCobro': this.balancePorPagar,
+        'balanceCobro':(cobranza_seccion == 'salida') ?  this.balancePorPagar : this.balanceRetornoPorPagar,
         'cobranza_id': (cobranza && cobranza.id) ? cobranza.id : null
       },
       swipeToClose: true,
@@ -1047,6 +1671,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
         tarjeta_id: null,
         estatus: null,
         created_at: null,
+        cobranza_seccion: cobranza_seccion,
         fecha_cargo: null,
         fecha_procesado: null,
         fecha_reg: null,
@@ -1058,7 +1683,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
         cobranza_id: (cobranza && cobranza.id) ? cobranza.id : null
       }
       //this.cobranzaProgData.push(_prepare);
-      this.saveProcess('cobranza', null, _prepare);
+      this.saveProcess((cobranza_seccion == 'salida') ? 'cobranza' : 'cobranza_retorno', null, _prepare);
       return data.info
       //console.log('data.info --->', data);
       //this.loadClienteData();
@@ -1113,6 +1738,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
           break;
         case 'vehiculo':
           this.vehiculoData = data;
+          this.vehicleOutlineBackground = this.vehiculoData.categoria.categoria.toLowerCase();
           this.initVehiculoForm(this.vehiculoData);
           //this.gf.vehiculo_id.patchValue(this.vehiculoData.id);
           //this.gf.vehiculo_clase_id.patchValue(this.vehiculoData.clase_id);
@@ -1162,6 +1788,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
         this.gf.modelo.patchValue(ModelsEnum.HOTELES);
         this.gf.precio_unitario_final.patchValue(null);
         this.selectedTarifaCat = null;
+        this.gf.con_descuento.patchValue(null);
         //this.resetTarifasData();
         break;
       case 'COMISIONISTA':
@@ -1383,14 +2010,14 @@ export class ContratoPage implements OnInit, AfterViewInit {
     this.gf.modelo_id.removeValidators(Validators.required);
     this.gf.comision.removeValidators(Validators.required);
 
-    if (!this.gf.con_descuento.value) {
+    if (!this.gf.con_descuento.value || this.gf.tipo_tarifa.value == 'Hotel') {
       this.gf.tarifa_apollo_id.patchValue(null);
       this.gf.tarifa_apollo_id.removeValidators(Validators.required);
     } else {
       if (!this.gf.tarifa_apollo_id.value) {
         this.gf.tarifa_apollo_id.setValidators(Validators.required);
         this.gf.tarifa_apollo_id.markAllAsTouched();
-        return;
+        //return;
       }
     }
 
@@ -1610,13 +2237,16 @@ export class ContratoPage implements OnInit, AfterViewInit {
     }
 
     // sacamos subtotal, iva y total final
+    console.log('cobranzaI -->', this.cobranzaI);
     let _subtotal = 0;
     let _iva = 0;
     let _total = 0;
     for (let i = 0; i < this.cobranzaI.length; i++) {
       _subtotal = _subtotal + ((this.cobranzaI[i].amount * (this.cobranzaI[i].number_sign === 'positive' ? 1 : -1)));
+      console.log('_subtotal --->', _subtotal);
     }
-    _subtotal = parseFloat(Number(_subtotal).toFixed(2));
+    //_subtotal = parseFloat(Number(_subtotal).toFixed(2)) - parseFloat(Number(this.gf.precio_unitario_final.value * _totalDias).toFixed(2));
+
     if (this.gf.con_iva.value) {
       _iva = parseFloat(Number(_subtotal * this.iva).toFixed(2));
       _total = (_subtotal + _iva);
@@ -1680,6 +2310,138 @@ export class ContratoPage implements OnInit, AfterViewInit {
     this.gf.cobranza_calc.patchValue(this.cobranzaI);
   }
 
+  async makeCalcRetorno(elementType?: string, cobro?: CobranzaCalcI) {
+    if (this.rf.cargos_extras_retorno_ids.value && this.rf.cargos_extras_retorno_ids.value.length == 0) {
+      this.sweetMsgServ.printStatus('Selecciona los cargos extras', 'warning');
+      return;
+    }
+
+    let cobranza_temp = JSON.parse(JSON.stringify(this.cobranzaRetornoI));
+    this.cobranzaRetornoI = [];
+    this.checkExtraChargeFrecuency();
+
+    let _totalFrecuenciaExtra = this.rf.frecuencia_extra.value;
+    let _precioUnitario = (this.cobranzaExtraPor == 'horas') ? this.gf.precio_unitario_final.value / 24 : this.gf.precio_unitario_final.value;
+    let _precioExtraDia = this.gf.precio_unitario_final.value;
+    let _precioExtraHora = parseFloat(Number(this.gf.precio_unitario_final.value / 24).toFixed(2));
+    console.log("Precio Dia----->", _precioExtraDia);
+    console.log("Precio Hora----->", _precioExtraHora);
+
+
+    // Verificamos si tenemos extras
+    if (this.rf.cargos_extras_retorno.value && this.rf.cargos_extras_retorno.value.length > 0) {
+
+      let _tempExtrasCalc = cobranza_temp.filter(x => x.element === 'cargoExtra');
+      console.log('tempExtrasCalc', _tempExtrasCalc);
+      if (elementType && elementType === 'extra' && cobro) {
+        console.log(elementType, cobro);
+        this.cobranzaRetornoI.push(... _tempExtrasCalc);
+
+        let _singleCobro = this.cobranzaRetornoI.find(x => x.element_label === cobro.element_label);
+        let _extraInForm = this.rf.cargos_extras_retorno.value.find(x => x.nombre === cobro.element_label);
+        let _index = this.cobranzaRetornoI.findIndex(x => x.element_label === cobro.element_label);
+        console.log(_index)
+        if (_singleCobro && _extraInForm && (_index + 1)) {
+          console.log(_singleCobro,_extraInForm,_index)
+          _singleCobro.quantity = cobro.quantity;
+          _singleCobro.amount = parseFloat(Number(_extraInForm.precio * cobro.quantity ).toFixed(2))
+          this.cobranzaRetornoI[_index] = _singleCobro;
+        }
+      } else {
+        for (let i = 0; i < this.rf.cargos_extras_retorno.value.length; i++) {
+
+          let _quantity = (this.rf.cargos_extras_retorno.value[i].tipo == 'gasolina') ? (this.convertFractionToLiters(this.vf.cant_combustible_salida.value) - this.convertFractionToLiters(this.rf.cant_combustible_retorno.value)) : 1;
+          this.cobranzaRetornoI.push({
+            element:  'cargoExtra',
+            value:  this.rf.cargos_extras_retorno.value[i].precio,
+            quantity:  _quantity,
+            quantity_type:  '',
+            element_label:  this.rf.cargos_extras_retorno.value[i].nombre,
+            number_sign:  'positive',
+            amount:  parseFloat(Number(this.rf.cargos_extras_retorno.value[i].precio * _quantity ).toFixed(2)),
+            currency: this.baseCurrency
+          })
+
+
+        }
+      }
+    }
+
+    if (this.frecuencia_extras_toggle && _totalFrecuenciaExtra && _totalFrecuenciaExtra > 0) {
+      this.cobranzaRetornoI.push({
+        element: (this.cobranzaExtraPor == 'horas') ? 'horas_extra' : 'dias_extra',
+        value:  _precioUnitario,
+        quantity:   _totalFrecuenciaExtra,
+        quantity_type: (this.cobranzaExtraPor == 'horas') ? 'horas' : 'dias',
+        element_label: (this.cobranzaExtraPor == 'horas') ? 'Horas extras' :'Dias extras',
+        number_sign:  'positive',
+        amount:  parseFloat(Number(_precioUnitario * _totalFrecuenciaExtra ).toFixed(2)),
+        currency: this.baseCurrency
+      })
+      this.rf.cobranzaExtraPor.patchValue(this.cobranzaExtraPor);
+    }
+
+    let _subtotal = 0;
+    let _iva = 0;
+    let _total = 0;
+    for (let i = 0; i < this.cobranzaRetornoI.length; i++) {
+      _subtotal = _subtotal + ((this.cobranzaRetornoI[i].amount * (this.cobranzaRetornoI[i].number_sign === 'positive' ? 1 : -1)));
+    }
+    _subtotal = parseFloat(Number(_subtotal).toFixed(2))
+    if (this.rf.con_iva_retorno.value) {
+      _iva = parseFloat(Number(_subtotal * this.iva).toFixed(2));
+      _total = (_subtotal + _iva);
+    } else {
+      _total = (_subtotal);
+    }
+
+
+    // subtotal
+    this.cobranzaRetornoI.push({
+      element: 'subtotal',
+      value: null,
+      quantity: null,
+      quantity_type: null,
+      element_label: 'Subtotal',
+      number_sign: 'positive',
+      amount: _subtotal,
+      currency: this.baseCurrency
+    });
+    this.rf.subtotal_retorno.patchValue(_subtotal);
+
+    // iva
+    if (this.rf.con_iva_retorno.value) {
+      this.cobranzaRetornoI.push({
+        element: 'iva',
+        value: null,
+        quantity: this.iva * 100,
+        quantity_type: '%',
+        element_label: 'IVA',
+        number_sign: 'positive',
+        amount: _iva,
+        currency: this.baseCurrency
+      });
+      this.rf.con_iva_retorno.patchValue(true);
+      this.rf.iva_retorno.patchValue(this.iva);
+      this.rf.iva_monto_retorno.patchValue(_iva);
+    }
+
+    // total
+    this.cobranzaRetornoI.push({
+      element: 'total',
+      value: null,
+      quantity: null,
+      quantity_type: null,
+      element_label: 'Total',
+      number_sign: 'positive',
+      amount: _total,
+      currency: this.baseCurrency
+    });
+    this.rf.total_retorno.patchValue(_total);
+    this.rf.cobranza_calc_retorno.patchValue(this.cobranzaRetornoI);
+    this.balanceRetornoPorPagar = _total;
+  }
+
   async pushSelectedExtras() {
     let _ids = this.gf.cobros_extras_ids.value;
     this.gf.cobros_extras.setValue(null);
@@ -1696,6 +2458,28 @@ export class ContratoPage implements OnInit, AfterViewInit {
     this.toastServ.presentToast('info','Revise la información de los cargos extra en especial la cantidad unitaria', 'top');
     console.log('cobros extras --->', _extrasObj);
     await this.makeCalc();
+  }
+
+  async pushSelectedCargosExtras() {
+    let _ids = this.rf.cargos_extras_retorno_ids.value;
+    this.rf.cargos_extras_retorno.setValue(null);
+    let _extrasObj = []
+    for (let i = 0; i < _ids.length; i++) {
+      let _extra = this.cargosExtras.find(x => x.id == _ids[i]);
+      if (_extra) {
+        _extrasObj.push(_extra);
+      }
+    }
+    if (_extrasObj && _extrasObj.length > 0) {
+      this.rf.cargos_extras_retorno.setValue(_extrasObj);
+      this.cobranzaRetornoI = _extrasObj;
+    } else {
+      this.cobranzaRetornoI = [];
+    }
+
+    this.toastServ.presentToast('info','Revise la información de los cargos extra en especial la cantidad unitaria', 'top');
+    console.log('cargos retorno extras --->', _extrasObj);
+    this.makeCalcRetorno();
   }
 
   getExtraRows() {
@@ -1715,19 +2499,19 @@ export class ContratoPage implements OnInit, AfterViewInit {
   //#endregion
 
   //#region COBRANZAPROG FUNCTIONS
-  async editCobro(tipo: CobranzaTipoE.PAGOTARJETA | CobranzaTipoE.PREAUTHORIZACION | CobranzaTipoE.PAGOEFECTIVO, cobro: CobranzaProgI) {
+  async editCobro(tipo: CobranzaTipoE.PAGOTARJETA | CobranzaTipoE.PREAUTHORIZACION | CobranzaTipoE.PAGOEFECTIVO, cobranza_seccion, cobro: CobranzaProgI) {
     if (tipo === CobranzaTipoE.PREAUTHORIZACION || tipo === CobranzaTipoE.PAGOTARJETA) {
-      await this.agregarTarjetaForm(cobro.tipo, cobro.tarjeta, true, cobro);
+      await this.agregarTarjetaForm(cobro.tipo, cobro.tarjeta, cobranza_seccion, true, cobro);
     }
 
     if (tipo === CobranzaTipoE.PAGOEFECTIVO) {
-      await this.agregarEfectivo(cobro);
+      await this.agregarEfectivo(cobro, cobranza_seccion);
     }
   }
   enableDisableEditCobro(cobro: CobranzaProgI, enable: boolean) {
     cobro.edit = enable;
   }
-  cancelCobro(cobro: CobranzaProgI) {
+  cancelCobro(cobro: CobranzaProgI, cobranza_seccion) {
     this.sweetMsgServ.confirmRequest('¿Estás seguro de querer remover este elemento?', 'Esta acción no se puede revertir').then(async (data) => {
       if (data.value) {
         let _payload = {
@@ -1736,9 +2520,16 @@ export class ContratoPage implements OnInit, AfterViewInit {
         let res = await this.cobranzaServ.cancelCobro(_payload);
         if (res.ok) {
           this.toastServ.presentToast('success', res.message, 'top');
-          let cobroIndex = this.cobranzaProgData.findIndex(x => x.id === cobro.id);
-          this.cobranzaProgData.splice(cobroIndex, 1);
-          this.recalBalancePorCobrar();
+          if (cobranza_seccion == 'salida') {
+            let cobroIndex = this.cobranzaProgData.findIndex(x => x.id === cobro.id);
+            this.cobranzaProgData.splice(cobroIndex, 1);
+            this.recalBalancePorCobrar();
+          } else {
+            let cobroIndex = this.cobranzaProgRetornoData.findIndex(x => x.id === cobro.id);
+            this.cobranzaProgRetornoData.splice(cobroIndex, 1);
+            this.recalBalanceRetornoPorCobrar();
+          }
+
         } else {
           this.sweetMsgServ.printStatusArray(res.errors.error.errors, 'error');
         }
@@ -1767,11 +2558,45 @@ export class ContratoPage implements OnInit, AfterViewInit {
       }
     }
     if (this.balancePorPagar < total) {
-      this.sweetMsgServ.printStatus('El monto acumado de cobro es mayor al balance por cobrar', 'warning');
+      this.sweetMsgServ.printStatus('El monto aculamado de cobro es mayor al balance por cobrar', 'warning');
     }
     this.balancePorPagar = Number(this.balancePorPagar -  total);
 
     this.setTotalPago();
+  }
+
+  recalBalanceRetornoPorCobrar() {
+    let total = 0;
+    this.balanceRetornoPorPagar = this.retornoDataForm.controls.total_retorno.value;
+    let _data = this.cobranzaProgRetornoData.filter(x => x.tipo == 2 || x.tipo == 3);
+    if (_data && _data.length > 0) {
+      for (let i = 0; i < _data.length; i++) {
+        total =  parseFloat(Number(Number(total) + Number(_data[i].monto)).toFixed(2));
+      }
+    }
+    if (this.balanceRetornoPorPagar < total) {
+      this.sweetMsgServ.printStatus('El monto aculamado de cobro es mayor al balance por cobrar', 'warning');
+    }
+    this.balanceRetornoPorPagar = Number(this.balanceRetornoPorPagar -  total);
+
+    this.setTotalRetornoPago();
+  }
+
+  setTotalRetornoPago() {
+    this.pagadoRetornoAutTotal = 0;
+    this.pagadoRetornoTotal = 0;
+    let _dataPagado = this.cobranzaProgRetornoData.filter(x => x.tipo == CobranzaTipoE.PAGOTARJETA || x.tipo == CobranzaTipoE.PAGOEFECTIVO);
+    if (_dataPagado && _dataPagado.length > 0) {
+      for (let i = 0; i < _dataPagado.length; i++) {
+        this.pagadoRetornoTotal =  parseFloat(Number(Number(this.pagadoRetornoTotal) + Number(_dataPagado[i].monto)).toFixed(2));
+      }
+    }
+    let _dataPreAutorizado = this.cobranzaProgRetornoData.filter(x => x.tipo == (CobranzaTipoE.PREAUTHORIZACION));
+    if (_dataPreAutorizado && _dataPreAutorizado.length > 0) {
+      for (let i = 0; i < _dataPreAutorizado.length; i++) {
+        this.pagadoRetornoAutTotal =  parseFloat(Number(Number(this.pagadoRetornoAutTotal) + Number(_dataPreAutorizado[i].monto)).toFixed(2));
+      }
+    }
   }
 
   setTotalPago() {
@@ -1793,13 +2618,25 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
   //#endregion
 
-  saveProcess(section: 'datos_generales' | 'datos_cliente' | 'datos_vehiculo' | 'cobranza', ignoreMsg?: boolean, payload?) {
+  saveAndGenerate(section: 'firma' | 'retorno') {
+    let mensaje: string = (section == 'firma') ? '¿Estás seguro de desea guardar el contrato?, ya que no podra ser editable' : '¿Estás seguro de desea guardar las cargos extras al contrato?'
+    this.sweetMsgServ.confirmRequest(mensaje).then(async (data) => {
+      if (data.value) {
+        await this.saveProcess(section);
+        await this.sendAndGeneratePDF();
+      }
+    })
+  }
+
+  async saveProcess(section: 'datos_generales' | 'datos_cliente' | 'datos_vehiculo' | 'cobranza' | 'check_in_salida' | 'check_form_list' |  'firma' | 'retorno' | 'cobranza_retorno', ignoreMsg?: boolean, payload?) {
     //this.sweetMsgServ.printStatus('Acción en desarrollo', 'warning');
+    this.spinner.show();
     console.log('section', section);
     let _payload;
     switch (section) {
       case 'datos_generales':
         if (this.generalDataForm.invalid) {
+          this.spinner.hide();
           this.sweetMsgServ.printStatus('Verifica que los datos solicitados esten completos', 'warning');
           this.generalDataForm.markAllAsTouched();
           console.log(this.generalDataForm);
@@ -1812,63 +2649,240 @@ export class ContratoPage implements OnInit, AfterViewInit {
         if (moment.isMoment(_payload.rango_fechas.fecha_retorno)) {
           _payload.rango_fechas.fecha_retorno = DateConv.transFormDate(_payload.rango_fechas.fecha_retorno, 'regular');
         }
+
         //_payload.hora_elaboracion = DateConv.transFormDate(moment.now(), 'time');
         break;
       case 'datos_vehiculo':
         if (this.vehiculoForm.invalid) {
+          this.spinner.hide();
           this.sweetMsgServ.printStatus('Verifica que los datos solicitados esten completos', 'warning');
           this.vehiculoForm.markAllAsTouched();
           return;
         }
+
         this.vehiculoForm.enable();
         _payload = this.vehiculoForm.value;
         this.checkVehiculoFormDisableFields();
         break;
       case 'datos_cliente':
         if (this.clienteDataForm.invalid) {
+          this.spinner.hide();
           if (!ignoreMsg) {
             this.sweetMsgServ.printStatus('Verifica que los datos solicitados esten completos', 'warning');
           }
 
           this.clienteDataForm.markAllAsTouched();
           return;
-        }
+        } /*else if (this.clientes_docs.length == 0) {
+          this.sweetMsgServ.printStatus('Es necesesario adjuntar la licencia del cliente', 'warning');
+          return;
+        }*/
+
         _payload = this.clienteDataForm.value;
         break;
       case 'cobranza':
         if (!payload) {
+          this.spinner.hide();
           this.sweetMsgServ.printStatus('Verifica que los datos solicitados esten completos', 'warning');
           return;
         }
         if (payload.tarjeta) {
           delete payload.tarjeta;
         }
+
         _payload = payload;
         //_payload.cobranza_id = payload.id;
+        break;
+      case 'check_in_salida':
+        if (this.dragObjs.length === 0) {
+          this.spinner.hide();
+          this.sweetMsgServ.printStatus('Agrega un elemento de verificación', 'warning');
+          return;
+        }
+
+        _payload = payload
+        break;
+      case 'check_form_list':
+        let canvas = await html2canvas(document.querySelector("#check-list-canvas"), { logging: true, allowTaint: false , useCORS: true });
+
+        let check_img = canvas.toDataURL();
+        this.check_list_img = check_img;
+
+
+        _payload = this.checkListForm.value
+        _payload.contrato_id = this.contract_id
+        _payload.check_list_img  = this.check_list_img;
+        console.log(_payload)
+        break;
+      case 'firma':
+
+        if (this.signature == '') {
+          this.spinner.hide();
+          this.sweetMsgServ.printStatus('Es necesesario la firma para terminar el proceso', 'warning');
+          return;
+        }
+        console.log(this.signature)
+        _payload = this.signature
+        break;
+      case 'retorno':
+        if (this.retornoDataForm.invalid) {
+          this.spinner.hide();
+          this.sweetMsgServ.printStatus('Verifica que los datos solicitados esten completos', 'warning');
+          console.log(this.retornoDataForm);
+          return;
+        }
+        _payload = this.retornoDataForm.value;
+        break;
+      case 'cobranza_retorno':
+          if (!payload) {
+            this.spinner.hide();
+            this.sweetMsgServ.printStatus('Verifica que los datos solicitados esten completos', 'warning');
+            return;
+          }
+          if (payload.tarjeta) {
+            delete payload.tarjeta;
+          }
+
+          _payload = payload;
+          //_payload.cobranza_id = payload.id;
         break;
     }
 
     _payload.seccion = section;
     _payload.num_contrato = this.num_contrato;
+
     console.log(section + '--->', _payload);
     //return;
 
     this.contratosServ.saveProgress(_payload).subscribe(async res => {
+      this.spinner.hide();
       if (res.ok) {
+
+        if (section === 'check_in_salida') {
+          localStorage.removeItem(this.generalServ.dragObjStorageKey);
+          this.selectedDragObj = null;
+        }
         this.sweetMsgServ.printStatus(res.message, 'success');
+        if (section == 'cobranza' || section == 'check_in_salida') {
+          this.step = this.step;
+        } else {
+          this.step++;
+        }
         this.contract_id = res.id;
         this.num_contrato = res.contract_number;
         this.contratosServ.setContractData(this.num_contrato);
+
+        if (section == 'firma') {
+          this.contratosServ.flushContractData();
+          this.router.navigateByUrl('vehiculos/list');
+        }
+
+        if (section === 'retorno') {
+          if(this.balanceRetornoPorPagar == 0) {
+            await this.viewPDF();
+            this.contratosServ.flushContractData();
+            this.router.navigateByUrl('vehiculos/list');
+          }
+        }
+
         await this.reloadAll();
       }
     }, error => {
+      this.spinner.hide();
       console.log(error);
       this.sweetMsgServ.printStatusArray(error.error.errors, 'error');
     })
   }
 
+  async sendAndGeneratePDF() {
+    this.spinner.show();
+    this.contratosServ.sendAndGeneratePDF(this.contract_id).subscribe(res => {
+      const url = URL.createObjectURL(res);
+      this.spinner.hide();
+      if (this.detectIOS() === true) {
+        window.location.assign(url);
+      } else {
+        window.open(url, '_blank');
+      }
+    }, error => {
+      this.spinner.hide();
+      const fr = new FileReader();
+      fr.addEventListener('loadend', (e: any) => {
+        const errors = JSON.parse(e.srcElement.result);
+        this.sweetMsgServ.printStatusArray(errors.errors, 'error');
+      });
+      fr.readAsText(error.error);
+    });
+  }
+
+
+  async viewPDF() {
+    this.spinner.show();
+    this.contratosServ.viewPDF(this.contract_id, null).subscribe(res => {
+      const url = URL.createObjectURL(res);
+      this.spinner.hide();
+      if (this.detectIOS() === true) {
+        window.location.assign(url);
+      } else {
+        window.open(url, '_blank');
+      }
+    }, error => {
+      this.spinner.hide();
+      const fr = new FileReader();
+      fr.addEventListener('loadend', (e: any) => {
+        const errors = JSON.parse(e.srcElement.result);
+        this.sweetMsgServ.printStatusArray(errors.errors, 'error');
+      });
+      fr.readAsText(error.error);
+    });
+  }
+
+  cancelContract() {
+    this.sweetMsgServ.confirmRequest('¿Estas seguro de querer cancelar este contrato?').then((data) => {
+      if (data.value) {
+       this.contratosServ.cancelContract(this.contract_id).subscribe(res => {
+         if (res.ok) {
+           this.sweetMsgServ.printStatus(res.message, 'success');
+           this.contratosServ.flushContractData();
+           localStorage.removeItem(this.generalServ.dragObjStorageKey);
+           setTimeout(() => {
+             window.location.reload();
+           }, 1000);
+
+         }
+       }, error => {
+        this.spinner.hide();
+         console.log(error);
+         this.sweetMsgServ.printStatusArray(error.error.errors, 'error');
+       })
+      }
+    });
+  }
+
+
+  catchEventTest(event) {
+    console.log(event);
+  }
+
+  ionViewWillLeave() {
+    this.resetAll();
+  }
   resetAll() {
-    //this.clientes_docs = [];
+    this.initGeneralForm();
+    this.initClientForm();
+    this.initVehiculoForm();
+    this.initCheckListForm();
+    this.initRetornoForm();
+
+    this.contractData = null;
+    this.step = 0;
+    this.vehiculoData = null;
+    this.cobranzaProgData = [];
+    this.dragObjs = [];
+    this.terminos = null;
+    this.signature_matrix = null;
+    this.signature = null;
+    this.num_contrato = null;
   }
 
 }

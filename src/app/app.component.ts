@@ -39,31 +39,41 @@ export class AppComponent implements OnDestroy {
       level: 0,
       active: false
     },
-    {
-      module: 'contratos',
-      icon: 'clipboard-outline',
-      label: 'Contratos',
-      route: null,
-      level: 0,
-      active: false,
-      children: [
-        {
-          module: 'contratos',
-          icon: 'document-outline',
-          label: 'Nuevo Contrato',
-          route: '/contratos/nuevo',
-          level: 1,
-          active: false
-        },
-      ]
-    },
+    // {
+    //   module: 'contratos',
+    //   icon: 'clipboard-outline',
+    //   label: 'Contratos',
+    //   route: null,
+    //   level: 0,
+    //   active: false,
+    //   children: [
+    //     {
+    //       module: 'contratos',
+    //       icon: 'document-outline',
+    //       label: 'Nuevo Contrato',
+    //       route: '/contratos/nuevo',
+    //       level: 1,
+    //       active: false
+    //     },
+    //   ]
+    // },
     {
       module: 'vehiculos',
       icon: 'car-sport-outline',
       label: 'Vehículos',
       route: null,
       level: 0,
-      active: false
+      active: false,
+      children: [
+        {
+          module: 'vehiculos',
+          icon: 'document-outline',
+          label: 'Lista de Vehiculos  | Estatus',
+          route: 'vehiculos/list',
+          level: 1,
+          active: false
+        },
+      ]
     },
     {
       module: 'reportes',
@@ -248,6 +258,14 @@ export class AppComponent implements OnDestroy {
                   icon: 'pricetags',
                   label: 'Tarifas Extras',
                   route: '/administracion/catalogos/precios/tarifas-extras',
+                  level: 3,
+                  active: false,
+                },
+                {
+                  module: 'catalogos',
+                  icon: 'pricetags',
+                  label: 'Cargos Extras',
+                  route: '/administracion/catalogos/precios/cargos-extras',
                   level: 3,
                   active: false,
                 }

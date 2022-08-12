@@ -3,6 +3,7 @@ import { Routes, RouterModule } from '@angular/router';
 import {TarifasExtrasPage} from './precios/tarifas-extras/tarifas-extras.page';
 import {UbicacionesComponent} from './ubicaciones/ubicaciones.component';
 import {TarifasCategoriasComponent} from './precios/tarifas-categorias/tarifas-categorias.component';
+import { CargosExtrasPage } from './precios/cargos-extras/cargos-extras.page';
 
 const routes: Routes = [
   {
@@ -12,6 +13,10 @@ const routes: Routes = [
   {
     path: 'precios/tarifas-extras',
     component: TarifasExtrasPage
+  },
+  {
+    path: 'precios/cargos-extras',
+    component: CargosExtrasPage
   },
   {
     path: 'ubicaciones',

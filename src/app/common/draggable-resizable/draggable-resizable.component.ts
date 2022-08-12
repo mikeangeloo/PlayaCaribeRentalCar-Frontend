@@ -9,7 +9,7 @@ import {
   Output,
   ViewChild
 } from '@angular/core';
-import {ActionSheetController, AlertController, ModalController, PopoverController} from '@ionic/angular';
+import {ActionSheetController, AlertController, ModalController, Platform, PopoverController} from '@ionic/angular';
 import {ModelosDocsComponent} from '../components/modelos-docs/modelos-docs.component';
 import {ModalDragElementDetailsComponent} from '../components/modal-drag-element-details/modal-drag-element-details.component';
 
@@ -21,6 +21,9 @@ const enum Status {
 
 export interface DragObjProperties {
   id: number;
+  contrato_id: number;
+  tipo: number;
+  objId: number;
   width: number;
   height: number;
   left: number;
@@ -38,9 +41,21 @@ export interface DragObjProperties {
   action?: 'position' | 'remove' | 'changeLevel' | 'photo' | 'addNote' | 'viewMore'
   levelColor?: 'default' | 'warning' | 'danger',
   levelTxt?: string;
-  badge?: string;
-  badgeTitle?: string;
-  notes?: string[];
+  indicatorIcon?: string;
+  indicatorTitle?: string;
+  notas?: [{
+    id?: number;
+    nota: string;
+    created_at?: string;
+    agente_id?: number;
+    agente?: string;
+    edit?: boolean;
+  }];
+  enable?: boolean | number;
+  lock?: boolean | number;
+  saved?: boolean;
+  created_at?: string;
+  updated_at?: string
 }
 
 
@@ -59,7 +74,11 @@ export class DraggableResizableComponent implements OnInit, AfterViewInit {
   @Input() public objLimitHeight: number;
 
   @Input() draggableObj: DragObjProperties = null;
+  @Input() contract_id: number;
+  @Input() dragId: number;
+  @Input() type: number;
   @Output() dragObjSaved = new EventEmitter();
+  @Output() dragObjSelected = new EventEmitter();
 
   @ViewChild("box", {static: true}) public box: ElementRef;
   private boxPosition: { left: number, top: number };
@@ -71,7 +90,8 @@ export class DraggableResizableComponent implements OnInit, AfterViewInit {
   constructor(
     public actionSheetController: ActionSheetController,
     private modalCtr: ModalController,
-    private alertController: AlertController
+    private alertController: AlertController,
+    public platform: Platform,
   ) {
 
   }
@@ -97,7 +117,7 @@ export class DraggableResizableComponent implements OnInit, AfterViewInit {
   private loadBox(){
     const {left, top} = this.box.nativeElement.getBoundingClientRect();
     this.boxPosition = {left, top};
-    console.log('boxPosition', this.boxPosition);
+    //console.log('boxPosition', this.boxPosition);
   }
 
   private loadContainer(){
@@ -106,24 +126,63 @@ export class DraggableResizableComponent implements OnInit, AfterViewInit {
     const right = left + this.objLimitWidth;
     const bottom = top + this.objLimitHeight;
     this.containerPos = { left, top, right, bottom };
-    console.log('containerPos --->', this.containerPos);
-  }
-
-  setStatus(event: MouseEvent, status: number){
-    event.stopPropagation();
-    if(status === 2) this.mouseClick = { x: event.clientX, y: event.clientY, left: this.objLeft, top: this.objTop };
-    else this.loadBox();  this.loadContainer();
-    this.status = status;
+    //console.log('containerPos --->', this.containerPos);
   }
 
   catchMouseMove(event) {
-    this.mouse = { x: event.clientX, y: event.clientY };
-    if(this.status === Status.RESIZE) this.resize();
-    else if(this.status === Status.MOVE) this.move();
-
+    if (this.platform.is('desktop')) {
+      //console.log('catchMouseMove -->',event);
+      this.mouse = { x: event.clientX, y: event.clientY };
+      if(this.status === Status.RESIZE) this.resize();
+      else if(this.status === Status.MOVE) this.move();
+    }
   }
 
+  catchTouchMove(event: TouchEvent) {
+    if (!this.platform.is('desktop')) {
+      //console.log('catchTouchMove -->',event);
+      //console.log('catchTouchMove status --->', this.status);
+
+      this.mouse = { x: event.touches[0].clientX, y: event.touches[0].clientY };
+      if(this.status === Status.RESIZE) this.resize();
+      else if(this.status === Status.MOVE) this.move();
+    }
+  }
+
+  setStatus(event: MouseEvent, status: number){
+    if (this.platform.is('desktop')) {
+      event.stopPropagation();
+      if(status === 2) this.mouseClick = { x: event.clientX, y: event.clientY, left: this.objLeft, top: this.objTop };
+      else this.loadBox();  this.loadContainer();
+      this.status = status;
+    }
+  }
+
+  setTouchStatus(event: TouchEvent, status: number){
+    if (!this.platform.is('desktop')) {
+      event.stopPropagation();
+
+      if (status === 0) {
+        document.getElementById('drag-container').style.overflow = 'scroll';
+        document.getElementById('revisionRowH').style.cssText = '--overflow: auto;'
+
+      } else {
+        document.getElementById('drag-container').style.overflow = 'hidden';
+        document.getElementById('revisionRowH').style.cssText = '--overflow: hidden;'
+      }
+
+      if(status === 2) this.mouseClick = { x: event.touches[0].clientX, y: event.touches[0].clientY, left: this.objLeft, top: this.objTop };
+      else this.loadBox();  this.loadContainer();
+      this.status = status;
+    }
+  }
+
+
+
   private resize(){
+    if (this.draggableObj.lock === true || this.draggableObj.lock == 1) {
+      return;
+    }
     if(this.resizeCondMeet()) {
       if (this.mouse.x - this.boxPosition.left <= 20 || this.mouse.y - this.boxPosition.top <= 20 ) {
         return true;
@@ -139,6 +198,9 @@ export class DraggableResizableComponent implements OnInit, AfterViewInit {
   }
 
   private move(){
+    if (this.draggableObj.lock === true || this.draggableObj.lock == 1) {
+      return;
+    }
     if(this.moveCondMeet()) {
       this.objLeft = this.mouseClick.left + (this.mouse.x - this.mouseClick.x);
       this.objTop = this.mouseClick.top + (this.mouse.y - this.mouseClick.y);
@@ -162,6 +224,8 @@ export class DraggableResizableComponent implements OnInit, AfterViewInit {
   saveCoords() {
     let randIndex = Math.floor(Math.random() * (100 - 1)) + 1;
     if (this.draggableObj) {
+      this.draggableObj.contrato_id = this.contract_id;
+      this.draggableObj.tipo = this.type;
       this.draggableObj.width = this.objWidth;
       this.draggableObj.height = this.objHeight;
       this.draggableObj.containerPost = this.containerPos;
@@ -171,151 +235,30 @@ export class DraggableResizableComponent implements OnInit, AfterViewInit {
       this.draggableObj.action = 'position';
     } else {
       this.draggableObj = {
+        id: null,
+        contrato_id: this.contract_id,
+        tipo: this.type,
         width: this.objWidth,
         height: this.objHeight,
         containerPost: this.containerPos,
         boxPosition: this.boxPosition,
-        id: randIndex,
+        objId: randIndex,
         top: this.objTop,
         left: this.objLeft,
         action: 'position',
-        levelColor: 'default'
+        levelColor: 'default',
+        enable: null
+
       }
     }
 
+    this.emitSelected(true);
     this.dragObjSaved.emit(this.draggableObj);
   }
 
-  removeObj() {
-    this.draggableObj.action = 'remove';
-    this.dragObjSaved.emit(this.draggableObj);
-  }
-
-  async damageLevelSheet() {
-    const actionSheet = await this.actionSheetController.create({
-      header: 'Opciones',
-      cssClass: 'my-custom-class',
-      backdropDismiss: false,
-      buttons: [
-        {
-          text: 'Normal',
-          cssClass: 'default',
-          handler: () => {
-            console.log('Nivel normal clicked');
-            this.draggableObj.levelColor = 'default';
-            this.draggableObj.levelTxt = 'Normal';
-            this.dragObjSaved.emit(this.draggableObj);
-          },
-        },
-        {
-          text: 'Medio',
-          cssClass: 'warning',
-          handler: () => {
-            console.log('Nivel medio clicked');
-            this.draggableObj.levelColor = 'warning';
-            this.draggableObj.levelTxt = 'Medio';
-            this.dragObjSaved.emit(this.draggableObj);
-          },
-        },
-        {
-          text: 'Grave',
-          cssClass: 'danger',
-          handler: () => {
-            console.log('Nivel grave clicked');
-            this.draggableObj.levelColor = 'danger';
-            this.draggableObj.levelTxt = 'Grave';
-            this.dragObjSaved.emit(this.draggableObj);
-          },
-        },
-        {
-          text: 'Cancelar',
-          icon: 'close',
-          role: 'cancel',
-          cssClass: 'action-sheet-cancel',
-          handler: () => {
-            console.log('Cancel clicked');
-          },
-        },
-      ],
-    });
-    await actionSheet.present();
-
-    const { role } = await actionSheet.onDidDismiss();
-    console.log('onDidDismiss resolved with role', role);
-  }
-
-  async openModelosDocModal() {
-    const modal = await this.modalCtr.create({
-      component: ModelosDocsComponent,
-      componentProps: {
-        model: 'check-list',
-        docType: 'check-list',
-        justButton: true,
-        fullSize: true,
-        model_id_value: 1,
-        asModal: true
-      },
-      swipeToClose: true,
-      cssClass: 'edit-form',
-    });
-    await  modal.present();
-    const {data} = await modal.onWillDismiss();
-    console.log('openModelosDocsModal data -->', data);
-  }
-
-  async addNote() {
-    const alert = await this.alertController.create({
-      cssClass: 'add-note-container',
-      header: 'Comentarios',
-      inputs: [
-        {
-          name: 'note',
-          type: 'textarea',
-          placeholder: 'Comentarios ...'
-        },
-      ],
-      buttons: [
-        {
-          text: 'Cancel',
-          role: 'cancel',
-          cssClass: 'secondary',
-          handler: () => {
-            console.log('Confirm Cancel');
-          }
-        }, {
-          text: 'Ok',
-          handler: (_dta) => {
-            if (_dta && _dta.note) {
-              if (this.draggableObj.notes && this.draggableObj.notes.length > 0) {
-                this.draggableObj.notes.push(_dta.note);
-              } else {
-                this.draggableObj.notes = [_dta.note];
-              }
-              this.saveCoords();
-            }
-            console.log('Confirm Ok');
-            console.log('handler -->', _dta);
-          }
-        }
-      ]
-    });
-
-    await alert.present();
-  }
-
-  async openFullView() {
-    const modal = await this.modalCtr.create({
-      component: ModalDragElementDetailsComponent,
-      componentProps: {
-        dragObj: this.draggableObj,
-        asModal: true
-      },
-      swipeToClose: true,
-      cssClass: 'edit-form',
-    });
-    await  modal.present();
-    const {data} = await modal.onWillDismiss();
-    console.log('openFullView data -->', data);
+  emitSelected(enable: boolean) {
+    this.draggableObj.enable = enable;
+    this.dragObjSelected.emit(this.draggableObj);
   }
 
 }

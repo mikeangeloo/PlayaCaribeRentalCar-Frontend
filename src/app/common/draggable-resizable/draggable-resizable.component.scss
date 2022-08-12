@@ -1,6 +1,6 @@
 .resizable-draggable {
-  outline: 2px dashed var(--app-blue-light);
-  color: var(--app-blue-light);
+  outline: 2px dashed var(--ion-color-primary);
+  color: var(--ion-color-primary);
   background-color: #ffffffad;
   position: absolute;
 
@@ -23,6 +23,7 @@
     transform: translate3d(-50%, 120%, 0);
     bottom: 0;
     z-index: 98;
+    text-shadow: 0px 1px 1px #ffab40;
   }
 
   span:nth-of-type(2) {
@@ -42,16 +43,14 @@
 
 .resize-action {
   position: absolute;
-  //left: 105%;
-  //top: 110%;
   left: 100%;
   top: 100%;
-  transform: translate3d(-50%, -50%, 0) rotateZ(45deg);
+  transform: translate3d(10%, 20%, 0) rotateZ(45deg);
   border-style: solid;
-  border-width: 8px;
-  border-color: transparent transparent transparent var(--app-blue-light);
-  &.warning {
-    border-color: transparent transparent transparent var(--ion-color-primary);
+  border-width: 20px;
+  border-color: transparent transparent transparent var(--ion-color-primary);
+  &.disable-drag {
+    border: none;
   }
   &.danger {
     border-color: transparent transparent transparent var(--ion-color-danger);
@@ -82,10 +81,13 @@
     padding: 0;
     font-size: 3rem;
   }
+  mat-icon {
+    font-weight: bolder;
+  }
 }
 ::ng-deep {
   .default {
-    color: var(--app-blue-light) !important;
+    color: var(--ion-color-primary) !important;
   }
 
   .warning {
@@ -97,8 +99,21 @@
     outline-color: var(--ion-color-danger) !important;
   }
 
+  .disable-drag {
+    color: var(--ion-color-primary) !important;
+    outline: none !important;
+    background: none !important;
+  }
+
   .add-note-container {
     --min-width: 35%;
+  }
+  .lock {
+    opacity: 0.7;
+    color:  var(--ion-color-primary) !important;
+  }
+  .unlock {
+    opacity: inherit;
   }
 }
 

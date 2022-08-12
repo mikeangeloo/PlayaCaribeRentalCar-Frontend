@@ -9,26 +9,13 @@
         <ion-card-content>
 
           <ion-row>
-            <ion-col size="12" size-md="2" class="ion-align-self-center" *ngIf="isModal === false || !isModal">
+            <ion-col size="12" size-md="4" class="ion-align-self-center" *ngIf="isModal === false || !isModal">
               <!--                <button mat-raised-button color="primary">Nuevo</button>-->
               <ion-button color="primary" class="btn-shadow no-contrast" (click)="openCatVehiculoForm()">Nuevo</ion-button>
+              <ion-button color="secondary" class="btn-shadow no-contrast" (click)="openAddLayoutModal()">Agregar Layouts</ion-button>
 <!--              <ion-button color="primary" class="btn-shadow no-contrast" [routerLink]="['/administracion/catalogo-vehiculos/categorias-vehiculos/', 0]">Nuevo</ion-button>-->
             </ion-col>
-            <ion-col size="12" size-md="10">
-              <!--<div class="input-group mb-3 filter-form">
-                <input type="text" class="form-control"
-                       placeholder="Ingrese un valor para filtrar los resultados de la tabla ..." [(ngModel)]="searchKey"
-                       (keyup)="applyFilter()">
-                <button mat-button matSuffix mat-icon-button aria-label="Clear" class="clear-bnt" *ngIf="searchKey"
-                        (click)="onSearchClear()">
-                  <mat-icon>close</mat-icon>
-                </button>
-                <div class="input-group-append">
-                  <button mat-raised-button class="btn btn-info" style="background-color: var(&#45;&#45;coe-primary-bold)" type="button" (click)="applyFilter()">
-                    <i class="material-icons">find_in_page</i>
-                  </button>
-                </div>
-              </div> &lt;!&ndash; filter form&ndash;&gt;-->
+            <ion-col size="12" size-md="8">
               <ion-searchbar placeholder="Ingrese un valor para filtrar los resultados de la tabla..." class="ion-no-padding" (ionInput)="applyFilter($event)" (ionCancel)="onSearchClear()"></ion-searchbar>
             </ion-col>
           </ion-row>

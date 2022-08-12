@@ -3,18 +3,33 @@
      [style.height.px]="objHeight"
      [style.transform]="'translate3d('+ objLeft + 'px,' + objTop + 'px,' + '0px)'"
      [class.active]="status === 1 || status === 2"
-     [class.default]="draggableObj.levelColor === 'default'"
+     [class.default]="draggableObj.enable === true || draggableObj.enable == 1"
      [class.warning]="draggableObj.levelColor === 'warning'"
+     [class.disable-drag]="draggableObj.enable === false || draggableObj.enable == 0"
      [class.danger]="draggableObj.levelColor === 'danger'"
+     [class.lock]="draggableObj.lock === true || draggableObj.lock == 1"
+     [class.unlock]="(draggableObj.lock === false || draggableObj.lock == 0) || !draggableObj.lock"
      (window:mousemove)="catchMouseMove($event)"
+     (window:touchmove)="catchTouchMove($event)"
+
+
      (mousedown)="setStatus($event, 2)"
+     (touchstart)="setTouchStatus($event, 2)"
+
      (window:mouseup)="setStatus($event, 0)"
+     (window:touchend)="setTouchStatus($event, 0)"
+
+
+     (click)="emitSelected(true)"
 >
-  <div class="drag-action-buttons">
+  <div *ngIf="draggableObj.enable === true || draggableObj.enable == 1" style="transform: translate3d(0px, -35px, 0px); width: 80px">
+    <span style="width: 100%;"><b>Id: {{draggableObj.objId}}</b></span>
+  </div>
+<!--  <div class="drag-action-buttons">
     <ion-button size="small" color="danger" (click)="removeObj()">
       <ion-icon slot="icon-only" name="trash-sharp"></ion-icon>
     </ion-button>
-    <ion-button size="small" style="--background: var(--app-blue-light); --color: white;" [matMenuTriggerFor]="dragMoreOpts">
+    <ion-button size="small" style="&#45;&#45;background: var(&#45;&#45;app-blue-light); &#45;&#45;color: white;" [matMenuTriggerFor]="dragMoreOpts">
       <ion-icon slot="icon-only" name="ellipsis-vertical-sharp"></ion-icon>
     </ion-button>
     <mat-menu #dragMoreOpts="matMenu">
@@ -35,17 +50,12 @@
         <span>Ver mas</span>
       </button>
     </mat-menu>
-  </div>
-  <!--  <img src="assets/icons/icon-512x512.png" alt="" style="-->
-  <!--    position: absolute;-->
-  <!--    pointer-events: none;-->
-  <!--    width: 100%;-->
-  <!--    height: 100%;-->
-  <!--">-->
+  </div>-->
+
   <div class="letter-identifier">
-    <p>{{draggableObj.badge}}</p>
+    <mat-icon>{{draggableObj.indicatorIcon}}</mat-icon>
   </div>
-  <div class="resize-action" (mousedown)="setStatus($event, 1)"></div>
+  <div *ngIf="(draggableObj.lock === false || draggableObj.lock == 0) || !draggableObj.lock" class="resize-action" [class.disable-drag]="draggableObj.enable === false || draggableObj.enable == 0" (mousedown)="setStatus($event, 1)" (touchstart)="setTouchStatus($event, 1)" ></div>
   <ng-container *ngIf="false">
     <span>{{objWidth | number:'1.0-0'}}px</span>
     <span>{{objHeight | number:'1.0-0'}}px</span>

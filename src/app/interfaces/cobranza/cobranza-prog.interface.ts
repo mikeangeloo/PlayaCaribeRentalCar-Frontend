@@ -10,6 +10,7 @@ export interface CobranzaProgI
     monto?: number;
     moneda?: string;
     tipo?: number;
+    cobranza_seccion?: string;
     estatus?: number;
     fecha_procesado?: string;
     cod_banco?: string;

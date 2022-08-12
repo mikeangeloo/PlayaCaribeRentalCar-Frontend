@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import {CommonModule, CurrencyPipe} from '@angular/common';
+import {CommonModule, CurrencyPipe, isPlatformBrowser} from '@angular/common';
 import {HotelesListComponent} from "./components/hoteles/listado-hoteles/hoteles-list/hoteles-list.component";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {MaterialModule} from "../material/material.module";
@@ -44,7 +44,12 @@ import {InputModalComponent} from './components/input-modal/input-modal.componen
 import {ChecklistInspectorZoneComponent} from './components/checklist-inspector-zone/checklist-inspector-zone.component';
 import {DraggableResizableComponent} from './draggable-resizable/draggable-resizable.component';
 import {ModalDragElementDetailsComponent} from './components/modal-drag-element-details/modal-drag-element-details.component';
-
+import {CargosExtrasTableComponent} from './components/configuracion/precios/cargos-extras-table/cargos-extras-table.component';
+import { CargosExtrasFormComponent } from './components/configuracion/precios/cargos-extras-form/cargos-extras-form.component';
+import { VehiculosListContractComponent } from './components/vehiculos/vehiculos-list-contract/vehiculos-list-contract.component';
+import { ReservasFormComponent } from './components/reservas/reservas-form/reservas-form.component';
+import { LayoutModalComponent } from './components/categorias-vehiculos/layout-modal/layout-modal.component';
+import { AddLayaoutModalComponent } from './components/categorias-vehiculos/add-layaout-modal/add-layaout-modal.component';
 
 
 @NgModule({
@@ -87,7 +92,13 @@ import {ModalDragElementDetailsComponent} from './components/modal-drag-element-
     InputModalComponent,
     ChecklistInspectorZoneComponent,
     DraggableResizableComponent,
-    ModalDragElementDetailsComponent
+    ModalDragElementDetailsComponent,
+    CargosExtrasTableComponent,
+    CargosExtrasFormComponent,
+    VehiculosListContractComponent,
+    ReservasFormComponent,
+    LayoutModalComponent,
+    AddLayaoutModalComponent
   ],
   exports: [
     HotelesListComponent,
@@ -128,7 +139,13 @@ import {ModalDragElementDetailsComponent} from './components/modal-drag-element-
     InputModalComponent,
     ChecklistInspectorZoneComponent,
     DraggableResizableComponent,
-    ModalDragElementDetailsComponent
+    ModalDragElementDetailsComponent,
+    CargosExtrasTableComponent,
+    CargosExtrasFormComponent,
+    VehiculosListContractComponent,
+    ReservasFormComponent,
+    LayoutModalComponent,
+    AddLayaoutModalComponent
   ],
   entryComponents: [
     HotelesListComponent,
@@ -169,7 +186,13 @@ import {ModalDragElementDetailsComponent} from './components/modal-drag-element-
     InputModalComponent,
     ChecklistInspectorZoneComponent,
     DraggableResizableComponent,
-    ModalDragElementDetailsComponent
+    ModalDragElementDetailsComponent,
+    CargosExtrasTableComponent,
+    CargosExtrasFormComponent,
+    VehiculosListContractComponent,
+    ReservasFormComponent,
+    LayoutModalComponent,
+    AddLayaoutModalComponent
   ],
     imports: [
         CommonModule,

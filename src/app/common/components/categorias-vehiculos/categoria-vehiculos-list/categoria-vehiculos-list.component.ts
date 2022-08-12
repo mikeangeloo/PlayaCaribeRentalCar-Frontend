@@ -11,6 +11,7 @@ import {TxtConv} from "../../../../helpers/txt-conv";
 import {CategoriasVehiculosI} from "../../../../interfaces/catalogo-vehiculos/categorias-vehiculos.interface";
 import {CategoriaVehiculosService} from "../../../../services/categoria-vehiculos.service";
 import {CategoriaVehiculosFormComponent} from "../categoria-vehiculos-form/categoria-vehiculos-form.component";
+import { AddLayaoutModalComponent } from '../add-layaout-modal/add-layaout-modal.component';
 
 @Component({
   selector: 'app-categoria-vehiculos-list',
@@ -133,9 +134,11 @@ export class CategoriaVehiculosListComponent implements OnInit, OnChanges {
       component: CategoriaVehiculosFormComponent,
       componentProps: {
         'asModal': true,
-        'categoria_vehiculo_id': (_data && _data.id) ? _data.id : null
+        'categoria_vehiculo_id': (_data && _data.id) ? _data.id : null,
+        'last_id': this.categoriasVehiculos.length + 1
       },
       swipeToClose: true,
+      backdropDismiss: false,
       cssClass: 'edit-form'
     });
     await modal.present();
@@ -143,6 +146,24 @@ export class CategoriaVehiculosListComponent implements OnInit, OnChanges {
     if (data.reload && data.reload === true) {
       this.loadCategoriasVehiculosTable();
     }
+  }
+
+  async openAddLayoutModal() {
+    const modal = await this.modalCtr.create({
+      component: AddLayaoutModalComponent,
+      componentProps: {
+        'asModal': true,
+      },
+      swipeToClose: false,
+      backdropDismiss: false,
+      cssClass: 'medium-form'
+    });
+    await modal.present();
+    const {data} = await modal.onDidDismiss();
+    if (data.reload && data.reload === true) {
+      this.loadCategoriasVehiculosTable();
+    }
+
   }
 
   inactiveCatVehiculo(_data: CategoriasVehiculosI) {

@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouteReuseStrategy } from '@angular/router';
 
@@ -12,7 +12,7 @@ import {JwtInterceptor} from "../interceptors/jwt-interceptor";
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
 import {NgxMaterialTimepickerModule} from "ngx-material-timepicker";
-
+import { NgxSpinnerModule } from "ngx-spinner";
 @NgModule({
   declarations: [
     AppComponent
@@ -32,8 +32,10 @@ import {NgxMaterialTimepickerModule} from "ngx-material-timepicker";
       // or after 30 seconds (whichever comes first).
       registrationStrategy: 'registerWhenStable:30000',
     }),
-    NgxMaterialTimepickerModule
+    NgxMaterialTimepickerModule,
+    NgxSpinnerModule,
   ],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   providers: [
     {
       provide: RouteReuseStrategy,

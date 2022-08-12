@@ -32,6 +32,12 @@ export class VehiculosService {
     }));
   }
 
+  public getAllWithContract(): Observable<any> {
+    return this.httpClient.get<any>(`${this.dashURL}/vehiculos/list-estatus-contract`).pipe(map(response => {
+      return response;
+    }));
+  }
+
   public getActive(): Observable<any> {
     return this.httpClient.get<any>(`${this.dashURL}/vehiculos`).pipe(map(response => {
       return response;

@@ -11,6 +11,7 @@ import {TarjetaService} from "../../../../services/tarjeta.service";
 import {GeneralService} from "../../../../services/general.service";
 import {ToastMessageService} from "../../../../services/toast-message.service";
 import {CobranzaTipoE} from '../../../../enums/cobranza-tipo.enum';
+import { StringMap } from '@angular/compiler/src/compiler_facade_interface';
 
 @Component({
   selector: 'app-tarjeta-form',
@@ -31,7 +32,6 @@ export class TarjetaFormComponent implements OnInit {
   @Input() card_id: number;
   @Input() cliente_id: number;
   @Input() loadLoading = true;
-
   @Input() needCaptureAmount = false;
   @Input() cod_banco: string;
   @Input() monto: number;

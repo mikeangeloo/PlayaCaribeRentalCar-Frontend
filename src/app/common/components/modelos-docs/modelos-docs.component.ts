@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
 import {DocDataTransfer} from '../../../interfaces/shared/doc-data-tranfer.interface';
 import {SweetMessagesService} from '../../../services/sweet-messages.service';
 import {FilesService} from '../../../services/files.service';
@@ -17,8 +17,8 @@ export class ModelosDocsComponent implements OnInit, OnChanges {
   public cobranza_docs: DocDataTransfer[] = [];
 
   @Input() model_id_value: number;
-  @Input() docType: 'licencia_conducir' | 'cupon' | 'voucher' | 'check-list';
-  @Input() model: 'clientes' | 'contratos' | 'cobranza' | 'check-list';
+  @Input() docType: 'licencia_conducir' | 'cupon' | 'voucher' | 'check_indicator' | 'layout';
+  @Input() model: 'clientes' | 'contratos' | 'cobranza' | 'check_list' | 'categorias_vehiculos';
   @Input() justButton: boolean;
   @Input() btnSize: 'small' | 'default' | 'large' = 'default';
   @Input() fullSize: boolean;
@@ -137,10 +137,6 @@ export class ModelosDocsComponent implements OnInit, OnChanges {
           return;
         }
 
-        if (this.docType === 'check-list') {
-          this.sweetMsgServ.printStatus('En desarrollo', 'warning');
-          return;
-        }
         let res = await this.filesServ.storeDocs(formData);
         let _lastIndex = 0;
         if (res.ok === true) {
