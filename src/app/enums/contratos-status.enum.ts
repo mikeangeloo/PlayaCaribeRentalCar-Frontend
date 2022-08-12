@@ -18,7 +18,7 @@ export class ContratosStatus
       case 2:
         return 'RENTADO';
       case 3:
-        return 'RETORNO';
+        return 'CERRADO';
       case 4:
         return 'RESERVA';
       default:
