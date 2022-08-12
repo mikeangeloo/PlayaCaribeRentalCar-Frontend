@@ -368,7 +368,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
             this.statusColor = "yellow";
           } else if (this.contractData.estatus == ContratosStatusE.RENTADO) {
             this.statusColor = "DeepSkyBlue";
-          } else if (this.contractData.estatus == ContratosStatusE.RETORNO) {
+          } else if (this.contractData.estatus == ContratosStatusE.CERRADO) {
             this.statusColor = "SpringGreen";
           }
 
@@ -945,7 +945,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
     if (this.contractData && this.contractData.estatus) {
       switch (this.contractData.estatus) {
         case ContratosStatusE.ELIMINADO:
-        case ContratosStatusE.RETORNO:
+        case ContratosStatusE.CERRADO:
           this.vehiculoForm.disable();
           break;
         case ContratosStatusE.BORRADOR:
@@ -2439,6 +2439,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
     });
     this.rf.total_retorno.patchValue(_total);
     this.rf.cobranza_calc_retorno.patchValue(this.cobranzaRetornoI);
+    this.balanceRetornoPorPagar = _total;
   }
 
   async pushSelectedExtras() {
@@ -2774,6 +2775,14 @@ export class ContratoPage implements OnInit, AfterViewInit {
         if (section == 'firma') {
           this.contratosServ.flushContractData();
           this.router.navigateByUrl('vehiculos/list');
+        }
+
+        if (section === 'retorno') {
+          if(this.balanceRetornoPorPagar == 0) {
+            await this.viewPDF();
+            this.contratosServ.flushContractData();
+            this.router.navigateByUrl('vehiculos/list');
+          }
         }
 
         await this.reloadAll();
