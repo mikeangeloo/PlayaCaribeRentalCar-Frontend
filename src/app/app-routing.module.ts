@@ -34,6 +34,12 @@ const routes: Routes = [
         path: 'vehiculos/list',
         loadChildren: () => import('./modules/vehiculos/listado-vehiculos/listado-vehiculos.module').then(m=> m.ListadoVehiculosPageModule)
       },
+      // region REPORTES
+      {
+        path: 'reportes',
+        loadChildren: () => import('./modules/reportes/reportes.module').then(m => m.ReportesModule)
+      },
+      // endregion
       //region ADMINISTRACION
 
           //region CATALOGO VEHICULOS

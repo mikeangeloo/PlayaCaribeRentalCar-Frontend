@@ -4,5 +4,6 @@ export enum VehiculosStatusE
   RENTADO = 'rentado',
   ENTALLER = 'en_taller',
   USOPERSONAL = 'uso_personal',
-  RESERVADO = 'reservado'
+  RESERVADO = 'reservado',
+  CORRALON = 'corralon'
 }
