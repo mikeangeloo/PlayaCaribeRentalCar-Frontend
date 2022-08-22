@@ -278,17 +278,23 @@ export class ContratoPage implements OnInit, AfterViewInit {
           } else {
             let res = await this.contratosServ._getContractData(this.contratosServ.getContractNumber());
             if (res.ok === true) {
-              this.contratosServ.cancelContract(res.data.id).subscribe(async res => {
-                if (res.ok) {
-                  this.sweetMsgServ.printStatus(res.message, 'success');
-                  localStorage.removeItem(this.generalServ.dragObjStorageKey);
-                  this.contratosServ.flushContractData();
-                  await this.reloadAll();
-                }
-              }, error => {
-                console.log(error);
-                this.sweetMsgServ.printStatusArray(error.error.errors, 'error');
-              })
+              if (res.data.estatus == ContratosStatusE.BORRADOR) {
+                this.contratosServ.cancelContract(res.data.id).subscribe(async res => {
+                  if (res.ok) {
+                    this.sweetMsgServ.printStatus(res.message, 'success');
+                    localStorage.removeItem(this.generalServ.dragObjStorageKey);
+                    this.contratosServ.flushContractData();
+                    await this.reloadAll();
+                  }
+                }, error => {
+                  console.log(error);
+                  this.sweetMsgServ.printStatusArray(error.error.errors, 'error');
+                })
+              } else {
+                this.contratosServ.flushContractData();
+                await this.reloadAll();
+              }
+
             } else {
               this.contratosServ.flushContractData();
               await this.reloadAll();
@@ -508,6 +514,9 @@ export class ContratoPage implements OnInit, AfterViewInit {
               this.cobranzaProgRetornoData = [];
             }
 
+            if(this.contractData.estatus == ContratosStatusE.RESERVA && !_datosVehiculo) {
+              this.step = 2;
+            }
 
 
           }
@@ -2815,6 +2824,12 @@ export class ContratoPage implements OnInit, AfterViewInit {
     });
   }
 
+  async finalizarRetorno() {
+    await this.viewPDF();
+    this.contratosServ.flushContractData();
+    this.router.navigateByUrl('vehiculos/list');
+  }
+
 
   async viewPDF() {
     this.spinner.show();
@@ -2826,6 +2841,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
       } else {
         window.open(url, '_blank');
       }
+
     }, error => {
       this.spinner.hide();
       const fr = new FileReader();
