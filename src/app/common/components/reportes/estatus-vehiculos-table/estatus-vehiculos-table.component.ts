@@ -6,6 +6,7 @@ import {ActionSheetController, ModalController, NavController} from '@ionic/angu
 import * as moment from 'moment';
 import { VehiculosC, VehiculosI } from 'src/app/interfaces/catalogo-vehiculos/vehiculos.interface';
 import { ReportesService } from 'src/app/services/reportes.service';
+import {TxtConv} from '../../../../helpers/txt-conv';
 
 @Component({
   selector: 'app-estatus-vehiculos-table',
@@ -63,6 +64,22 @@ export class EstatusVehiculosTableComponent implements OnInit {
         console.log(error);
       });
     }
+  }
+
+  // Method to filter mat-table according to the value enter at input search filter
+  applyFilter(event?) {
+    const searchValue = event.target.value;
+    this.listVehiculos.filter = TxtConv.txtCon(searchValue, 'lowercase');
+    // this.listSurveys.filter = this.searchKey.trim().toLocaleLowerCase();
+    // if (this.dataSource.paginator) {
+    //   this.dataSource.paginator.firstPage();
+    // }
+  }
+
+  // Method to clear input search filter
+  onSearchClear() {
+    this.searchKey = '';
+    this.applyFilter();
   }
 
 }
