@@ -86,4 +86,8 @@ export interface ContratoI
   cobranza_calc_retorno: CobranzaCalcI[];
 
   idioma?: string;
+
+  tipo_vencido?: string
+  dias_vencido?: number
+  horas_vencido?: number
 }

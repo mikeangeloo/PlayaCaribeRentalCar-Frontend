@@ -79,12 +79,12 @@
                 <mat-header-cell *matHeaderCellDef mat-sort-header>Estatus</mat-header-cell>
                 <mat-cell *matCellDef="let row">
                   <div class="column">
-                    <p style="font-weight: bold; color: white;" [ngStyle]="{'background-color':  ((row.prox_servicio - row.km_recorridos) > 500 ) ? 'green' : ((row.prox_servicio - row.km_recorridos) < 0) ? 'red' : 'orange'}" >
+                    <ion-chip style="font-weight: bold; color: white;" [ngStyle]="{'background-color':  ((row.prox_servicio - row.km_recorridos) > 500 ) ? 'green' : ((row.prox_servicio - row.km_recorridos) < 0) ? 'red' : 'orange'}" >
                       {{
                         ((row.prox_servicio - row.km_recorridos) > 500 ) ? "AL DÍA" : ((row.prox_servicio - row.km_recorridos) < 0) ? "URGENTE" : "ALERTA"
 
                       }}
-                    </p>
+                    </ion-chip>
                   </div>
                 </mat-cell>
               </ng-container>

@@ -43,9 +43,9 @@
                 <mat-header-cell *matHeaderCellDef mat-sort-header>Estatus</mat-header-cell>
                 <mat-cell *matCellDef="let row">
                   <div class="column">
-                    <p class="{{row.estatus}}" style="font-weight: bold; color: white;" >
+                    <ion-chip class="{{row.estatus}}" style="font-weight: bold; color: white;" >
                       {{vehiculoC.getLabel(row.estatus)}}
-                    </p>
+                    </ion-chip>
                   </div>
                 </mat-cell>
               </ng-container>

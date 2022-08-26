@@ -21,6 +21,7 @@ import { ReservasFormComponent } from '../../reservas/reservas-form/reservas-for
 import { threadId } from 'worker_threads';
 import {ContratosStatus, ContratosStatusE} from '../../../../enums/contratos-status.enum';
 import {CobranzaTipoE} from '../../../../enums/cobranza-tipo.enum';
+import { DateConv } from 'src/app/helpers/date-conv';
 
 @Component({
   selector: 'app-vehiculos-list-contract',
@@ -62,6 +63,8 @@ export class VehiculosListContractComponent implements OnInit {
   @ViewChild(MatSort, {static: true}) sort: MatSort;
   public statusC = ContratosStatus;
   public idioma: 'es' | 'en' = 'es';
+  cobranzaExtraPor: string = 'dias | horas';
+  horaExtraMax = 2;
 
   constructor(
     public generalService: GeneralService,
@@ -159,6 +162,45 @@ export class VehiculosListContractComponent implements OnInit {
 
   }
 
+  async setDiasHorasRetraso(vehiculos: VehiculosI[]) {
+    for (const vehiculo of vehiculos) {
+      if(vehiculo.contrato != null) {
+        this.cobranzaExtraPor = 'horas';
+        let hora_actual = DateConv.transFormDate(moment.now(), 'time');
+        let fecha_actual = DateConv.transFormDate(moment.now(), 'regular');
+
+        let _fechaRetornoM = moment(moment(`${vehiculo.contrato.fecha_retorno} ${vehiculo.contrato.hora_retorno}`).format('YYYY-MM-DD HH:mm'));
+        let _fechaActualM = moment(moment(`${fecha_actual} ${hora_actual}`));
+        let _dateDiffM = moment.duration(_fechaActualM.diff(_fechaRetornoM));
+        let extraFrecuency = _dateDiffM.asHours();
+
+        if (extraFrecuency > this.horaExtraMax) {
+          this.cobranzaExtraPor = 'dias';
+          extraFrecuency = _dateDiffM.asDays();
+        }
+
+        extraFrecuency = parseInt(extraFrecuency.toFixed(0));
+
+        vehiculo.contrato.tipo_vencido = this.cobranzaExtraPor
+        vehiculo.contrato.horas_vencido = (this.cobranzaExtraPor == 'horas') ? extraFrecuency : 0
+        vehiculo.contrato.dias_vencido = (this.cobranzaExtraPor == 'dias') ? extraFrecuency : 0
+
+
+        console.log('_fechaRetornoM -->', _fechaRetornoM);
+        console.log('_fechaActualM -->', _fechaActualM);
+        console.log('cobranzaExtraPor --->', this.cobranzaExtraPor);
+        console.log('extraFrecuency -->', extraFrecuency);
+
+        console.log(vehiculo.contrato);
+
+      }
+
+
+
+    }
+
+  }
+
   // Método para cargar datos de los campus
   async loadVehiculosTable(_data?: VehiculosI[]) {
     //this.listado-hoteles = null;
@@ -179,7 +221,7 @@ export class VehiculosListContractComponent implements OnInit {
           this.spinner = false;
           this.vehiculos = response.vehiculos;
           await this.loadReservas();
-
+          await this.setDiasHorasRetraso(this.vehiculos)
 
           this.listVehiculos = new MatTableDataSource(this.vehiculos);
           this.listVehiculos.sort = this.sort;

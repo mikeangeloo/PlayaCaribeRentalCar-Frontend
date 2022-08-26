@@ -52,6 +52,7 @@ import { LayoutModalComponent } from './components/categorias-vehiculos/layout-m
 import { AddLayaoutModalComponent } from './components/categorias-vehiculos/add-layaout-modal/add-layaout-modal.component';
 import { EstatusVehiculosTableComponent } from './components/reportes/estatus-vehiculos-table/estatus-vehiculos-table.component';
 import { MantenimientoVehiculosTableComponent } from './components/reportes/mantenimiento-vehiculos-table/mantenimiento-vehiculos-table.component';
+import { VehiculosEstatusFormComponent } from './components/vehiculos/vehiculos-estatus-form/vehiculos-estatus-form.component';
 
 
 @NgModule({
@@ -102,7 +103,8 @@ import { MantenimientoVehiculosTableComponent } from './components/reportes/mant
     LayoutModalComponent,
     AddLayaoutModalComponent,
     EstatusVehiculosTableComponent,
-    MantenimientoVehiculosTableComponent
+    MantenimientoVehiculosTableComponent,
+    VehiculosEstatusFormComponent
   ],
   exports: [
     HotelesListComponent,
@@ -151,7 +153,8 @@ import { MantenimientoVehiculosTableComponent } from './components/reportes/mant
     LayoutModalComponent,
     AddLayaoutModalComponent,
     EstatusVehiculosTableComponent,
-    MantenimientoVehiculosTableComponent
+    MantenimientoVehiculosTableComponent,
+    VehiculosEstatusFormComponent
   ],
   entryComponents: [
     HotelesListComponent,
@@ -200,7 +203,8 @@ import { MantenimientoVehiculosTableComponent } from './components/reportes/mant
     LayoutModalComponent,
     AddLayaoutModalComponent,
     EstatusVehiculosTableComponent,
-    MantenimientoVehiculosTableComponent
+    MantenimientoVehiculosTableComponent,
+    VehiculosEstatusFormComponent
   ],
     imports: [
         CommonModule,

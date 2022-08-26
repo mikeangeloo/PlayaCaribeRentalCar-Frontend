@@ -62,6 +62,14 @@ export class VehiculosService {
     }
   }
 
+  public updateStatus(data, id): Observable<any> {
+
+    return this.httpClient.put<any>(`${this.dashURL}/vehiculos/change-status/${id}`, data).pipe(map(response => {
+      return response;
+    }));
+
+  }
+
   public setInactive(id): Observable<any> {
     return this.httpClient.delete<any>(`${this.dashURL}/vehiculos/${id}`).pipe(map(response => {
       return response;

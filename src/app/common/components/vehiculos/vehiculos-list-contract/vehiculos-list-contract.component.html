@@ -57,7 +57,9 @@
                 (click)="expandedElement = expandedElement === row ? null : row">
                   <div class="column">
                    <p>
-                     <ion-chip class="{{row.estatus}}" title="{{vehiculoC.getLabel(row.estatus)}}">
+
+                     <ion-chip class="{{row.contrato != null && (row.contrato.dias_vencido  > 0 || row.contrato.horas_vencido  > 0) ? 'atrasado': row.estatus}}" title="{{vehiculoC.getLabel(row.estatus)}}">
+                      <ion-icon *ngIf="row.contrato != null && (row.contrato.dias_vencido  > 0 || row.contrato.horas_vencido  > 0)" name="time-outline" size="large" style="color: white;"></ion-icon>
                        <ion-label>{{vehiculoC.getLabel(row.estatus)}}</ion-label>
                        <mat-icon *ngIf="row.contrato != null && expandedElement !== row">keyboard_arrow_down</mat-icon>
                         <mat-icon *ngIf="row.contrato != null && expandedElement === row">keyboard_arrow_up</mat-icon>
@@ -233,7 +235,7 @@
                           <div style="display: table-cell;  width:34%"><span style="font-weight: bold ;">Cliente:</span> {{row.contrato.cliente.nombre}}  </div>
                         </div>
                         <div style="display: table-row">
-                          <div style="display: table-cell;  width:34%"><span style="font-weight: bold ;">Estatus:</span> <ion-chip [outline]="true">{{statusC.labelStatus(row.contrato.estatus)}}</ion-chip></div>
+                          <div style="display: table-cell;  width:34%"><span style="font-weight: bold ;">Estatus:</span> <ion-chip [outline]="true" [style]="{'color': row.contrato != null && (row.contrato.dias_vencido  > 0 || row.contrato.horas_vencido  > 0) ? 'red': 'black'}">{{row.contrato != null && (row.contrato.dias_vencido  > 0 || row.contrato.horas_vencido  > 0) ? row.contrato.tipo_vencido == 'dias' ? 'Vencido por ' + row.contrato.dias_vencido + ' dias'  : 'Vencido por ' + row.contrato.horas_vencido + ' horas' : statusC.labelStatus(row.contrato.estatus)}}</ion-chip></div>
                           <div style="display: table-cell;  width:34%" ><span style="font-weight: bold ; ">Total:</span> {{row.contrato.total}}  </div>
                         </div>
                     </div>
