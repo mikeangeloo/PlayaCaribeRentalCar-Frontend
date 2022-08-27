@@ -1497,7 +1497,7 @@
                       </table>
                     </ion-col> <!-- desbloce de cobro -->
                   </ion-row> <!-- precio unitario | aplicar IVA | aplicar descuento | desbloce de cobro -->
-                  <div class="card-action-buttons" *ngIf="step >=7">
+                  <div class="card-action-buttons" *ngIf="step >=6">
                     <ion-button color="success" (click)="saveProcess('retorno')">{{ (balanceRetornoPorPagar !== 0) ? "SIGUIENTE" : "TERMINAR" }}</ion-button>
                   </div>
                 </ion-card-content>
