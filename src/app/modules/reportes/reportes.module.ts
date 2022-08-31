@@ -9,12 +9,14 @@ import {AppCommonModule} from '../../common/common.module';
 import { ReportesRoutingModule } from './reportes-routing.module';
 import { EstatusVehiculosComponent } from './estatus-vehiculos/estatus-vehiculos.component';
 import { MantenimientoVehiculosComponent } from './mantenimiento-vehiculos/mantenimiento-vehiculos.component';
+import { ExedenteKilometrajeGasolinaComponent } from './exedente-kilometraje-gasolina/exedente-kilometraje-gasolina.component';
 
 
 @NgModule({
   declarations: [
     EstatusVehiculosComponent,
-    MantenimientoVehiculosComponent
+    MantenimientoVehiculosComponent,
+    ExedenteKilometrajeGasolinaComponent
   ],
   imports: [
     CommonModule,

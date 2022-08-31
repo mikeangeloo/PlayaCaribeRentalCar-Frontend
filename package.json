@@ -32,6 +32,7 @@
     "@capacitor/status-bar": "1.0.6",
     "@ionic/angular": "^5.9.1",
     "firebase-tools": "^11.0.1",
+    "fractions": "^1.0.2",
     "html2canvas": "^1.4.1",
     "moment-timezone": "^0.5.34",
     "ngx-material-timepicker": "^5.5.3",

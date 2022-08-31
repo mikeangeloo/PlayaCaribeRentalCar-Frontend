@@ -35,4 +35,10 @@ export class ReportesService {
       return response;
     }));
   }
+
+  public getExedenteKilometrajeGasolina(): Observable<any> {
+    return this.httpClient.get<any>(`${this.dashURL}/reportes/exedente-kilometraje-gasolina`).pipe(map(response => {
+      return response;
+    }));
+  }
 }

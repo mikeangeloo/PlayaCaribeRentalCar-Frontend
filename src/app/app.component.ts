@@ -99,6 +99,14 @@ export class AppComponent implements OnDestroy {
           level: 1,
           active: false
         },
+        {
+          module: 'reportes',
+          icon: 'document-outline',
+          label: 'Exedentes de Kilometraje y Gasolina ',
+          route: 'reportes/exedente-kilometraje-gasolina',
+          level: 1,
+          active: false
+        },
       ]
     },
     {
