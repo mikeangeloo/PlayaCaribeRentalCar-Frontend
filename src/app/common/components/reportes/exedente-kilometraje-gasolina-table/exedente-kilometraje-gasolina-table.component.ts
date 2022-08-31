@@ -18,6 +18,7 @@ var Fraction = require('fractions');
 export class ExedenteKilometrajeGasolinaTableComponent implements OnInit {
 
   public spinner = false;
+  @Input() isModal: boolean;
   displayedColumns: string[] = [
     'fecha',
     'rentador',
@@ -73,6 +74,22 @@ export class ExedenteKilometrajeGasolinaTableComponent implements OnInit {
     let resultadoFraccion = Fraction.subtract((gas_final) ? gas_final: "0/8", (gas_inicial) ? gas_inicial: "0/8");
     return resultadoFraccion
 
+  }
+
+  // Method to filter mat-table according to the value enter at input search filter
+  applyFilter(event?) {
+    const searchValue = event.target.value;
+    this.listContratos.filter = TxtConv.txtCon(searchValue, 'lowercase');
+    // this.listSurveys.filter = this.searchKey.trim().toLocaleLowerCase();
+    // if (this.dataSource.paginator) {
+    //   this.dataSource.paginator.firstPage();
+    // }
+  }
+
+  // Method to clear input search filter
+  onSearchClear() {
+    this.searchKey = '';
+    this.applyFilter();
   }
 
 
