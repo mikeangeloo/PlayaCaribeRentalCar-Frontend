@@ -60,7 +60,7 @@ export class ExedenteKilometrajeGasolinaTableComponent implements OnInit {
         this.listContratos = new MatTableDataSource(response.contratos);
         this.listContratos.sort = this.sort;
         this.listContratos.paginator = this.paginator3;
-        this.listContratos = response.contratos;
+        //this.listContratos = response.contratos;
         this.contratos = response.contratos;
       }
     }, error => {
