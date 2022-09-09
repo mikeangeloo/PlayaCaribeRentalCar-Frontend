@@ -178,7 +178,7 @@
               <mat-footer-row *matFooterRowDef="['loading']" [ngClass]="{hide: spinner === false}"></mat-footer-row>
               <mat-footer-row *matFooterRowDef="['init']" [ngClass]="{'hide':listContratos!=null || spinner === true}"></mat-footer-row>
               <mat-footer-row *matFooterRowDef="['noData']"
-                              [ngClass]="{hide:!(listContratos!=null && listContratos.length==0)}">
+                              [ngClass]="{hide:!(listContratos!=null && listContratos.data.length==0)}">
               </mat-footer-row>
             </mat-table>
 
