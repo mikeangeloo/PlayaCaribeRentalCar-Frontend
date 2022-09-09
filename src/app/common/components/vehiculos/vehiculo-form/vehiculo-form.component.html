@@ -185,9 +185,7 @@
                 <ion-col size="6">
                   <mat-form-field appearance="legacy">
                     <mat-label>Prox. Servicio</mat-label>
-                    <input matInput [matDatepicker]="prox_servicio" formControlName="prox_servicio" (click)="prox_servicio.open();">
-                    <mat-datepicker-toggle matSuffix [for]="prox_servicio"></mat-datepicker-toggle>
-                    <mat-datepicker #prox_servicio></mat-datepicker>
+                    <input matInput type="number" formControlName="prox_servicio">
                     <mat-error *ngIf="vf.prox_servicio.errors?.required">Campo requerido</mat-error>
                   </mat-form-field>
                 </ion-col>
