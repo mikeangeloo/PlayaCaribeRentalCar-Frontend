@@ -59,6 +59,10 @@ const routes: Routes = [
             path: 'administracion/catalogo-vehiculos/clases-vehiculos',
             loadChildren: () => import('./modules/catalogo-vehiculos/clases-vehiculos/clases-vehiculos.module').then(m => m.ClasesVehiculosPageModule)
           },
+          {
+            path: 'administracion/catalogo-vehiculos/polizas',
+            loadChildren: () => import('./modules/polizas/polizas.module').then( m => m.PolizasPageModule)
+          },
           //endregion
 
           //region CONTROL ACCESSO
@@ -112,6 +116,7 @@ const routes: Routes = [
 
     ]
   },
+
 
 ];
 

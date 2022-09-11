@@ -54,6 +54,8 @@ import { EstatusVehiculosTableComponent } from './components/reportes/estatus-ve
 import { MantenimientoVehiculosTableComponent } from './components/reportes/mantenimiento-vehiculos-table/mantenimiento-vehiculos-table.component';
 import { VehiculosEstatusFormComponent } from './components/vehiculos/vehiculos-estatus-form/vehiculos-estatus-form.component';
 import { ExedenteKilometrajeGasolinaTableComponent } from './components/reportes/exedente-kilometraje-gasolina-table/exedente-kilometraje-gasolina-table.component';
+import {PolizasTableComponent} from './components/polizas/polizas-table/polizas-table.component';
+import {PolizaFormComponent} from './components/polizas/poliza-form/poliza-form.component';
 
 
 @NgModule({
@@ -106,7 +108,9 @@ import { ExedenteKilometrajeGasolinaTableComponent } from './components/reportes
     EstatusVehiculosTableComponent,
     MantenimientoVehiculosTableComponent,
     VehiculosEstatusFormComponent,
-    ExedenteKilometrajeGasolinaTableComponent
+    ExedenteKilometrajeGasolinaTableComponent,
+    PolizasTableComponent,
+    PolizaFormComponent
   ],
   exports: [
     HotelesListComponent,
@@ -157,7 +161,9 @@ import { ExedenteKilometrajeGasolinaTableComponent } from './components/reportes
     EstatusVehiculosTableComponent,
     MantenimientoVehiculosTableComponent,
     VehiculosEstatusFormComponent,
-    ExedenteKilometrajeGasolinaTableComponent
+    ExedenteKilometrajeGasolinaTableComponent,
+    PolizasTableComponent,
+    PolizaFormComponent
   ],
   entryComponents: [
     HotelesListComponent,
@@ -208,7 +214,9 @@ import { ExedenteKilometrajeGasolinaTableComponent } from './components/reportes
     EstatusVehiculosTableComponent,
     MantenimientoVehiculosTableComponent,
     VehiculosEstatusFormComponent,
-    ExedenteKilometrajeGasolinaTableComponent
+    ExedenteKilometrajeGasolinaTableComponent,
+    PolizasTableComponent,
+    PolizaFormComponent
   ],
     imports: [
         CommonModule,
