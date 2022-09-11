@@ -166,6 +166,10 @@ ion-content {
   width: 125px;
   margin: 0 auto;
 }
+ion-modal {
+  --backdrop-opacity: 0.4 !important;
+}
+//endregion
 
 //region DOCS UPLOAD STYLES
 .capture-img-container {

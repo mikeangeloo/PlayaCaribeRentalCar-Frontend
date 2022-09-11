@@ -17,6 +17,10 @@ import {CurrencyPipe} from '@angular/common';
 import {TarifasApolloConfService} from '../../../../services/tarifas-apollo-conf.service';
 import {TarifasCategoriasService} from '../../../../services/tarifas-categorias.service';
 import {TarifasCategoriasI} from '../../../../interfaces/configuracion/tarifas-categorias.interface';
+import {PolizasI} from '../../../../interfaces/polizas/polizas.interface';
+import {PolizasService} from '../../../../services/polizas.service';
+import {PolizaFormComponent} from '../../polizas/poliza-form/poliza-form.component';
+import {map, Observable, startWith} from 'rxjs';
 
 @Component({
   selector: 'app-vehiculo-form',
@@ -45,6 +49,9 @@ export class VehiculoFormComponent implements OnInit {
 
   tarifasCategorias: TarifasCategoriasI[];
 
+  public polizas: PolizasI[] = [];
+  public polizas$: Observable<PolizasI[]>;
+
   constructor(
     public modalCtrl: ModalController,
     private fb: FormBuilder,
@@ -57,7 +64,8 @@ export class VehiculoFormComponent implements OnInit {
     private classVehiculosServ: ClasesVehiculosService,
     private currencyPipe: CurrencyPipe,
     private tarifasApolloConfSer: TarifasApolloConfService,
-    private tarifasCatServ: TarifasCategoriasService
+    private tarifasCatServ: TarifasCategoriasService,
+    private polizasServ: PolizasService
   ) {
     this.title = 'Formulario Véhiculo';
     this.vehiculoForm = this.fb.group({
@@ -66,7 +74,7 @@ export class VehiculoFormComponent implements OnInit {
       modelo_ano: [null, Validators.required],
       marca_id: [null, Validators.required],
       placas: [null, Validators.required],
-      num_poliza_seg: [null, Validators.required],
+      poliza_id: [null, Validators.required],
       km_recorridos: [null, Validators.required],
       categoria_vehiculo_id: [null, Validators.required],
       color: [null, Validators.required],
@@ -94,6 +102,7 @@ export class VehiculoFormComponent implements OnInit {
     this.loadCategoriasV();
     this.loadClasesV();
     this.loadTarifasCat();
+    this.loadPolizas();
 
     if (this.vehiculo_id) {
       await this.loadVehiculosData();
@@ -101,6 +110,13 @@ export class VehiculoFormComponent implements OnInit {
       this.vehiculoData = null;
       this.initVehiculoForm();
     }
+
+
+  }
+
+  private _filterNoPoliza(no_poliza: string): PolizasI[] {
+    const filterValue = no_poliza.toLowerCase();
+    return this.polizas.filter(no_poliza => no_poliza.no_poliza.toLowerCase().includes(filterValue));
   }
 
   loadMarcasV() {
@@ -143,6 +159,24 @@ export class VehiculoFormComponent implements OnInit {
     });
   }
 
+  loadPolizas() {
+    this.polizasServ.getActive().subscribe(res => {
+      if (res.ok) {
+        this.polizas = res.data
+
+        if (!this.polizas$) {
+          this.polizas$ = this.vf.poliza_id.valueChanges.pipe(
+            startWith(''),
+            map(value => (typeof value === 'string' ? value : value.id)),
+            map(id => (id ? this._filterNoPoliza(id): this.polizas.slice()))
+          );
+        }
+      }
+    }, error => {
+      console.log(error);
+    })
+  }
+
   initVehiculoForm(data?) {
     console.log(data);
     this.vehiculoForm.setValue({
@@ -151,7 +185,7 @@ export class VehiculoFormComponent implements OnInit {
       modelo_ano: (data && data.modelo_ano) ? data.modelo_ano : null,
       marca_id: (data && data.marca_id) ? data.marca_id : null,
       placas: (data && data.placas) ? data.placas : null,
-      num_poliza_seg: (data && data.num_poliza_seg) ? data.num_poliza_seg : null,
+      poliza_id: (data && data.poliza_id) ? data.poliza_id : '',
       km_recorridos: (data && data.km_recorridos) ? data.km_recorridos : null,
       categoria_vehiculo_id: (data && data.categoria_vehiculo_id) ? data.categoria_vehiculo_id : null,
       color: (data && data.color) ? data.color : null,
@@ -199,9 +233,9 @@ export class VehiculoFormComponent implements OnInit {
     }
 
     let _payload = this.vehiculoForm.value;
-    if (_payload.prox_servicio) {
-      _payload.prox_servicio = DateConv.transFormDate(_payload.prox_servicio, 'regular');
-    }
+    // if (_payload.prox_servicio) {
+    //   _payload.prox_servicio = DateConv.transFormDate(_payload.prox_servicio, 'regular');
+    // }
     console.log('payload --->', _payload);
     //return;
     this.generalServ.presentLoading('Guardando cambios ...');
@@ -277,6 +311,28 @@ export class VehiculoFormComponent implements OnInit {
         this.toastServ.presentToast('error', error.error.errors[0], 'top');
         this.newCatV = false;
       });
+    }
+  }
+
+  async newPoliza() {
+    const modal = await this.modalCtrl.create({
+      component: PolizaFormComponent,
+      showBackdrop: true,
+      backdropDismiss: false,
+      componentProps: {
+        asModal: true
+      }
+    });
+
+    await modal.present();
+
+    const {data} = await modal.onDidDismiss();
+    console.log('onDidDismiss Polizas -->', data)
+    if (data && data.reload === true) {
+      if (data.data && data.data.poliza_id) {
+        this.vehiculoForm.controls.poliza_id.patchValue(data.data.poliza_id);
+      }
+      this.loadPolizas();
     }
   }
 }

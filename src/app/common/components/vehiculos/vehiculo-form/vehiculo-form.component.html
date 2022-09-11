@@ -149,6 +149,9 @@
               <ion-row class="ion-no-padding ion-no-margin">
 
                 <ion-col size>
+                  <div>
+                    <ion-button fill="clear" size="small"></ion-button>
+                  </div>
                   <mat-form-field appearance="legacy">
                     <mat-label>Núm. Serie</mat-label>
                     <input type="text" matInput formControlName="num_serie">
@@ -157,6 +160,9 @@
                 </ion-col>
 
                 <ion-col size>
+                  <div>
+                    <ion-button fill="clear" size="small"></ion-button>
+                  </div>
                   <mat-form-field appearance="legacy">
                     <mat-label>No. Placas</mat-label>
                     <input matInput type="text" formControlName="placas">
@@ -165,10 +171,21 @@
                 </ion-col>
 
                 <ion-col size>
+                  <div>
+                    <ion-button size="small" color="success" (click)="newPoliza()"><ion-icon name="add"></ion-icon></ion-button>
+                  </div>
                   <mat-form-field appearance="legacy">
-                    <mat-label>No. Poliza Seguro</mat-label>
-                    <input matInput type="text" formControlName="num_poliza_seg">
-                    <mat-error *ngIf="vf.num_poliza_seg.errors?.required">Campo requerido</mat-error>
+                    <mat-label>No. Póliza Seguro</mat-label>
+                    <mat-select formControlName="poliza_id" (openedChange)="true">
+                      <mat-form-field appearance="legacy" style="padding: 0.8em;">
+                        <input (input)="vf.poliza_id.patchValue($event.target['value'])" matInput placeholder="Buscador No. Póliza ..." autocomplete="off" #polizasSearch>
+                        <button mat-icon-button matSuffix (click)="polizasSearch.value = null; vf.poliza_id.patchValue('')">
+                          <mat-icon>clear</mat-icon>
+                        </button>
+                      </mat-form-field>
+                      <mat-option *ngFor="let poliza of polizas$ | async" [value]="poliza.id">{{poliza.no_poliza}} | {{poliza.tipo_poliza}}</mat-option>
+                    </mat-select>
+                    <mat-error *ngIf="vf.poliza_id.errors?.required">Campo requerido</mat-error>
                   </mat-form-field>
                 </ion-col>
               </ion-row>

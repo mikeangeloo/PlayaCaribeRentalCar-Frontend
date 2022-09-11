@@ -90,7 +90,7 @@ export class PolizaFormComponent implements OnInit {
     this.generalServ.presentLoading('Guardando cambios ...');
     this.polizaServ.saveUpdate(this.polizaForm.value, this.poliza_id).subscribe(res => {
       this.generalServ.dismissLoading();
-      this.dismiss(true);
+      this.dismiss(true, res.data);
       if (res.ok === true) {
         this.toastServ.presentToast('success', res.message, 'top');
       }
@@ -101,9 +101,10 @@ export class PolizaFormComponent implements OnInit {
     });
   }
 
-  dismiss(reload?) {
+  dismiss(reload?, data?) {
     this.modalCtrl.dismiss({
-      reload
+      reload,
+      data
     });
   }
 
