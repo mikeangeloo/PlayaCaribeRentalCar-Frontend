@@ -6,6 +6,7 @@ import {MarcasVehiculosService} from '../../../services/marcas-vehiculos.service
 import {GeneralService} from '../../../services/general.service';
 import {SweetMessagesService} from '../../../services/sweet-messages.service';
 import {ToastMessageService} from '../../../services/toast-message.service';
+import {CobranzaTipo} from '../../../interfaces/cobranza/cobranza-prog.interface';
 
 @Component({
   selector: 'app-input-modal',
@@ -18,6 +19,8 @@ export class InputModalComponent implements OnInit {
   @Input() monto: number;
   @Input() balanceCobro: number;
   @Input() cobranza_id: number;
+  @Input() cobranzaTipo: CobranzaTipo;
+  @Input() totalDeposito: number;
   public title: string;
 
   constructor(
@@ -25,14 +28,23 @@ export class InputModalComponent implements OnInit {
     private sweetMsg: SweetMessagesService,
     private toastServ: ToastMessageService
   ) {
-    this.title = 'Captura de efectivo';
   }
 
   ngOnInit() {
-
+    if (this.cobranzaTipo === 'efectivo') {
+      this.title = 'Captura de efectivo';
+    } else if (this.cobranzaTipo === 'deposito') {
+      this.title = 'Captura de deposito';
+    }
   }
 
   saveUpdate() {
+    if (this.cobranzaTipo === 'deposito') {
+      if (!this.cobranza_id && this.monto > this.totalDeposito) {
+        this.sweetMsg.printStatus('El monto ingresado es mayor al deposito disponible', 'warning');
+        return;
+      }
+    }
     if (!this.cobranza_id && this.monto > this.balanceCobro) {
       this.sweetMsg.printStatus('El monto ingresado es mayor al balance por cobrar', 'warning');
       return;

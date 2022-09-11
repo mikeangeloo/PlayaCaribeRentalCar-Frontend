@@ -20,6 +20,11 @@
               <span style="font-weight: 500">Por saldar:</span> {{balanceCobro | currency}}
             </p>
           </div>
+          <div class="title-container" *ngIf="totalDeposito && cobranzaTipo === 'deposito'">
+            <p style="color: darkgreen;font-size: 1.1em;">
+              <span style="font-weight: 500">Depósito:</span> {{totalDeposito | currency}}
+            </p>
+          </div>
 
           <mat-form-field>
             <mat-label>Monto</mat-label>

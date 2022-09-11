@@ -23,3 +23,5 @@ export interface CobranzaProgI
 
     edit?: boolean;
 }
+
+export type CobranzaTipo = 'tarjeta' | 'efectivo' | 'deposito';

@@ -704,8 +704,8 @@ mat-header-row {
 }
 .small-form {
   @media (min-width: 768px) {
-    --height: 35%;
-    --width: 30%;
+    --max-width: 40%;
+    --max-height: 50%;
   }
 }
 .medium-form {

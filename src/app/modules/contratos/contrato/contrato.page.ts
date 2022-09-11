@@ -34,7 +34,7 @@ import {ToastMessageService} from '../../../services/toast-message.service';
 import {UbicacionesI} from '../../../interfaces/configuracion/ubicaciones.interface';
 import {UbicacionesService} from '../../../services/ubicaciones.service';
 import {map, Observable, single, startWith} from 'rxjs';
-import {CobranzaProgI} from '../../../interfaces/cobranza/cobranza-prog.interface';
+import {CobranzaProgI, CobranzaTipo} from '../../../interfaces/cobranza/cobranza-prog.interface';
 import {CobranzaService} from '../../../services/cobranza.service';
 import {TarifasCategoriasI} from '../../../interfaces/configuracion/tarifas-categorias.interface';
 import {TarifasCategoriasService} from '../../../services/tarifas-categorias.service';
@@ -1522,7 +1522,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
             handler: () => {
               console.log('Pago Efectivo clicked');
               //this.attachFiles();
-              this.agregarEfectivo(null,cobranza_seccion);
+              this.capturarCobroInput(null, cobranza_seccion, 'efectivo');
             },
           },
           {
@@ -1572,7 +1572,17 @@ export class ContratoPage implements OnInit, AfterViewInit {
             handler: () => {
               console.log('Pago Efectivo clicked');
               //this.attachFiles();
-              this.agregarEfectivo(null, cobranza_seccion);
+              this.capturarCobroInput(null, cobranza_seccion, 'efectivo');
+            },
+          },
+          {
+            text: 'Pago con Depósito',
+            icon: 'cash',
+            cssClass: this.balanceRetornoPorPagar == 0 ? 'disable' : '',
+            handler: () => {
+              console.log('Pago Depósito clicked');
+              //this.attachFiles();
+              this.capturarCobroInput(null, cobranza_seccion, 'deposito');
             },
           },
           {
@@ -1654,14 +1664,16 @@ export class ContratoPage implements OnInit, AfterViewInit {
     }
   }
 
-  async agregarEfectivo(cobranza: CobranzaProgI = null, cobranza_seccion) {
+  async capturarCobroInput(cobranza: CobranzaProgI = null, cobranza_seccion, cobranzaTipo: CobranzaTipo) {
     const modal = await this.modalCtr.create({
       component: InputModalComponent,
       componentProps: {
         'asModal': true,
         'monto': (cobranza && cobranza.monto) ? cobranza.monto : null,
         'balanceCobro':(cobranza_seccion == 'salida') ?  this.balancePorPagar : this.balanceRetornoPorPagar,
-        'cobranza_id': (cobranza && cobranza.id) ? cobranza.id : null
+        'cobranza_id': (cobranza && cobranza.id) ? cobranza.id : null,
+        'cobranzaTipo': cobranzaTipo,
+        'totalDeposito': this.pagadoAutTotal
       },
       swipeToClose: true,
       cssClass: 'small-form',
@@ -2514,7 +2526,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
     }
 
     if (tipo === CobranzaTipoE.PAGOEFECTIVO) {
-      await this.agregarEfectivo(cobro, cobranza_seccion);
+      await this.capturarCobroInput(cobro, cobranza_seccion, 'efectivo');
     }
   }
   enableDisableEditCobro(cobro: CobranzaProgI, enable: boolean) {
