@@ -370,9 +370,20 @@ fieldset {
     overflow-wrap: initial;
   }
 }
+.corralon {
+  color: white;
+  background: gray;
+
+  ion-label {
+    width: 100%;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    overflow-wrap: initial;
+  }
+}
 .en_taller {
   color: white;
-  background: var(--ion-color-dark-tint);
+  background: red;
 
 
   ion-label {

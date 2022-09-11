@@ -205,6 +205,10 @@
                       <ion-button fill="clear" (click)="activeVehiculo(row)" *ngIf="row.activo === 0" title="Habilitar registro">
                         <ion-icon name="checkmark-circle-outline" color="medium"></ion-icon>
                       </ion-button>
+                      <ion-button fill="clear" (click)="openVehiculoStatus(row)" *ngIf="row.estatus !== 'rentado'" title="Editar estatus">
+                        <ion-icon name="pencil-outline" ></ion-icon>
+                      </ion-button>
+
                     </div>
 
                   </div>

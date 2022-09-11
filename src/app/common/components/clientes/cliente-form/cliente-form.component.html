@@ -108,6 +108,23 @@
 
   <ion-item-divider></ion-item-divider>
 
+  <ion-card class="app-card">
+    <ion-card-content>
+
+      <ion-row style="height: 100%; align-content: center; justify-content: center">
+        <ion-col size="12" style="height: 90%">
+          <app-modelos-docs model="clientes" docType="licencia_conducir" [fullSize]="true" [justButton]="true" [model_id_value]="clienteForm && clienteForm.controls.id.value ? clienteForm.controls.id.value : null">
+            <legend name="legend">Doc. Cliente</legend>
+          </app-modelos-docs>
+
+        </ion-col>
+      </ion-row>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-item-divider></ion-item-divider>
+
+
   <ion-card>
     <ion-card-content>
       <h4 class="title2">Datos Bancarios</h4>

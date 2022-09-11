@@ -12,6 +12,7 @@ import {VehiculosC, VehiculosI} from "../../../../interfaces/catalogo-vehiculos/
 import {VehiculosService} from "../../../../services/vehiculos.service";
 import {VehiculoFormComponent} from "../vehiculo-form/vehiculo-form.component";
 import {TarifasApolloConfFormComponent} from '../../configuracion/precios/tarifas-apollo-conf-form/tarifas-apollo-conf-form.component';
+import { VehiculosEstatusFormComponent } from '../vehiculos-estatus-form/vehiculos-estatus-form.component';
 
 @Component({
   selector: 'app-vehiculos-list',
@@ -146,6 +147,28 @@ export class VehiculosListComponent implements OnInit, OnChanges {
       },
       swipeToClose: true,
       cssClass: 'edit-form'
+    });
+    await modal.present();
+    const {data} = await modal.onWillDismiss();
+    if (data.reload && data.reload === true) {
+      this.loadVehiculosTable();
+    }
+  }
+
+  async openVehiculoStatus(_data: VehiculosI) {
+    if (_data) {
+      this.editVehiculo = _data;
+    }
+    //this.generalService.presentLoading();
+    const modal = await this.modalCtr.create({
+      component: VehiculosEstatusFormComponent,
+      componentProps: {
+        'asModal': true,
+        'vehiculo_id': (_data && _data.id) ? _data.id : null
+      },
+      swipeToClose: false,
+      backdropDismiss: false,
+      cssClass: 'small-form'
     });
     await modal.present();
     const {data} = await modal.onWillDismiss();

@@ -81,7 +81,33 @@ export class AppComponent implements OnDestroy {
       label: 'Reportes',
       route: null,
       level: 0,
-      active: false
+      active: false,
+      children: [
+        {
+          module: 'reportes',
+          icon: 'document-outline',
+          label: 'Estatus de los Vehiculos',
+          route: 'reportes/estatus-vehiculos',
+          level: 1,
+          active: false
+        },
+        {
+          module: 'reportes',
+          icon: 'document-outline',
+          label: 'Servicios de Mantenimiento',
+          route: 'reportes/mantenimiento-vehiculos',
+          level: 1,
+          active: false
+        },
+        {
+          module: 'reportes',
+          icon: 'document-outline',
+          label: 'Exedentes de Kilometraje y Gasolina ',
+          route: 'reportes/exedente-kilometraje-gasolina',
+          level: 1,
+          active: false
+        },
+      ]
     },
     {
       module: 'administracion',

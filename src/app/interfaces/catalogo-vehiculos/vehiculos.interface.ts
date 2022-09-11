@@ -54,6 +54,8 @@ export class VehiculosC
         return 'Uso personal';
       case VehiculosStatusE.RESERVADO:
         return 'Reservado';
+      case VehiculosStatusE.CORRALON:
+          return 'Corralon';
       default:
         return '--';
     }
