@@ -21,6 +21,7 @@ import {PolizasI} from '../../../../interfaces/polizas/polizas.interface';
 import {PolizasService} from '../../../../services/polizas.service';
 import {PolizaFormComponent} from '../../polizas/poliza-form/poliza-form.component';
 import {map, Observable, startWith} from 'rxjs';
+import {VehiculosStatusE} from '../../../../enums/vehiculos-status.enum';
 
 @Component({
   selector: 'app-vehiculo-form',
@@ -46,6 +47,7 @@ export class VehiculoFormComponent implements OnInit {
   public clasesV: ClasesVehiculosI[];
 
   vehiculoC = VehiculosC;
+  vehiculoE = VehiculosStatusE
 
   tarifasCategorias: TarifasCategoriasI[];
 
@@ -211,6 +213,9 @@ export class VehiculoFormComponent implements OnInit {
       if (res.ok === true) {
         this.vehiculoData = res.vehiculo;
         this.initVehiculoForm(res.vehiculo);
+        if (this.vehiculoData.estatus === VehiculosStatusE.RESERVADO || this.vehiculoData.estatus === VehiculosStatusE.RENTADO) {
+          this.title += '- Solo Lectura';
+        }
       }
     }, error => {
       this.generalServ.dismissLoading();

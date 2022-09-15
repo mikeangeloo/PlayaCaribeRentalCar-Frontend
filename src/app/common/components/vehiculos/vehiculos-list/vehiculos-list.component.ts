@@ -13,6 +13,7 @@ import {VehiculosService} from "../../../../services/vehiculos.service";
 import {VehiculoFormComponent} from "../vehiculo-form/vehiculo-form.component";
 import {TarifasApolloConfFormComponent} from '../../configuracion/precios/tarifas-apollo-conf-form/tarifas-apollo-conf-form.component';
 import { VehiculosEstatusFormComponent } from '../vehiculos-estatus-form/vehiculos-estatus-form.component';
+import {VehiculosStatusE} from '../../../../enums/vehiculos-status.enum';
 
 @Component({
   selector: 'app-vehiculos-list',
@@ -26,6 +27,7 @@ export class VehiculosListComponent implements OnInit, OnChanges {
   @Input() isModal: boolean;
   @Output() emitData = new EventEmitter();
   public vehiculoC = VehiculosC;
+  public vehiculosE = VehiculosStatusE;
   displayedColumns: string[] = [
     'codigo',
     'estatus',

@@ -199,12 +199,14 @@
                       <ion-button fill="clear" (click)="openVehiculoForm(row)">
                         <ion-icon  name="create-outline"></ion-icon>
                       </ion-button>
-                      <ion-button fill="clear" (click)="inactiveVehiculo(row)" *ngIf="row.activo === 1" title="Deshabilitar registro">
-                        <ion-icon name="close-circle-outline" color="danger" ></ion-icon>
-                      </ion-button>
-                      <ion-button fill="clear" (click)="activeVehiculo(row)" *ngIf="row.activo === 0" title="Habilitar registro">
-                        <ion-icon name="checkmark-circle-outline" color="medium"></ion-icon>
-                      </ion-button>
+                      <ng-container *ngIf="row.estatus !== vehiculosE.RENTADO">
+                        <ion-button fill="clear" (click)="inactiveVehiculo(row)" *ngIf="row.activo === 1" title="Deshabilitar registro">
+                          <ion-icon name="close-circle-outline" color="danger" ></ion-icon>
+                        </ion-button>
+                        <ion-button fill="clear" (click)="activeVehiculo(row)" *ngIf="row.activo === 0" title="Habilitar registro">
+                          <ion-icon name="checkmark-circle-outline" color="medium"></ion-icon>
+                        </ion-button>
+                      </ng-container>
                       <ion-button fill="clear" (click)="openVehiculoStatus(row)" *ngIf="row.estatus !== 'rentado'" title="Editar estatus">
                         <ion-icon name="pencil-outline" ></ion-icon>
                       </ion-button>

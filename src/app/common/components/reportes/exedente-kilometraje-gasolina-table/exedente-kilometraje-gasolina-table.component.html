@@ -61,19 +61,6 @@
                   </div>
                 </mat-cell>
               </ng-container>
-
-              <!-- km_inicial -->
-              <ng-container matColumnDef="km_inicial">
-                <mat-header-cell *matHeaderCellDef mat-sort-header>Km Inicial</mat-header-cell>
-                <mat-cell *matCellDef="let row">
-                  <div class="column">
-                    <p>
-                      {{row.km_inicial}}
-                    </p>
-                  </div>
-                </mat-cell>
-              </ng-container>
-
               <!-- km_final -->
               <ng-container matColumnDef="km_final">
                 <mat-header-cell *matHeaderCellDef mat-sort-header>Km Final</mat-header-cell>
@@ -86,26 +73,26 @@
                 </mat-cell>
               </ng-container>
 
+              <!-- km_inicial -->
+              <ng-container matColumnDef="km_inicial">
+                <mat-header-cell *matHeaderCellDef mat-sort-header>Km Inicial</mat-header-cell>
+                <mat-cell *matCellDef="let row">
+                  <div class="column">
+                    <p>
+                      {{row.km_inicial}} sfd
+                    </p>
+                  </div>
+                </mat-cell>
+              </ng-container>
+
               <!-- km_exedente -->
               <ng-container matColumnDef="km_exedente">
                 <mat-header-cell *matHeaderCellDef mat-sort-header>Km Exedente</mat-header-cell>
                 <mat-cell *matCellDef="let row">
                   <div class="column" >
-                    <ion-chip [style]="{'background-color': row != null && (row.km_final - row.km_inicial  > 0) ? 'red': 'green'}" style="font-weight: bold; color: white;" >
+                    <ion-chip [style]="{'background-color': row != null && (row.km_final - row.km_inicial  >= 1) ? 'red': 'green'}" style="font-weight: bold; color: white;" >
                       {{row.km_final - row.km_inicial}}
                     </ion-chip>
-                  </div>
-                </mat-cell>
-              </ng-container>
-
-              <!-- gas_inicial -->
-              <ng-container matColumnDef="gas_inicial">
-                <mat-header-cell *matHeaderCellDef mat-sort-header>Gas Inicial</mat-header-cell>
-                <mat-cell *matCellDef="let row">
-                  <div class="column">
-                    <p>
-                      {{row.cant_combustible_salida}}
-                    </p>
                   </div>
                 </mat-cell>
               </ng-container>
@@ -117,6 +104,18 @@
                   <div class="column">
                     <p>
                       {{row.cant_combustible_retorno}}
+                    </p>
+                  </div>
+                </mat-cell>
+              </ng-container>
+
+              <!-- gas_inicial -->
+              <ng-container matColumnDef="gas_inicial">
+                <mat-header-cell *matHeaderCellDef mat-sort-header>Gas Inicial</mat-header-cell>
+                <mat-cell *matCellDef="let row">
+                  <div class="column">
+                    <p>
+                      {{row.cant_combustible_salida}}
                     </p>
                   </div>
                 </mat-cell>
