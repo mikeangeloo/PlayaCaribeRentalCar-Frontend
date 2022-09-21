@@ -24,11 +24,11 @@ export class ExedenteKilometrajeGasolinaTableComponent implements OnInit {
     'rentador',
     'vehiculo',
     'placas',
-    'km_inicial',
     'km_final',
+    'km_inicial',
     'km_exedente',
-    'gas_inicial',
     'gas_final',
+    'gas_inicial',
     'gas_exedente',
     'estatus',
   ];

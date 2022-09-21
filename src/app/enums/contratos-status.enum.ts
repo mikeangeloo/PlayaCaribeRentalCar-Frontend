@@ -12,7 +12,7 @@ export class ContratosStatus
   static labelStatus(estatus) {
     switch (estatus) {
       case 0:
-        return 'ELIMINADO';
+        return 'CANCELADO';
       case 1:
         return 'BORRADOR';
       case 2:

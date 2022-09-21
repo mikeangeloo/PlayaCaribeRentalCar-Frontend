@@ -52,6 +52,7 @@ import { CargosExtrasI } from 'src/app/interfaces/configuracion/cargos-extras.in
 import { CargosRetornoExtrasService } from 'src/app/services/cargos-retorno-extras.service';
 import { NgxSpinnerService } from "ngx-spinner";
 import { ActivatedRoute, Router } from '@angular/router';
+import {VehiculosStatusE} from '../../../enums/vehiculos-status.enum';
 
 @Component({
   selector: 'app-contrato',
@@ -1728,7 +1729,8 @@ export class ContratoPage implements OnInit, AfterViewInit {
     if (this.selectedTarifaCat && this.selectedTarifaCat.id) {
       _payload = {
         orderBy: 'tarifa_categoria_id',
-        tarifa_categoria_id: this.selectedTarifaCat.id
+        tarifa_categoria_id: this.selectedTarifaCat.id,
+        estatus: VehiculosStatusE.DISPONIBLE
       }
     }
     const modal = await this.modalCtr.create({

@@ -11,7 +11,7 @@
 
 
 
-  <ion-card class="app-card">
+  <ion-card class="app-card" [ngClass]="{'disable': vehiculoData?.estatus === vehiculoE.RENTADO || vehiculoData?.estatus === vehiculoE.RESERVADO}">
     <ion-card-content>
 
       <ion-row style="height: 100%; align-content: center; justify-content: center">
