@@ -107,6 +107,14 @@ export class AppComponent implements OnDestroy {
           level: 1,
           active: false
         },
+        {
+          module: 'reportes',
+          icon: 'document-outline',
+          label: 'Polizas y seguros ',
+          route: 'reportes/polizas-seguros',
+          level: 1,
+          active: false
+        },
       ]
     },
     {

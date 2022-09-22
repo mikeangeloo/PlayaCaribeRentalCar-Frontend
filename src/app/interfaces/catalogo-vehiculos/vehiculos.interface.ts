@@ -6,6 +6,7 @@ import {ClasesVehiculosI} from './clases-vehiculos.interface';
 import {TarifasCategoriasI} from '../configuracion/tarifas-categorias.interface';
 import { ContratoI } from "../contratos/contrato.interface";
 import { ReservaI } from "../reservas/reserva.interface";
+import { PolizasI } from "../polizas/polizas.interface";
 
 export interface VehiculosI
 {
@@ -37,6 +38,7 @@ export interface VehiculosI
   clase_id?: number;
   clase?: ClasesVehiculosI;
   contrato?: ContratoI | ReservaI
+  poliza?: PolizasI
 }
 
 export class VehiculosC
