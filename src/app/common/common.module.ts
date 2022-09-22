@@ -56,6 +56,7 @@ import { VehiculosEstatusFormComponent } from './components/vehiculos/vehiculos-
 import { ExedenteKilometrajeGasolinaTableComponent } from './components/reportes/exedente-kilometraje-gasolina-table/exedente-kilometraje-gasolina-table.component';
 import {PolizasTableComponent} from './components/polizas/polizas-table/polizas-table.component';
 import {PolizaFormComponent} from './components/polizas/poliza-form/poliza-form.component';
+import {CobroDepositoModalComponent} from './components/cobro-deposito-modal/cobro-deposito-modal.component';
 
 
 @NgModule({
@@ -110,7 +111,8 @@ import {PolizaFormComponent} from './components/polizas/poliza-form/poliza-form.
     VehiculosEstatusFormComponent,
     ExedenteKilometrajeGasolinaTableComponent,
     PolizasTableComponent,
-    PolizaFormComponent
+    PolizaFormComponent,
+    CobroDepositoModalComponent
   ],
   exports: [
     HotelesListComponent,
@@ -163,7 +165,8 @@ import {PolizaFormComponent} from './components/polizas/poliza-form/poliza-form.
     VehiculosEstatusFormComponent,
     ExedenteKilometrajeGasolinaTableComponent,
     PolizasTableComponent,
-    PolizaFormComponent
+    PolizaFormComponent,
+    CobroDepositoModalComponent
   ],
   entryComponents: [
     HotelesListComponent,
@@ -216,7 +219,8 @@ import {PolizaFormComponent} from './components/polizas/poliza-form/poliza-form.
     VehiculosEstatusFormComponent,
     ExedenteKilometrajeGasolinaTableComponent,
     PolizasTableComponent,
-    PolizaFormComponent
+    PolizaFormComponent,
+    CobroDepositoModalComponent
   ],
     imports: [
         CommonModule,

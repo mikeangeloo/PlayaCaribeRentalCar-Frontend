@@ -1,0 +1,87 @@
+<ion-header translucent *ngIf="asModal">
+  <ion-toolbar>
+    <ion-title>{{ title }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button class="close-btn" (click)="dismiss()">
+        <ion-icon name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content fullscreen>
+
+  <ion-card class="app-card">
+    <ion-card-content>
+      <ion-row>
+        <ion-col size="6">
+          <h2></h2>
+        </ion-col>
+        <ion-col size="6" class="ion-text-end">
+          <button mat-raised-button class="button-success" (click)="saveUpdate()">Guardar</button>
+        </ion-col>
+        <ion-col size="12">
+          <table class="complement-table">
+            <thead>
+            <tr>
+              <th>Tarjeta</th>
+              <th>Pre-Autorización</th>
+              <th>Cobrar</th>
+              <th>Cód. Banco</th>
+            </tr>
+            </thead>
+            <tbody>
+            <ng-container>
+              <tr>
+                <td style="font-size: 12px;">
+                  AMERICAN EXPRESS <br>
+                  33333
+                </td>
+                <td>
+                  <div class="table-input">
+                    <input type="text" [value]="5000 | currency" [readOnly]="true">
+                    <p class="input-hint">Solo Lectura</p>
+                  </div>
+                </td>
+                <td>
+                  <div class="table-input">
+                    <input type="number" autocomplete="off">
+                    <div class="input-subfix">
+                      <span>$</span>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div class="table-input">
+                    <input type="number" autocomplete="off">
+                  </div>
+                </td>
+              </tr>
+              <tr class="error-feed">
+                <td colspan="4">
+                  <ul style="text-align: left">
+                    <li>
+                      Error example
+                    </li>
+                  </ul>
+                </td>
+              </tr>
+            </ng-container>
+
+            </tbody>
+          </table>
+        </ion-col>
+      </ion-row>
+    </ion-card-content>
+  </ion-card>
+</ion-content>
+
+<ion-footer>
+  <ion-toolbar>
+    <ion-buttons slot="end">
+      <ion-button color="medium" (click)="dismiss()">
+        Cerrar Ventana
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-footer>

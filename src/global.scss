@@ -714,6 +714,13 @@ mat-header-row {
     --width: 75%;
   }
 }
+
+.large-form {
+  @media (min-width: 768px) {
+    --height: 85%;
+    --width: 85%;
+  }
+}
 .nested-modal {
   --backdrop-opacity: 0.5;
 }
@@ -767,6 +774,12 @@ mat-header-row {
     .input-prefix {
       position: absolute;
       right: 8%;
+      top: 7px;
+    }
+
+    .input-subfix {
+      position: absolute;
+      left: 8%;
       top: 7px;
     }
 

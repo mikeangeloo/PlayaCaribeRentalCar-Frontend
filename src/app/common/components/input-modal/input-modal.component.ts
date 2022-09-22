@@ -19,8 +19,6 @@ export class InputModalComponent implements OnInit {
   @Input() monto: number;
   @Input() balanceCobro: number;
   @Input() cobranza_id: number;
-  @Input() cobranzaTipo: CobranzaTipo;
-  @Input() totalDeposito: number;
   public title: string;
 
   constructor(
@@ -31,20 +29,10 @@ export class InputModalComponent implements OnInit {
   }
 
   ngOnInit() {
-    if (this.cobranzaTipo === 'efectivo') {
-      this.title = 'Captura de efectivo';
-    } else if (this.cobranzaTipo === 'deposito') {
-      this.title = 'Captura de deposito';
-    }
+    this.title = 'Captura de efectivo';
   }
 
   saveUpdate() {
-    if (this.cobranzaTipo === 'deposito') {
-      if (!this.cobranza_id && this.monto > this.totalDeposito) {
-        this.sweetMsg.printStatus('El monto ingresado es mayor al deposito disponible', 'warning');
-        return;
-      }
-    }
     if (!this.cobranza_id && this.monto > this.balanceCobro) {
       this.sweetMsg.printStatus('El monto ingresado es mayor al balance por cobrar', 'warning');
       return;
