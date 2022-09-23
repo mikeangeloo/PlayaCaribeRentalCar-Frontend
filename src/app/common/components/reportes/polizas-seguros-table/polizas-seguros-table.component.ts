@@ -75,9 +75,9 @@ export class PolizasSegurosTableComponent implements OnInit {
     }
   }
 
-  public calcEstatus(desde, hasta) {
+  public calcEstatus(hasta) {
     var a = moment(hasta);
-    var b = moment(desde);
+    var b = moment().subtract(1, 'day');
     let resultado = a.diff(b,'days')
     return resultado
 

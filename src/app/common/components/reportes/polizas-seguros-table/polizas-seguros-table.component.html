@@ -140,9 +140,9 @@
                 <mat-header-cell *matHeaderCellDef mat-sort-header>Estatus</mat-header-cell>
                 <mat-cell *matCellDef="let row">
                   <div class="column">
-                    <ion-chip style="font-weight: bold; color: white;" [ngStyle]="{'background-color':  (calcEstatus(row.poliza.fecha_inicio, row.poliza.fecha_fin) > 0 ) ? 'green' :  'red' }" >
+                    <ion-chip style="font-weight: bold; color: white;" [ngStyle]="{'background-color':  (calcEstatus(row.poliza.fecha_fin) > 0 ) ? 'green' :  'red' }" >
                       {{
-                        calcEstatus(row.poliza.fecha_inicio, row.poliza.fecha_fin)
+                        calcEstatus(row.poliza.fecha_fin)
 
                       }}
                     </ion-chip>
