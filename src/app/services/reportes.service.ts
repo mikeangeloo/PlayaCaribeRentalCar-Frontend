@@ -35,6 +35,11 @@ export class ReportesService {
       return response;
     }));
   }
+  public getVehiculosPoliza(): Observable<any> {
+    return this.httpClient.get<any>(`${this.dashURL}/reportes/polizas-seguros`).pipe(map(response => {
+      return response;
+    }));
+  }
 
   public getExedenteKilometrajeGasolina(): Observable<any> {
     return this.httpClient.get<any>(`${this.dashURL}/reportes/exedente-kilometraje-gasolina`).pipe(map(response => {

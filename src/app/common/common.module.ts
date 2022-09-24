@@ -57,6 +57,7 @@ import { ExedenteKilometrajeGasolinaTableComponent } from './components/reportes
 import {PolizasTableComponent} from './components/polizas/polizas-table/polizas-table.component';
 import {PolizaFormComponent} from './components/polizas/poliza-form/poliza-form.component';
 import {CobroDepositoModalComponent} from './components/cobro-deposito-modal/cobro-deposito-modal.component';
+import { PolizasSegurosTableComponent } from './components/reportes/polizas-seguros-table/polizas-seguros-table.component';
 
 
 @NgModule({
@@ -112,7 +113,9 @@ import {CobroDepositoModalComponent} from './components/cobro-deposito-modal/cob
     ExedenteKilometrajeGasolinaTableComponent,
     PolizasTableComponent,
     PolizaFormComponent,
-    CobroDepositoModalComponent
+    CobroDepositoModalComponent,
+    PolizaFormComponent,
+    PolizasSegurosTableComponent
   ],
   exports: [
     HotelesListComponent,
@@ -165,6 +168,8 @@ import {CobroDepositoModalComponent} from './components/cobro-deposito-modal/cob
     VehiculosEstatusFormComponent,
     ExedenteKilometrajeGasolinaTableComponent,
     PolizasTableComponent,
+    PolizaFormComponent,
+    PolizasSegurosTableComponent,
     PolizaFormComponent,
     CobroDepositoModalComponent
   ],
@@ -219,6 +224,8 @@ import {CobroDepositoModalComponent} from './components/cobro-deposito-modal/cob
     VehiculosEstatusFormComponent,
     ExedenteKilometrajeGasolinaTableComponent,
     PolizasTableComponent,
+    PolizaFormComponent,
+    PolizasSegurosTableComponent,
     PolizaFormComponent,
     CobroDepositoModalComponent
   ],
