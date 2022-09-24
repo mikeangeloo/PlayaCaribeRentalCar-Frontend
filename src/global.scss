@@ -169,6 +169,12 @@ ion-content {
 ion-modal {
   --backdrop-opacity: 0.4 !important;
 }
+.danger-color {
+  color: var(--ion-color-danger);
+}
+.success-color {
+  color: var(--ion-color-success);
+}
 //endregion
 
 //region DOCS UPLOAD STYLES

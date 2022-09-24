@@ -19,7 +19,9 @@ export class HomePage {
       componentProps: {
         'asModal': true,
         'balanceCobro': 4000,
-        'cobranza_id': 1
+        'contrato_id': 21,
+        'num_contrato': 'AP021',
+        'cliente_id': 1
       },
       swipeToClose: true,
       cssClass: 'large-form'

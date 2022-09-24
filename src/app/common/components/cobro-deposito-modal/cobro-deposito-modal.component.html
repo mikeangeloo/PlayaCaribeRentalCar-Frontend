@@ -15,7 +15,8 @@
     <ion-card-content>
       <ion-row>
         <ion-col size="6">
-          <h2></h2>
+          <h4 style="margin: 0; padding: 0;">Balance por cobrar: <span class="danger-color">{{balanceCobro | currency}}</span></h4>
+          <h4 style="margin: 0; padding: 0;">Total deposito: <span class="success-color">{{totalDeposito | currency}}</span></h4>
         </ion-col>
         <ion-col size="6" class="ion-text-end">
           <button mat-raised-button class="button-success" (click)="saveUpdate()">Guardar</button>
@@ -31,21 +32,21 @@
             </tr>
             </thead>
             <tbody>
-            <ng-container>
+            <ng-container *ngFor="let cobranzaD of cobranzaDepositos">
               <tr>
                 <td style="font-size: 12px;">
-                  AMERICAN EXPRESS <br>
-                  33333
+                  {{cobranzaD?.c_type | uppercase}} <br>
+                  {{cobranzaD?.c_cn4}}
                 </td>
                 <td>
                   <div class="table-input">
-                    <input type="text" [value]="5000 | currency" [readOnly]="true">
+                    <input type="text" [value]="cobranzaD?.c_monto | currency" [readOnly]="true">
                     <p class="input-hint">Solo Lectura</p>
                   </div>
                 </td>
                 <td>
                   <div class="table-input">
-                    <input type="number" autocomplete="off">
+                    <input type="number" autocomplete="off" [(ngModel)]="cobranzaD.monto" (ngModelChange)="handleCobroCaptura(cobranzaD)">
                     <div class="input-subfix">
                       <span>$</span>
                     </div>
@@ -53,15 +54,15 @@
                 </td>
                 <td>
                   <div class="table-input">
-                    <input type="number" autocomplete="off">
+                    <input type="text" autocomplete="off" [(ngModel)]="cobranzaD.cod_banco">
                   </div>
                 </td>
               </tr>
-              <tr class="error-feed">
+              <tr class="error-feed" *ngIf="cobranzaD.errors && cobranzaD.errors.length > 0">
                 <td colspan="4">
                   <ul style="text-align: left">
-                    <li>
-                      Error example
+                    <li *ngFor="let error of cobranzaD.errors">
+                      {{error}}
                     </li>
                   </ul>
                 </td>
