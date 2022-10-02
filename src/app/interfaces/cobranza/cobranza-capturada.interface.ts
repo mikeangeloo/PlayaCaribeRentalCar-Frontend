@@ -4,6 +4,7 @@ export interface CobranzaCapturadaI
 {
   id: number;
   contrato_id: number;
+  cobranza_id?: number;
   tarjeta_id: number;
   cliente_id: number;
   fecha_cargo: string;
@@ -19,4 +20,5 @@ export interface CobranzaCapturadaI
   created_at: Date;
   updated_at: Date;
   tarjeta: CardI;
+  cobro_depositos?: CobranzaCapturadaI[]
 }

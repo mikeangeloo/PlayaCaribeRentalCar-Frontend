@@ -8,6 +8,8 @@ import {CobranzaStatusEnum} from '../../../enums/cobranza-status.enum';
 import {CobranzaCapturadaI} from '../../../interfaces/cobranza/cobranza-capturada.interface';
 import {CobranzaSeccionEnum} from '../../../enums/cobranza-seccion.enum';
 import {ContratoSeccionEnum} from '../../../enums/contrato-seccion.enum';
+import {ContratosService} from '../../../services/contratos.service';
+import {concatAll, concatMap, from, map, mergeAll, mergeMap} from 'rxjs';
 
 interface CobranzaDepositoI {
   c_type: string
@@ -25,6 +27,7 @@ interface CobranzaDepositoI {
   cobranza_seccion: string
   cod_banco: string
   cobranzaAuth_id: number
+  cobroDeposito_id: number
 
   errors?: string[];
 }
@@ -51,7 +54,8 @@ export class CobroDepositoModalComponent implements OnInit {
     public modalCtrl: ModalController,
     private sweetMsg: SweetMessagesService,
     private toastServ: ToastMessageService,
-    private cobroServ: CobranzaService
+    private cobroServ: CobranzaService,
+    private contratoServ: ContratosService
   ) {
     this.title = 'Cobranza de depósito';
   }
@@ -62,6 +66,14 @@ export class CobroDepositoModalComponent implements OnInit {
 
   saveUpdate() {
     console.log('cobro deposito --->', this.cobranzaDepositos);
+    let test = from(this.cobranzaDepositos).pipe(
+      map((data) => {
+        return {payload: data, petition: this.contratoServ.saveProgress(data)}
+      }),
+      mergeMap((data) => data.petition)
+    ).subscribe((res) => {
+      console.log('map --->', res)
+    })
   }
 
   async loadCobranza() {
@@ -75,10 +87,25 @@ export class CobroDepositoModalComponent implements OnInit {
     let res = await this.cobroServ.getCobranza(payload)
     if (res.ok) {
       this.cobranzaAuthCapturada = res['data']
-      this.totalDeposito = res['total']
+      this.totalDeposito = res['totalDeposito']
       console.log(res['total'])
 
       for(let cobranzaAuth of this.cobranzaAuthCapturada) {
+        let cobroDeposito = {
+          cod_banco: '',
+          monto: null,
+          cobroDeposito_id: null
+        }
+        if (cobranzaAuth.cobro_depositos && cobranzaAuth.cobro_depositos.length > 0) {
+          let getDepositoData = this.findCobroDepositosOnData(cobranzaAuth.id, cobranzaAuth.tarjeta_id, cobranzaAuth.cobro_depositos)
+          console.log(getDepositoData)
+          if (getDepositoData) {
+            cobroDeposito.cod_banco = getDepositoData.cod_banco;
+            cobroDeposito.monto = getDepositoData.monto
+            cobroDeposito.cobroDeposito_id = getDepositoData.id
+          }
+        }
+
         let cobranzaDeposito: CobranzaDepositoI = {
           c_type: cobranzaAuth.tarjeta?.c_type,
           c_cn4: cobranzaAuth.tarjeta?.c_cn4,
@@ -86,16 +113,17 @@ export class CobroDepositoModalComponent implements OnInit {
 
           cliente_id: this.cliente_id,
           cobranza_seccion: CobranzaSeccionEnum.RETORNO,
-          cod_banco: '',
+          cod_banco: cobroDeposito.cod_banco,
           contrato_id: this.contrato_id,
           moneda: 'MXN',
-          monto: null,
+          monto: cobroDeposito.monto,
           num_contrato: this.num_contrato,
           seccion: ContratoSeccionEnum.COBRANZARETORNO,
           tarjeta_id: cobranzaAuth.tarjeta_id,
           tipo: CobranzaTipoE.PAGODEPOSITO,
 
           cobranzaAuth_id: cobranzaAuth.id,
+          cobroDeposito_id: cobroDeposito.cobroDeposito_id,
 
           errors: []
         }
@@ -119,6 +147,10 @@ export class CobroDepositoModalComponent implements OnInit {
       reload,
       info: _data
     });
+  }
+
+  private findCobroDepositosOnData(preAuthId: number, tarjeta_id: number, cobro: CobranzaCapturadaI[]): CobranzaCapturadaI {
+    return cobro.filter((cobro) => cobro.tarjeta_id === tarjeta_id && cobro.cobranza_id === preAuthId).pop()
   }
 
 }
