@@ -59,6 +59,7 @@ import {
   CobroDepositoModalComponent
 } from '../../../common/components/cobro-deposito-modal/cobro-deposito-modal.component';
 
+
 @Component({
   selector: 'app-contrato',
   templateUrl: './contrato.page.html',
