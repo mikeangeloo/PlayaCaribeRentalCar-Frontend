@@ -56,6 +56,7 @@ import { VehiculosEstatusFormComponent } from './components/vehiculos/vehiculos-
 import { ExedenteKilometrajeGasolinaTableComponent } from './components/reportes/exedente-kilometraje-gasolina-table/exedente-kilometraje-gasolina-table.component';
 import {PolizasTableComponent} from './components/polizas/polizas-table/polizas-table.component';
 import {PolizaFormComponent} from './components/polizas/poliza-form/poliza-form.component';
+import {CobroDepositoModalComponent} from './components/cobro-deposito-modal/cobro-deposito-modal.component';
 import { PolizasSegurosTableComponent } from './components/reportes/polizas-seguros-table/polizas-seguros-table.component';
 
 
@@ -112,6 +113,8 @@ import { PolizasSegurosTableComponent } from './components/reportes/polizas-segu
     ExedenteKilometrajeGasolinaTableComponent,
     PolizasTableComponent,
     PolizaFormComponent,
+    CobroDepositoModalComponent,
+    PolizaFormComponent,
     PolizasSegurosTableComponent
   ],
   exports: [
@@ -166,8 +169,9 @@ import { PolizasSegurosTableComponent } from './components/reportes/polizas-segu
     ExedenteKilometrajeGasolinaTableComponent,
     PolizasTableComponent,
     PolizaFormComponent,
-    PolizasSegurosTableComponent
-
+    PolizasSegurosTableComponent,
+    PolizaFormComponent,
+    CobroDepositoModalComponent
   ],
   entryComponents: [
     HotelesListComponent,
@@ -221,8 +225,9 @@ import { PolizasSegurosTableComponent } from './components/reportes/polizas-segu
     ExedenteKilometrajeGasolinaTableComponent,
     PolizasTableComponent,
     PolizaFormComponent,
-    PolizasSegurosTableComponent
-
+    PolizasSegurosTableComponent,
+    PolizaFormComponent,
+    CobroDepositoModalComponent
   ],
     imports: [
         CommonModule,

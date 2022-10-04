@@ -21,13 +21,20 @@ export class CobranzaService {
     this.dashURL = environment.dashUrl;
   }
 
-
   public async cancelCobro(payload) {
     try {
       let res = await this.httpClient.post<any>(`${this.dashURL}/cobranza/cancel`, payload).toPromise();
       if (res.ok) {
         return {ok: true, message: res.message}
       }
+    } catch (e) {
+      return {ok: false, errors: e}
+    }
+  }
+
+  public async getCobranza(payload) {
+    try {
+      return  await this.httpClient.post<any>(`${this.dashURL}/cobranza/get-cobranza`, payload).toPromise()
     } catch (e) {
       return {ok: false, errors: e}
     }

@@ -169,6 +169,12 @@ ion-content {
 ion-modal {
   --backdrop-opacity: 0.4 !important;
 }
+.danger-color {
+  color: var(--ion-color-danger);
+}
+.success-color {
+  color: var(--ion-color-success);
+}
 //endregion
 
 //region DOCS UPLOAD STYLES
@@ -704,14 +710,21 @@ mat-header-row {
 }
 .small-form {
   @media (min-width: 768px) {
-    --height: 35%;
-    --width: 30%;
+    --max-width: 40%;
+    --max-height: 50%;
   }
 }
 .medium-form {
   @media (min-width: 768px) {
     --height: 75%;
     --width: 75%;
+  }
+}
+
+.large-form {
+  @media (min-width: 768px) {
+    --height: 85%;
+    --width: 85%;
   }
 }
 .nested-modal {
@@ -767,6 +780,12 @@ mat-header-row {
     .input-prefix {
       position: absolute;
       right: 8%;
+      top: 7px;
+    }
+
+    .input-subfix {
+      position: absolute;
+      left: 8%;
       top: 7px;
     }
 

@@ -6,6 +6,7 @@ import {MarcasVehiculosService} from '../../../services/marcas-vehiculos.service
 import {GeneralService} from '../../../services/general.service';
 import {SweetMessagesService} from '../../../services/sweet-messages.service';
 import {ToastMessageService} from '../../../services/toast-message.service';
+import {CobranzaTipo} from '../../../interfaces/cobranza/cobranza-prog.interface';
 
 @Component({
   selector: 'app-input-modal',
@@ -25,11 +26,10 @@ export class InputModalComponent implements OnInit {
     private sweetMsg: SweetMessagesService,
     private toastServ: ToastMessageService
   ) {
-    this.title = 'Captura de efectivo';
   }
 
   ngOnInit() {
-
+    this.title = 'Captura de efectivo';
   }
 
   saveUpdate() {

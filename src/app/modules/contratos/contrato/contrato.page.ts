@@ -7,7 +7,7 @@ import {CardI} from '../../../interfaces/cards/card.interface';
 import {TarjetaFormComponent} from '../../../common/components/tarjetas/tarjeta-form/tarjeta-form.component';
 import {ActionSheetController, AlertController, ModalController} from '@ionic/angular';
 import {MultiTableFilterComponent} from '../../../common/components/multi-table-filter/multi-table-filter.component';
-import {FormBuilder, FormGroup, Validator, Validators} from '@angular/forms';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {DateConv} from '../../../helpers/date-conv';
 import {SessionService} from '../../../services/session.service';
 import {SucursalesI} from '../../../interfaces/sucursales.interface';
@@ -33,8 +33,8 @@ import {ModelsEnum} from '../../../enums/models.enum';
 import {ToastMessageService} from '../../../services/toast-message.service';
 import {UbicacionesI} from '../../../interfaces/configuracion/ubicaciones.interface';
 import {UbicacionesService} from '../../../services/ubicaciones.service';
-import {map, Observable, single, startWith} from 'rxjs';
-import {CobranzaProgI} from '../../../interfaces/cobranza/cobranza-prog.interface';
+import {map, Observable, startWith} from 'rxjs';
+import {CobranzaProgI, CobranzaTipo} from '../../../interfaces/cobranza/cobranza-prog.interface';
 import {CobranzaService} from '../../../services/cobranza.service';
 import {TarifasCategoriasI} from '../../../interfaces/configuracion/tarifas-categorias.interface';
 import {TarifasCategoriasService} from '../../../services/tarifas-categorias.service';
@@ -42,17 +42,22 @@ import {CobranzaTipoE} from '../../../enums/cobranza-tipo.enum';
 import {InputModalComponent} from '../../../common/components/input-modal/input-modal.component';
 import {DragObjProperties} from '../../../common/draggable-resizable/draggable-resizable.component';
 import {ModelosDocsComponent} from '../../../common/components/modelos-docs/modelos-docs.component';
-import {ModalDragElementDetailsComponent} from '../../../common/components/modal-drag-element-details/modal-drag-element-details.component';
+import {
+  ModalDragElementDetailsComponent
+} from '../../../common/components/modal-drag-element-details/modal-drag-element-details.component';
 import {CheckListTypeEnum} from '../../../enums/check-list-type.enum';
 import {NotasService} from '../../../services/notas.service';
 import {CheckListService} from '../../../services/check-list.service';
-import { SignatureCaptureComponent } from 'src/app/common/components/signature-capture/signature-capture.component';
+import {SignatureCaptureComponent} from 'src/app/common/components/signature-capture/signature-capture.component';
 import html2canvas from 'html2canvas';
-import { CargosExtrasI } from 'src/app/interfaces/configuracion/cargos-extras.interface';
-import { CargosRetornoExtrasService } from 'src/app/services/cargos-retorno-extras.service';
-import { NgxSpinnerService } from "ngx-spinner";
-import { ActivatedRoute, Router } from '@angular/router';
+import {CargosExtrasI} from 'src/app/interfaces/configuracion/cargos-extras.interface';
+import {CargosRetornoExtrasService} from 'src/app/services/cargos-retorno-extras.service';
+import {NgxSpinnerService} from 'ngx-spinner';
+import {ActivatedRoute, Router} from '@angular/router';
 import {VehiculosStatusE} from '../../../enums/vehiculos-status.enum';
+import {
+  CobroDepositoModalComponent
+} from '../../../common/components/cobro-deposito-modal/cobro-deposito-modal.component';
 
 @Component({
   selector: 'app-contrato',
@@ -1523,7 +1528,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
             handler: () => {
               console.log('Pago Efectivo clicked');
               //this.attachFiles();
-              this.agregarEfectivo(null,cobranza_seccion);
+              this.capturarCobroInput(null, cobranza_seccion, 'efectivo');
             },
           },
           {
@@ -1573,7 +1578,17 @@ export class ContratoPage implements OnInit, AfterViewInit {
             handler: () => {
               console.log('Pago Efectivo clicked');
               //this.attachFiles();
-              this.agregarEfectivo(null, cobranza_seccion);
+              this.capturarCobroInput(null, cobranza_seccion, 'efectivo');
+            },
+          },
+          {
+            text: 'Pago con Depósito',
+            icon: 'cash',
+            cssClass: this.balanceRetornoPorPagar == 0 ? 'disable' : '',
+            handler: () => {
+              console.log('Pago Depósito clicked');
+              //this.attachFiles();
+             this.capturaDeposito('retorno')
             },
           },
           {
@@ -1655,7 +1670,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
     }
   }
 
-  async agregarEfectivo(cobranza: CobranzaProgI = null, cobranza_seccion) {
+  async capturarCobroInput(cobranza: CobranzaProgI = null, cobranza_seccion, cobranzaTipo: CobranzaTipo) {
     const modal = await this.modalCtr.create({
       component: InputModalComponent,
       componentProps: {
@@ -1701,6 +1716,34 @@ export class ContratoPage implements OnInit, AfterViewInit {
       return null;
     }
   }
+
+  async capturaDeposito(cobranza_seccion: 'salida' | 'retorno') {
+    const modal = await this.modalCtr.create({
+      component: CobroDepositoModalComponent,
+      componentProps: {
+        'asModal': true,
+        'balanceCobro':(cobranza_seccion == 'salida') ?  this.balancePorPagar : this.balanceRetornoPorPagar,
+        'contrato_id': this.contract_id,
+        'num_contrato': this.num_contrato,
+        'cliente_id': this.contractData.cliente.id
+      },
+      swipeToClose: true,
+      cssClass: 'large-form'
+      //presentingElement: pageEl
+    });
+    await modal.present();
+    const {data} = await modal.onWillDismiss();
+    if (data) {
+      console.log(data)
+      if (data.reload) {
+        await this.reloadAll();
+      }
+    } else {
+      return null;
+    }
+  }
+
+
   //#endregion
 
   //#region SIGNATURE MANAGEMENT
@@ -2510,13 +2553,17 @@ export class ContratoPage implements OnInit, AfterViewInit {
   //#endregion
 
   //#region COBRANZAPROG FUNCTIONS
-  async editCobro(tipo: CobranzaTipoE.PAGOTARJETA | CobranzaTipoE.PREAUTHORIZACION | CobranzaTipoE.PAGOEFECTIVO, cobranza_seccion, cobro: CobranzaProgI) {
+  async editCobro(tipo: CobranzaTipoE.PAGOTARJETA | CobranzaTipoE.PREAUTHORIZACION | CobranzaTipoE.PAGOEFECTIVO | CobranzaTipoE.PAGODEPOSITO, cobranza_seccion, cobro: CobranzaProgI) {
     if (tipo === CobranzaTipoE.PREAUTHORIZACION || tipo === CobranzaTipoE.PAGOTARJETA) {
       await this.agregarTarjetaForm(cobro.tipo, cobro.tarjeta, cobranza_seccion, true, cobro);
     }
 
     if (tipo === CobranzaTipoE.PAGOEFECTIVO) {
-      await this.agregarEfectivo(cobro, cobranza_seccion);
+      await this.capturarCobroInput(cobro, cobranza_seccion, 'efectivo');
+    }
+
+    if (tipo === CobranzaTipoE.PAGODEPOSITO) {
+      await this.capturaDeposito(cobranza_seccion)
     }
   }
   enableDisableEditCobro(cobro: CobranzaProgI, enable: boolean) {
@@ -2579,7 +2626,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
   recalBalanceRetornoPorCobrar() {
     let total = 0;
     this.balanceRetornoPorPagar = this.retornoDataForm.controls.total_retorno.value;
-    let _data = this.cobranzaProgRetornoData.filter(x => x.tipo == 2 || x.tipo == 3);
+    let _data = this.cobranzaProgRetornoData.filter(x => x.tipo == 2 || x.tipo == 3 || x.tipo == 4);
     if (_data && _data.length > 0) {
       for (let i = 0; i < _data.length; i++) {
         total =  parseFloat(Number(Number(total) + Number(_data[i].monto)).toFixed(2));
@@ -2596,7 +2643,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
   setTotalRetornoPago() {
     this.pagadoRetornoAutTotal = 0;
     this.pagadoRetornoTotal = 0;
-    let _dataPagado = this.cobranzaProgRetornoData.filter(x => x.tipo == CobranzaTipoE.PAGOTARJETA || x.tipo == CobranzaTipoE.PAGOEFECTIVO);
+    let _dataPagado = this.cobranzaProgRetornoData.filter(x => x.tipo == CobranzaTipoE.PAGOTARJETA || x.tipo == CobranzaTipoE.PAGOEFECTIVO || x.tipo == CobranzaTipoE.PAGODEPOSITO);
     if (_dataPagado && _dataPagado.length > 0) {
       for (let i = 0; i < _dataPagado.length; i++) {
         this.pagadoRetornoTotal =  parseFloat(Number(Number(this.pagadoRetornoTotal) + Number(_dataPagado[i].monto)).toFixed(2));
