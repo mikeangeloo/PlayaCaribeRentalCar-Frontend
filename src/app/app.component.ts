@@ -136,7 +136,7 @@ export class AppComponent implements OnDestroy {
             {
               module: 'catalogo-vehiculos',
               icon: 'bookmarks',
-              label: 'Listado de Vehículos',
+              label: 'Inventario de Vehículos',
               route: '/administracion/catalogo-vehiculos/listado-vehiculos',
               level: 2,
               active: false,

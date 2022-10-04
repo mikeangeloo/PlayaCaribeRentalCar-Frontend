@@ -9,7 +9,8 @@ import {CobranzaCapturadaI} from '../../../interfaces/cobranza/cobranza-capturad
 import {CobranzaSeccionEnum} from '../../../enums/cobranza-seccion.enum';
 import {ContratoSeccionEnum} from '../../../enums/contrato-seccion.enum';
 import {ContratosService} from '../../../services/contratos.service';
-import {concatAll, concatMap, from, map, mergeAll, mergeMap} from 'rxjs';
+import {concatAll, concatMap, from, map, mergeAll, mergeMap, of} from 'rxjs';
+import {catchError} from 'rxjs/operators';
 
 interface CobranzaDepositoI {
   c_type: string
@@ -67,12 +68,21 @@ export class CobroDepositoModalComponent implements OnInit {
   saveUpdate() {
     console.log('cobro deposito --->', this.cobranzaDepositos);
     let test = from(this.cobranzaDepositos).pipe(
-      map((data) => {
-        return {payload: data, petition: this.contratoServ.saveProgress(data)}
+      map((payload) => {
+        return this.contratoServ.saveProgress(payload).pipe(
+          map((response) => {
+            return {payload: payload, response: response}
+          })
+        )
       }),
-      mergeMap((data) => data.petition)
+      mergeMap((data) => data)
     ).subscribe((res) => {
-      console.log('map --->', res)
+      if (res.response.ok === true) {
+        this.dismiss(true)
+      }
+    },error => {
+      console.log(error)
+      this.sweetMsg.printStatusArray(error.error.errors, 'error')
     })
   }
 
