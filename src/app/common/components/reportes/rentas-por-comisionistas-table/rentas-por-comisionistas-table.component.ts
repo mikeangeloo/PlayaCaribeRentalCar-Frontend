@@ -8,6 +8,7 @@ import {FormControl, FormGroup} from '@angular/forms';
 import {SweetMessagesService} from '../../../../services/sweet-messages.service';
 import {DateConv} from '../../../../helpers/date-conv';
 import * as moment from 'moment-timezone';
+import {BehaviorSubject} from 'rxjs';
 
 
 export interface RentasPorComisionaI
@@ -104,7 +105,7 @@ export class RentasPorComisionistasTableComponent implements OnChanges {
 
   public usuarios: UsuariosSistemaI[];
   public comisionistas: ComisionistasI[];
-  public usuariosGroup: UserGroupI[] = []
+  public usuariosGroup: UserGroupI[] = [];
 
   range = new FormGroup({
     start: new FormControl(),
@@ -114,6 +115,11 @@ export class RentasPorComisionistasTableComponent implements OnChanges {
   selectedUserGroup = new FormControl('');
 
   maxDate = moment().format('YYYY-MM-DD');
+
+  public searchPayload = {
+    rango_fechas: null,
+    usuario_data: null
+  }
 
   constructor(
     public reportesServ: ReportesService,
@@ -128,14 +134,14 @@ export class RentasPorComisionistasTableComponent implements OnChanges {
   }
 
   // Método para cargar datos de los campus
-  loadReporteRentasPorComisionistasTable(payload?) {
-    this.usuariosGroup = [];
+  loadReporteRentasPorComisionistasTable() {
+    //this.usuariosGroup = [];
     console.log('ready');
     //this.listado-hoteles = null;
     this.listRentasPorComisionistas = null;
     this.spinner = true;
 
-    this.reportesServ.getReporteRentasPorComisionista(payload).subscribe(response => {
+    this.reportesServ.getReporteRentasPorComisionista(this.searchPayload).subscribe(response => {
       if (response.ok === true) {
         this.spinner = false;
         this.listRentasPorComisionistas = new MatTableDataSource(response.data);
@@ -144,15 +150,19 @@ export class RentasPorComisionistasTableComponent implements OnChanges {
         this.totalCobrado = response.total_cobrado;
         this.usuarios = response.usuarios_sistema;
         this.comisionistas = response.comisionistas;
-        this.usuariosGroup.push({
+
+        let _usuariosGroup = []
+        _usuariosGroup[0] = {
           group: 'usuarios',
           user: this.usuarios
-        });
+        }
 
-        this.usuariosGroup.push({
+        _usuariosGroup[1] = {
           group: 'comisionistas',
           user: this.comisionistas
-        });
+        }
+
+        this.usuariosGroup = _usuariosGroup;
 
         console.log('usuario group --->', this.usuariosGroup)
       }
@@ -183,26 +193,48 @@ export class RentasPorComisionistasTableComponent implements OnChanges {
   }
 
   searchFilter() {
-    let payload = {
-      rango_fechas: null,
-      usuario_data: null
-    }
     let rangeDate = this.range.value;
     let userSearch = this.selectedUserGroup.value;
 
     if (rangeDate) {
-      rangeDate.start = DateConv.transFormDate(rangeDate.start, 'regular');
-      rangeDate.end = DateConv.transFormDate(rangeDate.end, 'regular');
-      payload.rango_fechas = rangeDate;
+      if (moment(rangeDate.start).isValid()) {
+        rangeDate.start = DateConv.transFormDate(rangeDate.start, 'regular');
+      } else {
+        rangeDate.start = null;
+      }
+
+      if (moment(rangeDate.end).isValid()) {
+        rangeDate.end = DateConv.transFormDate(rangeDate.end, 'regular');
+      } else {
+        rangeDate.start = null;
+      }
+
+      if (rangeDate.end || rangeDate.start) {
+        this.searchPayload.rango_fechas = rangeDate;
+      }
     }
 
     if (userSearch) {
-      payload.usuario_data = userSearch
+      this.searchPayload.usuario_data = userSearch
     }
 
-    console.log('payload --->', payload);
+    console.log('payload --->', this.searchPayload);
 
-    this.loadReporteRentasPorComisionistasTable(payload);
+    this.loadReporteRentasPorComisionistasTable();
+
+  }
+
+  catchChange(event) {
+    console.log(event)
+    console.log(event.source.selected)
+  }
+
+  clearSearchFilter() {
+    this.searchPayload.rango_fechas = null;
+    this.searchPayload.usuario_data = null;
+    this.range.reset();
+    this.selectedUserGroup.reset();
+    this.loadReporteRentasPorComisionistasTable();
 
   }
 
