@@ -1,15 +1,14 @@
-import {Component, EventEmitter, Input, OnChanges, OnInit, Output, ViewChild} from '@angular/core';
+import {Component, Input, OnChanges, OnInit, ViewChild} from '@angular/core';
 import {MatTableDataSource} from '@angular/material/table';
 import {MatPaginator} from '@angular/material/paginator';
 import {MatSort} from '@angular/material/sort';
-import { VehiculosI } from 'src/app/interfaces/catalogo-vehiculos/vehiculos.interface';
 import { ReportesService } from 'src/app/services/reportes.service';
 import {TxtConv} from '../../../../helpers/txt-conv';
 
-export interface DetallePagosI
+export interface RentasPorVehiculoI
 {
   id: number;
-  created_at: string;
+  created_at: Date;
   num_contrato: string;
   ub_salida_id: number;
   vehiculo_id: number;
@@ -17,15 +16,8 @@ export interface DetallePagosI
   user_close_id?: any;
   total_salida: string;
   total_retorno: string;
-  cobranza_tarjeta_mxn: any;
-  cobranza_tarjeta_usd: any;
-  cobranza_efectivo_mxn: string;
-  cobranza_efectivo_usd: any;
-  cobranza_pre_auth_mxn: string;
-  cobranza_pre_auth_usd: any;
-  cobranza_deposito_mxn: string;
-  cobranza_deposito_usd?: any;
-  total_final: number;
+  rango_fechas: string;
+  total_cobrado: number;
   salida: {
     id: number;
     alias: string;
@@ -42,44 +34,31 @@ export interface DetallePagosI
     username: string;
     nombre: string;
   };
-  usuario_close : {
+  usuario_close?: {
     id: number;
     username: string;
     nombre: string;
-  }
+  };
 }
 
 @Component({
-  selector: 'app-detalles-pagos-table',
-  templateUrl: './detalles-pagos-table.component.html',
-  styleUrls: ['./detalles-pagos-table.component.scss'],
+  selector: 'app-rentas-por-vehiculo-table',
+  templateUrl: './rentas-por-vehiculo-table.component.html',
+  styleUrls: ['./rentas-por-vehiculo-table.component.scss'],
 })
-export class DetallesPagosTableComponent implements OnChanges {
-  @Input() enterView: boolean;
+export class RentasPorVehiculoTableComponent implements OnChanges {
 
+  @Input() enterView: boolean
   public spinner = false;
   displayedColumns: string[] = [
-    'fecha',
-    'folio',
+    'created_at',
     'sucursal',
+    'folio',
     'placas',
-    'nombre_auto',
-    'usuario_crea',
-    'usuario_cierra',
-    //'total_salida',
-    //'total_retorno',
-    //'total',
-    'cobranza_tarjeta_mxn',
-    'cobranza_tarjeta_usd',
-    'cobranza_efectivo_mxn',
-    'cobranza_efectivo_usd',
-    'cobranza_pre_auth_mxn',
-    'cobranza_pre_auth_usd',
-    'cobranza_deposito_mxn',
-    'cobranza_deposito_usd'
+    'total_cobrado'
   ];
 
-  listDetallePagos: MatTableDataSource<DetallePagosI[]>;
+  listRentasPorVehiculo: MatTableDataSource<RentasPorVehiculoI[]>;
   public searchKey: string;
   @ViewChild(MatPaginator, {static: false}) paginator3: MatPaginator;
   @ViewChild(MatSort, {static: true}) sort: MatSort;
@@ -89,22 +68,22 @@ export class DetallesPagosTableComponent implements OnChanges {
   ) { }
 
   ngOnChanges() {
-    this.loadReportePagosTable()
+    this.loadReporteRentasPorVehiculoTable()
   }
 
   // Método para cargar datos de los campus
-  loadReportePagosTable() {
+  loadReporteRentasPorVehiculoTable() {
     console.log('ready');
     //this.listado-hoteles = null;
-    this.listDetallePagos = null;
+    this.listRentasPorVehiculo = null;
     this.spinner = true;
 
-    this.reportesServ.getReportePagos().subscribe(response => {
+    this.reportesServ.getReporteRentasPorVehiculo().subscribe(response => {
       if (response.ok === true) {
         this.spinner = false;
-        this.listDetallePagos = new MatTableDataSource(response.data);
-        this.listDetallePagos.sort = this.sort;
-        this.listDetallePagos.paginator = this.paginator3;
+        this.listRentasPorVehiculo = new MatTableDataSource(response.data);
+        this.listRentasPorVehiculo.sort = this.sort;
+        this.listRentasPorVehiculo.paginator = this.paginator3;
         this.totalCobrado = response.total_cobrado;
       }
     }, error => {
@@ -115,7 +94,7 @@ export class DetallesPagosTableComponent implements OnChanges {
   // Method to filter mat-table according to the value enter at input search filter
   applyFilter(event?) {
     const searchValue = event.target.value;
-    this.listDetallePagos.filter = TxtConv.txtCon(searchValue, 'lowercase');
+    this.listRentasPorVehiculo.filter = TxtConv.txtCon(searchValue, 'lowercase');
     // this.listSurveys.filter = this.searchKey.trim().toLocaleLowerCase();
     // if (this.dataSource.paginator) {
     //   this.dataSource.paginator.firstPage();

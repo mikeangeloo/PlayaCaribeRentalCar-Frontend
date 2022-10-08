@@ -52,4 +52,11 @@ export class ReportesService {
       return response;
     }));
   }
+
+  public getReporteRentasPorVehiculo(): Observable<any> {
+    return this.httpClient.get<any>(`${this.dashURL}/reportes/rentas-por-vehiculo`).pipe(map(response => {
+      return response;
+    }));
+  }
+
 }

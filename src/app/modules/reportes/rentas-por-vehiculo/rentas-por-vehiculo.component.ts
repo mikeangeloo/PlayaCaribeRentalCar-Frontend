@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'app-detalle-pagos',
-  templateUrl: './detalle-pagos.component.html',
-  styleUrls: ['./detalle-pagos.component.scss'],
+  selector: 'app-rentas-por-vehiculo',
+  templateUrl: './rentas-por-vehiculo.component.html',
+  styleUrls: ['./rentas-por-vehiculo.component.scss'],
 })
-export class DetallePagosComponent implements OnInit {
+export class RentasPorVehiculoComponent implements OnInit {
 
   enterView: boolean
   constructor() { }
@@ -19,4 +19,5 @@ export class DetallePagosComponent implements OnInit {
   ionViewDidLeave() {
     this.enterView = false
   }
+
 }

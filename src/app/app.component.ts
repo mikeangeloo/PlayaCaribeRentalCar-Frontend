@@ -123,6 +123,14 @@ export class AppComponent implements OnDestroy {
           level: 1,
           active: false
         },
+        {
+          module: 'reportes',
+          icon: 'document-outline',
+          label: 'Rentas por Vehículo',
+          route: 'reportes/rentas-por-vehiculo',
+          level: 1,
+          active: false
+        },
       ]
     },
     {

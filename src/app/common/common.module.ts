@@ -59,6 +59,9 @@ import {PolizaFormComponent} from './components/polizas/poliza-form/poliza-form.
 import {CobroDepositoModalComponent} from './components/cobro-deposito-modal/cobro-deposito-modal.component';
 import { PolizasSegurosTableComponent } from './components/reportes/polizas-seguros-table/polizas-seguros-table.component';
 import {DetallesPagosTableComponent} from './components/reportes/detalle-pagos-table/detalles-pagos-table.component';
+import {
+  RentasPorVehiculoTableComponent
+} from './components/reportes/rentas-por-vehiculo-table/rentas-por-vehiculo-table.component';
 
 
 @NgModule({
@@ -117,7 +120,8 @@ import {DetallesPagosTableComponent} from './components/reportes/detalle-pagos-t
     CobroDepositoModalComponent,
     PolizaFormComponent,
     PolizasSegurosTableComponent,
-    DetallesPagosTableComponent
+    DetallesPagosTableComponent,
+    RentasPorVehiculoTableComponent
   ],
   exports: [
     HotelesListComponent,
@@ -174,7 +178,8 @@ import {DetallesPagosTableComponent} from './components/reportes/detalle-pagos-t
     PolizasSegurosTableComponent,
     PolizaFormComponent,
     CobroDepositoModalComponent,
-    DetallesPagosTableComponent
+    DetallesPagosTableComponent,
+    RentasPorVehiculoTableComponent
   ],
   entryComponents: [
     HotelesListComponent,
@@ -231,7 +236,8 @@ import {DetallesPagosTableComponent} from './components/reportes/detalle-pagos-t
     PolizasSegurosTableComponent,
     PolizaFormComponent,
     CobroDepositoModalComponent,
-    DetallesPagosTableComponent
+    DetallesPagosTableComponent,
+    RentasPorVehiculoTableComponent
   ],
     imports: [
         CommonModule,
