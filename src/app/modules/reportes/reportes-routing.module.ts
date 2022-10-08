@@ -4,6 +4,7 @@ import { EstatusVehiculosComponent } from './estatus-vehiculos/estatus-vehiculos
 import { ExedenteKilometrajeGasolinaComponent } from './exedente-kilometraje-gasolina/exedente-kilometraje-gasolina.component';
 import { MantenimientoVehiculosComponent } from './mantenimiento-vehiculos/mantenimiento-vehiculos.component';
 import { PolizasSegurosComponent } from './polizas-seguros/polizas-seguros.component';
+import {DetallePagosComponent} from './detalle-pagos/detalle-pagos.component';
 
 const routes: Routes = [
   {
@@ -21,6 +22,10 @@ const routes: Routes = [
   {
     path: 'polizas-seguros',
     component: PolizasSegurosComponent
+  },
+  {
+    path: 'detalle-pagos',
+    component: DetallePagosComponent
   }
 ];
 

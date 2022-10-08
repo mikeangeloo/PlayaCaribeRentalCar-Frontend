@@ -46,4 +46,10 @@ export class ReportesService {
       return response;
     }));
   }
+
+  public getReportePagos(): Observable<any> {
+    return this.httpClient.get<any>(`${this.dashURL}/reportes/detalle-pagos`).pipe(map(response => {
+      return response;
+    }));
+  }
 }

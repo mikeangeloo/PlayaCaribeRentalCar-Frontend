@@ -11,6 +11,7 @@ import { EstatusVehiculosComponent } from './estatus-vehiculos/estatus-vehiculos
 import { MantenimientoVehiculosComponent } from './mantenimiento-vehiculos/mantenimiento-vehiculos.component';
 import { ExedenteKilometrajeGasolinaComponent } from './exedente-kilometraje-gasolina/exedente-kilometraje-gasolina.component';
 import { PolizasSegurosComponent } from './polizas-seguros/polizas-seguros.component';
+import {DetallePagosComponent} from './detalle-pagos/detalle-pagos.component';
 
 
 @NgModule({
@@ -18,7 +19,8 @@ import { PolizasSegurosComponent } from './polizas-seguros/polizas-seguros.compo
     EstatusVehiculosComponent,
     MantenimientoVehiculosComponent,
     ExedenteKilometrajeGasolinaComponent,
-    PolizasSegurosComponent
+    PolizasSegurosComponent,
+    DetallePagosComponent
   ],
   imports: [
     CommonModule,

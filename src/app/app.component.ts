@@ -115,6 +115,14 @@ export class AppComponent implements OnDestroy {
           level: 1,
           active: false
         },
+        {
+          module: 'reportes',
+          icon: 'document-outline',
+          label: 'Detalle Pagos',
+          route: 'reportes/detalle-pagos',
+          level: 1,
+          active: false
+        },
       ]
     },
     {
