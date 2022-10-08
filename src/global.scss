@@ -754,6 +754,26 @@ mat-header-row {
     padding: 10px;
   }
 
+  &.reports {
+    td {
+      border: 1px solid var(--ion-color-primary);
+      padding: 8px;
+      font-size: 14px;
+      text-align: left;
+      font-weight: 600;
+      &:nth-child(2) {
+        text-align: right;
+      }
+
+      &.table-input {
+        text-align: right;
+        width: 90%;
+        margin: 0;
+        margin-left: 15%;
+      }
+    }
+  }
+
   .table-input {
     display: flex;
     justify-content: space-around;
@@ -762,6 +782,7 @@ mat-header-row {
     width: 80%;
     margin: 0 auto;
     flex-direction: column;
+    border: none !important;
 
     input {
       background: #f7ce9936;
@@ -834,6 +855,7 @@ mat-header-row {
     width: 80%;
     margin: 0 auto;
     flex-direction: column;
+
 
     input {
       background: #bcd4ff52;

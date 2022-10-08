@@ -131,6 +131,14 @@ export class AppComponent implements OnDestroy {
           level: 1,
           active: false
         },
+        {
+          module: 'reportes',
+          icon: 'document-outline',
+          label: 'Rentas por Comisionistas',
+          route: 'reportes/rentas-por-comisionistas',
+          level: 1,
+          active: false
+        },
       ]
     },
     {

@@ -6,6 +6,7 @@ import { MantenimientoVehiculosComponent } from './mantenimiento-vehiculos/mante
 import { PolizasSegurosComponent } from './polizas-seguros/polizas-seguros.component';
 import {DetallePagosComponent} from './detalle-pagos/detalle-pagos.component';
 import {RentasPorVehiculoComponent} from './rentas-por-vehiculo/rentas-por-vehiculo.component';
+import {RentasPorComisionistasComponent} from './rentas-por-comisionistas/rentas-por-comisionistas.component';
 
 const routes: Routes = [
   {
@@ -31,6 +32,10 @@ const routes: Routes = [
   {
     path: 'rentas-por-vehiculo',
     component: RentasPorVehiculoComponent
+  },
+  {
+    path: 'rentas-por-comisionistas',
+    component: RentasPorComisionistasComponent
   }
 ];
 

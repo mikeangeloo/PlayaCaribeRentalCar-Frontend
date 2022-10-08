@@ -13,6 +13,7 @@ import { ExedenteKilometrajeGasolinaComponent } from './exedente-kilometraje-gas
 import { PolizasSegurosComponent } from './polizas-seguros/polizas-seguros.component';
 import {DetallePagosComponent} from './detalle-pagos/detalle-pagos.component';
 import {RentasPorVehiculoComponent} from './rentas-por-vehiculo/rentas-por-vehiculo.component';
+import {RentasPorComisionistasComponent} from './rentas-por-comisionistas/rentas-por-comisionistas.component';
 
 
 @NgModule({
@@ -22,7 +23,8 @@ import {RentasPorVehiculoComponent} from './rentas-por-vehiculo/rentas-por-vehic
     ExedenteKilometrajeGasolinaComponent,
     PolizasSegurosComponent,
     DetallePagosComponent,
-    RentasPorVehiculoComponent
+    RentasPorVehiculoComponent,
+    RentasPorComisionistasComponent
   ],
   imports: [
     CommonModule,

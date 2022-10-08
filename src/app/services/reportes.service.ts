@@ -59,4 +59,10 @@ export class ReportesService {
     }));
   }
 
+  public getReporteRentasPorComisionista(payload?): Observable<any> {
+    return this.httpClient.post<any>(`${this.dashURL}/reportes/rentas-comisionistas`, payload).pipe(map(response => {
+      return response;
+    }));
+  }
+
 }
