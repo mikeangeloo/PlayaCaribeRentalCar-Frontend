@@ -8,8 +8,6 @@ import {FormControl, FormGroup} from '@angular/forms';
 import {SweetMessagesService} from '../../../../services/sweet-messages.service';
 import {DateConv} from '../../../../helpers/date-conv';
 import * as moment from 'moment-timezone';
-import {BehaviorSubject} from 'rxjs';
-
 
 export interface RentasPorComisionaI
 {
@@ -27,6 +25,7 @@ export interface RentasPorComisionaI
   total_retorno: string;
   rango_fechas: string;
   total_cobrado: number;
+  comision: number;
   salida: {
     id: number;
     alias: string;
@@ -42,11 +41,13 @@ export interface RentasPorComisionaI
     id: number;
     username: string;
     nombre: string;
+    apellidos: string;
   };
   usuario_close?: {
     id: number;
     username: string;
     nombre: string;
+    apellidos: string;
   };
   cliente: {
     id: number;
@@ -57,7 +58,8 @@ export interface RentasPorComisionaI
 export interface UsuariosSistemaI {
   id: number;
   username: string;
-  nombre: string
+  nombre: string;
+  apellidos: string;
 }
 
 export interface ComisionistasI {
@@ -67,10 +69,17 @@ export interface ComisionistasI {
   comisiones_pactadas?: number[]
 }
 
-export interface UserGroupI {
-  group: string
-  disabled?: boolean;
-  user: UsuariosSistemaI[] | ComisionistasI[]
+export interface SearchPayLoadI {
+  rango_fechas?: {
+    start: string;
+    end: string
+  },
+  search_users?:
+    {
+      tipo?: string;
+      user_id?: number
+    }[]
+
 }
 
 @Component({
@@ -99,27 +108,25 @@ export class RentasPorComisionistasTableComponent implements OnChanges {
   @ViewChild(MatPaginator, {static: false}) paginator3: MatPaginator;
   @ViewChild(MatSort, {static: true}) sort: MatSort;
   public totalCobrado = 0;
+  public totalComisiones = 0;
 
   public porcentaje: number = null
   public comisionCalc: number = null
 
   public usuarios: UsuariosSistemaI[];
   public comisionistas: ComisionistasI[];
-  public usuariosGroup: UserGroupI[] = [];
 
   range = new FormGroup({
     start: new FormControl(),
     end: new FormControl()
   });
 
-  selectedUserGroup = new FormControl('');
+  selectedUserInter = new FormControl('');
+  selectedUserExtern = new FormControl('');
 
   maxDate = moment().format('YYYY-MM-DD');
 
-  public searchPayload = {
-    rango_fechas: null,
-    usuario_data: null
-  }
+  public searchPayload: SearchPayLoadI = {};
 
   constructor(
     public reportesServ: ReportesService,
@@ -136,7 +143,7 @@ export class RentasPorComisionistasTableComponent implements OnChanges {
   // Método para cargar datos de los campus
   loadReporteRentasPorComisionistasTable() {
     //this.usuariosGroup = [];
-    console.log('ready');
+
     //this.listado-hoteles = null;
     this.listRentasPorComisionistas = null;
     this.spinner = true;
@@ -148,8 +155,13 @@ export class RentasPorComisionistasTableComponent implements OnChanges {
         this.listRentasPorComisionistas.sort = this.sort;
         this.listRentasPorComisionistas.paginator = this.paginator3;
         this.totalCobrado = response.total_cobrado;
-        this.usuarios = response.usuarios_sistema;
-        this.comisionistas = response.comisionistas;
+        this.totalComisiones = response.total_comisiones;
+
+        if (!this.searchPayload || !this.searchPayload?.search_users || this.searchPayload?.search_users?.length === 0) {
+          this.usuarios = response.usuarios_sistema;
+          this.comisionistas = response.comisionistas;
+        }
+
 
         let _usuariosGroup = []
         _usuariosGroup[0] = {
@@ -161,10 +173,6 @@ export class RentasPorComisionistasTableComponent implements OnChanges {
           group: 'comisionistas',
           user: this.comisionistas
         }
-
-        this.usuariosGroup = _usuariosGroup;
-
-        console.log('usuario group --->', this.usuariosGroup)
       }
     }, error => {
       this.spinner = false;
@@ -193,8 +201,11 @@ export class RentasPorComisionistasTableComponent implements OnChanges {
   }
 
   searchFilter() {
+    this.searchPayload.search_users = [];
+
     let rangeDate = this.range.value;
-    let userSearch = this.selectedUserGroup.value;
+    let userIntern = this.selectedUserInter.value;
+    let userExtern = this.selectedUserExtern.value;
 
     if (rangeDate) {
       if (moment(rangeDate.start).isValid()) {
@@ -214,27 +225,49 @@ export class RentasPorComisionistasTableComponent implements OnChanges {
       }
     }
 
-    if (userSearch) {
-      this.searchPayload.usuario_data = userSearch
+    if (userIntern) {
+      this.searchPayload.search_users.push({
+        tipo: 'usuarios',
+        user_id: userIntern
+      })
     }
 
-    console.log('payload --->', this.searchPayload);
-
+    if (userExtern) {
+      this.searchPayload.search_users.push({
+        tipo: 'comisionistas',
+        user_id: userExtern
+      });
+      if(this.displayedColumns.findIndex(x => x === 'total_comision') === -1) {
+        this.displayedColumns.push('total_comision');
+      }
+      if(this.displayedColumns.findIndex(x => x === 'comisionista') === -1) {
+        this.displayedColumns.push('comisionista');
+      }
+    }
     this.loadReporteRentasPorComisionistasTable();
 
-  }
-
-  catchChange(event) {
-    console.log(event)
-    console.log(event.source.selected)
   }
 
   clearSearchFilter() {
     this.searchPayload.rango_fechas = null;
-    this.searchPayload.usuario_data = null;
+    this.searchPayload.search_users = [];
     this.range.reset();
-    this.selectedUserGroup.reset();
+    this.selectedUserInter.reset();
+    this.selectedUserExtern.reset();
     this.loadReporteRentasPorComisionistasTable();
+
+    let findIndexTotalComision = this.displayedColumns.findIndex(x => x === 'total_comision');
+
+
+    if (findIndexTotalComision !== -1) {
+      this.displayedColumns.splice(findIndexTotalComision, 1);
+    }
+
+    let findIndexComisionista = this.displayedColumns.findIndex(x => x === 'comisionista');
+
+    if (findIndexComisionista !== -1) {
+      this.displayedColumns.splice(findIndexComisionista, 1);
+    }
 
   }
 

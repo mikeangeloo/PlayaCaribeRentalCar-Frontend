@@ -761,6 +761,11 @@ mat-header-row {
       font-size: 14px;
       text-align: left;
       font-weight: 600;
+      &:nth-child(1) {
+        max-width: 87px;
+        width: 87px;
+        font-size: 12px;
+      }
       &:nth-child(2) {
         text-align: right;
       }
