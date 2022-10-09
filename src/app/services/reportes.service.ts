@@ -65,4 +65,9 @@ export class ReportesService {
     }));
   }
 
+  public getReporteGeneral(payload?): Observable<any> {
+    return this.httpClient.post<any>(`${this.dashURL}/reportes/general`, payload).pipe(map(response => {
+      return response;
+    }));
+  }
 }

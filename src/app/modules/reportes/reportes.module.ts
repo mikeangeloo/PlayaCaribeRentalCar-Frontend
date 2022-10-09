@@ -14,6 +14,7 @@ import { PolizasSegurosComponent } from './polizas-seguros/polizas-seguros.compo
 import {DetallePagosComponent} from './detalle-pagos/detalle-pagos.component';
 import {RentasPorVehiculoComponent} from './rentas-por-vehiculo/rentas-por-vehiculo.component';
 import {RentasPorComisionistasComponent} from './rentas-por-comisionistas/rentas-por-comisionistas.component';
+import {ReporteGeneralComponent} from './reporte-general/reporte-general.component';
 
 
 @NgModule({
@@ -24,7 +25,8 @@ import {RentasPorComisionistasComponent} from './rentas-por-comisionistas/rentas
     PolizasSegurosComponent,
     DetallePagosComponent,
     RentasPorVehiculoComponent,
-    RentasPorComisionistasComponent
+    RentasPorComisionistasComponent,
+    ReporteGeneralComponent
   ],
   imports: [
     CommonModule,

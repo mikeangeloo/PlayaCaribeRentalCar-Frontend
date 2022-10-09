@@ -139,6 +139,14 @@ export class AppComponent implements OnDestroy {
           level: 1,
           active: false
         },
+        {
+          module: 'reportes',
+          icon: 'document-outline',
+          label: 'Reporte General',
+          route: 'reportes/reporte-general',
+          level: 1,
+          active: false
+        },
       ]
     },
     {
