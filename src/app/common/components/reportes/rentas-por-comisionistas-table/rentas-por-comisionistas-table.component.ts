@@ -9,7 +9,6 @@ import {SweetMessagesService} from '../../../../services/sweet-messages.service'
 import {DateConv} from '../../../../helpers/date-conv';
 import * as moment from 'moment-timezone';
 
-
 export interface RentasPorComisionaI
 {
   id: number;
@@ -26,6 +25,7 @@ export interface RentasPorComisionaI
   total_retorno: string;
   rango_fechas: string;
   total_cobrado: number;
+  comision: number;
   salida: {
     id: number;
     alias: string;
@@ -41,11 +41,13 @@ export interface RentasPorComisionaI
     id: number;
     username: string;
     nombre: string;
+    apellidos: string;
   };
   usuario_close?: {
     id: number;
     username: string;
     nombre: string;
+    apellidos: string;
   };
   cliente: {
     id: number;
@@ -56,7 +58,8 @@ export interface RentasPorComisionaI
 export interface UsuariosSistemaI {
   id: number;
   username: string;
-  nombre: string
+  nombre: string;
+  apellidos: string;
 }
 
 export interface ComisionistasI {
@@ -66,10 +69,17 @@ export interface ComisionistasI {
   comisiones_pactadas?: number[]
 }
 
-export interface UserGroupI {
-  group: string
-  disabled?: boolean;
-  user: UsuariosSistemaI[] | ComisionistasI[]
+export interface SearchPayLoadI {
+  rango_fechas?: {
+    start: string;
+    end: string
+  },
+  search_users?:
+    {
+      tipo?: string;
+      user_id?: number
+    }[]
+
 }
 
 @Component({
@@ -98,22 +108,25 @@ export class RentasPorComisionistasTableComponent implements OnChanges {
   @ViewChild(MatPaginator, {static: false}) paginator3: MatPaginator;
   @ViewChild(MatSort, {static: true}) sort: MatSort;
   public totalCobrado = 0;
+  public totalComisiones = 0;
 
   public porcentaje: number = null
   public comisionCalc: number = null
 
   public usuarios: UsuariosSistemaI[];
   public comisionistas: ComisionistasI[];
-  public usuariosGroup: UserGroupI[] = []
 
   range = new FormGroup({
     start: new FormControl(),
     end: new FormControl()
   });
 
-  selectedUserGroup = new FormControl('');
+  selectedUserInter = new FormControl('');
+  selectedUserExtern = new FormControl('');
 
   maxDate = moment().format('YYYY-MM-DD');
+
+  public searchPayload: SearchPayLoadI = {};
 
   constructor(
     public reportesServ: ReportesService,
@@ -128,33 +141,38 @@ export class RentasPorComisionistasTableComponent implements OnChanges {
   }
 
   // Método para cargar datos de los campus
-  loadReporteRentasPorComisionistasTable(payload?) {
-    this.usuariosGroup = [];
-    console.log('ready');
+  loadReporteRentasPorComisionistasTable() {
+    //this.usuariosGroup = [];
+
     //this.listado-hoteles = null;
     this.listRentasPorComisionistas = null;
     this.spinner = true;
 
-    this.reportesServ.getReporteRentasPorComisionista(payload).subscribe(response => {
+    this.reportesServ.getReporteRentasPorComisionista(this.searchPayload).subscribe(response => {
       if (response.ok === true) {
         this.spinner = false;
         this.listRentasPorComisionistas = new MatTableDataSource(response.data);
         this.listRentasPorComisionistas.sort = this.sort;
         this.listRentasPorComisionistas.paginator = this.paginator3;
         this.totalCobrado = response.total_cobrado;
-        this.usuarios = response.usuarios_sistema;
-        this.comisionistas = response.comisionistas;
-        this.usuariosGroup.push({
+        this.totalComisiones = response.total_comisiones;
+
+        if (!this.searchPayload || !this.searchPayload?.search_users || this.searchPayload?.search_users?.length === 0) {
+          this.usuarios = response.usuarios_sistema;
+          this.comisionistas = response.comisionistas;
+        }
+
+
+        let _usuariosGroup = []
+        _usuariosGroup[0] = {
           group: 'usuarios',
           user: this.usuarios
-        });
+        }
 
-        this.usuariosGroup.push({
+        _usuariosGroup[1] = {
           group: 'comisionistas',
           user: this.comisionistas
-        });
-
-        console.log('usuario group --->', this.usuariosGroup)
+        }
       }
     }, error => {
       this.spinner = false;
@@ -183,26 +201,73 @@ export class RentasPorComisionistasTableComponent implements OnChanges {
   }
 
   searchFilter() {
-    let payload = {
-      rango_fechas: null,
-      usuario_data: null
-    }
+    this.searchPayload.search_users = [];
+
     let rangeDate = this.range.value;
-    let userSearch = this.selectedUserGroup.value;
+    let userIntern = this.selectedUserInter.value;
+    let userExtern = this.selectedUserExtern.value;
 
     if (rangeDate) {
-      rangeDate.start = DateConv.transFormDate(rangeDate.start, 'regular');
-      rangeDate.end = DateConv.transFormDate(rangeDate.end, 'regular');
-      payload.rango_fechas = rangeDate;
+      if (moment(rangeDate.start).isValid()) {
+        rangeDate.start = DateConv.transFormDate(rangeDate.start, 'regular');
+      } else {
+        rangeDate.start = null;
+      }
+
+      if (moment(rangeDate.end).isValid()) {
+        rangeDate.end = DateConv.transFormDate(rangeDate.end, 'regular');
+      } else {
+        rangeDate.start = null;
+      }
+
+      if (rangeDate.end || rangeDate.start) {
+        this.searchPayload.rango_fechas = rangeDate;
+      }
     }
 
-    if (userSearch) {
-      payload.usuario_data = userSearch
+    if (userIntern) {
+      this.searchPayload.search_users.push({
+        tipo: 'usuarios',
+        user_id: userIntern
+      })
     }
 
-    console.log('payload --->', payload);
+    if (userExtern) {
+      this.searchPayload.search_users.push({
+        tipo: 'comisionistas',
+        user_id: userExtern
+      });
+      if(this.displayedColumns.findIndex(x => x === 'total_comision') === -1) {
+        this.displayedColumns.push('total_comision');
+      }
+      if(this.displayedColumns.findIndex(x => x === 'comisionista') === -1) {
+        this.displayedColumns.push('comisionista');
+      }
+    }
+    this.loadReporteRentasPorComisionistasTable();
 
-    this.loadReporteRentasPorComisionistasTable(payload);
+  }
+
+  clearSearchFilter() {
+    this.searchPayload.rango_fechas = null;
+    this.searchPayload.search_users = [];
+    this.range.reset();
+    this.selectedUserInter.reset();
+    this.selectedUserExtern.reset();
+    this.loadReporteRentasPorComisionistasTable();
+
+    let findIndexTotalComision = this.displayedColumns.findIndex(x => x === 'total_comision');
+
+
+    if (findIndexTotalComision !== -1) {
+      this.displayedColumns.splice(findIndexTotalComision, 1);
+    }
+
+    let findIndexComisionista = this.displayedColumns.findIndex(x => x === 'comisionista');
+
+    if (findIndexComisionista !== -1) {
+      this.displayedColumns.splice(findIndexComisionista, 1);
+    }
 
   }
 

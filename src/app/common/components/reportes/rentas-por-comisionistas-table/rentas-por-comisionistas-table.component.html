@@ -10,7 +10,7 @@
           <ion-row class="ion-justify-content-end">
             <ion-col size="12" size-md="8" class="ion-align-self-end">
               <ion-row class="ion-align-items-baseline">
-                <ion-col size>
+                <ion-col size sizeMd="3">
                   <mat-form-field appearance="legacy">
                     <mat-label>Ingresa un rango de fechas</mat-label>
                     <mat-date-range-input [formGroup]="range" [rangePicker]="picker" [max]="maxDate">
@@ -25,22 +25,34 @@
                     <mat-error *ngIf="range.controls.end.hasError('matEndDateInvalid')">Fecha Inválida</mat-error>
                   </mat-form-field>
                 </ion-col>
-                <ion-col size>
+                <ion-col size sizeMd="3">
                   <mat-form-field appearance="legacy">
-                    <mat-label>Comisionista</mat-label>
-                    <mat-select [formControl]="selectedUserGroup">
+                    <mat-label>Comisionista Interno</mat-label>
+                    <mat-select [formControl]="selectedUserInter" >
                       <mat-option>-- Selecciona --</mat-option>
-                      <mat-optgroup *ngFor="let group of usuariosGroup" [label]="group.group | titlecase"
-                                    [disabled]="group.disabled">
-                        <mat-option *ngFor="let user of group.user" [value]="{'tipo': group.group, 'user_id': user.id}">
-                          {{user.nombre}} {{user.apellidos ?? ''}}
-                        </mat-option>
-                      </mat-optgroup>
+                      <mat-option *ngFor="let user of usuarios" [value]="user.id">{{user.nombre}} {{user.apellidos}}</mat-option>
                     </mat-select>
                   </mat-form-field>
                 </ion-col>
-                <ion-col size>
-                  <button mat-raised-button color="primary" (click)="searchFilter()">Filtrar</button>
+                <ion-col size sizeMd="3">
+                  <mat-form-field appearance="legacy">
+                    <mat-label>Comisionista Externo</mat-label>
+                    <mat-select [formControl]="selectedUserExtern" >
+                      <mat-option>-- Selecciona --</mat-option>
+                      <mat-option *ngFor="let user of comisionistas" [value]="user.id">{{user.nombre}} {{user.apellidos}}</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </ion-col>
+                <ion-col size sizeMd="3">
+                  <div class="action-btn-container" style="justify-content: flex-start">
+                    <button mat-raised-button class="button-secondary" (click)="searchFilter()">
+                      <mat-icon>find_in_page</mat-icon>
+                    </button>
+                    &nbsp;
+                    <button mat-raised-button class="button-cancel" *ngIf="searchPayload.search_users?.length > 0 || searchPayload.rango_fechas" (click)="clearSearchFilter()">
+                      <mat-icon>clear</mat-icon>
+                    </button>
+                  </div>
                 </ion-col>
               </ion-row>
               <ion-searchbar placeholder="Ingrese un valor para filtrar los resultados de la tabla..." class="ion-no-padding" (ionInput)="applyFilter($event)" (ionCancel)="onSearchClear()"></ion-searchbar>
@@ -50,18 +62,28 @@
                 <tbody>
                 <tr>
                   <td>Total:</td>
-                  <td> <span style="color: var(--ion-color-success); font-weight: 600">{{totalCobrado | currency}} MXN</span></td>
+                  <td> <span style="color: var(--ion-color-success); font-weight: 600">{{totalCobrado | currency}}</span></td>
                 </tr>
-                <tr>
-                  <td>% Comisión:</td>
-                  <td class="table-input">
-                    <input type="number" [(ngModel)]="porcentaje" (ngModelChange)="calcComision()">
-                  </td>
-                </tr>
-                <tr>
-                  <td>Comisión:</td>
-                  <td>{{comisionCalc | currency}}</td>
-                </tr>
+                <ng-container *ngIf="!selectedUserExtern.value || selectedUserInter.value">
+                  <tr>
+                    <td>% Comisión:</td>
+                    <td class="table-input">
+                      <input type="number" [(ngModel)]="porcentaje" (ngModelChange)="calcComision()">
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Comisión internos:</td>
+                    <td>{{comisionCalc | currency}}</td>
+                  </tr>
+                </ng-container>
+                </tbody>
+              </table>
+              <table style="margin-top: 1rem;border-top: 1px;" class="complement-table reports" *ngIf="selectedUserExtern.value">
+                <tbody>
+                  <tr>
+                    <td>Comisiones externos:</td>
+                    <td>{{totalComisiones | currency}}</td>
+                  </tr>
                 </tbody>
               </table>
             </ion-col>
@@ -75,7 +97,7 @@
                 <mat-cell *matCellDef="let row">
                   <div class="column">
                     <p>
-                      {{row.created_at | date: 'short'}}
+                      {{row.created_at | date: 'shortDate'}}
                     </p>
                   </div>
                 </mat-cell>
@@ -87,7 +109,7 @@
                 <mat-cell *matCellDef="let row">
                   <div class="column">
                     <p>
-                      {{row.fecha_retorno | date: 'short'}}
+                      {{row.fecha_retorno | date: 'shortDate'}}
                     </p>
                   </div>
                 </mat-cell>
@@ -178,6 +200,30 @@
                   <div class="column">
                     <p>
                       {{row.total_cobrado ? (row.total_cobrado | currency) : '--'}}
+                    </p>
+                  </div>
+                </mat-cell>
+              </ng-container>
+
+              <!-- comisionista-->
+              <ng-container matColumnDef="comisionista">
+                <mat-header-cell *matHeaderCellDef mat-sort-header>Comisionista</mat-header-cell>
+                <mat-cell *matCellDef="let row">
+                  <div class="column">
+                    <p>
+                      {{row.comisionista ? row.comisionista.nombre : '--'}}
+                    </p>
+                  </div>
+                </mat-cell>
+              </ng-container>
+
+              <!-- total_comision-->
+              <ng-container matColumnDef="total_comision">
+                <mat-header-cell *matHeaderCellDef mat-sort-header>Total Comisión</mat-header-cell>
+                <mat-cell *matCellDef="let row">
+                  <div class="column">
+                    <p>
+                      {{row.comision ? (row.comision | currency) : '--'}}
                     </p>
                   </div>
                 </mat-cell>
