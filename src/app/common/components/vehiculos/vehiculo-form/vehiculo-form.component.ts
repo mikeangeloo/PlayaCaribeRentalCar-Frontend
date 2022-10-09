@@ -82,7 +82,8 @@ export class VehiculoFormComponent implements OnInit {
       color: [null, Validators.required],
       version: [null, Validators.required],
 
-      prox_servicio: [null],
+      prox_km_servicio: [null],
+      fecha_prox_servicio: [null],
       cant_combustible: [null],
       cap_tanque: [null],
       precio_renta: [null],
@@ -192,7 +193,8 @@ export class VehiculoFormComponent implements OnInit {
       categoria_vehiculo_id: (data && data.categoria_vehiculo_id) ? data.categoria_vehiculo_id : null,
       color: (data && data.color) ? data.color : null,
       version: (data && data.version) ? data.version : null,
-      prox_servicio: (data && data.prox_servicio) ? data.prox_servicio : null,
+      prox_km_servicio: (data && data.prox_km_servicio) ? data.prox_km_servicio : null,
+      fecha_prox_servicio: (data && data.fecha_prox_servicio) ? data.fecha_prox_servicio : null,
       cant_combustible: (data && data.cant_combustible) ? data.cant_combustible : null,
       cap_tanque: (data && data.cap_tanque) ? data.cap_tanque : null,
       precio_renta: (data && data.precio_renta) ? data.precio_renta : null,
@@ -238,9 +240,9 @@ export class VehiculoFormComponent implements OnInit {
     }
 
     let _payload = this.vehiculoForm.value;
-    // if (_payload.prox_servicio) {
-    //   _payload.prox_servicio = DateConv.transFormDate(_payload.prox_servicio, 'regular');
-    // }
+    if (_payload.fecha_prox_servicio) {
+      _payload.fecha_prox_servicio = DateConv.transFormDate(_payload.fecha_prox_servicio, 'regular');
+    }
     console.log('payload --->', _payload);
     //return;
     this.generalServ.presentLoading('Guardando cambios ...');

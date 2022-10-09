@@ -50,13 +50,13 @@
                 </mat-cell>
               </ng-container>
 
-              <!-- prox_servicio-->
-              <ng-container matColumnDef="prox_servicio">
-                <mat-header-cell *matHeaderCellDef mat-sort-header>Prox Servicio</mat-header-cell>
+              <!-- prox_km_servicio-->
+              <ng-container matColumnDef="prox_km_servicio">
+                <mat-header-cell *matHeaderCellDef mat-sort-header>Prox. Km Servicio</mat-header-cell>
                 <mat-cell *matCellDef="let row">
                   <div class="column">
                     <p>
-                      {{row.prox_servicio}}
+                      {{row.prox_km_servicio}}
                     </p>
                   </div>
                 </mat-cell>
@@ -68,7 +68,31 @@
                 <mat-cell *matCellDef="let row">
                   <div class="column">
                     <p>
-                      {{row.prox_servicio - row.km_recorridos}}
+                      {{row.prox_km_servicio - row.km_recorridos}}
+                    </p>
+                  </div>
+                </mat-cell>
+              </ng-container>
+
+              <!-- fecha_prox_servicio-->
+              <ng-container matColumnDef="fecha_prox_servicio">
+                <mat-header-cell *matHeaderCellDef mat-sort-header>Prox. Km Servicio</mat-header-cell>
+                <mat-cell *matCellDef="let row">
+                  <div class="column">
+                    <p>
+                      {{row.fecha_prox_servicio | date: 'shortDate'}}
+                    </p>
+                  </div>
+                </mat-cell>
+              </ng-container>
+
+              <!-- dias_faltantes-->
+              <ng-container matColumnDef="dias_faltantes">
+                <mat-header-cell *matHeaderCellDef mat-sort-header>Días Faltantes</mat-header-cell>
+                <mat-cell *matCellDef="let row">
+                  <div class="column">
+                    <p>
+                      {{checkDiasFaltantes(row.fecha_prox_servicio)}}
                     </p>
                   </div>
                 </mat-cell>
@@ -79,9 +103,9 @@
                 <mat-header-cell *matHeaderCellDef mat-sort-header>Estatus</mat-header-cell>
                 <mat-cell *matCellDef="let row">
                   <div class="column">
-                    <ion-chip style="font-weight: bold; color: white;" [ngStyle]="{'background-color':  ((row.prox_servicio - row.km_recorridos) > 500 ) ? 'green' : ((row.prox_servicio - row.km_recorridos) < 0) ? 'red' : 'orange'}" >
+                    <ion-chip style="font-weight: bold; color: white;" [ngStyle]="{'background-color': checkStatus(row.km_recorridos, row.prox_km_servicio, row.fecha_prox_servicio)?.color}" >
                       {{
-                        ((row.prox_servicio - row.km_recorridos) > 500 ) ? "AL DÍA" : ((row.prox_servicio - row.km_recorridos) < 0) ? "URGENTE" : "ALERTA"
+                      checkStatus(row.km_recorridos, row.prox_km_servicio, row.fecha_prox_servicio)?.estatus
 
                       }}
                     </ion-chip>

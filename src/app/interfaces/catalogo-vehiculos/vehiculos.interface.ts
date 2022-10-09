@@ -18,7 +18,8 @@ export interface VehiculosI
   placas?: string;
   num_poliza_seg?: string;
   km_recorridos?: number;
-  prox_servicio?: string;
+  prox_km_servicio?: number;
+  fecha_prox_servicio?: string;
   categoria_vehiculo_id?: number;
   cant_combustible_anterior?: string;
   cant_combustible?: string;

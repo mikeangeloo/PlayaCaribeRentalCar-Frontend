@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnInit, Output, SimpleChanges, ViewChild} from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild} from '@angular/core';
 import {MatTableDataSource} from '@angular/material/table';
 import {MatPaginator} from '@angular/material/paginator';
 import {MatSort} from '@angular/material/sort';
@@ -14,18 +14,22 @@ import {TxtConv} from '../../../../helpers/txt-conv';
   templateUrl: './mantenimiento-vehiculos-table.component.html',
   styleUrls: ['./mantenimiento-vehiculos-table.component.scss'],
 })
-export class MantenimientoVehiculosTableComponent implements OnInit {
+export class MantenimientoVehiculosTableComponent implements OnInit, OnChanges {
 
   public spinner = false;
   @Input() public vehiculos: VehiculosI[] = [];
   @Input() isModal: boolean;
   @Output() emitData = new EventEmitter();
+
+  @Input() enterView: boolean;
   displayedColumns: string[] = [
     'modelo',
     'placas',
     'km_recorridos',
-    'prox_servicio',
+    'prox_km_servicio',
     'km_faltante',
+    'fecha_prox_servicio',
+    'dias_faltantes',
     'estatus'
   ];
   public vehiculoC = VehiculosC;
@@ -34,12 +38,21 @@ export class MantenimientoVehiculosTableComponent implements OnInit {
   @ViewChild(MatPaginator, {static: false}) paginator3: MatPaginator;
   @ViewChild(MatSort, {static: true}) sort: MatSort;
 
+  dias_faltantes = 0;
+
   constructor(
     public reportesServ: ReportesService
   ) { }
 
   ngOnInit() {
-    this.loadVehiculosTable()
+
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (this.enterView) {
+      this.loadVehiculosTable()
+    }
+
   }
 
   // Método para cargar datos de los campus
@@ -85,6 +98,43 @@ export class MantenimientoVehiculosTableComponent implements OnInit {
   onSearchClear() {
     this.searchKey = '';
     this.applyFilter();
+  }
+
+  checkDiasFaltantes(checkDate: string) {
+    let currDay = moment();
+    return moment(checkDate).diff(moment(currDay), 'days');
+  }
+
+  checkStatus(km_recorridos: number, prox_km_servicio: number, fecha_prox_servicio: string): {estatus: string, color: string} {
+    let diffDays = moment(moment(fecha_prox_servicio)).diff(moment(), 'days');
+    let kmRestantes = prox_km_servicio - km_recorridos;
+
+    let limitDays = 14;
+    let limitKm = 1000;
+
+    let response = {
+      estatus: '',
+      color: ''
+    }
+
+    if (limitDays >= diffDays && diffDays > 0) {
+      response.estatus = 'ALERTA x DÍAS';
+      response.color = 'orange';
+    } else if (limitKm >= kmRestantes && kmRestantes > 0) {
+      response.estatus = 'ALERTA x KM';
+      response.color = 'orange';
+    } else if (diffDays <= 0) {
+      response.estatus = 'URGENTE x DÍAS';
+      response.color = 'red';
+    } else if (kmRestantes <= 0) {
+      response.estatus = 'URGENTE x KM';
+      response.color = 'red';
+    } else {
+      response.estatus = 'AL DÍA';
+      response.color = 'green';
+    }
+
+    return response
   }
 
 }

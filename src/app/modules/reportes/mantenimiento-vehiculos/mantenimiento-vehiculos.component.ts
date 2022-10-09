@@ -7,8 +7,17 @@ import { Component, OnInit } from '@angular/core';
 })
 export class MantenimientoVehiculosComponent implements OnInit {
 
+  enterView: boolean;
   constructor() { }
 
   ngOnInit() {}
+
+  ionViewWillEnter() {
+    this.enterView = true
+  }
+
+  ionViewWillLeave() {
+    this.enterView = false
+  }
 
 }

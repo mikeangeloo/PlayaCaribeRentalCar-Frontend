@@ -191,7 +191,7 @@
               </ion-row>
 
               <ion-row class="ion-no-padding ion-no-margin">
-                <ion-col size="6">
+                <ion-col size="4">
                   <mat-form-field appearance="legacy">
                     <mat-label>Km Recorridos</mat-label>
                     <input matInput type="number" formControlName="km_recorridos">
@@ -199,11 +199,22 @@
                   </mat-form-field>
                 </ion-col>
 
-                <ion-col size="6">
+                <ion-col size="4">
                   <mat-form-field appearance="legacy">
-                    <mat-label>Prox. Servicio</mat-label>
-                    <input matInput type="number" formControlName="prox_servicio">
-                    <mat-error *ngIf="vf.prox_servicio.errors?.required">Campo requerido</mat-error>
+                    <mat-label>Prox. Km Servicio</mat-label>
+                    <input matInput type="number" formControlName="prox_km_servicio">
+                    <mat-error *ngIf="vf.prox_km_servicio.errors?.required">Campo requerido</mat-error>
+                  </mat-form-field>
+                </ion-col>
+
+                <ion-col size="4">
+                  <mat-form-field appearance="legacy">
+                    <mat-label>Fecha Prox. Servicio</mat-label>
+                    <input matInput [matDatepicker]="fecha_prox_servicio" formControlName="fecha_prox_servicio" (click)="fecha_prox_servicio.open()">
+                    <mat-hint>MM/DD/YYYY</mat-hint>
+                    <mat-datepicker-toggle matSuffix [for]="fecha_prox_servicio"></mat-datepicker-toggle>
+                    <mat-datepicker #fecha_prox_servicio></mat-datepicker>
+                    <mat-error *ngIf="vf.fecha_prox_servicio.errors?.required">Campo requerido</mat-error>
                   </mat-form-field>
                 </ion-col>
               </ion-row>
