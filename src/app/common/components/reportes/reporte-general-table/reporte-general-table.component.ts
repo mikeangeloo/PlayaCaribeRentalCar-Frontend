@@ -29,7 +29,7 @@ export class ReporteGeneralTableComponent implements OnInit {
                     'placas', 'km_inicial', 'km_final', 'gas_inicial', 'gas_final',
                     'total', 'total_cobrado', 'fecha_cierre'
                   ];
-  columnsToDisplayWithExpand = [...this.reportColums, 'expand'];
+  columnsToDisplayWithExpand = [...this.reportColums];
   expandedElement: ReporteDataI | null;
 
   constructor(
