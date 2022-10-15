@@ -121,4 +121,9 @@ tr.example-element-row:not(.example-expanded-row):active {
 .example-element-detail {
   overflow: hidden;
   display: flex;
+  background: #c4c0c036;
+}
+
+.with-expanded-info {
+ text-align: left !important;
 }

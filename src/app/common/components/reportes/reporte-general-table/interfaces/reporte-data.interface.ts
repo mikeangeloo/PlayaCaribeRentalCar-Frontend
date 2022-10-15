@@ -1,4 +1,5 @@
 import {ReporteEndpointI} from './reporte-endpoint.interface';
+import {CobranzaCapturada} from '../../../../../interfaces/cobranza/cobranza-capturada.interface';
 
 export interface ReporteDataI {
   fecha_renta: string
@@ -18,5 +19,9 @@ export interface ReporteDataI {
   total_cobrado: number
   fecha_cierre: string
 
-  fullData?: ReporteEndpointI[]
+  estatus: number
+
+  fullData?: ReporteEndpointI
+
+  desgloce_cobranza: CobranzaCapturada[]
 }

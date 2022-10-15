@@ -1,3 +1,5 @@
+import {CobranzaCapturadaI} from '../../../../../interfaces/cobranza/cobranza-capturada.interface';
+
 export interface ReporteEndpointI {
   id: number;
   created_at: Date;
@@ -65,4 +67,5 @@ export interface ReporteEndpointI {
     username: string;
     nombre: string;
   };
+  cobranza?: CobranzaCapturadaI[]
 }
