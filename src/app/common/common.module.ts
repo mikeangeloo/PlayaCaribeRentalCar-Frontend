@@ -68,6 +68,7 @@ import {
 import {
   ReporteGeneralTableComponent
 } from './components/reportes/reporte-general-table/reporte-general-table.component';
+import {SearchControlsComponent} from './search-controls/search-controls.component';
 
 
 @NgModule({
@@ -129,7 +130,8 @@ import {
     DetallesPagosTableComponent,
     RentasPorVehiculoTableComponent,
     RentasPorComisionistasTableComponent,
-    ReporteGeneralTableComponent
+    ReporteGeneralTableComponent,
+    SearchControlsComponent
   ],
   exports: [
     HotelesListComponent,
@@ -189,7 +191,8 @@ import {
     DetallesPagosTableComponent,
     RentasPorVehiculoTableComponent,
     RentasPorComisionistasTableComponent,
-    ReporteGeneralTableComponent
+    ReporteGeneralTableComponent,
+    SearchControlsComponent
   ],
   entryComponents: [
     HotelesListComponent,
@@ -249,7 +252,8 @@ import {
     DetallesPagosTableComponent,
     RentasPorVehiculoTableComponent,
     RentasPorComisionistasTableComponent,
-    RentasPorComisionistasTableComponent
+    RentasPorComisionistasTableComponent,
+    SearchControlsComponent
   ],
     imports: [
         CommonModule,

@@ -1,10 +1,15 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, ViewChild} from '@angular/core';
 import {animate, state, style, transition, trigger} from '@angular/animations';
 import {ReporteDataI} from './interfaces/reporte-data.interface';
 import {ReporteEndpointI} from './interfaces/reporte-endpoint.interface';
 import {ReportesService} from '../../../../services/reportes.service';
 import {ContratosStatusE} from '../../../../enums/contratos-status.enum';
 import {CobranzaCapturada} from '../../../../interfaces/cobranza/cobranza-capturada.interface';
+import {MatTableDataSource} from '@angular/material/table';
+import {MatPaginator} from '@angular/material/paginator';
+import {MatSort} from '@angular/material/sort';
+import {TxtConv} from '../../../../helpers/txt-conv';
+import {SearchPayLoadI} from '../rentas-por-comisionistas-table/rentas-por-comisionistas-table.component';
 
 @Component({
   selector: 'app-reporte-general-table',
@@ -21,10 +26,14 @@ import {CobranzaCapturada} from '../../../../interfaces/cobranza/cobranza-captur
 
 export class ReporteGeneralTableComponent implements OnInit {
   @Input() enterView: boolean;
-
+  public spinner = false;
   public totalCobrado = 0;
   reporteDataEndpoint: ReporteEndpointI[];
-  dataSource: ReporteDataI[] = [];
+  reporteDataSource: ReporteDataI[] = [];
+  tableListData: MatTableDataSource<any>
+  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator;
+  @ViewChild(MatSort, {static: true}) sort: MatSort;
+  public searchKey: string;
   reportColums = [
                     'fecha_renta', 'folio', 'nombre_cliente', 'suc_salida',
                     'agente_entrega', 'agente_recibe', 'suc_entrega', 'vehiculo',
@@ -42,9 +51,12 @@ export class ReporteGeneralTableComponent implements OnInit {
     this.loadReporteGeneral();
   }
 
-  loadReporteGeneral() {
-    this.dataSource = [];
-    this.reporteServ.getReporteGeneral().subscribe(res => {
+  loadReporteGeneral(searchPayload?: SearchPayLoadI) {
+    this.spinner = true;
+    this.tableListData = null;
+    this.reporteDataSource = [];
+    this.reporteServ.getReporteGeneral(searchPayload).subscribe(res => {
+      this.spinner = false;
       if (res.ok) {
         this.reporteDataEndpoint = res.data;
         this.totalCobrado = res.total_cobrado;
@@ -84,13 +96,37 @@ export class ReporteGeneralTableComponent implements OnInit {
             desgloce_cobranza: reporte.cobranza?.map((cobro) => { return new CobranzaCapturada(cobro)})
           }
 
-          this.dataSource.push(_report);
+          this.reporteDataSource.push(_report);
         }
-        console.log('data source', this.dataSource)
+        this.tableListData = new MatTableDataSource(this.reporteDataSource);
+        this.tableListData.sort = this.sort;
+        this.tableListData.paginator = this.paginator;
+
+        console.log('data source', this.reporteDataSource)
       }
     },error => {
       console.log(error)
     })
+  }
+
+  // Method to filter mat-table according to the value enter at input search filter
+  applyFilter(event?) {
+    const searchValue = event.target.value;
+    this.tableListData.filter = TxtConv.txtCon(searchValue, 'lowercase');
+    // this.listSurveys.filter = this.searchKey.trim().toLocaleLowerCase();
+    // if (this.dataSource.paginator) {
+    //   this.dataSource.paginator.firstPage();
+    // }
+  }
+
+  // Method to clear input search filter
+  onSearchClear() {
+    this.searchKey = '';
+    this.applyFilter();
+  }
+
+  handleSearchFilter(searchPayload: SearchPayLoadI) {
+    this.loadReporteGeneral(searchPayload);
   }
 
 }
