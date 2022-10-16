@@ -19,6 +19,17 @@
             </ion-col>
           </ion-row>
 
+          <ion-row>
+            <ion-col size="12">
+              <div class="indicators-container">
+                <div *ngFor="let indicator of estatusIndicators" class="indicator {{indicator.color}}">
+                  <ion-label>{{indicator.indicator}}</ion-label>
+                </div>
+
+              </div>
+            </ion-col>
+          </ion-row>
+
           <div class="mat-elevation-z8 table-container">
             <table mat-table
                    [dataSource]="tableListData" matSort multiTemplateDataRows
@@ -178,7 +189,7 @@
 
               <tr mat-header-row *matHeaderRowDef="columnsToDisplayWithExpand"></tr>
               <tr mat-row *matRowDef="let element; columns: columnsToDisplayWithExpand;"
-                  class="example-element-row"
+                  class="example-element-row {{element.estatus_color}}"
                   [class.example-expanded-row]="expandedElement === element"
                   (click)="expandedElement = expandedElement === element ? null : element">
               </tr>

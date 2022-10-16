@@ -25,4 +25,21 @@ export class ContratosStatus
         return '--'
     }
   }
+
+  static cssClassStatus(estatus) {
+    switch (estatus) {
+      case 0:
+        return 'cancelado';
+      case 1:
+        return 'borrador';
+      case 2:
+        return 'rentado';
+      case 3:
+        return 'cerrado';
+      case 4:
+        return 'reservado';
+      default:
+        return '--'
+    }
+  }
 }

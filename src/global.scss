@@ -358,6 +358,16 @@ fieldset {
   }
 }
 
+//#region ESTATUS COLORS
+.indicators-container {
+  display: flex;
+  margin-bottom: 0.5rem;
+  .indicator {
+    margin-right: 0.5rem;
+    padding: 0.5rem;
+    border-radius: 10px;
+  }
+}
 .disponible {
   color: white;
   background: #29801C;
@@ -380,7 +390,18 @@ fieldset {
     overflow-wrap: initial;
   }
 }
-.corralon {
+.cerrado, .retorno {
+  color: white;
+  background: #123878;
+
+  ion-label {
+    width: 100%;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    overflow-wrap: initial;
+  }
+}
+.corralon, .borrador {
   color: white;
   background: gray;
 
@@ -394,6 +415,18 @@ fieldset {
 .en_taller {
   color: white;
   background: red;
+
+
+  ion-label {
+    width: 100%;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    overflow-wrap: initial;
+  }
+}
+.cancelado {
+  color: white;
+  background: var(--ion-color-danger);
 
 
   ion-label {
@@ -418,7 +451,7 @@ fieldset {
 .reservado {
   color: white;
   background: #ebb215;
-  width: 100%;
+  //width: 100%;
 
   ion-label {
     width: 100%;

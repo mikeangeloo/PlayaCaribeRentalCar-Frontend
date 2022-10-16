@@ -20,6 +20,7 @@ export interface ReporteDataI {
   fecha_cierre: string
 
   estatus: number
+  estatus_color: string
 
   fullData?: ReporteEndpointI
 

@@ -3,7 +3,7 @@ import {animate, state, style, transition, trigger} from '@angular/animations';
 import {ReporteDataI} from './interfaces/reporte-data.interface';
 import {ReporteEndpointI} from './interfaces/reporte-endpoint.interface';
 import {ReportesService} from '../../../../services/reportes.service';
-import {ContratosStatusE} from '../../../../enums/contratos-status.enum';
+import {ContratosStatus, ContratosStatusE} from '../../../../enums/contratos-status.enum';
 import {CobranzaCapturada} from '../../../../interfaces/cobranza/cobranza-capturada.interface';
 import {MatTableDataSource} from '@angular/material/table';
 import {MatPaginator} from '@angular/material/paginator';
@@ -42,6 +42,29 @@ export class ReporteGeneralTableComponent implements OnInit {
                   ];
   columnsToDisplayWithExpand = [...this.reportColums];
   expandedElement: ReporteDataI | null;
+
+  estatusIndicators = [
+    {
+      indicator: 'Rentado',
+      color: ContratosStatus.cssClassStatus(2)
+    },
+    {
+      indicator: 'Cerrado',
+      color: ContratosStatus.cssClassStatus(3)
+    },
+    {
+      indicator: 'Cancelado',
+      color: ContratosStatus.cssClassStatus(0)
+    },
+    {
+      indicator: 'Reservado',
+      color: ContratosStatus.cssClassStatus(4)
+    },
+    {
+      indicator: 'Borrador',
+      color: ContratosStatus.cssClassStatus(1)
+    }
+  ]
 
   constructor(
     private reporteServ: ReportesService
@@ -93,7 +116,8 @@ export class ReporteGeneralTableComponent implements OnInit {
             fecha_cierre: fechaRetorno,
             estatus: reporte.estatus,
             fullData: reporte,
-            desgloce_cobranza: reporte.cobranza?.map((cobro) => { return new CobranzaCapturada(cobro)})
+            desgloce_cobranza: reporte.cobranza?.map((cobro) => { return new CobranzaCapturada(cobro)}),
+            estatus_color: ContratosStatus.cssClassStatus(reporte.estatus)
           }
 
           this.reporteDataSource.push(_report);
