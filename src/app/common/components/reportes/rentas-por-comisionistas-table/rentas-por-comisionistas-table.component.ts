@@ -116,17 +116,17 @@ export class RentasPorComisionistasTableComponent implements OnChanges {
   public usuarios: UsuariosSistemaI[];
   public comisionistas: ComisionistasI[];
 
-  range = new FormGroup({
-    start: new FormControl(),
-    end: new FormControl()
-  });
-
-  selectedUserInter = new FormControl('');
-  selectedUserExtern = new FormControl('');
-
-  maxDate = moment().format('YYYY-MM-DD');
-
-  public searchPayload: SearchPayLoadI = {};
+  // range = new FormGroup({
+  //   start: new FormControl(),
+  //   end: new FormControl()
+  // });
+  //
+  // selectedUserInter = new FormControl('');
+  // selectedUserExtern = new FormControl('');
+  //
+  // maxDate = moment().format('YYYY-MM-DD');
+  //
+  // public searchPayload: SearchPayLoadI = {};
 
   constructor(
     public reportesServ: ReportesService,
@@ -141,14 +141,14 @@ export class RentasPorComisionistasTableComponent implements OnChanges {
   }
 
   // Método para cargar datos de los campus
-  loadReporteRentasPorComisionistasTable() {
+  loadReporteRentasPorComisionistasTable(searchPayload?: SearchPayLoadI) {
     //this.usuariosGroup = [];
 
     //this.listado-hoteles = null;
     this.listRentasPorComisionistas = null;
     this.spinner = true;
 
-    this.reportesServ.getReporteRentasPorComisionista(this.searchPayload).subscribe(response => {
+    this.reportesServ.getReporteRentasPorComisionista(searchPayload).subscribe(response => {
       if (response.ok === true) {
         this.spinner = false;
         this.listRentasPorComisionistas = new MatTableDataSource(response.data);
@@ -157,21 +157,9 @@ export class RentasPorComisionistasTableComponent implements OnChanges {
         this.totalCobrado = response.total_cobrado;
         this.totalComisiones = response.total_comisiones;
 
-        if (!this.searchPayload || !this.searchPayload?.search_users || this.searchPayload?.search_users?.length === 0) {
+        if (!searchPayload || !searchPayload?.search_users || searchPayload?.search_users?.length === 0) {
           this.usuarios = response.usuarios_sistema;
           this.comisionistas = response.comisionistas;
-        }
-
-
-        let _usuariosGroup = []
-        _usuariosGroup[0] = {
-          group: 'usuarios',
-          user: this.usuarios
-        }
-
-        _usuariosGroup[1] = {
-          group: 'comisionistas',
-          user: this.comisionistas
         }
       }
     }, error => {
@@ -200,43 +188,9 @@ export class RentasPorComisionistasTableComponent implements OnChanges {
     this.comisionCalc = (residuo);
   }
 
-  searchFilter() {
-    this.searchPayload.search_users = [];
+  handleSearchFilter(searchPayload: SearchPayLoadI) {
 
-    let rangeDate = this.range.value;
-    let userIntern = this.selectedUserInter.value;
-    let userExtern = this.selectedUserExtern.value;
-
-    if (rangeDate) {
-      if (moment(rangeDate.start).isValid()) {
-        rangeDate.start = DateConv.transFormDate(rangeDate.start, 'regular');
-      } else {
-        rangeDate.start = null;
-      }
-
-      if (moment(rangeDate.end).isValid()) {
-        rangeDate.end = DateConv.transFormDate(rangeDate.end, 'regular');
-      } else {
-        rangeDate.start = null;
-      }
-
-      if (rangeDate.end || rangeDate.start) {
-        this.searchPayload.rango_fechas = rangeDate;
-      }
-    }
-
-    if (userIntern) {
-      this.searchPayload.search_users.push({
-        tipo: 'usuarios',
-        user_id: userIntern
-      })
-    }
-
-    if (userExtern) {
-      this.searchPayload.search_users.push({
-        tipo: 'comisionistas',
-        user_id: userExtern
-      });
+    if (searchPayload.search_users?.find(x => x.tipo === 'comisionistas')) {
       if(this.displayedColumns.findIndex(x => x === 'total_comision') === -1) {
         this.displayedColumns.push('total_comision');
       }
@@ -244,16 +198,21 @@ export class RentasPorComisionistasTableComponent implements OnChanges {
         this.displayedColumns.push('comisionista');
       }
     }
-    this.loadReporteRentasPorComisionistasTable();
+
+    if (searchPayload.search_users?.length === 0 || !searchPayload.rango_fechas) {
+      this.clearSearchFilter()
+    } else {
+      this.loadReporteRentasPorComisionistasTable(searchPayload);
+    }
 
   }
 
   clearSearchFilter() {
-    this.searchPayload.rango_fechas = null;
-    this.searchPayload.search_users = [];
-    this.range.reset();
-    this.selectedUserInter.reset();
-    this.selectedUserExtern.reset();
+    // this.searchPayload.rango_fechas = null;
+    // this.searchPayload.search_users = [];
+    // this.range.reset();
+    // this.selectedUserInter.reset();
+    // this.selectedUserExtern.reset();
     this.loadReporteRentasPorComisionistasTable();
 
     let findIndexTotalComision = this.displayedColumns.findIndex(x => x === 'total_comision');

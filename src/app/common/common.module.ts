@@ -65,6 +65,10 @@ import {
 import {
   RentasPorComisionistasTableComponent
 } from './components/reportes/rentas-por-comisionistas-table/rentas-por-comisionistas-table.component';
+import {
+  ReporteGeneralTableComponent
+} from './components/reportes/reporte-general-table/reporte-general-table.component';
+import {SearchControlsComponent} from './search-controls/search-controls.component';
 
 
 @NgModule({
@@ -125,7 +129,9 @@ import {
     PolizasSegurosTableComponent,
     DetallesPagosTableComponent,
     RentasPorVehiculoTableComponent,
-    RentasPorComisionistasTableComponent
+    RentasPorComisionistasTableComponent,
+    ReporteGeneralTableComponent,
+    SearchControlsComponent
   ],
   exports: [
     HotelesListComponent,
@@ -184,7 +190,9 @@ import {
     CobroDepositoModalComponent,
     DetallesPagosTableComponent,
     RentasPorVehiculoTableComponent,
-    RentasPorComisionistasTableComponent
+    RentasPorComisionistasTableComponent,
+    ReporteGeneralTableComponent,
+    SearchControlsComponent
   ],
   entryComponents: [
     HotelesListComponent,
@@ -243,7 +251,9 @@ import {
     CobroDepositoModalComponent,
     DetallesPagosTableComponent,
     RentasPorVehiculoTableComponent,
-    RentasPorComisionistasTableComponent
+    RentasPorComisionistasTableComponent,
+    RentasPorComisionistasTableComponent,
+    SearchControlsComponent
   ],
     imports: [
         CommonModule,
