@@ -8,21 +8,45 @@
         <ion-card-content>
 
           <ion-row>
-            <ion-col size="12" size-md="9" class="ion-align-self-end">
+            <ion-col size="12" size-sm="6" size-md="8" class="ion-align-self-end">
               <app-search-controls #searchControlsComponent (emitSearchParams)="handleSearchFilter($event)">
               </app-search-controls>
               <ion-searchbar placeholder="Ingrese un valor para filtrar los resultados de la tabla..." class="ion-no-padding" (ionInput)="applyFilter($event)" (ionCancel)="onSearchClear()"></ion-searchbar>
             </ion-col>
-            <ion-col size="12" size-md="3" class="ion-text-center">
-              <h4 style="margin: 0">Total Cobrado:</h4>
-              <span style="color: var(--ion-color-success); font-weight: 600">{{totalCobrado | currency}} MXN</span>
+
+            <ion-col size="12" size-sm="6" size-md="4">
+              <table class="complement-table reports">
+                <tbody>
+                <tr>
+                  <td>Total Rentados:</td>
+                  <td class="success-color"> <span style="font-weight: 600">${{totalRentados | currency}}</span></td>
+                </tr>
+                <tr>
+                  <td>Total Cerrados:</td>
+                  <td class="success-color"> <span style="font-weight: 600">${{totalCerrados | currency}}</span></td>
+                </tr>
+                <tr>
+                  <td>Total Cancelados:</td>
+                  <td class="danger-color"> <span style="font-weight: 600">${{totalCancelados | currency}}</span></td>
+                </tr>
+                <tr>
+                  <td>Total Reservados:</td>
+                  <td class="app-color"> <span style="font-weight: 600">${{totalReservados | currency}}</span></td>
+                </tr>
+                <tr>
+                  <td>Total Borradores:</td>
+                  <td class="medium-color"> <span style="font-weight: 600">${{totalBorradores | currency}}</span></td>
+                </tr>
+                </tbody>
+              </table>
             </ion-col>
           </ion-row>
 
           <ion-row>
+
             <ion-col size="12">
               <div class="indicators-container">
-                <div *ngFor="let indicator of estatusIndicators" class="indicator {{indicator.color}}">
+                <div *ngFor="let indicator of estatusIndicators" class="indicator {{indicator.color}} rgba-opt">
                   <ion-label>{{indicator.indicator}}</ion-label>
                 </div>
 
@@ -189,7 +213,7 @@
 
               <tr mat-header-row *matHeaderRowDef="columnsToDisplayWithExpand"></tr>
               <tr mat-row *matRowDef="let element; columns: columnsToDisplayWithExpand;"
-                  class="example-element-row {{element.estatus_color}}"
+                  class="example-element-row {{element.estatus_color}} rgba-opt"
                   [class.example-expanded-row]="expandedElement === element"
                   (click)="expandedElement = expandedElement === element ? null : element">
               </tr>

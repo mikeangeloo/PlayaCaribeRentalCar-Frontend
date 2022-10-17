@@ -112,11 +112,11 @@ $cols-lg: 18;
   }
 
   tr.example-element-row:not(.example-expanded-row):hover {
-    background: #f5f5f5;
+    border: 2px dotted #ffffff
   }
 
   tr.example-element-row:not(.example-expanded-row):active {
-    background: #efefef;
+    background: #0000000a;
   }
 
   .example-element-row td {

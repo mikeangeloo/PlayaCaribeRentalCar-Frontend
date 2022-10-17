@@ -175,6 +175,15 @@ ion-modal {
 .success-color {
   color: var(--ion-color-success);
 }
+.app-color {
+  color: var(--ion-color-primary);
+}
+.warning-color {
+  color: var(--ion-color-warning);
+}
+.medium-color {
+  color: var(--ion-color-medium);
+}
 //endregion
 
 //region DOCS UPLOAD STYLES
@@ -368,9 +377,22 @@ fieldset {
     border-radius: 10px;
   }
 }
-.disponible {
+.disponible, .success {
   color: white;
-  background: #29801C;
+  background: var(--ion-color-success);
+
+  td {
+    color: white;
+  }
+
+  &.rgba-opt {
+    background: rgba(var(--ion-color-success-rgb), 0.55);
+    color: black;
+
+    td {
+      color: black;
+    }
+  }
 
   ion-label {
     width: 100%;
@@ -383,6 +405,19 @@ fieldset {
   color: white;
   background: #3780F9;
 
+  td {
+    color: white;
+  }
+
+  &.rgba-opt {
+    background: rgba(#3780F9, 0.65);
+    color: black;
+
+    td {
+      color: black;
+    }
+  }
+
   ion-label {
     width: 100%;
     text-overflow: ellipsis;
@@ -394,6 +429,19 @@ fieldset {
   color: white;
   background: #123878;
 
+  td {
+    color: white;
+  }
+
+  &.rgba-opt {
+    background: rgba(#123878, 0.58);
+    color: black;
+
+    td {
+      color: black;
+    }
+  }
+
   ion-label {
     width: 100%;
     text-overflow: ellipsis;
@@ -403,7 +451,20 @@ fieldset {
 }
 .corralon, .borrador {
   color: white;
-  background: gray;
+  background: var(--ion-color-medium);
+
+  td {
+    color: white;
+  }
+
+  &.rgba-opt {
+    background: rgba(var(--ion-color-medium-rgb), 0.4);
+    color: black;
+
+    td {
+      color: black;
+    }
+  }
 
   ion-label {
     width: 100%;
@@ -416,6 +477,18 @@ fieldset {
   color: white;
   background: red;
 
+  td {
+    color: white;
+  }
+
+  &.rgba-opt {
+    background: rgba(var(--ion-color-danger-rgb), 0.55);
+    color: black;
+
+    td {
+      color: black;
+    }
+  }
 
   ion-label {
     width: 100%;
@@ -427,6 +500,19 @@ fieldset {
 .cancelado {
   color: white;
   background: var(--ion-color-danger);
+
+  td {
+    color: white;
+  }
+
+  &.rgba-opt {
+    background: rgba(var(--ion-color-danger-rgb), 0.55);
+    color: black;
+
+    td {
+      color: black;
+    }
+  }
 
 
   ion-label {
@@ -440,6 +526,18 @@ fieldset {
   color: white;
   background: var(--ion-color-dark-tint);
 
+  td {
+    color: white;
+  }
+
+  &.rgba-opt {
+    background: rgba(var(--ion-color-dark-rgb), 0.55);
+    color: black;
+
+    td {
+      color: black;
+    }
+  }
 
   ion-label {
     width: 100%;
@@ -450,8 +548,21 @@ fieldset {
 }
 .reservado {
   color: white;
-  background: #ebb215;
+  background: var(--ion-color-warning);
   //width: 100%;
+
+  td {
+    color: white;
+  }
+
+  &.rgba-opt {
+    background: rgba(var(--ion-color-warning-rgb), 0.55);
+    color: black;
+
+    td {
+      color: black;
+    }
+  }
 
   ion-label {
     width: 100%;
@@ -462,7 +573,20 @@ fieldset {
 }
 .atrasado {
   color: white;
-  background: #AF060E;
+  background: var(--ion-color-danger-shade);
+
+  td {
+    color: white;
+  }
+
+  &.rgba-opt {
+    background: rgba(var(--ion-color-danger-rgb), 0.55);
+    color: black;
+
+    td {
+      color: black;
+    }
+  }
 
   ion-label {
     width: 100%;
@@ -800,8 +924,8 @@ tfoot {
       text-align: left;
       font-weight: 600;
       &:nth-child(1) {
-        max-width: 87px;
-        width: 87px;
+        max-width: 100px;
+        width: 100px;
         font-size: 12px;
       }
       &:nth-child(2) {

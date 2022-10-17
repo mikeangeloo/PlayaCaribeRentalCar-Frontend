@@ -27,7 +27,13 @@ import {SearchPayLoadI} from '../rentas-por-comisionistas-table/rentas-por-comis
 export class ReporteGeneralTableComponent implements OnInit {
   @Input() enterView: boolean;
   public spinner = false;
-  public totalCobrado = 0;
+
+  public totalRentados = 0;
+  public totalCerrados = 0;
+  public totalCancelados = 0;
+  public totalReservados = 0;
+  public totalBorradores = 0;
+
   reporteDataEndpoint: ReporteEndpointI[];
   reporteDataSource: ReporteDataI[] = [];
   tableListData: MatTableDataSource<any>
@@ -82,7 +88,11 @@ export class ReporteGeneralTableComponent implements OnInit {
       this.spinner = false;
       if (res.ok) {
         this.reporteDataEndpoint = res.data;
-        this.totalCobrado = res.total_cobrado;
+        this.totalRentados = res.total_rentados;
+        this.totalCerrados = res.total_cerrados;
+        this.totalCancelados = res.total_cancelados;
+        this.totalReservados = res.total_reservados;
+        this.totalBorradores = res.total_borradores;
 
         for (let reporte of this.reporteDataEndpoint) {
           let fechaSalida = '';
