@@ -79,7 +79,7 @@
             <ion-col size="12">
               <div class="indicators-container">
                 <div *ngFor="let indicator of estatusIndicators" class="indicator {{indicator.color}} rgba-opt">
-                  <ion-toggle [disabled]="spinner" [checked]="indicator.checked" [(ngModel)]="indicator.checked" (ionChange)="setOnStatusSearch(indicator)"></ion-toggle>{{indicator.indicator}}
+                  <ion-toggle [disabled]="spinner" [checked]="indicator.checked" [(ngModel)]="indicator.checked" (ionChange)="setOnStatusSearch()"></ion-toggle>{{indicator.indicator}}
                 </div>
 
               </div>
