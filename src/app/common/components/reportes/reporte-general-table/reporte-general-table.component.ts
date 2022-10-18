@@ -1,9 +1,9 @@
-import {Component, Input, OnInit, ViewChild} from '@angular/core';
+import {Component, Input, OnChanges, OnInit, ViewChild} from '@angular/core';
 import {animate, state, style, transition, trigger} from '@angular/animations';
 import {ReporteDataI} from './interfaces/reporte-data.interface';
 import {ReporteEndpointI} from './interfaces/reporte-endpoint.interface';
 import {ReportesService} from '../../../../services/reportes.service';
-import {ContratosStatus, ContratosStatusE} from '../../../../enums/contratos-status.enum';
+import {ContratosStatus} from '../../../../enums/contratos-status.enum';
 import {CobranzaCapturada} from '../../../../interfaces/cobranza/cobranza-capturada.interface';
 import {MatTableDataSource} from '@angular/material/table';
 import {MatPaginator} from '@angular/material/paginator';
@@ -24,7 +24,7 @@ import {SearchPayLoadI} from '../rentas-por-comisionistas-table/rentas-por-comis
   ],
 })
 
-export class ReporteGeneralTableComponent implements OnInit {
+export class ReporteGeneralTableComponent implements OnInit, OnChanges {
   @Input() enterView: boolean;
   public spinner = false;
 
@@ -52,25 +52,37 @@ export class ReporteGeneralTableComponent implements OnInit {
   estatusIndicators = [
     {
       indicator: 'Rentado',
-      color: ContratosStatus.cssClassStatus(2)
+      color: ContratosStatus.cssClassStatus(2),
+      checked: true,
+      status: 2
     },
     {
       indicator: 'Cerrado',
-      color: ContratosStatus.cssClassStatus(3)
+      color: ContratosStatus.cssClassStatus(3),
+      checked: true,
+      status: 3
     },
     {
       indicator: 'Cancelado',
-      color: ContratosStatus.cssClassStatus(0)
+      color: ContratosStatus.cssClassStatus(0),
+      checked: true,
+      status: 0
     },
     {
       indicator: 'Reservado',
-      color: ContratosStatus.cssClassStatus(4)
+      color: ContratosStatus.cssClassStatus(4),
+      checked: true,
+      status: 4
     },
     {
       indicator: 'Borrador',
-      color: ContratosStatus.cssClassStatus(1)
+      color: ContratosStatus.cssClassStatus(1),
+      checked: true,
+      status: 1
     }
   ]
+
+  searchPayload: SearchPayLoadI = {}
 
   constructor(
     private reporteServ: ReportesService
@@ -78,6 +90,12 @@ export class ReporteGeneralTableComponent implements OnInit {
 
   ngOnInit() {
     this.loadReporteGeneral();
+  }
+
+  ngOnChanges() {
+    if (this.enterView) {
+      this.loadReporteGeneral(this.searchPayload)
+    }
   }
 
   loadReporteGeneral(searchPayload?: SearchPayLoadI) {
@@ -136,7 +154,7 @@ export class ReporteGeneralTableComponent implements OnInit {
         this.tableListData.sort = this.sort;
         this.tableListData.paginator = this.paginator;
 
-        console.log('data source', this.reporteDataSource)
+
       }
     },error => {
       console.log(error)
@@ -160,7 +178,16 @@ export class ReporteGeneralTableComponent implements OnInit {
   }
 
   handleSearchFilter(searchPayload: SearchPayLoadI) {
-    this.loadReporteGeneral(searchPayload);
+    this.searchPayload = searchPayload
+    this.loadReporteGeneral(this.searchPayload);
+  }
+
+  setOnStatusSearch() {
+    this.searchPayload.status = this.estatusIndicators.filter((indicator) => indicator.checked).map((indicator) => {
+      return indicator.status
+    });
+
+    this.loadReporteGeneral(this.searchPayload)
   }
 
 }

@@ -184,6 +184,9 @@ ion-modal {
 .medium-color {
   color: var(--ion-color-medium);
 }
+.dark-tint-color {
+  color: var(--ion-color-dark-tint);
+}
 //endregion
 
 //region DOCS UPLOAD STYLES
@@ -371,10 +374,23 @@ fieldset {
 .indicators-container {
   display: flex;
   margin-bottom: 0.5rem;
+  flex-wrap: wrap;
   .indicator {
+    display: flex;
+    align-items: center;
     margin-right: 0.5rem;
     padding: 0.5rem;
     border-radius: 10px;
+    flex: 1;
+    margin-bottom: 0.5rem;
+
+    @media (min-width: 580px) {
+      flex: 0 1 0;
+    }
+
+    ion-toggle {
+      padding-right: 0.25rem;
+    }
   }
 }
 .disponible, .success {
@@ -400,6 +416,10 @@ fieldset {
     overflow: hidden;
     overflow-wrap: initial;
   }
+
+  ion-toggle {
+    --background-checked: var(--ion-color-success);
+  }
 }
 .rentado {
   color: white;
@@ -423,6 +443,10 @@ fieldset {
     text-overflow: ellipsis;
     overflow: hidden;
     overflow-wrap: initial;
+  }
+
+  ion-toggle {
+    --background-checked: #3780F9;
   }
 }
 .cerrado, .retorno {
@@ -448,6 +472,10 @@ fieldset {
     overflow: hidden;
     overflow-wrap: initial;
   }
+
+  ion-toggle {
+    --background-checked: #123878;
+  }
 }
 .corralon, .borrador {
   color: white;
@@ -472,6 +500,10 @@ fieldset {
     overflow: hidden;
     overflow-wrap: initial;
   }
+
+  ion-toggle {
+    --background-checked: var(--ion-color-medium);
+  }
 }
 .en_taller {
   color: white;
@@ -495,6 +527,10 @@ fieldset {
     text-overflow: ellipsis;
     overflow: hidden;
     overflow-wrap: initial;
+  }
+
+  ion-toggle {
+    --background-checked: red;
   }
 }
 .cancelado {
@@ -521,6 +557,10 @@ fieldset {
     overflow: hidden;
     overflow-wrap: initial;
   }
+
+  ion-toggle {
+    --background-checked: var(--ion-color-danger);
+  }
 }
 .uso_personal {
   color: white;
@@ -544,6 +584,10 @@ fieldset {
     text-overflow: ellipsis;
     overflow: hidden;
     overflow-wrap: initial;
+  }
+
+  ion-toggle {
+    --background-checked: var(--ion-color-dark-tint);
   }
 }
 .reservado {
@@ -570,6 +614,10 @@ fieldset {
     overflow: hidden;
     overflow-wrap: initial;
   }
+
+  ion-toggle {
+    --background-checked: var(--ion-color-warning);
+  }
 }
 .atrasado {
   color: white;
@@ -593,6 +641,10 @@ fieldset {
     text-overflow: ellipsis;
     overflow: hidden;
     overflow-wrap: initial;
+  }
+
+  ion-toggle {
+    --background-checked: var(--ion-color-danger-shade);
   }
 }
 

@@ -8,38 +8,70 @@
         <ion-card-content>
 
           <ion-row>
-            <ion-col size="12" size-sm="6" size-md="8" class="ion-align-self-end">
+            <ion-col size="12">
+              <ion-row>
+                <ion-col size="12" size-sm="4" size-md="3" size-xl="2">
+                  <ion-card class="ion-no-margin">
+                    <ion-card-header>
+                      <ion-card-subtitle>Total Rentados</ion-card-subtitle>
+                    </ion-card-header>
+                    <ion-card-content>
+                      <span class="success-color" style="font-weight: 600">${{totalRentados | currency}}</span>
+                    </ion-card-content>
+                  </ion-card>
+                </ion-col>
+                <ion-col size="12" size-sm="4" size-md="3" size-xl="2">
+                  <ion-card class="ion-no-margin">
+                    <ion-card-header>
+                      <ion-card-subtitle>Total Cerrados</ion-card-subtitle>
+                    </ion-card-header>
+                    <ion-card-content>
+                      <span class="success-color" style="font-weight: 600">${{totalCerrados | currency}}</span>
+                    </ion-card-content>
+                  </ion-card>
+                </ion-col>
+                <ion-col size="12" size-sm="4" size-md="3" size-xl="2">
+                  <ion-card class="ion-no-margin">
+                    <ion-card-header>
+                      <ion-card-subtitle>Total Cancelados</ion-card-subtitle>
+                    </ion-card-header>
+                    <ion-card-content>
+                      <span class="danger-color" style="font-weight: 600">${{totalCancelados | currency}}</span>
+                    </ion-card-content>
+                  </ion-card>
+                </ion-col>
+                <ion-col size="12" size-sm="4" size-md="3" size-xl="2">
+                  <ion-card class="ion-no-margin">
+                    <ion-card-header>
+                      <ion-card-subtitle>Total Reservados</ion-card-subtitle>
+                    </ion-card-header>
+                    <ion-card-content>
+                      <span class="app-color" style="font-weight: 600">${{totalReservados | currency}}</span>
+                    </ion-card-content>
+                  </ion-card>
+                </ion-col>
+                <ion-col size="12" size-sm="4" size-md="3" size-xl="2">
+                  <ion-card class="ion-no-margin">
+                    <ion-card-header>
+                      <ion-card-subtitle>Total Borradores</ion-card-subtitle>
+                    </ion-card-header>
+                    <ion-card-content>
+                      <span class="dark-tint-color" style="font-weight: 600">${{totalBorradores | currency}}</span>
+                    </ion-card-content>
+                  </ion-card>
+                </ion-col>
+              </ion-row>
+            </ion-col>
+
+            <ion-col size="12" size-md="6">
               <app-search-controls #searchControlsComponent (emitSearchParams)="handleSearchFilter($event)">
               </app-search-controls>
+            </ion-col>
+            <ion-col size="12" size-md="6" class="ion-align-self-center">
               <ion-searchbar placeholder="Ingrese un valor para filtrar los resultados de la tabla..." class="ion-no-padding" (ionInput)="applyFilter($event)" (ionCancel)="onSearchClear()"></ion-searchbar>
             </ion-col>
 
-            <ion-col size="12" size-sm="6" size-md="4">
-              <table class="complement-table reports">
-                <tbody>
-                <tr>
-                  <td>Total Rentados:</td>
-                  <td class="success-color"> <span style="font-weight: 600">${{totalRentados | currency}}</span></td>
-                </tr>
-                <tr>
-                  <td>Total Cerrados:</td>
-                  <td class="success-color"> <span style="font-weight: 600">${{totalCerrados | currency}}</span></td>
-                </tr>
-                <tr>
-                  <td>Total Cancelados:</td>
-                  <td class="danger-color"> <span style="font-weight: 600">${{totalCancelados | currency}}</span></td>
-                </tr>
-                <tr>
-                  <td>Total Reservados:</td>
-                  <td class="app-color"> <span style="font-weight: 600">${{totalReservados | currency}}</span></td>
-                </tr>
-                <tr>
-                  <td>Total Borradores:</td>
-                  <td class="medium-color"> <span style="font-weight: 600">${{totalBorradores | currency}}</span></td>
-                </tr>
-                </tbody>
-              </table>
-            </ion-col>
+
           </ion-row>
 
           <ion-row>
@@ -47,7 +79,7 @@
             <ion-col size="12">
               <div class="indicators-container">
                 <div *ngFor="let indicator of estatusIndicators" class="indicator {{indicator.color}} rgba-opt">
-                  <ion-label>{{indicator.indicator}}</ion-label>
+                  <ion-toggle [disabled]="spinner" [checked]="indicator.checked" [(ngModel)]="indicator.checked" (ionChange)="setOnStatusSearch(indicator)"></ion-toggle>{{indicator.indicator}}
                 </div>
 
               </div>

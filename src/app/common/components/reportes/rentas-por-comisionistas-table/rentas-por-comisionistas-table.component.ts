@@ -78,8 +78,8 @@ export interface SearchPayLoadI {
     {
       tipo?: string;
       user_id?: number
-    }[]
-
+    }[],
+  status?: Array<number>
 }
 
 @Component({
