@@ -5,7 +5,7 @@ import {CobranzaCalcI} from '../cobranza/cobranza-calc.interface';
 import {CobranzaProgI} from '../cobranza/cobranza-prog.interface';
 import {DragObjProperties} from '../../common/draggable-resizable/draggable-resizable.component';
 import { CheckListI } from "../check-list/check-list.interface";
-import { CargosExtrasI } from "../configuracion/cargos-extras.interface";
+import { TipoCambioI } from "../configuracion/cargos-extras.interface";
 
 export interface ReservaI
 {

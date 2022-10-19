@@ -5,7 +5,7 @@ import {CobranzaCalcI} from '../cobranza/cobranza-calc.interface';
 import {CobranzaProgI} from '../cobranza/cobranza-prog.interface';
 import {DragObjProperties} from '../../common/draggable-resizable/draggable-resizable.component';
 import { CheckListI } from "../check-list/check-list.interface";
-import { CargosExtrasI } from "../configuracion/cargos-extras.interface";
+import { TipoCambioI } from "../configuracion/cargos-extras.interface";
 
 export interface ContratoI
 {
@@ -77,7 +77,7 @@ export interface ContratoI
   km_final: number;
   cant_combustible_retorno:string;
   cargos_retorno_extras_ids?: number[];
-  cargos_retorno_extras: CargosExtrasI[];
+  cargos_retorno_extras: TipoCambioI[];
   subtotal_retorno: number;
   con_iva_retorno: number;
   iva_retorno: number;

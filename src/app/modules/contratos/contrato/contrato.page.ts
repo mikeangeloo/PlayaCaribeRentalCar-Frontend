@@ -50,7 +50,7 @@ import {NotasService} from '../../../services/notas.service';
 import {CheckListService} from '../../../services/check-list.service';
 import {SignatureCaptureComponent} from 'src/app/common/components/signature-capture/signature-capture.component';
 import html2canvas from 'html2canvas';
-import {CargosExtrasI} from 'src/app/interfaces/configuracion/cargos-extras.interface';
+import {TipoCambioI} from 'src/app/interfaces/configuracion/cargos-extras.interface';
 import {CargosRetornoExtrasService} from 'src/app/services/cargos-retorno-extras.service';
 import {NgxSpinnerService} from 'ngx-spinner';
 import {ActivatedRoute, Router} from '@angular/router';
@@ -203,7 +203,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
   retornoDataForm: FormGroup;
   cargos_extras_toggle = false;
   frecuencia_extras_toggle = false;
-  cargosExtras: CargosExtrasI[];
+  cargosExtras: TipoCambioI[];
   extraFrecuency: number;
   public cobranzaRetornoI: CobranzaCalcI[] = [];
 

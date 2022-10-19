@@ -69,6 +69,12 @@ import {
   ReporteGeneralTableComponent
 } from './components/reportes/reporte-general-table/reporte-general-table.component';
 import {SearchControlsComponent} from './search-controls/search-controls.component';
+import {HeaderComponent} from './header/header.component';
+import {
+  TiposCambiosTableComponent
+} from './components/configuracion/precios/tipos-cambios-table/tipos-cambios-table.component';
+import {TipoCambioFormComponent} from './components/configuracion/precios/tipo-cambio-form/tipo-cambio-form.component';
+import {TiposCambioIndicadorComponent} from './components/tipos-cambio-indicador/tipos-cambio-indicador.component';
 
 
 @NgModule({
@@ -131,7 +137,11 @@ import {SearchControlsComponent} from './search-controls/search-controls.compone
     RentasPorVehiculoTableComponent,
     RentasPorComisionistasTableComponent,
     ReporteGeneralTableComponent,
-    SearchControlsComponent
+    SearchControlsComponent,
+    TiposCambioIndicadorComponent,
+    HeaderComponent,
+    TiposCambiosTableComponent,
+    TipoCambioFormComponent
   ],
   exports: [
     HotelesListComponent,
@@ -192,7 +202,11 @@ import {SearchControlsComponent} from './search-controls/search-controls.compone
     RentasPorVehiculoTableComponent,
     RentasPorComisionistasTableComponent,
     ReporteGeneralTableComponent,
-    SearchControlsComponent
+    SearchControlsComponent,
+    TiposCambioIndicadorComponent,
+    HeaderComponent,
+    TiposCambiosTableComponent,
+    TipoCambioFormComponent
   ],
   entryComponents: [
     HotelesListComponent,
@@ -253,7 +267,11 @@ import {SearchControlsComponent} from './search-controls/search-controls.compone
     RentasPorVehiculoTableComponent,
     RentasPorComisionistasTableComponent,
     RentasPorComisionistasTableComponent,
-    SearchControlsComponent
+    SearchControlsComponent,
+    TiposCambioIndicadorComponent,
+    HeaderComponent,
+    TiposCambiosTableComponent,
+    TipoCambioFormComponent
   ],
     imports: [
         CommonModule,

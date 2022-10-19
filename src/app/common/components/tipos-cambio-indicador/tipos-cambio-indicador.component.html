@@ -1,0 +1,7 @@
+<div class="tipo-cambio-container" *ngIf="convMonedaServ.tipoCambio">
+  <div class="divisa-base">
+    <ion-button size="small" color="secondary" (click)="convMonedaServ.tipoCambioOpts()">
+      1 {{convMonedaServ.tipoCambio.divisa_base}} = ${{convMonedaServ.tipoCambio.tipo_cambio | currency}} {{convMonedaServ.tipoCambio.divisa_conversion}}
+    </ion-button>
+  </div>
+</div>

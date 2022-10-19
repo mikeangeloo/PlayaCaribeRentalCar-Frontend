@@ -3,7 +3,7 @@ import {environment} from "../../environments/environment";
 import {HttpClient} from "@angular/common/http";
 import {NavController} from "@ionic/angular";
 import {map, Observable} from "rxjs";
-import { CargosExtrasI } from '../interfaces/configuracion/cargos-extras.interface';
+import { TipoCambioI } from '../interfaces/configuracion/cargos-extras.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -38,7 +38,7 @@ export class CargosRetornoExtrasService {
     try {
       let res = await this.httpClient.get<any>(`${this.dashURL}/cargos-extras`).toPromise();
       if (res.ok) {
-        return {ok: true, data: res.datas as CargosExtrasI[]}
+        return {ok: true, data: res.datas as TipoCambioI[]}
       }
     } catch (e) {
       return {ok: false, errors: e}
