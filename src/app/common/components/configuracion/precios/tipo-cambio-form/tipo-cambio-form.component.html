@@ -26,10 +26,10 @@
                 <ion-col size="12" size-md="4">
                   <mat-form-field appearance="legacy">
                     <mat-label>Divisa Base</mat-label>
-                    <mat-select  formControlName="divisa_base">
-                      <mat-option *ngFor="let divisa of divisasList" [value]="divisa.divisa_iso">{{divisa.divisa_iso}}</mat-option>
+                    <mat-select  formControlName="divisa_base_id" (selectionChange)="catchDivisaChange('divisa_base_id')">
+                      <mat-option *ngFor="let divisa of divisasList" [value]="divisa.id">{{divisa.divisa_iso}} - {{divisa.nombre_divisa}}</mat-option>
                     </mat-select>
-                    <mat-error *ngIf="tc.divisa_base.errors?.required">Campo requerido</mat-error>
+                    <mat-error *ngIf="tc.divisa_base_id.errors?.required">Campo requerido</mat-error>
                   </mat-form-field>
                 </ion-col>
                 <ion-col size="12" size-md="4">
@@ -42,10 +42,10 @@
                 <ion-col size="12" size-md="4">
                   <mat-form-field appearance="legacy">
                     <mat-label>Divisa Conversión</mat-label>
-                    <mat-select  formControlName="divisa_conversion">
-                      <mat-option *ngFor="let divisa of divisasList" [value]="divisa.divisa_iso">{{divisa.divisa_iso}}</mat-option>
+                    <mat-select  formControlName="divisa_conversion_id" (selectionChange)="catchDivisaChange('divisa_conversion_id')" >
+                      <mat-option *ngFor="let divisa of divisasList" [value]="divisa.id">{{divisa.divisa_iso}} - {{divisa.nombre_divisa}}</mat-option>
                     </mat-select>
-                    <mat-error *ngIf="tc.divisa_conversion.errors?.required">Campo requerido</mat-error>
+                    <mat-error *ngIf="tc.divisa_conversion_id.errors?.required">Campo requerido</mat-error>
                   </mat-form-field>
                 </ion-col>
 

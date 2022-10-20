@@ -663,8 +663,8 @@
                   <br>
                   <ion-row>
                     <ion-col size="6">
-                      <h4 style="margin: 0; padding: 0;">Total: <span style="color: var(--ion-color-success)">{{(generalDataForm && generalDataForm.controls.total.value) ? (generalDataForm.controls.total.value | currency) : '--'}}</span></h4>
-                      <h4 style="margin: 0; padding: 0;">Balance por saldar: <span [ngClass]="{'danger-color': balancePorPagar > 0}">{{(balancePorPagar) ? (balancePorPagar | currency) : ('0' | currency)}}</span></h4>
+                      <h4 style="margin: 0; padding: 0;">Total: <span style="color: var(--ion-color-success)">{{(generalDataForm && generalDataForm.controls.total.value) ? (generalDataForm.controls.total.value | currency) + ' MXN' : '--'}}</span></h4>
+                      <h4 style="margin: 0; padding: 0;">Balance por saldar: <span [ngClass]="{'danger-color': balancePorPagar > 0}">{{(balancePorPagar) ? (balancePorPagar | currency) + ' MXN' : ('0' | currency) + ' MXN'}}</span></h4>
                     </ion-col>
                     <ion-col size="6" class="ion-text-end">
                       <button mat-raised-button class="button-secondary" (click)="agregarPagoOpt('salida')">

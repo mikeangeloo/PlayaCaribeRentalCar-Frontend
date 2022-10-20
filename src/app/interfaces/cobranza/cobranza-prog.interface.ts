@@ -7,8 +7,11 @@ export interface CobranzaProgI
     tarjeta_id?: number;
     cliente_id?: number;
     fecha_cargo?: string;
+    tipo_cambio?: number;
     monto?: number;
+    monto_cobrado?: number;
     moneda?: string;
+    moneda_cobrada?: string;
     tipo?: number;
     cobranza_seccion?: string;
     estatus?: number;

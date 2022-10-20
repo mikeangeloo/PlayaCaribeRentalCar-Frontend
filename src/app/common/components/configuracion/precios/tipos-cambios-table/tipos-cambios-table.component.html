@@ -101,9 +101,9 @@
                       <ion-button fill="clear" (click)="openTipoCambioForm(row)">
                         <ion-icon  name="create-outline"></ion-icon>
                       </ion-button>
-<!--                      <ion-button fill="clear" (click)="inactiveCargoExtra(row)" *ngIf="row.activo === 1" title="Deshabilitar registro">-->
-<!--                        <ion-icon name="close-circle-outline" color="danger" ></ion-icon>-->
-<!--                      </ion-button>-->
+                      <ion-button fill="clear" (click)="deleteTipoCambio(row.id)">
+                        <ion-icon name="trash" color="danger" ></ion-icon>
+                      </ion-button>
 <!--                      <ion-button fill="clear" (click)="activeCargoExtra(row)" *ngIf="row.activo === 0" title="Habilitar registro">-->
 <!--                        <ion-icon name="checkmark-circle-outline" color="medium"></ion-icon>-->
 <!--                      </ion-button>-->

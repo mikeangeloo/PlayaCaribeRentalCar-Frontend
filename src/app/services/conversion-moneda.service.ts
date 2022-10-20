@@ -4,6 +4,7 @@ import {HttpClient} from '@angular/common/http';
 import {AlertController, NavController} from '@ionic/angular';
 import {lastValueFrom, map, Observable} from 'rxjs';
 import {TiposCambioI} from '../interfaces/configuracion/tipos-cambio';
+import {DivisasI} from '../interfaces/configuracion/divisas.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -18,6 +19,8 @@ export class ConversionMonedaService {
   public tiposCambio: TiposCambioI[] = [];
   public tipoCambio: TiposCambioI;
 
+  public divisas: DivisasI[] = [];
+
   // endregion
 
   // region Constructor
@@ -27,6 +30,8 @@ export class ConversionMonedaService {
     private alertCtrl: AlertController
   ) {
     this.dashURL = environment.dashUrl;
+
+    this.loadDivisas();
   }
 
   // endregion
@@ -54,6 +59,14 @@ export class ConversionMonedaService {
       return response;
     }));
   }
+
+  public deleteTipoCambio(id: number): Observable<any> {
+    return this.httpClient.delete<any>(`${this.dashURL}/tipo-cambio/${id}`).pipe(map(response => {
+      return response;
+    }));
+  }
+
+
 
 
   async loadTiposCambios() {
@@ -87,6 +100,13 @@ export class ConversionMonedaService {
       this.tipoCambio = this.tiposCambio.find(tipo => tipo.id === data.values)
     }
 
+  }
+
+  async loadDivisas() {
+    let res = await lastValueFrom(this.getAllDivisas());
+    if (res.ok) {
+      this.divisas = res.data;
+    }
   }
 
 }

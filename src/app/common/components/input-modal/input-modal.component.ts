@@ -7,6 +7,8 @@ import {GeneralService} from '../../../services/general.service';
 import {SweetMessagesService} from '../../../services/sweet-messages.service';
 import {ToastMessageService} from '../../../services/toast-message.service';
 import {CobranzaTipo} from '../../../interfaces/cobranza/cobranza-prog.interface';
+import {TiposCambioI} from '../../../interfaces/configuracion/tipos-cambio';
+import {ConversionMonedaService} from '../../../services/conversion-moneda.service';
 
 @Component({
   selector: 'app-input-modal',
@@ -21,10 +23,15 @@ export class InputModalComponent implements OnInit {
   @Input() cobranza_id: number;
   public title: string;
 
+  public divisa_id: number = 1;
+  public converionSaldo: number;
+  public tipoCambioTomado: TiposCambioI;
+
   constructor(
     public modalCtrl: ModalController,
     private sweetMsg: SweetMessagesService,
-    private toastServ: ToastMessageService
+    private toastServ: ToastMessageService,
+    public convMonedaServ: ConversionMonedaService
   ) {
   }
 
@@ -32,12 +39,26 @@ export class InputModalComponent implements OnInit {
     this.title = 'Captura de efectivo';
   }
 
+  handleDivisaChange() {
+    this.tipoCambioTomado = this.convMonedaServ.tiposCambio.find(tipoC => tipoC.divisa_base_id === this.divisa_id);
+    if (this.tipoCambioTomado && this.tipoCambioTomado.divisa_base !== 'MXN') {
+      this.converionSaldo = (this.balanceCobro / Number(this.tipoCambioTomado.tipo_cambio));
+    } else {
+      this.converionSaldo = null;
+      this.tipoCambioTomado = null;
+    }
+  }
+
   saveUpdate() {
     if (!this.cobranza_id && this.monto > this.balanceCobro) {
       this.sweetMsg.printStatus('El monto ingresado es mayor al balance por cobrar', 'warning');
       return;
     }
-    this.dismiss(true, {monto: this.monto});
+    let montoCobrado = this.monto;
+    if (this.tipoCambioTomado && this.tipoCambioTomado.divisa_base !== 'MXN') {
+      montoCobrado = (this.monto * Number(this.tipoCambioTomado.tipo_cambio));
+    }
+    this.dismiss(true, {monto: montoCobrado, monto_cobrado: this.monto, tipoCambio: this.tipoCambioTomado, divisaId: this.divisa_id});
   }
 
   dismiss(reload?, _data?) {

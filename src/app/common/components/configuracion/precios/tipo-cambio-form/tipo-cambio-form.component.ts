@@ -31,8 +31,10 @@ export class TipoCambioFormComponent implements OnInit {
     this.title = 'Formulario Tipo de Cambio';
     this.tipoCambioForm = this.fb.group({
       id: [null],
+      divisa_base_id: [null, Validators.required],
       divisa_base: [null, Validators.required],
       tipo_cambio: [null, Validators.required],
+      divisa_conversion_id: [null, Validators.required],
       divisa_conversion: [null, Validators.required]
     });
   }
@@ -54,8 +56,10 @@ export class TipoCambioFormComponent implements OnInit {
   initTipoCambioForm(data?) {
     this.tipoCambioForm.setValue({
       id: (data && data.id) ? data.id : null,
+      divisa_base_id: (data && data.divisa_base_id) ? data.divisa_base_id : null,
       divisa_base: (data && data.divisa_base) ? data.divisa_base : null,
       tipo_cambio: (data && data.tipo_cambio) ? data.tipo_cambio : null,
+      divisa_conversion_id: (data && data.divisa_conversion_id) ? data.divisa_conversion_id : null,
       divisa_conversion: (data && data.divisa_conversion) ? data.divisa_conversion : null
     });
   }
@@ -87,6 +91,17 @@ export class TipoCambioFormComponent implements OnInit {
       this.generalServ.dismissLoading();
       console.log(error);
     });
+  }
+
+  catchDivisaChange(formControlName: string) {
+    let divisaData = this.divisasList.find((divisa) => divisa.id === this.tipoCambioForm.controls[formControlName].value);
+    if (divisaData) {
+      if (formControlName === 'divisa_base_id') {
+        this.tipoCambioForm.controls.divisa_base.patchValue(divisaData.divisa_iso);
+      } else if (formControlName === 'divisa_conversion_id') {
+        this.tipoCambioForm.controls.divisa_conversion.patchValue(divisaData.divisa_iso);
+      }
+    }
   }
 
   saveUpdate() {

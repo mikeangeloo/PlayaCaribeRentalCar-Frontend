@@ -144,4 +144,21 @@ export class TiposCambiosTableComponent implements OnInit {
     }
   }
 
+  deleteTipoCambio(id) {
+    this.sweetServ.confirmDelete().then((data) => {
+      if (data.value) {
+        this.conversionMonedaServ.deleteTipoCambio(id).subscribe(res => {
+          if (res.ok) {
+            this.sweetServ.printStatus(res.message, 'success');
+            this.loadTiposCambioTable()
+            this.conversionMonedaServ.loadTiposCambios();
+          }
+        })
+      }
+    }, errors => {
+      console.log(errors);
+      this.sweetServ.printStatusArray(errors.error.errors, 'error');
+    })
+  }
+
 }
