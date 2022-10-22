@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import {GeneralService} from '../services/general.service';
 
 @Component({
   selector: 'app-home',
@@ -8,5 +9,14 @@ import { Component } from '@angular/core';
 export class HomePage {
 
   constructor(
+    private generalServ: GeneralService
   ) {}
+
+  ionViewWillEnter() {
+    this.generalServ.headerTitle = 'Dashboard'
+  }
+
+  ionViewWillLeave() {
+    this.generalServ.headerTitle = ''
+  }
 }

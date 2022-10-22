@@ -1,4 +1,5 @@
 import {CardI} from '../cards/card.interface';
+import {TiposCambioI} from '../configuracion/tipos-cambio';
 
 export interface CobranzaProgI
 {
@@ -7,8 +8,12 @@ export interface CobranzaProgI
     tarjeta_id?: number;
     cliente_id?: number;
     fecha_cargo?: string;
+    tipo_cambio_id?: number;
+    tipo_cambio?: number;
     monto?: number;
+    monto_cobrado?: number;
     moneda?: string;
+    moneda_cobrada?: string;
     tipo?: number;
     cobranza_seccion?: string;
     estatus?: number;
@@ -22,6 +27,8 @@ export interface CobranzaProgI
     cobranza_id: number;
 
     edit?: boolean;
+
+    tipo_cambio_usado?: TiposCambioI
 }
 
 export type CobranzaTipo = 'tarjeta' | 'efectivo' | 'deposito';

@@ -441,8 +441,8 @@
                     <br>
                     <ion-row>
                       <ion-col size="6">
-                        <h4 style="margin: 0; padding: 0;">Total: <span style="color: var(--ion-color-success)">{{(generalDataForm && generalDataForm.controls.total.value) ? (generalDataForm.controls.total.value | currency) : '--'}}</span></h4>
-                        <h4 style="margin: 0; padding: 0;">Balance por saldar: <span [ngClass]="{'danger-color': balancePorPagar > 0}">{{(balancePorPagar) ? (balancePorPagar | currency) : ('0' | currency)}}</span></h4>
+                        <h4 style="margin: 0; padding: 0;">Total: <span style="color: var(--ion-color-success)">${{(generalDataForm && generalDataForm.controls.total.value) ? (generalDataForm.controls.total.value | currency) : '--'}} MXN</span></h4>
+                        <h4 style="margin: 0; padding: 0;">Balance por saldar: $<span [ngClass]="{'danger-color': balancePorPagar > 0}">{{(balancePorPagar) ? (balancePorPagar | currency) : ('0' | currency)}} MXN</span></h4>
                       </ion-col>
                       <ion-col size="6" class="ion-text-end">
                         <button mat-raised-button class="button-secondary" (click)="agregarPagoOpt('reserva')">
@@ -457,13 +457,13 @@
                           <ion-card-content>
                             <div class="accordion-title">
                               <span class="icon">
-                                 <ion-icon name="checkmark-circle" [color]="(balancePorPagar == 0) ? 'success': ''"></ion-icon>
+                                 <ion-icon name="checkmark-circle" [color]="(balancePorPagar <= 0) ? 'success': ''"></ion-icon>
                               </span>
                               <span>
                                 Pagado
                               </span>
                               <span>
-                                {{pagadoTotal | currency}}
+                                ${{pagadoTotal | currency}} {{baseCurrency}}
                               </span>
                             </div>
 
@@ -483,12 +483,18 @@
                                         {{(cobranzaPago.tarjeta && cobranzaPago.tarjeta.c_cn4) ? cobranzaPago.tarjeta.c_cn4 : '--'}}
                                       </span>
                                         <span>
-                                           {{(cobranzaPago.monto) ? (cobranzaPago.monto | currency) : ('0' | currency) }} {{cobranzaPago.moneda}}
+                                           {{(cobranzaPago.monto_cobrado) ? (cobranzaPago.monto_cobrado | currency) : ('0' | currency) }} {{cobranzaPago.moneda_cobrada}}
                                       </span>
                                       </div>
                                     </mat-panel-description>
                                   </mat-expansion-panel-header>
                                   <ion-row class="border-ion-row">
+                                    <ion-col size="12" *ngIf="cobranzaPago.tipo_cambio && cobranzaPago.tipo_cambio_id">
+                                      <div style="display: flex; justify-content: space-between;">
+                                        <span>Tipo Cambio</span>
+                                        <span>1 {{cobranzaPago.moneda_cobrada}} = {{cobranzaPago.tipo_cambio}} {{cobranzaPago.moneda}}</span>
+                                      </div>
+                                    </ion-col>
                                     <ion-col size="12">
                                       <ion-row>
                                         <ion-col size="fill">
@@ -530,7 +536,7 @@
                                             <div class="info-row">
                                               <span>Monto: </span>
                                               <p>
-                                                {{cobranzaPago.monto | currency}} {{cobranzaPago.moneda}}
+                                                {{cobranzaPago.monto_cobrado | currency}} {{cobranzaPago.moneda_cobrada}}
                                               </p>
                                             </div>
                                           </div>
@@ -552,12 +558,18 @@
                                     <mat-panel-description>
                                       <div class="tarjeta-resume">
                                     <span style="padding-right: 0.5em">
-                                      {{cobranzaPago.monto | currency}} {{cobranzaPago.moneda}}
+                                      {{cobranzaPago.monto_cobrado | currency}} {{cobranzaPago.moneda_cobrada}}
                                     </span>
                                       </div>
                                     </mat-panel-description>
                                   </mat-expansion-panel-header>
                                   <ion-row>
+                                    <ion-col size="12" *ngIf="cobranzaPago.tipo_cambio && cobranzaPago.tipo_cambio_id">
+                                      <div style="display: flex; justify-content: space-between;">
+                                        <span>Tipo Cambio</span>
+                                        <span>1 {{cobranzaPago.moneda_cobrada}} = {{cobranzaPago.tipo_cambio}} {{cobranzaPago.moneda}}</span>
+                                      </div>
+                                    </ion-col>
                                     <ion-col size="12">
                                       <div style="display: flex; justify-content: space-evenly;">
                                         <button *ngIf="cobranzaPago.id && cobranzaPago.edit !== true" (click)="cancelCobro(cobranzaPago, 'salida')" class="mat-elevation-z0" mat-mini-fab color="warn">

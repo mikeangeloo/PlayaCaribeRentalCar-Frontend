@@ -19,6 +19,8 @@ export class GeneralService {
   public apiUrl = environment.dashUrl;
   public verifyEmail$ = new BehaviorSubject(null)
   public dragObjStorageKey = 'dragObjs';
+
+  public headerTitle = '';
   //#region Atributos
   constructor(
     public loadingController: LoadingController,

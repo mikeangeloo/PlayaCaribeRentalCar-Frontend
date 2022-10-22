@@ -18,6 +18,11 @@
               <span style="font-weight: 500">Por saldar:</span> {{montoCobrar | currency}}
             </p>
           </div>
+          <ng-container *ngIf="tipoCambioTomado?.id">
+            <p style="color: #af0202;font-size: 1.1em; text-align: center;">
+              <span style="font-weight: bold; color: black;">ó</span> <span style="font-weight: 500"> </span> ${{converionSaldo | currency}} {{tipoCambioTomado.divisa_base}}
+            </p>
+          </ng-container>
           <ng-container>
             <form [formGroup]="cardForm">
               <ion-row>
@@ -178,6 +183,14 @@
                     <input type="number" matInput formControlName="monto">
                     <mat-error *ngIf="cardForm.controls['monto'].errors?.required">Campo requerido
                     </mat-error>
+                  </mat-form-field>
+                </ion-col>
+                <ion-col size>
+                  <mat-form-field>
+                    <mat-label>Moneda</mat-label>
+                    <mat-select (selectionChange)="handleDivisaChange()" [(ngModel)]="divisa_id" [ngModelOptions]="{standalone: true}">
+                      <mat-option *ngFor="let divisa of convMonedaServ.divisas" [value]="divisa.id">{{divisa.divisa_iso}}</mat-option>
+                    </mat-select>
                   </mat-form-field>
                 </ion-col>
               </ion-row>

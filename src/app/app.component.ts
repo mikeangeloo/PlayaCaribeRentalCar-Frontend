@@ -342,6 +342,14 @@ export class AppComponent implements OnDestroy {
                   route: '/administracion/catalogos/precios/cargos-extras',
                   level: 3,
                   active: false,
+                },
+                {
+                  module: 'catalogos',
+                  icon: 'pricetags',
+                  label: 'Tipos Cambio',
+                  route: '/administracion/catalogos/tipos-cambio',
+                  level: 3,
+                  active: false,
                 }
               ]
             },

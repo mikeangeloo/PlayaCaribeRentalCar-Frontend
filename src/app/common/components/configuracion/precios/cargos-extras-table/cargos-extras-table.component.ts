@@ -10,7 +10,7 @@ import * as moment from 'moment';
 import {TxtConv} from '../../../../../helpers/txt-conv';
 import { CargosExtrasFormComponent } from '../cargos-extras-form/cargos-extras-form.component';
 import { CargosRetornoExtrasService } from 'src/app/services/cargos-retorno-extras.service';
-import { CargosExtrasI } from 'src/app/interfaces/configuracion/cargos-extras.interface';
+import { CargosExtraI } from 'src/app/interfaces/configuracion/cargos-extras.interface';
 
 @Component({
   selector: 'app-cargos-extras-table',
@@ -19,8 +19,8 @@ import { CargosExtrasI } from 'src/app/interfaces/configuracion/cargos-extras.in
 })
 export class CargosExtrasTableComponent implements OnInit, OnChanges {
   public spinner = false;
-  public editCargosExtras: CargosExtrasI;
-  @Input() public cargosExtras: CargosExtrasI[] = [];
+  public editCargosExtras: CargosExtraI;
+  @Input() public cargosExtras: CargosExtraI[] = [];
   @Input() isModal: boolean;
   @Output() emitData = new EventEmitter();
   displayedColumns: string[] = [
@@ -70,7 +70,7 @@ export class CargosExtrasTableComponent implements OnInit, OnChanges {
   }
 
   // Método para cargar datos de los campus
-  loadCargosExtrasTable(_data?: CargosExtrasI[]) {
+  loadCargosExtrasTable(_data?: CargosExtraI[]) {
     console.log('ready');
     //this.listado-hoteles = null;
     this.listCargosExtras = null;
@@ -115,11 +115,11 @@ export class CargosExtrasTableComponent implements OnInit, OnChanges {
     this.applyFilter();
   }
 
-  catchSelectedRow(_data: CargosExtrasI) {
+  catchSelectedRow(_data: CargosExtraI) {
     this.editCargosExtras = _data;
   }
   // Método para editar survey
-  async openCargosExtrasForm(_data?: CargosExtrasI) {
+  async openCargosExtrasForm(_data?: CargosExtraI) {
     if (_data) {
       this.editCargosExtras = _data;
     } else {
@@ -142,7 +142,7 @@ export class CargosExtrasTableComponent implements OnInit, OnChanges {
     }
   }
 
-  inactiveCargoExtra(_data: CargosExtrasI) {
+  inactiveCargoExtra(_data: CargosExtraI) {
     this.sweetServ.confirmRequest('¿Estás seguro de querer deshabilitar este registro ?').then((data) => {
       if (data.value) {
         this.cargosRetornoExtrasServ.setInactive(_data.id).subscribe(res => {
@@ -158,7 +158,7 @@ export class CargosExtrasTableComponent implements OnInit, OnChanges {
     });
   }
 
-  activeCargoExtra(_data: CargosExtrasI) {
+  activeCargoExtra(_data: CargosExtraI) {
     this.sweetServ.confirmRequest('¿Estás seguro de querer habilitar este registro ?').then((data) => {
       if (data.value) {
         this.cargosRetornoExtrasServ.setEnable(_data.id).subscribe(res => {

@@ -7,6 +7,8 @@ import {GeneralService} from '../../../services/general.service';
 import {SweetMessagesService} from '../../../services/sweet-messages.service';
 import {ToastMessageService} from '../../../services/toast-message.service';
 import {CobranzaTipo} from '../../../interfaces/cobranza/cobranza-prog.interface';
+import {TiposCambioI} from '../../../interfaces/configuracion/tipos-cambio';
+import {ConversionMonedaService} from '../../../services/conversion-moneda.service';
 
 @Component({
   selector: 'app-input-modal',
@@ -16,28 +18,56 @@ import {CobranzaTipo} from '../../../interfaces/cobranza/cobranza-prog.interface
 export class InputModalComponent implements OnInit {
 
   @Input() asModal: boolean;
-  @Input() monto: number;
+  @Input() montoCobrado: number;
   @Input() balanceCobro: number;
   @Input() cobranza_id: number;
+  @Input() divisa_id: number = 1;
+
   public title: string;
+
+
+  public converionSaldo: number;
+  public tipoCambioTomado: TiposCambioI;
 
   constructor(
     public modalCtrl: ModalController,
     private sweetMsg: SweetMessagesService,
-    private toastServ: ToastMessageService
+    private toastServ: ToastMessageService,
+    public convMonedaServ: ConversionMonedaService
   ) {
   }
 
   ngOnInit() {
     this.title = 'Captura de efectivo';
+    if (this.divisa_id && this.divisa_id !== 1) {
+      this.handleDivisaChange();
+    }
+  }
+
+  handleDivisaChange() {
+    this.tipoCambioTomado = this.convMonedaServ.tiposCambio.find(tipoC => tipoC.divisa_base_id === this.divisa_id);
+    if (this.tipoCambioTomado && this.tipoCambioTomado.divisa_base !== 'MXN') {
+      this.converionSaldo = (this.balanceCobro / Number(this.tipoCambioTomado.tipo_cambio));
+    } else {
+      this.converionSaldo = null;
+      this.tipoCambioTomado = {
+        id: null,
+        tipo_cambio: 1,
+        divisa_base: 'MXN'
+      };
+    }
   }
 
   saveUpdate() {
-    if (!this.cobranza_id && this.monto > this.balanceCobro) {
+    if (!this.cobranza_id && this.montoCobrado > this.balanceCobro) {
       this.sweetMsg.printStatus('El monto ingresado es mayor al balance por cobrar', 'warning');
       return;
     }
-    this.dismiss(true, {monto: this.monto});
+    let montoBase = this.montoCobrado;
+    if (this.tipoCambioTomado && this.tipoCambioTomado.divisa_base !== 'MXN') {
+      montoBase = (this.montoCobrado * Number(this.tipoCambioTomado.tipo_cambio));
+    }
+    this.dismiss(true, {monto: montoBase, monto_cobrado: this.montoCobrado, tipoCambio: this.tipoCambioTomado, divisaId: this.divisa_id});
   }
 
   dismiss(reload?, _data?) {

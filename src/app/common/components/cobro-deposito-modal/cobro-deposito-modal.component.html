@@ -15,11 +15,11 @@
     <ion-card-content>
       <ion-row>
         <ion-col size="6">
-          <h4 style="margin: 0; padding: 0;">Balance por cobrar: <span class="danger-color">{{balanceCobro | currency}}</span></h4>
-          <h4 style="margin: 0; padding: 0;">Total deposito: <span class="success-color">{{totalDeposito | currency}}</span></h4>
+          <h4 style="margin: 0; padding: 0;">Balance por cobrar: <span class="danger-color">${{balanceCobro | currency}} MXN</span></h4>
+          <h4 style="margin: 0; padding: 0;">Total deposito: <span class="success-color">${{totalDeposito | currency}} MXN</span></h4>
         </ion-col>
         <ion-col size="6" class="ion-text-end">
-          <button mat-raised-button class="button-success" (click)="saveUpdate()">Guardar</button>
+          <button mat-raised-button class="button-success" [disabled]="canSave()" (click)="saveUpdate()">Guardar</button>
         </ion-col>
         <ion-col size="12">
           <table class="complement-table">
@@ -40,16 +40,26 @@
                 </td>
                 <td>
                   <div class="table-input">
-                    <input type="text" [value]="cobranzaD?.c_monto | currency" [readOnly]="true">
+                    <input type="text" [value]="'$' + (cobranzaD?.c_monto | currency) + ' ' + cobranzaD?.moneda_cobrada" [readOnly]="true">
                     <p class="input-hint">Solo Lectura</p>
+                  </div>
+                  <div *ngIf="cobranzaD.moneda_cobrada !== 'MXN'">
+                    <small style="display: block;margin-top: 10px;">USD/MXN: ${{cobranzaD.tipo_cambio | currency}}</small>
                   </div>
                 </td>
                 <td>
                   <div class="table-input">
-                    <input type="number" autocomplete="off" [(ngModel)]="cobranzaD.monto" (ngModelChange)="handleCobroCaptura(cobranzaD)">
+                    <input type="number" autocomplete="off" [(ngModel)]="cobranzaD.monto_cobrado" (ngModelChange)="handleCobroCaptura(cobranzaD)">
                     <div class="input-subfix">
                       <span>$</span>
                     </div>
+                    <div class="input-prefix">
+                      <span>{{cobranzaD.moneda_cobrada}}</span>
+                    </div>
+                  </div>
+
+                  <div *ngIf="cobranzaD.moneda_cobrada !== 'MXN' && cobranzaD.conversionCobro > 0">
+                    <small style="display: block;margin-top: 10px;">USD/MXN: ${{cobranzaD.conversionCobro | currency}}</small>
                   </div>
                 </td>
                 <td>
