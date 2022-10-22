@@ -16,12 +16,12 @@
       <ion-row style="height: 100%; align-content: center; justify-content: center">
         <ion-col size="12" style="height: 90%">
           <div class="title-container">
-            <p style="color: #af0202;font-size: 1.1em;">
+            <p [ngClass]="{'success-color': balanceCobro <= 0, 'danger-color': balanceCobro > 0}" style="font-size: 1.1em;">
               <span style="font-weight: 500">Por saldar:</span> ${{balanceCobro | currency}} MXN
             </p>
 
           </div>
-          <ng-container *ngIf="tipoCambioTomado">
+          <ng-container *ngIf="tipoCambioTomado?.id">
             <p style="color: #af0202;font-size: 1.1em; text-align: center;">
               <span style="font-weight: bold; color: black;">ó</span> <span style="font-weight: 500"> </span> ${{converionSaldo | currency}} {{tipoCambioTomado.divisa_base}}
             </p>
@@ -32,7 +32,7 @@
               <mat-form-field>
                 <mat-label>Monto</mat-label>
                 <mat-icon matPrefix>paid</mat-icon>
-                <input type="number" matInput [(ngModel)]="monto">
+                <input type="number" matInput [(ngModel)]="montoCobrado">
               </mat-form-field>
             </ion-col>
             <ion-col size="12" size-md="6">

@@ -1,4 +1,4 @@
-export interface TipoCambioI
+export interface CargosExtraI
 {
     id?: number;
     nombre?: string;

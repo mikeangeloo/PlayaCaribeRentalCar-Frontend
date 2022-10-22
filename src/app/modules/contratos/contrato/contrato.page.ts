@@ -50,7 +50,7 @@ import {NotasService} from '../../../services/notas.service';
 import {CheckListService} from '../../../services/check-list.service';
 import {SignatureCaptureComponent} from 'src/app/common/components/signature-capture/signature-capture.component';
 import html2canvas from 'html2canvas';
-import {TipoCambioI} from 'src/app/interfaces/configuracion/cargos-extras.interface';
+import {CargosExtraI} from 'src/app/interfaces/configuracion/cargos-extras.interface';
 import {CargosRetornoExtrasService} from 'src/app/services/cargos-retorno-extras.service';
 import {NgxSpinnerService} from 'ngx-spinner';
 import {ActivatedRoute, Router} from '@angular/router';
@@ -203,7 +203,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
   retornoDataForm: FormGroup;
   cargos_extras_toggle = false;
   frecuencia_extras_toggle = false;
-  cargosExtras: TipoCambioI[];
+  cargosExtras: CargosExtraI[];
   extraFrecuency: number;
   public cobranzaRetornoI: CobranzaCalcI[] = [];
 
@@ -1626,10 +1626,11 @@ export class ContratoPage implements OnInit, AfterViewInit {
         'returnCapture': true,
         'needCaptureAmount': true,
         'cod_banco': (cobranza && cobranza.cod_banco) ? cobranza.cod_banco : null,
-        'monto': (cobranza && cobranza.monto) ? cobranza.monto : null,
+        'montoCobrado': (cobranza && cobranza.monto_cobrado) ? cobranza.monto_cobrado : null,
         'tipoPago': tipo,
         'titularTarj': _titular,
-        'montoCobrar': (cobranza_seccion == 'salida') ? this.balancePorPagar : this.balanceRetornoPorPagar
+        'montoCobrar': (cobranza_seccion == 'salida') ? this.balancePorPagar : this.balanceRetornoPorPagar,
+        'divisa_id': (cobranza && cobranza.tipo_cambio_usado?.divisa_base_id) ? cobranza.tipo_cambio_usado.divisa_base_id : null
       },
       swipeToClose: true,
       cssClass: 'edit-form',
@@ -1652,9 +1653,13 @@ export class ContratoPage implements OnInit, AfterViewInit {
           fecha_cargo: null,
           fecha_procesado: null,
           fecha_reg: null,
+          tipo_cambio_id: data.info.tipoCambio.id,
+          tipo_cambio: data.info.tipoCambio.tipo_cambio,
           cobranza_seccion: cobranza_seccion,
           moneda: this.baseCurrency,
+          moneda_cobrada: data.info.tipoCambio.divisa_base,
           monto: data.info.monto,
+          monto_cobrado: data.info.monto_cobrado,
           tipo: data.info.c_charge_method,
           res_banco: null,
           updated_at: null,
@@ -1676,9 +1681,10 @@ export class ContratoPage implements OnInit, AfterViewInit {
       component: InputModalComponent,
       componentProps: {
         'asModal': true,
-        'monto': (cobranza && cobranza.monto) ? cobranza.monto : null,
+        'montoCobrado': (cobranza && cobranza.monto_cobrado) ? cobranza.monto_cobrado : null,
         'balanceCobro':(cobranza_seccion == 'salida') ?  this.balancePorPagar : this.balanceRetornoPorPagar,
-        'cobranza_id': (cobranza && cobranza.id) ? cobranza.id : null
+        'cobranza_id': (cobranza && cobranza.id) ? cobranza.id : null,
+        'divisa_id': (cobranza && cobranza.tipo_cambio_usado?.divisa_base_id) ? cobranza.tipo_cambio_usado.divisa_base_id : null
       },
       swipeToClose: true,
       cssClass: 'small-form',
@@ -1701,6 +1707,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
         fecha_cargo: null,
         fecha_procesado: null,
         fecha_reg: null,
+        tipo_cambio_id: data.info.tipoCambio.id,
         tipo_cambio: data.info.tipoCambio.tipo_cambio,
         moneda: this.baseCurrency,
         moneda_cobrada: data.info.tipoCambio.divisa_base,
@@ -2559,7 +2566,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
   //#region COBRANZAPROG FUNCTIONS
   async editCobro(tipo: CobranzaTipoE.PAGOTARJETA | CobranzaTipoE.PREAUTHORIZACION | CobranzaTipoE.PAGOEFECTIVO | CobranzaTipoE.PAGODEPOSITO, cobranza_seccion, cobro: CobranzaProgI) {
     if (tipo === CobranzaTipoE.PREAUTHORIZACION || tipo === CobranzaTipoE.PAGOTARJETA) {
-      await this.agregarTarjetaForm(cobro.tipo, cobro.tarjeta, cobranza_seccion, true, cobro);
+      await this.agregarTarjetaForm(cobro.tipo, cobranza_seccion, cobro.tarjeta, true, cobro);
     }
 
     if (tipo === CobranzaTipoE.PAGOEFECTIVO) {
@@ -2619,7 +2626,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
         total =  parseFloat(Number(Number(total) + Number(_data[i].monto)).toFixed(2));
       }
     }
-    if (this.balancePorPagar < total) {
+    if ((total - this.balancePorPagar) > 50) {
       this.sweetMsgServ.printStatus('El monto aculamado de cobro es mayor al balance por cobrar', 'warning');
     }
     this.balancePorPagar = Number(this.balancePorPagar -  total);

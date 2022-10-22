@@ -1,5 +1,5 @@
 import {Component, EventEmitter, Input, OnInit, Output, SimpleChanges, ViewChild} from '@angular/core';
-import {TipoCambioI} from '../../../../../interfaces/configuracion/cargos-extras.interface';
+import {CargosExtraI} from '../../../../../interfaces/configuracion/cargos-extras.interface';
 import {MatTableDataSource} from '@angular/material/table';
 import {MatPaginator} from '@angular/material/paginator';
 import {MatSort} from '@angular/material/sort';
@@ -22,8 +22,8 @@ import {TipoCambioFormComponent} from '../tipo-cambio-form/tipo-cambio-form.comp
 export class TiposCambiosTableComponent implements OnInit {
 
   public spinner = false;
-  public editTipoCambio: TipoCambioI;
-  @Input() public tiposCambio: TipoCambioI[] = [];
+  public editTipoCambio: CargosExtraI;
+  @Input() public tiposCambio: CargosExtraI[] = [];
   @Input() isModal: boolean;
   @Output() emitData = new EventEmitter();
   displayedColumns: string[] = [
@@ -72,7 +72,7 @@ export class TiposCambiosTableComponent implements OnInit {
   }
 
   // Método para cargar datos de los campus
-  loadTiposCambioTable(_data?: TipoCambioI[]) {
+  loadTiposCambioTable(_data?: CargosExtraI[]) {
     console.log('ready');
     //this.listado-hoteles = null;
     this.listTiposCambio = null;
@@ -117,11 +117,11 @@ export class TiposCambiosTableComponent implements OnInit {
     this.applyFilter();
   }
 
-  catchSelectedRow(_data: TipoCambioI) {
+  catchSelectedRow(_data: CargosExtraI) {
     this.editTipoCambio = _data;
   }
   // Método para editar survey
-  async openTipoCambioForm(_data?: TipoCambioI) {
+  async openTipoCambioForm(_data?: CargosExtraI) {
     if (_data) {
       this.editTipoCambio = _data;
     } else {

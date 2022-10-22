@@ -18,12 +18,14 @@ import {ConversionMonedaService} from '../../../services/conversion-moneda.servi
 export class InputModalComponent implements OnInit {
 
   @Input() asModal: boolean;
-  @Input() monto: number;
+  @Input() montoCobrado: number;
   @Input() balanceCobro: number;
   @Input() cobranza_id: number;
+  @Input() divisa_id: number = 1;
+
   public title: string;
 
-  public divisa_id: number = 1;
+
   public converionSaldo: number;
   public tipoCambioTomado: TiposCambioI;
 
@@ -37,6 +39,9 @@ export class InputModalComponent implements OnInit {
 
   ngOnInit() {
     this.title = 'Captura de efectivo';
+    if (this.divisa_id && this.divisa_id !== 1) {
+      this.handleDivisaChange();
+    }
   }
 
   handleDivisaChange() {
@@ -45,20 +50,24 @@ export class InputModalComponent implements OnInit {
       this.converionSaldo = (this.balanceCobro / Number(this.tipoCambioTomado.tipo_cambio));
     } else {
       this.converionSaldo = null;
-      this.tipoCambioTomado = null;
+      this.tipoCambioTomado = {
+        id: null,
+        tipo_cambio: 1,
+        divisa_base: 'MXN'
+      };
     }
   }
 
   saveUpdate() {
-    if (!this.cobranza_id && this.monto > this.balanceCobro) {
+    if (!this.cobranza_id && this.montoCobrado > this.balanceCobro) {
       this.sweetMsg.printStatus('El monto ingresado es mayor al balance por cobrar', 'warning');
       return;
     }
-    let montoCobrado = this.monto;
+    let montoBase = this.montoCobrado;
     if (this.tipoCambioTomado && this.tipoCambioTomado.divisa_base !== 'MXN') {
-      montoCobrado = (this.monto * Number(this.tipoCambioTomado.tipo_cambio));
+      montoBase = (this.montoCobrado * Number(this.tipoCambioTomado.tipo_cambio));
     }
-    this.dismiss(true, {monto: montoCobrado, monto_cobrado: this.monto, tipoCambio: this.tipoCambioTomado, divisaId: this.divisa_id});
+    this.dismiss(true, {monto: montoBase, monto_cobrado: this.montoCobrado, tipoCambio: this.tipoCambioTomado, divisaId: this.divisa_id});
   }
 
   dismiss(reload?, _data?) {
