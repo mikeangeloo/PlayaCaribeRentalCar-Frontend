@@ -10,7 +10,7 @@ import {ConversionMonedaService} from '../../../services/conversion-moneda.servi
 export class TiposCambioIndicadorComponent implements OnInit {
 
   constructor(
-    private convMonedaServ: ConversionMonedaService
+    public convMonedaServ: ConversionMonedaService
   ) { }
 
   async ngOnInit() {
