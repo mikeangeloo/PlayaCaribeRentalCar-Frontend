@@ -38,6 +38,7 @@ export class SearchControlsComponent implements OnInit {
 
 
   @Input() byVehiculos: boolean = false;
+  @Input() byVehiculoParam: string;
   @Input() byNumContrato: boolean = false;
 
   public vehiculos: VehiculosI[];

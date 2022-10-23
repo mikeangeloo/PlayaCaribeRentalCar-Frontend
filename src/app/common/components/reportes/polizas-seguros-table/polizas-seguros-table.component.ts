@@ -7,6 +7,7 @@ import * as moment from 'moment';
 import { VehiculosC, VehiculosI } from 'src/app/interfaces/catalogo-vehiculos/vehiculos.interface';
 import { ReportesService } from 'src/app/services/reportes.service';
 import {TxtConv} from '../../../../helpers/txt-conv';
+import {SearchPayLoadI} from '../../../search-controls/search-controls.component';
 
 @Component({
   selector: 'app-polizas-seguros-table',
@@ -38,6 +39,8 @@ export class PolizasSegurosTableComponent implements OnInit {
   @ViewChild(MatPaginator, {static: false}) paginator3: MatPaginator;
   @ViewChild(MatSort, {static: true}) sort: MatSort;
 
+  searchPayload: SearchPayLoadI = {}
+
   constructor(
     public reportesServ: ReportesService
   ) { }
@@ -47,7 +50,7 @@ export class PolizasSegurosTableComponent implements OnInit {
   }
 
   // Método para cargar datos de los campus
-  loadVehiculosTable(_data?: VehiculosI[]) {
+  loadVehiculosTable(_data?: VehiculosI[], searchPayload?: SearchPayLoadI) {
     console.log('ready');
     //this.listado-hoteles = null;
     this.listVehiculos = null;
@@ -60,7 +63,7 @@ export class PolizasSegurosTableComponent implements OnInit {
       this.listVehiculos.sort = this.sort;
       this.listVehiculos.paginator = this.paginator3;
     } else {
-      this.reportesServ.getVehiculosPoliza().subscribe(response => {
+      this.reportesServ.getVehiculosPoliza(searchPayload).subscribe(response => {
         if (response.ok === true) {
           this.spinner = false;
           this.listVehiculos = new MatTableDataSource(response.vehiculos);
@@ -97,6 +100,11 @@ export class PolizasSegurosTableComponent implements OnInit {
   onSearchClear() {
     this.searchKey = '';
     this.applyFilter();
+  }
+
+  handleSearchFilter(searchPayload: SearchPayLoadI) {
+    this.searchPayload = searchPayload
+    this.loadVehiculosTable(null, this.searchPayload)
   }
 
 }

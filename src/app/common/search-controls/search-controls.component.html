@@ -24,9 +24,9 @@
 
   <ion-col size sizeMd="3" *ngIf="vehiculos && byVehiculos">
     <mat-form-field appearance="legacy">
-      <mat-label>Vehiculos</mat-label>
+      <mat-label>Vehiculos {{(byVehiculoParam) ? '-' + byVehiculoParam : ''}}</mat-label>
       <mat-select [formControl]="selectedVehiculo">
-        <mat-option *ngFor="let vehiculo of vehiculos" [value]="vehiculo.id">{{vehiculo.modelo}} - {{vehiculo.codigo}}</mat-option>
+        <mat-option *ngFor="let vehiculo of vehiculos" [value]="vehiculo.id">{{(byVehiculoParam) ? vehiculo[byVehiculoParam] : (vehiculo.modelo - vehiculo.codigo) }}</mat-option>
       </mat-select>
     </mat-form-field>
   </ion-col>

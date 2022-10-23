@@ -35,8 +35,8 @@ export class ReportesService {
       return response;
     }));
   }
-  public getVehiculosPoliza(): Observable<any> {
-    return this.httpClient.get<any>(`${this.dashURL}/reportes/polizas-seguros`).pipe(map(response => {
+  public getVehiculosPoliza(payload): Observable<any> {
+    return this.httpClient.post<any>(`${this.dashURL}/reportes/polizas-seguros`, payload).pipe(map(response => {
       return response;
     }));
   }
@@ -47,14 +47,14 @@ export class ReportesService {
     }));
   }
 
-  public getReportePagos(): Observable<any> {
-    return this.httpClient.get<any>(`${this.dashURL}/reportes/detalle-pagos`).pipe(map(response => {
+  public getReportePagos(payload): Observable<any> {
+    return this.httpClient.post<any>(`${this.dashURL}/reportes/detalle-pagos`, payload).pipe(map(response => {
       return response;
     }));
   }
 
-  public getReporteRentasPorVehiculo(): Observable<any> {
-    return this.httpClient.get<any>(`${this.dashURL}/reportes/rentas-por-vehiculo`).pipe(map(response => {
+  public getReporteRentasPorVehiculo(payload): Observable<any> {
+    return this.httpClient.post<any>(`${this.dashURL}/reportes/rentas-por-vehiculo`, payload).pipe(map(response => {
       return response;
     }));
   }

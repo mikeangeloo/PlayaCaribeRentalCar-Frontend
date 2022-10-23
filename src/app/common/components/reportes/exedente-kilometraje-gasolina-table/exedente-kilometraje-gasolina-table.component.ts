@@ -56,7 +56,6 @@ export class ExedenteKilometrajeGasolinaTableComponent implements OnInit {
   @ViewChild(MatSort, {static: true}) sort: MatSort;
 
   searchPayload: SearchPayLoadI = {}
-  vehiculosSearch: VehiculosI;
 
   constructor(
     public reportesServ: ReportesService

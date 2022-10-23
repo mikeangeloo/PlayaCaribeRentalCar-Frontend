@@ -1,6 +1,6 @@
 <div class="main-content">
   <ion-row>
-    <ion-col size="12" [ngClass]="{hide: !vehiculos || vehiculos.length === 0}">
+    <ion-col size="12">
       <ion-card class="ion-no-margin ion-no-padding">
         <ion-card-header>
           <h2>Polizas y seguros</h2>
@@ -9,6 +9,7 @@
 
           <ion-row>
             <ion-col size="12" size-md="10">
+
               <ion-searchbar placeholder="Ingrese un valor para filtrar los resultados de la tabla..." class="ion-no-padding" (ionInput)="applyFilter($event)" (ionCancel)="onSearchClear()"></ion-searchbar>
             </ion-col>
           </ion-row>

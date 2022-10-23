@@ -4,6 +4,7 @@ import {MatPaginator} from '@angular/material/paginator';
 import {MatSort} from '@angular/material/sort';
 import { ReportesService } from 'src/app/services/reportes.service';
 import {TxtConv} from '../../../../helpers/txt-conv';
+import {SearchPayLoadI} from '../../../search-controls/search-controls.component';
 
 export interface RentasPorVehiculoI
 {
@@ -63,22 +64,27 @@ export class RentasPorVehiculoTableComponent implements OnChanges {
   @ViewChild(MatPaginator, {static: false}) paginator3: MatPaginator;
   @ViewChild(MatSort, {static: true}) sort: MatSort;
   public totalCobrado = 0;
+
+  searchPayload: SearchPayLoadI = {}
+
   constructor(
     public reportesServ: ReportesService
   ) { }
 
   ngOnChanges() {
-    this.loadReporteRentasPorVehiculoTable()
+    if (this.enterView) {
+      this.loadReporteRentasPorVehiculoTable()
+    }
   }
 
   // Método para cargar datos de los campus
-  loadReporteRentasPorVehiculoTable() {
+  loadReporteRentasPorVehiculoTable(searchPayload?: SearchPayLoadI) {
     console.log('ready');
     //this.listado-hoteles = null;
     this.listRentasPorVehiculo = null;
     this.spinner = true;
 
-    this.reportesServ.getReporteRentasPorVehiculo().subscribe(response => {
+    this.reportesServ.getReporteRentasPorVehiculo(searchPayload).subscribe(response => {
       if (response.ok === true) {
         this.spinner = false;
         this.listRentasPorVehiculo = new MatTableDataSource(response.data);
@@ -105,6 +111,11 @@ export class RentasPorVehiculoTableComponent implements OnChanges {
   onSearchClear() {
     this.searchKey = '';
     this.applyFilter();
+  }
+
+  handleSearchFilter(searchPayload: SearchPayLoadI) {
+    this.searchPayload = searchPayload
+    this.loadReporteRentasPorVehiculoTable(this.searchPayload)
   }
 
 }

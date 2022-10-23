@@ -1575,7 +1575,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
           {
             text: 'Pago Efectivo',
             icon: 'cash',
-            cssClass: this.balanceRetornoPorPagar == 0 ? 'disable' : '',
+            cssClass: this.balanceRetornoPorPagar <= 0 ? 'disable' : '',
             handler: () => {
               console.log('Pago Efectivo clicked');
               //this.attachFiles();
@@ -1585,7 +1585,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
           {
             text: 'Pago con Depósito',
             icon: 'cash',
-            cssClass: this.balanceRetornoPorPagar == 0 ? 'disable' : '',
+            cssClass: this.balanceRetornoPorPagar <= 0 ? 'disable' : '',
             handler: () => {
               console.log('Pago Depósito clicked');
               //this.attachFiles();

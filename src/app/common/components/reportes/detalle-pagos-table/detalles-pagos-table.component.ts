@@ -5,6 +5,7 @@ import {MatSort} from '@angular/material/sort';
 import { VehiculosI } from 'src/app/interfaces/catalogo-vehiculos/vehiculos.interface';
 import { ReportesService } from 'src/app/services/reportes.service';
 import {TxtConv} from '../../../../helpers/txt-conv';
+import {SearchPayLoadI} from '../../../search-controls/search-controls.component';
 
 export interface DetallePagosI
 {
@@ -84,6 +85,9 @@ export class DetallesPagosTableComponent implements OnChanges {
   @ViewChild(MatPaginator, {static: false}) paginator3: MatPaginator;
   @ViewChild(MatSort, {static: true}) sort: MatSort;
   public totalCobrado = 0;
+
+  searchPayload: SearchPayLoadI = {}
+
   constructor(
     public reportesServ: ReportesService
   ) { }
@@ -93,13 +97,13 @@ export class DetallesPagosTableComponent implements OnChanges {
   }
 
   // Método para cargar datos de los campus
-  loadReportePagosTable() {
+  loadReportePagosTable(searchPayload?: SearchPayLoadI) {
     console.log('ready');
     //this.listado-hoteles = null;
     this.listDetallePagos = null;
     this.spinner = true;
 
-    this.reportesServ.getReportePagos().subscribe(response => {
+    this.reportesServ.getReportePagos(searchPayload).subscribe(response => {
       if (response.ok === true) {
         this.spinner = false;
         this.listDetallePagos = new MatTableDataSource(response.data);
@@ -126,6 +130,11 @@ export class DetallesPagosTableComponent implements OnChanges {
   onSearchClear() {
     this.searchKey = '';
     this.applyFilter();
+  }
+
+  handleSearchFilter(searchPayload: SearchPayLoadI) {
+    this.searchPayload = searchPayload
+    this.loadReportePagosTable(this.searchPayload)
   }
 
 }
