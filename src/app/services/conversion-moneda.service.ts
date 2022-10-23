@@ -42,14 +42,20 @@ export class ConversionMonedaService {
     }));
   }
 
+  public getAllHistory(): Observable<any> {
+    return this.httpClient.get<any>(`${this.dashURL}/tipo-cambio/all-history`).pipe(map(response => {
+      return response;
+    }));
+  }
+
   public getDataById(payload): Observable<any> {
     return this.httpClient.post<any>(`${this.dashURL}/tipo-cambio`, payload).pipe(map(response => {
       return response;
     }));
   }
 
-  public saveUpdate(data): Observable<any> {
-    return this.httpClient.post<any>(`${this.dashURL}/tipo-cambio/save-update`, data).pipe(map(response => {
+  public save(data): Observable<any> {
+    return this.httpClient.post<any>(`${this.dashURL}/tipo-cambio/save`, data).pipe(map(response => {
       return response;
     }));
   }

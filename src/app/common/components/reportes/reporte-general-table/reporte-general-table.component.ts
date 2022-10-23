@@ -9,7 +9,7 @@ import {MatTableDataSource} from '@angular/material/table';
 import {MatPaginator} from '@angular/material/paginator';
 import {MatSort} from '@angular/material/sort';
 import {TxtConv} from '../../../../helpers/txt-conv';
-import {SearchPayLoadI} from '../rentas-por-comisionistas-table/rentas-por-comisionistas-table.component';
+import {SearchPayLoadI} from '../../../search-controls/search-controls.component';
 
 @Component({
   selector: 'app-reporte-general-table',

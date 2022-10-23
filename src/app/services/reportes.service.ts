@@ -41,8 +41,8 @@ export class ReportesService {
     }));
   }
 
-  public getExedenteKilometrajeGasolina(): Observable<any> {
-    return this.httpClient.get<any>(`${this.dashURL}/reportes/exedente-kilometraje-gasolina`).pipe(map(response => {
+  public getExedenteKilometrajeGasolina(payload?): Observable<any> {
+    return this.httpClient.post<any>(`${this.dashURL}/reportes/exedente-kilometraje-gasolina`, payload).pipe(map(response => {
       return response;
     }));
   }

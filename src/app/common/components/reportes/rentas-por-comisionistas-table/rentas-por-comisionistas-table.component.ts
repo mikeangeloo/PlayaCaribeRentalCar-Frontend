@@ -8,6 +8,7 @@ import {FormControl, FormGroup} from '@angular/forms';
 import {SweetMessagesService} from '../../../../services/sweet-messages.service';
 import {DateConv} from '../../../../helpers/date-conv';
 import * as moment from 'moment-timezone';
+import {SearchPayLoadI} from '../../../search-controls/search-controls.component';
 
 export interface RentasPorComisionaI
 {
@@ -69,18 +70,7 @@ export interface ComisionistasI {
   comisiones_pactadas?: number[]
 }
 
-export interface SearchPayLoadI {
-  rango_fechas?: {
-    start: string;
-    end: string
-  },
-  search_users?:
-    {
-      tipo?: string;
-      user_id?: number
-    }[],
-  status?: Array<number>
-}
+
 
 @Component({
   selector: 'app-rentas-por-comisionistas-table',

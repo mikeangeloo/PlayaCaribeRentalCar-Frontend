@@ -79,6 +79,17 @@
                 </mat-cell>
               </ng-container>-->
 
+              <!-- created_at -->
+              <ng-container matColumnDef="created_by">
+                <mat-header-cell *matHeaderCellDef mat-sort-header>Creado Por</mat-header-cell>
+                <mat-cell *matCellDef="let row">
+                  <div class="column">
+                    <p>
+                      {{row.created_by}}
+                    </p>
+                  </div>
+                </mat-cell>
+              </ng-container>
 
               <!-- created_at -->
               <ng-container matColumnDef="created_at">
@@ -98,9 +109,9 @@
                 <mat-cell *matCellDef="let row">
                   <div class="column">
                     <div class="action-btn-container">
-                      <ion-button fill="clear" (click)="openTipoCambioForm(row)">
-                        <ion-icon  name="create-outline"></ion-icon>
-                      </ion-button>
+<!--                      <ion-button fill="clear" (click)="openTipoCambioForm(row)">-->
+<!--                        <ion-icon  name="create-outline"></ion-icon>-->
+<!--                      </ion-button>-->
                       <ion-button fill="clear" (click)="deleteTipoCambio(row.id)">
                         <ion-icon name="trash" color="danger" ></ion-icon>
                       </ion-button>

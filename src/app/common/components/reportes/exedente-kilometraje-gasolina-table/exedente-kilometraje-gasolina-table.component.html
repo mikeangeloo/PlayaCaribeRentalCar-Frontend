@@ -1,6 +1,6 @@
 <div class="main-content">
   <ion-row>
-    <ion-col size="12" [ngClass]="{hide: !contratos || contratos.length === 0}">
+    <ion-col size="12">
       <ion-card class="ion-no-margin ion-no-padding">
         <ion-card-header>
           <h2>Exedentes de Kilometraje y Gasolina</h2>
@@ -8,7 +8,9 @@
         <ion-card-content>
 
           <ion-row>
-            <ion-col size="12" size-md="10">
+            <ion-col size="12" size-md="8" class="ion-align-self-end">
+              <app-search-controls [byVehiculos]="true" [byNumContrato]="true" (emitSearchParams)="handleSearchFilter($event)">
+              </app-search-controls>
               <ion-searchbar placeholder="Ingrese un valor para filtrar los resultados de la tabla..." class="ion-no-padding" (ionInput)="applyFilter($event)" (ionCancel)="onSearchClear()"></ion-searchbar>
             </ion-col>
           </ion-row>
@@ -20,7 +22,7 @@
                 <mat-cell *matCellDef="let row">
                   <div class="column">
                     <p>
-                      {{row.created_at | date:'short'  }}
+                      {{row.fecha | date:'short'  }}
                     </p>
                   </div>
                 </mat-cell>
@@ -32,7 +34,7 @@
                 <mat-cell *matCellDef="let row">
                   <div class="column">
                     <p>
-                      {{row.usuario.nombre}}
+                      {{row.rentador}}
                     </p>
                   </div>
                 </mat-cell>
@@ -44,7 +46,7 @@
                 <mat-cell *matCellDef="let row">
                   <div class="column">
                     <p>
-                      {{row.vehiculo.modelo}}
+                      {{row.vehiculo}}
                     </p>
                   </div>
                 </mat-cell>
@@ -56,7 +58,7 @@
                 <mat-cell *matCellDef="let row">
                   <div class="column">
                     <p>
-                      {{row.vehiculo.placas}}
+                      {{row.placas}}
                     </p>
                   </div>
                 </mat-cell>
@@ -90,8 +92,8 @@
                 <mat-header-cell *matHeaderCellDef mat-sort-header>Km Exedente</mat-header-cell>
                 <mat-cell *matCellDef="let row">
                   <div class="column" >
-                    <ion-chip [style]="{'background-color': row != null && (row.km_final - row.km_inicial  >= 1) ? 'red': 'green'}" style="font-weight: bold; color: white;" >
-                      {{row.km_final - row.km_inicial}}
+                    <ion-chip [style]="{'background-color': row != null && (row.km_exedente >= 1) ? 'red': 'green'}" style="font-weight: bold; color: white;" >
+                      {{row.km_exedente}}
                     </ion-chip>
                   </div>
                 </mat-cell>
@@ -103,7 +105,7 @@
                 <mat-cell *matCellDef="let row">
                   <div class="column">
                     <p>
-                      {{row.cant_combustible_retorno}}
+                      {{row.gas_final}}
                     </p>
                   </div>
                 </mat-cell>
@@ -115,7 +117,7 @@
                 <mat-cell *matCellDef="let row">
                   <div class="column">
                     <p>
-                      {{row.cant_combustible_salida}}
+                      {{row.gas_inicial}}
                     </p>
                   </div>
                 </mat-cell>
@@ -126,8 +128,8 @@
                 <mat-header-cell *matHeaderCellDef mat-sort-header>Gas Exedente</mat-header-cell>
                 <mat-cell *matCellDef="let row">
                   <div class="column">
-                    <ion-chip [style]="{'background-color': calcExcedenteGas(row.cant_combustible_salida ,row.cant_combustible_retorno).numerator < '0' ? 'red': 'green'}" style="font-weight: bold; color: white;" >
-                      {{ calcExcedenteGas(row.cant_combustible_salida ,row.cant_combustible_retorno)}}
+                    <ion-chip [style]="{'background-color': (row.gas_exedente).numerator < '0' ? 'red': 'green'}" style="font-weight: bold; color: white;" >
+                      {{ row.gas_exedente}}
                     </ion-chip>
                   </div>
                 </mat-cell>
@@ -139,7 +141,7 @@
                 <mat-cell *matCellDef="let row">
                   <div class="column">
                     <p>
-                      {{'CONTRATO ' + statusC.labelStatus(row.estatus)}}
+                      {{row.estatus}}
                     </p>
                   </div>
                 </mat-cell>

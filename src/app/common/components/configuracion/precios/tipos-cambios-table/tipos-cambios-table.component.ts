@@ -7,10 +7,8 @@ import {GeneralService} from '../../../../../services/general.service';
 import {ActionSheetController, ModalController, NavController} from '@ionic/angular';
 import {SweetMessagesService} from '../../../../../services/sweet-messages.service';
 import {ToastMessageService} from '../../../../../services/toast-message.service';
-import {CargosRetornoExtrasService} from '../../../../../services/cargos-retorno-extras.service';
 import * as moment from 'moment';
 import {TxtConv} from '../../../../../helpers/txt-conv';
-import {CargosExtrasFormComponent} from '../cargos-extras-form/cargos-extras-form.component';
 import {ConversionMonedaService} from '../../../../../services/conversion-moneda.service';
 import {TipoCambioFormComponent} from '../tipo-cambio-form/tipo-cambio-form.component';
 
@@ -31,6 +29,7 @@ export class TiposCambiosTableComponent implements OnInit {
     'divisa_base',
     'tipo_cambio',
     'divisa_conversion',
+    'created_by',
     'created_at',
     'acciones'
   ];
@@ -86,7 +85,7 @@ export class TiposCambiosTableComponent implements OnInit {
       this.listTiposCambio.sort = this.sort;
       this.listTiposCambio.paginator = this.paginator3;
     } else {
-      this.conversionMonedaServ.getAllTiposCambio().subscribe(response => {
+      this.conversionMonedaServ.getAllHistory().subscribe(response => {
         if (response.ok === true) {
           this.spinner = false;
           this.listTiposCambio = new MatTableDataSource(response.data);

@@ -1,4 +1,4 @@
-import {Component, Input, OnInit, ViewChild} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ModalController} from '@ionic/angular';
 import {GeneralService} from '../../../../../services/general.service';
@@ -30,7 +30,6 @@ export class TipoCambioFormComponent implements OnInit {
   ) {
     this.title = 'Formulario Tipo de Cambio';
     this.tipoCambioForm = this.fb.group({
-      id: [null],
       divisa_base_id: [null, Validators.required],
       divisa_base: [null, Validators.required],
       tipo_cambio: [null, Validators.required],
@@ -55,7 +54,6 @@ export class TipoCambioFormComponent implements OnInit {
 
   initTipoCambioForm(data?) {
     this.tipoCambioForm.setValue({
-      id: (data && data.id) ? data.id : null,
       divisa_base_id: (data && data.divisa_base_id) ? data.divisa_base_id : null,
       divisa_base: (data && data.divisa_base) ? data.divisa_base : null,
       tipo_cambio: (data && data.tipo_cambio) ? data.tipo_cambio : null,
@@ -112,12 +110,13 @@ export class TipoCambioFormComponent implements OnInit {
     }
     this.generalServ.presentLoading('Guardando cambios ...');
 
-    this.conversionMonedaServ.saveUpdate(this.tipoCambioForm.value).subscribe(res => {
+    this.conversionMonedaServ.save(this.tipoCambioForm.value).subscribe(async res => {
       this.generalServ.dismissLoading();
-      this.dismiss(true);
+
       if (res.ok === true) {
         this.toastServ.presentToast('success', res.message, 'top');
-        this.conversionMonedaServ.loadTiposCambios()
+        await this.conversionMonedaServ.loadTiposCambios()
+        this.dismiss(true);
       }
     }, error => {
       console.log(error);

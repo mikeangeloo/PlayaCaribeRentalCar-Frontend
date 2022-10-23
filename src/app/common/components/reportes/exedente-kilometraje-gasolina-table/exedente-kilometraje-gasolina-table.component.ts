@@ -1,14 +1,28 @@
-import {Component, EventEmitter, Input, OnInit, Output, SimpleChanges, ViewChild} from '@angular/core';
+import {Component, Input, OnInit, ViewChild} from '@angular/core';
 import {MatTableDataSource} from '@angular/material/table';
 import {MatPaginator} from '@angular/material/paginator';
 import {MatSort} from '@angular/material/sort';
-import {ActionSheetController, ModalController, NavController} from '@ionic/angular';
-import * as moment from 'moment';
 import { ReportesService } from 'src/app/services/reportes.service';
 import {TxtConv} from '../../../../helpers/txt-conv';
 import { ContratoI } from 'src/app/interfaces/contratos/contrato.interface';
 import { ContratosStatus } from 'src/app/enums/contratos-status.enum';
+import {VehiculosI} from '../../../../interfaces/catalogo-vehiculos/vehiculos.interface';
+import {SearchPayLoadI} from '../../../search-controls/search-controls.component';
 var Fraction = require('fractions');
+
+interface ReporteExcedenteKMGasI {
+  fecha: Date,
+  rentador: string,
+  vehiculo: string,
+  placas: string,
+  km_inicial: number,
+  km_final: number,
+  km_exedente: number,
+  gas_inicial: string,
+  gas_final: string,
+  gas_exedente: string,
+  estatus: string,
+}
 
 @Component({
   selector: 'app-exedente-kilometraje-gasolina-table',
@@ -24,20 +38,25 @@ export class ExedenteKilometrajeGasolinaTableComponent implements OnInit {
     'rentador',
     'vehiculo',
     'placas',
-    'km_final',
     'km_inicial',
+    'km_final',
     'km_exedente',
-    'gas_final',
     'gas_inicial',
+    'gas_final',
     'gas_exedente',
     'estatus',
   ];
   contratos: ContratoI[];
+  reporteContratos: ReporteExcedenteKMGasI[] = [];
+
   listContratos: MatTableDataSource<any>;
   public searchKey: string;
   public statusC = ContratosStatus;
   @ViewChild(MatPaginator, {static: false}) paginator3: MatPaginator;
   @ViewChild(MatSort, {static: true}) sort: MatSort;
+
+  searchPayload: SearchPayLoadI = {}
+  vehiculosSearch: VehiculosI;
 
   constructor(
     public reportesServ: ReportesService
@@ -47,21 +66,42 @@ export class ExedenteKilometrajeGasolinaTableComponent implements OnInit {
     this.loadContratosTable()
   }
 
-  loadContratosTable() {
+  loadContratosTable(searchPayload?: SearchPayLoadI) {
     console.log('ready');
     //this.listado-hoteles = null;
     this.listContratos = null;
     this.spinner = true;
+    this.reporteContratos = [];
 
 
-    this.reportesServ.getExedenteKilometrajeGasolina().subscribe(response => {
+    this.reportesServ.getExedenteKilometrajeGasolina(searchPayload).subscribe(response => {
       if (response.ok === true) {
         this.spinner = false;
-        this.listContratos = new MatTableDataSource(response.contratos);
+        this.contratos = response.contratos;
+
+        for (let contrato of this.contratos) {
+          let reporte: ReporteExcedenteKMGasI = {
+            estatus: 'CONTRATO ' + ContratosStatus.labelStatus(contrato.estatus),
+            fecha: contrato.created_at,
+            gas_exedente: this.calcExcedenteGas(contrato.cant_combustible_salida ,contrato.cant_combustible_retorno),
+            gas_final: contrato.cant_combustible_retorno,
+            gas_inicial: contrato.cant_combustible_salida,
+            km_exedente: contrato.km_final - contrato.km_inicial,
+            km_final: contrato.km_final,
+            km_inicial: contrato.km_inicial,
+            placas: contrato.vehiculo?.placas,
+            rentador: contrato.usuario?.nombre,
+            vehiculo: contrato.vehiculo?.modelo
+          }
+
+          this.reporteContratos.push(reporte);
+        }
+
+        this.listContratos = new MatTableDataSource(this.reporteContratos);
         this.listContratos.sort = this.sort;
         this.listContratos.paginator = this.paginator3;
         //this.listContratos = response.contratos;
-        this.contratos = response.contratos;
+
       }
     }, error => {
       this.spinner = false;
@@ -92,6 +132,9 @@ export class ExedenteKilometrajeGasolinaTableComponent implements OnInit {
     this.applyFilter();
   }
 
-
+  handleSearchFilter(searchPayload: SearchPayLoadI) {
+    this.searchPayload = searchPayload
+    this.loadContratosTable(this.searchPayload)
+  }
 
 }

@@ -6,6 +6,7 @@ import {CobranzaProgI} from '../cobranza/cobranza-prog.interface';
 import {DragObjProperties} from '../../common/draggable-resizable/draggable-resizable.component';
 import { CheckListI } from "../check-list/check-list.interface";
 import { CargosExtraI } from "../configuracion/cargos-extras.interface";
+import {UsersI} from '../users.interface';
 
 export interface ContratoI
 {
@@ -62,6 +63,7 @@ export interface ContratoI
   updated_at: Date;
   cliente?: any;
   vehiculo: VehiculosI;
+  usuario?: UsersI;
   firma_cliente: string;
   firma_matrix: string;
 
@@ -75,7 +77,9 @@ export interface ContratoI
   // total_frecuencia_extra: number;
 
   km_final: number;
+  km_inicial?: number;
   cant_combustible_retorno:string;
+  cant_combustible_salida?: string;
   cargos_retorno_extras_ids?: number[];
   cargos_retorno_extras: CargosExtraI[];
   subtotal_retorno: number;
