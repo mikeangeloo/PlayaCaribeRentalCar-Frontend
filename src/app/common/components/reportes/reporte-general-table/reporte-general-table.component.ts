@@ -140,7 +140,7 @@ export class ReporteGeneralTableComponent implements OnInit, OnChanges {
             gas_inicial: reporte.cant_combustible_salida,
             gas_final: reporte.cant_combustible_retorno,
             total: reporte.total_final,
-            total_cobrado: reporte.total_cobrado,
+            total_cobrado: reporte.total_cobrado_mxn,
             fecha_cierre: fechaRetorno,
             estatus: reporte.estatus,
             fullData: reporte,

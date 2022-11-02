@@ -36,8 +36,12 @@ export class CobranzaCapturada
   tarjeta_id: number;
   cliente_id: number;
   fecha_cargo: string;
+  tipo_cambio_id: number;
+  tipo_cambio: number;
   monto: string;
+  monto_cobrado: string;
   moneda: string;
+  moneda_cobrada: string;
   tipo_id: number;
   tipo: string;
   cobranza_seccion: string;
@@ -57,8 +61,12 @@ export class CobranzaCapturada
     this.tarjeta_id = data.tarjeta_id
     this.cliente_id = data.cliente_id
     this.fecha_cargo = data.fecha_cargo
+    this.tipo_cambio_id = data.tipo_cambio_id
+    this.tipo_cambio = data.tipo_cambio
     this.monto = data.monto
+    this.monto_cobrado = data.monto_cobrado
     this.moneda = data.moneda
+    this.moneda_cobrada = data.moneda_cobrada
     this.tipo_id = data.tipo
     this.tipo = this.getTipo(data.tipo)
     this.cobranza_seccion = data.cobranza_seccion

@@ -2,12 +2,13 @@ import {CobranzaCapturadaI} from '../../../../../interfaces/cobranza/cobranza-ca
 
 export interface ReporteEndpointI {
   id: number;
-  created_at: Date;
+  created_at: string;
   fecha_salida: string;
   hora_salida: string;
   fecha_retorno: string;
   hora_retorno: string;
   num_contrato: string;
+  num_reserva?: string;
   ub_salida_id: number;
   ub_retorno_id: number;
   vehiculo_id: number;
@@ -21,16 +22,41 @@ export interface ReporteEndpointI {
   cant_combustible_salida: string;
   cant_combustible_retorno: string;
   estatus: number;
-  cobranza_tarjeta_mxn?: number;
-  cobranza_tarjeta_usd?: number;
-  cobranza_efectivo_mxn: number;
-  cobranza_efectivo_usd?: number;
-  cobranza_pre_auth_mxn: number;
-  cobranza_pre_auth_usd?: number;
-  cobranza_deposito_mxn: number;
-  cobranza_deposito_usd?: number;
+  cobranza_tarjeta_mxn?: {
+    total: number,
+    data: CobranzaCapturadaI[]
+  };
+  cobranza_tarjeta_usd?: {
+    total: number,
+    data: CobranzaCapturadaI[]
+  };
+  cobranza_efectivo_mxn: {
+    total: number,
+    data: CobranzaCapturadaI[]
+  };
+  cobranza_efectivo_usd?: {
+    total: number,
+    data: CobranzaCapturadaI[]
+  };
+  cobranza_pre_auth_mxn: {
+    total: number,
+    data: CobranzaCapturadaI[]
+  };
+  cobranza_pre_auth_usd?: {
+    total: number,
+    data: CobranzaCapturadaI[]
+  };
+  cobranza_deposito_mxn: {
+    total: number,
+    data: CobranzaCapturadaI[]
+  };
+  cobranza_deposito_usd?: {
+    total: number,
+    data: CobranzaCapturadaI[]
+  };
   total_final: number;
-  total_cobrado: number;
+  total_cobrado_mxn: number;
+  total_cobrado_usd: number;
   salida?: {
     id: number;
     alias: string;
