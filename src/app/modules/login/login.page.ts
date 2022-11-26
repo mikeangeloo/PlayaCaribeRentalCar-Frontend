@@ -92,6 +92,7 @@ export class LoginPage implements OnInit {
           sessionStorage.setItem(this.sessionService.profileToken, JSON.stringify(res.data));
           this.sessionService.$profileData.next(res.data);
           this.sessionService.$role.next(res.data.rol.rol);
+          this.sessionService.logged$.next(true)
 
           this.loginForm.reset();
           this.sweetMsg.printStatus(res.message, 'success');

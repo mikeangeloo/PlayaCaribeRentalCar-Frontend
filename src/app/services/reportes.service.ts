@@ -70,4 +70,12 @@ export class ReportesService {
       return response;
     }));
   }
+
+  public getDashboardInfo(payload?): Observable<any> {
+    return this.httpClient.get<any>(`${this.dashURL}/dashboard-info`, payload).pipe(map(response => {
+      return response;
+    }));
+  }
+
+
 }

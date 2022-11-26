@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {GeneralService} from '../../services/general.service';
+import {SessionService} from '../../services/session.service';
 
 @Component({
   selector: 'app-header',
@@ -9,7 +10,8 @@ import {GeneralService} from '../../services/general.service';
 export class HeaderComponent implements OnInit {
 
   constructor(
-    public generalServ: GeneralService
+    public generalServ: GeneralService,
+    public sessionServ: SessionService
   ) { }
 
   ngOnInit() {}

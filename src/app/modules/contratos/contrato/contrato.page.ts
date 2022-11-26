@@ -319,17 +319,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
     //await this.reloadAll();
 
-    this.exitPlacesOptions$ = this.gf.ub_salida_id.valueChanges.pipe(
-        startWith(''),
-        map(value => (typeof value === 'string' ? value: value.alias)),
-        map(alias => (alias ? this._filterUbicacion(alias): this.ubicaciones.slice())),
-    );
 
-    this.returnPlacesOptions$ = this.gf.ub_retorno_id.valueChanges.pipe(
-        startWith(''),
-        map(value => (typeof value === 'string' ? value: value.alias)),
-        map(alias => (alias ? this._filterUbicacion(alias): this.ubicaciones.slice())),
-    );
 
   }
 
@@ -411,8 +401,11 @@ export class ContratoPage implements OnInit, AfterViewInit {
               this.initGeneralForm();
             }
 
+            // Si tenemos vehiculoId pasado desde routing
+            let vehiculoIdRouting = this.route.snapshot.paramMap.get('vehicle_id')
             let _datosVehiculo = this.contractData.etapas_guardadas.find(x => x === 'datos_vehiculo');
-            if (_datosVehiculo) {
+
+            if (_datosVehiculo) { // evaluamos de acuerdo a la etapa de guardada en contratos
               console.log('datos_vehiculo');
               if (this.contractData.vehiculo || this.contractData.estatus === ContratosStatusE.RESERVA) {
                 this.step = 3;
@@ -424,6 +417,17 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
               }
 
+            } else if (vehiculoIdRouting) {
+                let vehiculosPayload = {
+                  vehicle_id: vehiculoIdRouting
+                }
+                this.generalServ.getList('vehiculos', vehiculosPayload).subscribe(res => {
+                  if (res.ok) {
+                    this.vehiculoData = res.fullData[0]
+                    this.setVehiculoBackgroundLayout(this.vehiculoData.categoria_vehiculo_id, this.vehiculoData.categoria.categoria);
+                    this.initVehiculoForm(this.vehiculoData);
+                  }
+                })
             } else {
               this.initVehiculoForm();
             }
@@ -618,7 +622,6 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
     this.generalDataForm = this.fb.group({
       num_contrato: [(data && data.num_contrato ? data.num_contrato : null)],
-      //vehiculo_id: [(data && data.vehiculo && data.vehiculo.id ? data.vehiculo.id : (this.vehiculoData && this.vehiculoData.id) ? this.vehiculoData.id : null), Validators.required],
       tipo_tarifa_id: [(data && data.tipo_tarifa_id) ? data.tipo_tarifa_id : (_tipoTarifaApollo && _tipoTarifaApollo.id ? _tipoTarifaApollo.id : null), Validators.required],
       tipo_tarifa: [(data && data.tipo_tarifa) ? data.tipo_tarifa : (_tipoTarifaApollo && _tipoTarifaApollo.tarifa ? _tipoTarifaApollo.tarifa : null), Validators.required],
 
@@ -662,8 +665,8 @@ export class ContratoPage implements OnInit, AfterViewInit {
       cobranza_calc: [(data && data.cobranza_calc ? data.cobranza_calc : null), Validators.required],
 
       total_dias: [(data && data.total_dias) ? data.total_dias : null, Validators.required],
-      ub_salida_id: [(data && data.ub_salida_id) ? data.ub_salida_id : 1, Validators.required],
-      ub_retorno_id: [(data && data.ub_retorno_id) ? data.ub_retorno_id : 1, Validators.required],
+      ub_salida_id: [(data && data.ub_salida_id) ? data.ub_salida_id : null, Validators.required],
+      ub_retorno_id: [(data && data.ub_retorno_id) ? data.ub_retorno_id : null, Validators.required],
     });
 
     if (data && data.id) {
@@ -705,6 +708,18 @@ export class ContratoPage implements OnInit, AfterViewInit {
     if (data && data.total_dias) {
       this.setBaseRentFrequency();
     }
+
+    this.exitPlacesOptions$ = this.generalDataForm.controls.ub_salida_id.valueChanges.pipe(
+      startWith(''),
+      map(value => (typeof value === 'string' ? value: value.alias)),
+      map(alias => (alias ? this._filterUbicacion(alias): this.ubicaciones.slice())),
+    );
+
+    this.returnPlacesOptions$ = this.generalDataForm.controls.ub_retorno_id.valueChanges.pipe(
+      startWith(''),
+      map(value => (typeof value === 'string' ? value: value.alias)),
+      map(alias => (alias ? this._filterUbicacion(alias): this.ubicaciones.slice())),
+    );
 
   }
 

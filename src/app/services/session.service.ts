@@ -20,6 +20,7 @@ export class SessionService {
 
   public $profileData = new BehaviorSubject<ProfileDataI>(null);
   public $role = new BehaviorSubject<string>(null);
+  public logged$ = new BehaviorSubject<boolean>(false)
 
   public role;
   public dashURL: string;
@@ -130,6 +131,7 @@ export class SessionService {
     sessionStorage.removeItem(this.JWToken);
     sessionStorage.removeItem(this.profileToken);
     sessionStorage.removeItem(this.permissionToken);
+    this.logged$.next(false);
     // Redireccionar
     this.navCtrl.navigateRoot(['/login']);
   }

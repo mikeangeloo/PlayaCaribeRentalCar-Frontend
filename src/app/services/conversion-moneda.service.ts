@@ -5,6 +5,7 @@ import {AlertController, NavController} from '@ionic/angular';
 import {lastValueFrom, map, Observable} from 'rxjs';
 import {TiposCambioI} from '../interfaces/configuracion/tipos-cambio';
 import {DivisasI} from '../interfaces/configuracion/divisas.interface';
+import {SessionService} from './session.service';
 
 @Injectable({
   providedIn: 'root'
@@ -27,11 +28,16 @@ export class ConversionMonedaService {
   constructor(
     public httpClient: HttpClient,
     public navCtrl: NavController,
-    private alertCtrl: AlertController
+    private alertCtrl: AlertController,
+    private sessionServ: SessionService
   ) {
     this.dashURL = environment.dashUrl;
 
-    this.loadDivisas();
+    this.sessionServ.logged$.subscribe((logged) => {
+      if (logged) {
+        this.loadDivisas();
+      }
+    })
   }
 
   // endregion
@@ -48,7 +54,7 @@ export class ConversionMonedaService {
     }));
   }
 
-  public getDataById(payload): Observable<any> {
+  public getDataById(payload?): Observable<any> {
     return this.httpClient.post<any>(`${this.dashURL}/tipo-cambio`, payload).pipe(map(response => {
       return response;
     }));

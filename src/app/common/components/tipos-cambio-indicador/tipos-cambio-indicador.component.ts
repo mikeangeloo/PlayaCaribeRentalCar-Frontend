@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {ConversionMonedaService} from '../../../services/conversion-moneda.service';
+import {SessionService} from '../../../services/session.service';
 
 
 @Component({
@@ -10,12 +11,15 @@ import {ConversionMonedaService} from '../../../services/conversion-moneda.servi
 export class TiposCambioIndicadorComponent implements OnInit {
 
   constructor(
-    public convMonedaServ: ConversionMonedaService
+    public convMonedaServ: ConversionMonedaService,
+    private sessionServ: SessionService
   ) { }
 
   async ngOnInit() {
-    await this.convMonedaServ.loadTiposCambios();
-
+    this.sessionServ.logged$.subscribe(async (logged) => {
+      if (logged) {
+        await this.convMonedaServ.loadTiposCambios();
+      }
+    })
   }
-
 }

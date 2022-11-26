@@ -393,6 +393,9 @@ export class AppComponent implements OnDestroy {
 
       this.sessionService.getRole();
       this.sessionService.getProfile();
+      if (this.sessionService.isLogged()) {
+        this.sessionService.logged$.next(true);
+      }
 
     });
   }
