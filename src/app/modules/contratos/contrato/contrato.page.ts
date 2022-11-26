@@ -58,6 +58,7 @@ import {VehiculosStatusE} from '../../../enums/vehiculos-status.enum';
 import {
   CobroDepositoModalComponent
 } from '../../../common/components/cobro-deposito-modal/cobro-deposito-modal.component';
+import {CategoriaVehiculosService} from '../../../services/categoria-vehiculos.service';
 
 
 @Component({
@@ -189,6 +190,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
   dragObjs: DragObjProperties[] = [];
   selectedDragObj: DragObjProperties;
   vehicleOutlineBackground: string;
+  externalLayoutPresent: boolean;
   checkListForm: FormGroup;
   public check_list_img;
   //#endregion
@@ -240,6 +242,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
     public ubicacionesServ: UbicacionesService,
     public cobranzaServ: CobranzaService,
     public tarifasCatServ: TarifasCategoriasService,
+    public categoriaVehiculoServ: CategoriaVehiculosService,
     public actionSheetController: ActionSheetController,
     public alertController: AlertController,
     public notasServ: NotasService,
@@ -414,7 +417,8 @@ export class ContratoPage implements OnInit, AfterViewInit {
               if (this.contractData.vehiculo || this.contractData.estatus === ContratosStatusE.RESERVA) {
                 this.step = 3;
                 this.vehiculoData = this.contractData.vehiculo;
-                this.vehicleOutlineBackground = this.vehiculoData.categoria.categoria.toLowerCase();
+                this.setVehiculoBackgroundLayout(this.vehiculoData.categoria_vehiculo_id, this.vehiculoData.categoria.categoria);
+                //this.vehicleOutlineBackground = this.vehiculoData.categoria.categoria.toLowerCase();
                 console.log(this.vehicleOutlineBackground);
                 this.initVehiculoForm(this.contractData);
 
@@ -429,7 +433,8 @@ export class ContratoPage implements OnInit, AfterViewInit {
               console.log('cobranza');
               this.cobranzaProgData = this.contractData.cobranza.filter(x => x.cobranza_seccion == 'salida' || x.cobranza_seccion == 'reserva');
               console.log(this.cobranzaProgData)
-              if (this.balancePorPagar == 0) {
+              this.recalBalancePorCobrar();
+              if (this.balancePorPagar <= 0 && this.pagadoAutTotal > 0) {
                 this.step = 4;
               };
 
@@ -795,6 +800,24 @@ export class ContratoPage implements OnInit, AfterViewInit {
     }
     this.enableDisableDescuentoFreq(true);
 
+  }
+
+  setVehiculoBackgroundLayout(categoriaVehiculoId: number, categoria: string) {
+    this.categoriaVehiculoServ.getDataById(categoriaVehiculoId).subscribe(res => {
+      if (res.ok) {
+        if (res.layout?.file) {
+          this.vehicleOutlineBackground = res.layout?.file;
+          this.externalLayoutPresent = true;
+        } else {
+          this.vehicleOutlineBackground = categoria.toLowerCase();
+          this.externalLayoutPresent = false;
+        }
+      }
+    }, error => {
+      console.log(error);
+      this.vehicleOutlineBackground = categoria.toLowerCase();
+      this.externalLayoutPresent = false;
+    })
   }
   //#endregion
 
@@ -1516,7 +1539,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
           {
             text: 'Pago con Tarjeta',
             icon: 'card',
-            cssClass:   this.balancePorPagar == 0 ? 'disable' : '',
+            cssClass:   this.balancePorPagar <= 0 ? 'disable' : '',
             handler: () => {
               console.log('Capturar Pago con Tarjeta clicked');
               this.agregarTarjetaForm(CobranzaTipoE.PAGOTARJETA,cobranza_seccion , null, true);
@@ -1525,7 +1548,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
           {
             text: 'Pago Efectivo',
             icon: 'cash',
-            cssClass: this.balancePorPagar == 0 ? 'disable' : '',
+            cssClass: this.balancePorPagar <= 0 ? 'disable' : '',
             handler: () => {
               console.log('Pago Efectivo clicked');
               //this.attachFiles();
@@ -1566,7 +1589,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
           {
             text: 'Pago con Tarjeta',
             icon: 'card',
-            cssClass:   this.balanceRetornoPorPagar == 0 ? 'disable' : '',
+            cssClass:   this.balanceRetornoPorPagar <= 0 ? 'disable' : '',
             handler: () => {
               console.log('Capturar Pago con Tarjeta clicked');
               this.agregarTarjetaForm(CobranzaTipoE.PAGOTARJETA, cobranza_seccion, null, true);
@@ -1803,7 +1826,8 @@ export class ContratoPage implements OnInit, AfterViewInit {
           break;
         case 'vehiculo':
           this.vehiculoData = data;
-          this.vehicleOutlineBackground = this.vehiculoData.categoria.categoria.toLowerCase();
+          this.setVehiculoBackgroundLayout(this.vehiculoData.categoria_vehiculo_id, this.vehiculoData.categoria.categoria);
+          //this.vehicleOutlineBackground = this.vehiculoData.categoria.categoria.toLowerCase();
           this.initVehiculoForm(this.vehiculoData);
           //this.gf.vehiculo_id.patchValue(this.vehiculoData.id);
           //this.gf.vehiculo_clase_id.patchValue(this.vehiculoData.clase_id);
