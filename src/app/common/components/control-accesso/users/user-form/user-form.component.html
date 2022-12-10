@@ -108,10 +108,10 @@
                 <ion-col size="6">
                   <mat-form-field appearance="legacy">
                     <mat-label>Rol</mat-label>
-                    <mat-select formControlName="role_id">
-                      <mat-option *ngFor="let rol of roles" [value]="rol.id">{{rol.rol}}</mat-option>
+                    <mat-select formControlName="levelScope">
+                      <mat-option *ngFor="let rol of roles" [value]="rol.levelScope">{{rol.rol}}</mat-option>
                     </mat-select>
-                    <mat-error *ngIf="uf.role_id.errors?.required">Campo requerido</mat-error>
+                    <mat-error *ngIf="uf.levelScope.errors?.required">Campo requerido</mat-error>
                   </mat-form-field>
                 </ion-col>
               </ion-row>

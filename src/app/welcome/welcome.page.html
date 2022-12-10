@@ -1,0 +1,17 @@
+<ion-content [fullscreen]="true">
+  <!-- Due to the codepen sandboxing the form will not submit properly in this environment -->
+  <div class="background">
+    <ion-grid>
+      <ion-row class="ion-justify-content-center ion-align-items-center ion-text-center">
+        <ion-col size-sm="12">
+          <h1 id="time">{{currentTime | async}}</h1>
+          <h3 id="day" class="display-5">{{currentDate | async}}</h3>
+          <h2 id="greeting">{{welcomeMsg}}</h2>
+          <h3>{{conciergeMsg}}</h3>
+        </ion-col><!-- /.col -->
+
+      </ion-row><!-- /.row -->
+    </ion-grid><!-- /.container -->
+  </div>
+
+</ion-content>

@@ -87,7 +87,7 @@
                 <mat-cell *matCellDef="let row">
                   <div class="column">
                     <p class="text-overflow">
-                      {{row.rol.rol}}
+                      {{row.levelScope | roleName}}
                     </p>
                   </div>
                 </mat-cell>
@@ -151,11 +151,14 @@
                       <ion-button fill="clear" (click)="openUsuarioForm(row)">
                         <ion-icon  name="create-outline"></ion-icon>
                       </ion-button>
-                      <ion-button fill="clear" (click)="inactiveUsuario(row)" *ngIf="row.activo === 1" title="Deshabilitar registro">
+                      <ion-button fill="clear" (click)="enableDisableUsuario(row, false)" *ngIf="row.activo === 1" title="Deshabilitar registro">
                         <ion-icon name="close-circle-outline" color="danger" ></ion-icon>
                       </ion-button>
-                      <ion-button fill="clear" (click)="activeUsuario(row)" *ngIf="row.activo === 0" title="Habilitar registro">
+                      <ion-button fill="clear" (click)="enableDisableUsuario(row, true)" *ngIf="row.activo === 0" title="Habilitar registro">
                         <ion-icon name="checkmark-circle-outline" color="medium"></ion-icon>
+                      </ion-button>
+                      <ion-button fill="clear" (click)="deleteUsuario(row)" title="Borrar registro">
+                        <ion-icon name="trash-outline" color="danger"></ion-icon>
                       </ion-button>
                     </div>
 

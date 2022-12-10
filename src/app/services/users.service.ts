@@ -50,14 +50,14 @@ export class UsersService {
     }
   }
 
-  public setInactive(id): Observable<any> {
+  public deleteUser(id): Observable<any> {
     return this.httpClient.delete<any>(`${this.dashURL}/usuarios/${id}`).pipe(map(response => {
       return response;
     }));
   }
 
-  public setEnable(id): Observable<any> {
-    return this.httpClient.get<any>(`${this.dashURL}/usuarios/enable/${id}`).pipe(map(response => {
+  public setEnable(payload): Observable<any> {
+    return this.httpClient.post<any>(`${this.dashURL}/usuarios/enable-disable`, payload).pipe(map(response => {
       return response;
     }));
   }

@@ -75,6 +75,7 @@ import {
 } from './components/configuracion/precios/tipos-cambios-table/tipos-cambios-table.component';
 import {TipoCambioFormComponent} from './components/configuracion/precios/tipo-cambio-form/tipo-cambio-form.component';
 import {TiposCambioIndicadorComponent} from './components/tipos-cambio-indicador/tipos-cambio-indicador.component';
+import {RoleNamePipe} from '../pipes/role-name.pipe';
 
 
 @NgModule({
@@ -141,7 +142,8 @@ import {TiposCambioIndicadorComponent} from './components/tipos-cambio-indicador
     TiposCambioIndicadorComponent,
     HeaderComponent,
     TiposCambiosTableComponent,
-    TipoCambioFormComponent
+    TipoCambioFormComponent,
+    RoleNamePipe
   ],
   exports: [
     HotelesListComponent,
@@ -206,7 +208,8 @@ import {TiposCambioIndicadorComponent} from './components/tipos-cambio-indicador
     TiposCambioIndicadorComponent,
     HeaderComponent,
     TiposCambiosTableComponent,
-    TipoCambioFormComponent
+    TipoCambioFormComponent,
+    RoleNamePipe
   ],
   entryComponents: [
     HotelesListComponent,

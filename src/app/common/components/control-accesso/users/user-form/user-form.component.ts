@@ -15,6 +15,7 @@ import {RolesService} from "../../../../../services/roles.service";
 import {AreasTrabajoService} from "../../../../../services/areas-trabajo.service";
 import {SucursalesService} from "../../../../../services/sucursales.service";
 import {error} from "protractor";
+import {RoleLevelsTypes} from '../../../../../enums/role-levels.enum';
 
 @Component({
   selector: 'app-user-form',
@@ -29,7 +30,21 @@ export class UserFormComponent implements OnInit {
   public usuarioForm: FormGroup;
   public usuarioData: UsersI;
 
-  public roles: RoleI[];
+  //public roles: RoleI[];
+  public roles =  [
+    {
+      levelScope: 20,
+      rol: 'Administrador'
+    },
+    {
+      levelScope: 15,
+      rol: 'Gerente'
+    },
+    {
+      levelScope: 5,
+      rol: 'Vendedor'
+    }
+  ]
   public areaTrabajo: AreaTrabajoI[];
   public sucursales: SucursalesI[];
 
@@ -51,7 +66,7 @@ export class UserFormComponent implements OnInit {
     this.usuarioForm = this.fb.group({
       id: [null],
       area_trabajo_id: [null, Validators.required],
-      role_id: [null, Validators.required],
+      //role_id: [null, Validators.required],
       nombre: [null, Validators.required],
       apellidos: [null, Validators.required],
       email: [null, Validators.required],
@@ -59,7 +74,8 @@ export class UserFormComponent implements OnInit {
       username: [null, Validators.required],
       sucursal_id: [null, Validators.required],
       activo: [null],
-      password: [null]
+      password: [null],
+      levelScope: [0]
     });
 
 
@@ -70,7 +86,7 @@ export class UserFormComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.loadRoles();
+    //this.loadRoles();
     this.loadAreasTrabajo();
     this.loadSucursales();
 
@@ -89,6 +105,9 @@ export class UserFormComponent implements OnInit {
     })
   }
 
+  /**
+   * @deprecated
+   * **/
   loadRoles() {
     this.roleServ.getActive().subscribe(res => {
       if (res.ok === true) {
@@ -124,7 +143,7 @@ export class UserFormComponent implements OnInit {
     this.usuarioForm.setValue({
       id: (data && data.id) ? data.id : null,
       area_trabajo_id: (data && data.area_trabajo_id) ? data.area_trabajo_id : null,
-      role_id: (data && data.role_id) ? data.role_id : null,
+      //role_id: (data && data.role_id) ? data.role_id : null,
       nombre: (data && data.nombre) ? data.nombre : null,
       apellidos: (data && data.apellidos) ? data.apellidos : null,
       email: (data && data.email) ? data.email : null,
@@ -132,7 +151,8 @@ export class UserFormComponent implements OnInit {
       username: (data && data.username) ? data.username : null,
       sucursal_id: (data && data.sucursal_id) ? data.sucursal_id : null,
       activo: (data && data.activo) ? data.activo : 0,
-      password: (data && data.password) ? data.password: '********'
+      password: (data && data.password) ? data.password: '********',
+      levelScope: (data && data.levelScope) ? data.levelScope : 0
     });
     this.uf.activo.disable();
     this.uf.password.disable();

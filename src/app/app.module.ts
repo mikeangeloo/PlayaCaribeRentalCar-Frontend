@@ -17,6 +17,8 @@ import { NgxSpinnerModule } from "ngx-spinner";
 import locateESMX from '@angular/common/locales/es-MX'
 import {registerLocaleData} from '@angular/common';
 import {AppCommonModule} from './common/common.module';
+import {DirectivesModule} from './directives/directives.module';
+
 
 registerLocaleData(locateESMX, 'es-MX')
 
@@ -42,6 +44,7 @@ registerLocaleData(locateESMX, 'es-MX')
     NgxMaterialTimepickerModule,
     NgxSpinnerModule,
     AppCommonModule,
+    DirectivesModule,
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   providers: [
@@ -57,6 +60,6 @@ registerLocaleData(locateESMX, 'es-MX')
   ],
   bootstrap: [
     AppComponent
-  ],
+  ]
 })
 export class AppModule {}

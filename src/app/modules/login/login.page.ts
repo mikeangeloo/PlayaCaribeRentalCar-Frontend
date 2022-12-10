@@ -90,15 +90,15 @@ export class LoginPage implements OnInit {
           this.token = res.token;
           sessionStorage.setItem(this.sessionService.JWToken, this.token);
           sessionStorage.setItem(this.sessionService.profileToken, JSON.stringify(res.data));
+          sessionStorage.setItem(this.sessionService.levelScopeKey, JSON.stringify(res.data.levelScope))
           this.sessionService.$profileData.next(res.data);
-          this.sessionService.$role.next(res.data.rol.rol);
+          this.sessionService.$roleLevelsScope.next(res.data.levelScope);
           this.sessionService.logged$.next(true)
 
           this.loginForm.reset();
           this.sweetMsg.printStatus(res.message, 'success');
 
-          this.navigate.navigateRoot(['dashboard']);
-          //this.router.navigate(['dashboard']);
+          this.navigate.navigateRoot(['welcome']);
         }
       },
       (error: HttpErrorResponse) => {
