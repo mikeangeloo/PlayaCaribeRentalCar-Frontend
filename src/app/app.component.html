@@ -28,7 +28,7 @@
           </div>
         </div>
 
-        <ion-list id="sidenav" class="links-container">
+        <ion-list id="sidenav" class="links-container" *ngIf="sessionService.$profileData.value">
 
           <!--<ng-container> &lt;!&ndash; Dashboard &ndash;&gt;
             <ion-item class="item item-icon-left" routerLinkActive="active-route" [routerLink]="['dashboard']"
@@ -118,7 +118,10 @@
             </ng-container> &lt;!&ndash; Clientes &ndash;&gt;
 
           </ng-container> &lt;!&ndash; Administración &ndash;&gt;-->
-
+          <ion-item class="item item-icon-left no-rotate"  [routerLink]="'welcome'"  routerLinkActive="active-route" [routerDirection]="">
+            <ion-icon name="home"></ion-icon>&nbsp;<span style="width: 100%; margin-left: 7px;">Home</span>
+          </ion-item>
+          <hr>
           <ng-container *ngTemplateOutlet="recursiveMenu; context: {$implicit: menuTreeSideBar}"></ng-container>
           <ng-template #recursiveMenu let-demoMenu>
             <ng-container *ngFor="let menu of demoMenu">

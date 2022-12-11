@@ -881,6 +881,9 @@ mat-header-row {
 .action-btn-container {
   display: flex;
   justify-content: space-around;
+  ion-button {
+    --padding-end: 0 !important;
+  }
 }
 tfoot {
   display: flex;

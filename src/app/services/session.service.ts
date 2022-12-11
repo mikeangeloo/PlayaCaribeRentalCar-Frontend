@@ -135,8 +135,15 @@ export class SessionService {
     sessionStorage.removeItem(this.permissionToken);
     sessionStorage.removeItem(this.levelScopeKey);
     this.logged$.next(false);
+    this.flushSubjectsSession();
     // Redireccionar
     this.navCtrl.navigateRoot(['/login']);
+  }
+
+  flushSubjectsSession() {
+    this.$profileData.next(null);
+    this.$roleLevelsScope.next(null);
+    this.logged$.next(null);
   }
 
   reloadPage() {
