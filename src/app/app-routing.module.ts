@@ -36,7 +36,7 @@ const routes: Routes = [
       {
         path: 'contratos',
         canActivate: [RolesScopeGuard],
-        data: {allowedLevels: [RoleLevelsEnum.ADMINISTRATOR, RoleLevelsEnum.MANAGAER]},
+        data: {allowedLevels: [RoleLevelsEnum.ADMINISTRATOR, RoleLevelsEnum.MANAGAER, RoleLevelsEnum.SALESAGENT]},
         loadChildren: () => import('./modules/contratos/contrato/contrato.module').then( m => m.ContratoPageModule)
       },
       {
