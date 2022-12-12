@@ -2731,7 +2731,10 @@ export class ContratoPage implements OnInit, AfterViewInit {
     this.sweetMsgServ.confirmRequest(mensaje).then(async (data) => {
       if (data.value) {
         await this.saveProcess(section);
-        await this.sendAndGeneratePDF();
+        setTimeout(async () => {
+          await this.sendAndGeneratePDF();
+        }, 500);
+
       }
     })
   }

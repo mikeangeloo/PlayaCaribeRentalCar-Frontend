@@ -1532,7 +1532,12 @@ export class ReservasFormComponent implements OnInit {
   async sendAndGeneratePDF() {
     this.spinner.show();
     this.contratosServ.flushReservaData();
-    this.contratosServ.sendAndGenerateReservaPDF(this.contract_id, this.idioma).subscribe(res => {
+    let sendPDFToClient = false;
+    let msgResponse = await this.sweetMsgServ.confirmRequest('¿Quieres enviar una copia del la reserva en PDF al cliente?', ' ');
+    if (msgResponse.value) {
+      sendPDFToClient = true;
+    }
+    this.contratosServ.sendAndGenerateReservaPDF(this.contract_id, this.idioma, sendPDFToClient).subscribe(res => {
       const url = URL.createObjectURL(res);
       this.dismiss(true);
       this.spinner.hide();
