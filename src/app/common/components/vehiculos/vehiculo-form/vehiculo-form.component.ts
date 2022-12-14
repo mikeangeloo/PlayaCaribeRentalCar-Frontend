@@ -84,7 +84,7 @@ export class VehiculoFormComponent implements OnInit {
 
       prox_km_servicio: [null],
       fecha_prox_servicio: [null],
-      cant_combustible: [null],
+      cant_combustible_anterior: [null],
       cap_tanque: [null],
       precio_renta: [null],
       activo: [null],
@@ -195,7 +195,7 @@ export class VehiculoFormComponent implements OnInit {
       version: (data && data.version) ? data.version : null,
       prox_km_servicio: (data && data.prox_km_servicio) ? data.prox_km_servicio : null,
       fecha_prox_servicio: (data && data.fecha_prox_servicio) ? data.fecha_prox_servicio : null,
-      cant_combustible: (data && data.cant_combustible) ? data.cant_combustible : null,
+      cant_combustible_anterior: (data && data.cant_combustible_anterior) ? data.cant_combustible_anterior : null,
       cap_tanque: (data && data.cap_tanque) ? data.cap_tanque : null,
       precio_renta: (data && data.precio_renta) ? data.precio_renta : null,
       activo: (data && data.activo) ? data.activo : 0,

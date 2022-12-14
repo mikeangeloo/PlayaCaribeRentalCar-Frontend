@@ -861,7 +861,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
   initRetornoForm(data?) {
     this.retornoDataForm = this.fb.group({
       cant_combustible_retorno: [(data && data.cant_combustible_retorno ? data.cant_combustible_retorno : null), Validators.required],
-      km_final: [(data && data.km_final ? data.km_final: null), [Validators.required, Validators.min(this.vf.km_inicial.value)]],
+      km_final: [(data && data.km_final ? data.km_final: null), [Validators.required, Validators.min(this.vehiculoForm?.controls.km_inicial.value)]],
       cargos_extras_retorno_ids: [(data && data.cargos_retorno_extras_ids ? data.cargos_retorno_extras_ids : null)],
       cargos_extras_retorno: [(data && data.cargos_retorno_extras ? data.cargos_retorno_extras : null)],
       frecuencia_extra: [(data && data.frecuencia_extra ? data.frecuencia_extra : null)],

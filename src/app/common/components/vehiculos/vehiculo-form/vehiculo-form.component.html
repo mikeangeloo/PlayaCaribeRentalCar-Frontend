@@ -223,7 +223,7 @@
                 <ion-col size="6">
                   <mat-form-field appearance="legacy">
                     <mat-label>Cantidad Combustible</mat-label>
-                    <mat-select formControlName="cant_combustible">
+                    <mat-select formControlName="cant_combustible_anterior">
                       <mat-option value="1/8">1/8</mat-option>
                       <mat-option value="2/8">2/8</mat-option>
                       <mat-option value="3/8">3/8</mat-option>
@@ -233,7 +233,7 @@
                       <mat-option value="7/8">7/8</mat-option>
                       <mat-option value="8/8">8/8</mat-option>
                     </mat-select>
-                    <mat-error *ngIf="vf.cant_combustible.errors?.required">Campo requerido</mat-error>
+                    <mat-error *ngIf="vf.cant_combustible_anterior.errors?.required">Campo requerido</mat-error>
                   </mat-form-field>
                 </ion-col>
 
