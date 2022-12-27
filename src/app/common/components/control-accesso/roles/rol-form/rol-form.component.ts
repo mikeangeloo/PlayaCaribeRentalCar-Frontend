@@ -1,8 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
-import {AreaTrabajoI} from "../../../../../interfaces/profile/area-trabajo.interface";
 import {ModalController} from "@ionic/angular";
-import {AreasTrabajoService} from "../../../../../services/areas-trabajo.service";
 import {GeneralService} from "../../../../../services/general.service";
 import {SweetMessagesService} from "../../../../../services/sweet-messages.service";
 import {ToastMessageService} from "../../../../../services/toast-message.service";
@@ -20,7 +18,6 @@ export class RolFormComponent implements OnInit {
   @Input() rol_id: number;
   public title: string;
   public rolForm: FormGroup;
-  public rolData: RoleI;
   constructor(
     public modalCtrl: ModalController,
     private fb: FormBuilder,

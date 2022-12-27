@@ -26,7 +26,7 @@
                 <ion-col size="6">
                   <mat-form-field appearance="legacy">
                     <mat-label>Rol</mat-label>
-                    <input matInput type="text" formControlName="rol">
+                    <input matInput type="text" formControlName="rol" maxlength="80" autocomplete="off">
                     <mat-error *ngIf="rf.rol.errors?.required">Campo requerido</mat-error>
                   </mat-form-field>
                 </ion-col>
@@ -42,7 +42,7 @@
                   </mat-form-field>
                 </ion-col>
               </ion-row>
-              <br />
+              <br/>
               <ion-button class="btn-shadow" color="secondary" expand="full" (click)="saveUpdate()">
                 Guardar
               </ion-button>

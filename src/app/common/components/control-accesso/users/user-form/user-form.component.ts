@@ -1,21 +1,16 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
-import {MarcasVehiculosI} from "../../../../../interfaces/catalogo-vehiculos/marcas-vehiculos.interface";
 import {ModalController} from "@ionic/angular";
-import {MarcasVehiculosService} from "../../../../../services/marcas-vehiculos.service";
 import {GeneralService} from "../../../../../services/general.service";
 import {SweetMessagesService} from "../../../../../services/sweet-messages.service";
 import {ToastMessageService} from "../../../../../services/toast-message.service";
 import {UsersI} from "../../../../../interfaces/users.interface";
-import {RoleI} from "../../../../../interfaces/profile/role.interface";
 import {AreaTrabajoI} from "../../../../../interfaces/profile/area-trabajo.interface";
 import {SucursalesI} from "../../../../../interfaces/sucursales.interface";
 import {UsersService} from "../../../../../services/users.service";
 import {RolesService} from "../../../../../services/roles.service";
 import {AreasTrabajoService} from "../../../../../services/areas-trabajo.service";
 import {SucursalesService} from "../../../../../services/sucursales.service";
-import {error} from "protractor";
-import {RoleLevelsTypes} from '../../../../../enums/role-levels.enum';
 
 @Component({
   selector: 'app-user-form',
@@ -30,7 +25,6 @@ export class UserFormComponent implements OnInit {
   public usuarioForm: FormGroup;
   public usuarioData: UsersI;
 
-  //public roles: RoleI[];
   public roles =  [
     {
       levelScope: 20,
@@ -66,7 +60,6 @@ export class UserFormComponent implements OnInit {
     this.usuarioForm = this.fb.group({
       id: [null],
       area_trabajo_id: [null, Validators.required],
-      //role_id: [null, Validators.required],
       nombre: [null, Validators.required],
       apellidos: [null, Validators.required],
       email: [null, Validators.required],
@@ -86,7 +79,6 @@ export class UserFormComponent implements OnInit {
   }
 
   ngOnInit() {
-    //this.loadRoles();
     this.loadAreasTrabajo();
     this.loadSucursales();
 
@@ -102,19 +94,6 @@ export class UserFormComponent implements OnInit {
     this.changePwdForm = this.fb.group({
       user_id: [this.usuario_id, Validators.required],
       password: [null, Validators.required]
-    })
-  }
-
-  /**
-   * @deprecated
-   * **/
-  loadRoles() {
-    this.roleServ.getActive().subscribe(res => {
-      if (res.ok === true) {
-        this.roles = res.roles;
-      }
-    }, error => {
-      console.log(error);
     })
   }
 
@@ -143,7 +122,6 @@ export class UserFormComponent implements OnInit {
     this.usuarioForm.setValue({
       id: (data && data.id) ? data.id : null,
       area_trabajo_id: (data && data.area_trabajo_id) ? data.area_trabajo_id : null,
-      //role_id: (data && data.role_id) ? data.role_id : null,
       nombre: (data && data.nombre) ? data.nombre : null,
       apellidos: (data && data.apellidos) ? data.apellidos : null,
       email: (data && data.email) ? data.email : null,

@@ -26,7 +26,7 @@
                 <ion-col size="6">
                   <mat-form-field appearance="legacy">
                     <mat-label>Nombre</mat-label>
-                    <input matInput type="text" formControlName="nombre">
+                    <input matInput type="text" formControlName="nombre" autocomplete="off" maxlength="80">
                     <mat-error *ngIf="uf.nombre.errors?.required">Campo requerido</mat-error>
                   </mat-form-field>
                 </ion-col>
@@ -34,7 +34,7 @@
                 <ion-col size="6">
                   <mat-form-field appearance="legacy">
                     <mat-label>Apellidos</mat-label>
-                    <input matInput type="text" formControlName="apellidos">
+                    <input matInput type="text" formControlName="apellidos" autocomplete="off" maxlength="80">
                     <mat-error *ngIf="uf.apellidos.errors?.required">Campo requerido</mat-error>
                   </mat-form-field>
                 </ion-col>
@@ -44,7 +44,7 @@
                 <ion-col size="6">
                   <mat-form-field appearance="legacy">
                     <mat-label>Email</mat-label>
-                    <input type="email" matInput formControlName="email">
+                    <input type="email" matInput formControlName="email" autocomplete="off" maxlength="80">
                     <mat-error *ngIf="uf.email.errors?.required">Campo requerido</mat-error>
                   </mat-form-field>
                 </ion-col>
@@ -52,7 +52,7 @@
                 <ion-col size="6">
                   <mat-form-field appearance="legacy">
                     <mat-label>Teléfono</mat-label>
-                    <input type="email" matInput formControlName="telefono">
+                    <input type="tel" matInput formControlName="telefono" autocomplete="off">
                     <mat-error *ngIf="uf.telefono.errors?.required">Campo requerido</mat-error>
                   </mat-form-field>
                 </ion-col>
@@ -62,23 +62,28 @@
                 <ion-col size="6">
                   <mat-form-field appearance="legacy">
                     <mat-label>UserName</mat-label>
-                    <input type="text" matInput formControlName="username">
+                    <input type="text" matInput formControlName="username" autocomplete="off" maxlength="80">
                     <mat-error *ngIf="uf.username.errors?.required">Campo requerido</mat-error>
                   </mat-form-field>
                 </ion-col>
 
                 <ion-col size="6" style="position: relative">
                   <div style="position: absolute; top: 0; right: 0; z-index: 999;">
-                    <ion-button size="small" color="success" (click)="showChangePwd(true)" *ngIf="enablePwdForm === false"><ion-icon name="reload-circle-sharp"></ion-icon></ion-button>
+                    <ion-button size="small" color="success" (click)="showChangePwd(true)"
+                                *ngIf="enablePwdForm === false">
+                      <ion-icon name="reload-circle-sharp"></ion-icon>
+                    </ion-button>
                     <div style="float: right;" *ngIf="enablePwdForm">
                       <ion-button size="small" color="primary" (click)="savePwdChange()">Cambiar</ion-button>
-                      <ion-button size="small" color="medium" (click)="showChangePwd(false)"><ion-icon name="close"></ion-icon></ion-button>
+                      <ion-button size="small" color="medium" (click)="showChangePwd(false)">
+                        <ion-icon name="close"></ion-icon>
+                      </ion-button>
                     </div>
                   </div>
 
                   <mat-form-field appearance="legacy" [ngClass]="{hide: enablePwdForm === true}">
                     <mat-label>Password</mat-label>
-                    <input type="email" matInput formControlName="password">
+                    <input type="password" matInput formControlName="password" maxlength="20">
                     <mat-error *ngIf="uf.password.errors?.required">Campo requerido</mat-error>
                   </mat-form-field>
 
@@ -86,7 +91,7 @@
                     <ion-col size="6">
                       <mat-form-field appearance="legacy">
                         <mat-label>Password</mat-label>
-                        <input type="email" matInput formControlName="password" autocomplete="off">
+                        <input type="password" matInput formControlName="password" autocomplete="off" maxlength="20">
                         <mat-error *ngIf="uf.password.errors?.required">Campo requerido</mat-error>
                       </mat-form-field>
                     </ion-col>
@@ -99,7 +104,8 @@
                   <mat-form-field appearance="legacy">
                     <mat-label>Sucursal</mat-label>
                     <mat-select formControlName="sucursal_id">
-                      <mat-option *ngFor="let sucursal of sucursales" [value]="sucursal.id">{{sucursal.nombre}}</mat-option>
+                      <mat-option *ngFor="let sucursal of sucursales"
+                                  [value]="sucursal.id">{{sucursal.nombre}}</mat-option>
                     </mat-select>
                     <mat-error *ngIf="uf.sucursal_id.errors?.required">Campo requerido</mat-error>
                   </mat-form-field>
@@ -137,7 +143,7 @@
                   </mat-form-field>
                 </ion-col>
               </ion-row>
-              <br />
+              <br/>
               <ion-button class="btn-shadow" color="secondary" expand="full" (click)="saveUpdate()">
                 Guardar
               </ion-button>

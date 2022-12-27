@@ -18,7 +18,6 @@ export class MarcaVehiculoFormComponent implements OnInit {
   @Input() marca_id: number;
   public title: string;
   public marcaForm: FormGroup;
-  public marcaData: MarcasVehiculosI;
   constructor(
     public modalCtrl: ModalController,
     private fb: FormBuilder,

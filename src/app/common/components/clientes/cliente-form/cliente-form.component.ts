@@ -1,13 +1,9 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
-import {HotelesI} from "../../../../interfaces/hoteles/hoteles.interface";
 import {ModalController} from "@ionic/angular";
-import {HotelesService} from "../../../../services/hoteles.service";
 import {GeneralService} from "../../../../services/general.service";
 import {SweetMessagesService} from "../../../../services/sweet-messages.service";
 import {ToastMessageService} from "../../../../services/toast-message.service";
-import {ComisionistasI} from "../../../../interfaces/comisionistas/comisionistas.interface";
-import {ComisionistaFormComponent} from "../../comisionistas/comisionista-form/comisionista-form.component";
 import {ClientesI} from "../../../../interfaces/clientes/clientes.interface";
 import {ClientesService} from "../../../../services/clientes.service";
 import {Months} from "../../../../interfaces/shared/months";
@@ -43,7 +39,6 @@ export class ClienteFormComponent implements OnInit {
     this.clienteForm = this.fb.group({
       id: [null],
       nombre: [null, Validators.required],
-      //apellidos: [null, Validators.required],
       telefono: [null, Validators.required],
       num_licencia: [null, Validators.required],
       licencia_mes: [null, Validators.required],
@@ -70,7 +65,6 @@ export class ClienteFormComponent implements OnInit {
     this.clienteForm.setValue({
       id: (data && data.id) ? data.id : null,
       nombre: (data && data.nombre) ? data.nombre : null,
-      //apellidos: (data && data.apellidos) ? data.apellidos : null,
       telefono: (data && data.telefono) ? data.telefono : null,
       num_licencia: (data && data.num_licencia) ? data.num_licencia : null,
       licencia_mes: (data && data.licencia_mes) ? data.licencia_mes : null,
@@ -124,7 +118,6 @@ export class ClienteFormComponent implements OnInit {
 
   async openTarjetaForm(_data?: CardI) {
     const pageEl: HTMLElement = document.querySelector('.ion-page');
-    //this.generalService.presentLoading();
     const modal = await this.modalCtr.create({
       component: TarjetaFormComponent,
       componentProps: {

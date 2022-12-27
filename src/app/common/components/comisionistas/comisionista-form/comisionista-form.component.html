@@ -26,14 +26,14 @@
                 <ion-col>
                   <mat-form-field appearance="legacy">
                     <mat-label>Nombre</mat-label>
-                    <input matInput type="text" formControlName="nombre">
+                    <input matInput type="text" formControlName="nombre" maxlength="80" autocomplete="off">
                     <mat-error *ngIf="cf.nombre.errors?.required">Campo requerido</mat-error>
                   </mat-form-field>
                 </ion-col>
                 <ion-col>
                   <mat-form-field appearance="legacy">
                     <mat-label>Apellidos</mat-label>
-                    <input matInput type="text" formControlName="apellidos">
+                    <input matInput type="text" formControlName="apellidos" maxlength="80" autocomplete="off">
                     <mat-error *ngIf="cf.apellidos.errors?.required">Campo requerido</mat-error>
                   </mat-form-field>
                 </ion-col>
@@ -43,14 +43,14 @@
                 <ion-col>
                   <mat-form-field appearance="legacy">
                     <mat-label>Tel. Contacto</mat-label>
-                    <input matInput type="text" formControlName="tel_contacto">
+                    <input matInput type="tel" formControlName="tel_contacto" autocomplete="off">
                     <mat-error *ngIf="cf.tel_contacto.errors?.required">Campo requerido</mat-error>
                   </mat-form-field>
                 </ion-col>
                 <ion-col>
                   <mat-form-field appearance="legacy">
                     <mat-label>Email</mat-label>
-                    <input matInput type="text" formControlName="email_contacto">
+                    <input matInput type="email" formControlName="email_contacto" autocomplete="off" maxlength="80">
                     <mat-error *ngIf="cf.email_contacto.errors?.required">Campo requerido</mat-error>
                   </mat-form-field>
                 </ion-col>

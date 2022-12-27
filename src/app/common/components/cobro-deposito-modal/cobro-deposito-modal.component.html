@@ -40,7 +40,7 @@
                 </td>
                 <td>
                   <div class="table-input">
-                    <input type="text" [value]="'$' + (cobranzaD?.c_monto | currency) + ' ' + cobranzaD?.moneda_cobrada" [readOnly]="true">
+                    <input type="text"  autocomplete="off" [value]="'$' + (cobranzaD?.c_monto | currency) + ' ' + cobranzaD?.moneda_cobrada" [readOnly]="true">
                     <p class="input-hint">Solo Lectura</p>
                   </div>
                   <div *ngIf="cobranzaD.moneda_cobrada !== 'MXN'">
@@ -64,7 +64,7 @@
                 </td>
                 <td>
                   <div class="table-input">
-                    <input type="text" autocomplete="off" [(ngModel)]="cobranzaD.cod_banco">
+                    <input type="text" autocomplete="off" maxlength="50" [(ngModel)]="cobranzaD.cod_banco">
                   </div>
                 </td>
               </tr>

@@ -26,7 +26,7 @@
                 <ion-col size="12">
                   <mat-form-field appearance="legacy">
                     <mat-label>Clase</mat-label>
-                    <input matInput type="text" formControlName="clase">
+                    <input matInput type="text" formControlName="clase" maxlength="100" autocomplete="off">
                     <mat-error *ngIf="cf.clase.errors?.required">Campo requerido</mat-error>
                   </mat-form-field>
                 </ion-col>

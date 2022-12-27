@@ -1,6 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
-import {MarcasVehiculosI} from "../../../../interfaces/catalogo-vehiculos/marcas-vehiculos.interface";
 import {ModalController} from "@ionic/angular";
 import {MarcasVehiculosService} from "../../../../services/marcas-vehiculos.service";
 import {GeneralService} from "../../../../services/general.service";
@@ -10,7 +9,6 @@ import {CategoriasVehiculosI} from "../../../../interfaces/catalogo-vehiculos/ca
 import {CategoriaVehiculosService} from "../../../../services/categoria-vehiculos.service";
 import { LayoutModalComponent } from '../layout-modal/layout-modal.component';
 import { DocDataTransfer } from 'src/app/interfaces/shared/doc-data-tranfer.interface';
-import { AddLayaoutModalComponent } from '../add-layaout-modal/add-layaout-modal.component';
 
 @Component({
   selector: 'app-categoria-vehiculos-form',
@@ -24,7 +22,6 @@ export class CategoriaVehiculosFormComponent implements OnInit {
   @Input() last_id: number;
   public title: string;
   public categoriaVehiculoForm: FormGroup;
-  public categoriaVehiculoData: CategoriasVehiculosI;
   public layoutSeleccionado: DocDataTransfer = null;
   public layout: DocDataTransfer = null;
   constructor(

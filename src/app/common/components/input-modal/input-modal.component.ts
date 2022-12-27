@@ -1,12 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {MarcasVehiculosI} from '../../../interfaces/catalogo-vehiculos/marcas-vehiculos.interface';
 import {ModalController} from '@ionic/angular';
-import {MarcasVehiculosService} from '../../../services/marcas-vehiculos.service';
-import {GeneralService} from '../../../services/general.service';
 import {SweetMessagesService} from '../../../services/sweet-messages.service';
-import {ToastMessageService} from '../../../services/toast-message.service';
-import {CobranzaTipo} from '../../../interfaces/cobranza/cobranza-prog.interface';
 import {TiposCambioI} from '../../../interfaces/configuracion/tipos-cambio';
 import {ConversionMonedaService} from '../../../services/conversion-moneda.service';
 
@@ -32,7 +26,6 @@ export class InputModalComponent implements OnInit {
   constructor(
     public modalCtrl: ModalController,
     private sweetMsg: SweetMessagesService,
-    private toastServ: ToastMessageService,
     public convMonedaServ: ConversionMonedaService
   ) {
   }

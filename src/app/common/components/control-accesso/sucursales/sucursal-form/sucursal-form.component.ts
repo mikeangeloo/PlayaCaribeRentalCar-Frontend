@@ -1,8 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
-import {HotelesI} from "../../../../../interfaces/hoteles/hoteles.interface";
 import {ModalController} from "@ionic/angular";
-import {HotelesService} from "../../../../../services/hoteles.service";
 import {GeneralService} from "../../../../../services/general.service";
 import {SweetMessagesService} from "../../../../../services/sweet-messages.service";
 import {ToastMessageService} from "../../../../../services/toast-message.service";
@@ -20,7 +18,6 @@ export class SucursalFormComponent implements OnInit {
   @Input() sucursal_id: number;
   public title: string;
   public sucursalForm: FormGroup;
-  public sucursalData: SucursalesI;
   constructor(
     public modalCtrl: ModalController,
     private fb: FormBuilder,

@@ -26,21 +26,21 @@
                 <ion-col size="12" size-md="4">
                   <mat-form-field appearance="legacy">
                     <mat-label>Nombre</mat-label>
-                    <input matInput type="text" formControlName="nombre">
+                    <input matInput type="text" formControlName="nombre" autocomplete="off" maxlength="80">
                     <mat-error *ngIf="tf.nombre.errors?.required">Campo requerido</mat-error>
                   </mat-form-field>
                 </ion-col>
                 <ion-col size="12" size-md="4">
                   <mat-form-field appearance="legacy">
                     <mat-label>Tipo</mat-label>
-                    <input matInput type="text" formControlName="tipo">
+                    <input matInput type="text" formControlName="tipo" autocomplete="off" maxlength="50">
                     <mat-error *ngIf="tf.tipo.errors?.required">Campo requerido</mat-error>
                   </mat-form-field>
                 </ion-col>
                 <ion-col size="12" size-md="4">
                   <mat-form-field appearance="legacy">
                     <mat-label>Precio</mat-label>
-                    <input matInput type="number" formControlName="precio">
+                    <input matInput type="number" formControlName="precio" autocomplete="off">
                     <mat-error *ngIf="tf.precio.errors?.required">Campo requerido</mat-error>
                   </mat-form-field>
                 </ion-col>
@@ -59,7 +59,7 @@
                   </mat-form-field>
                 </ion-col>
               </ion-row>
-              <br />
+              <br/>
               <ion-button class="btn-shadow" color="secondary" expand="full" (click)="saveUpdate()">
                 Guardar
               </ion-button>

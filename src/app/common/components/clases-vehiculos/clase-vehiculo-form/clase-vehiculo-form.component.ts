@@ -1,9 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {CategoriasVehiculosI} from '../../../../interfaces/catalogo-vehiculos/categorias-vehiculos.interface';
 import {ModalController} from '@ionic/angular';
-import {CategoriaVehiculosService} from '../../../../services/categoria-vehiculos.service';
-import {MarcasVehiculosService} from '../../../../services/marcas-vehiculos.service';
 import {GeneralService} from '../../../../services/general.service';
 import {SweetMessagesService} from '../../../../services/sweet-messages.service';
 import {ToastMessageService} from '../../../../services/toast-message.service';
@@ -21,7 +18,6 @@ export class ClaseVehiculoFormComponent implements OnInit {
   @Input() clase_vehiculo_id: number;
   public title: string;
   public claseVehiculoForm: FormGroup;
-  public claseVehiculoData: ClasesVehiculosI;
   constructor(
       public modalCtrl: ModalController,
       private fb: FormBuilder,

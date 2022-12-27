@@ -100,8 +100,6 @@ export class ComisionistaFormComponent implements OnInit {
     });
   }
   saveUpdate() {
-    // console.log(this.comisionistaForm.value);
-    // return;
     if (this.comisionistaForm.invalid) {
       this.sweetMsg.printStatus('Debe llenar los campos requeridos', 'warning');
       this.comisionistaForm.markAllAsTouched();
