@@ -87,7 +87,7 @@ export class CategoriaVehiculosFormComponent implements OnInit {
       this.categoriaVehiculoForm.markAllAsTouched();
       return;
     }
-    if (this.layoutSeleccionado == null ) {
+    if (this.layoutSeleccionado == null && !this.layout ) {
       this.sweetMsg.printStatus('Debe seleccionar o subir imagen para la nueva categoría', 'warning');
       return;
     }
@@ -105,6 +105,7 @@ export class CategoriaVehiculosFormComponent implements OnInit {
       }
     }, error => {
       console.log(error);
+      this.sweetMsg.printStatusArray(error.error.errors, 'error');
       this.generalServ.dismissLoading();
     });
   }
