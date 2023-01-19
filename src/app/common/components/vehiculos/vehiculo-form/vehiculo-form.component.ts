@@ -122,20 +122,28 @@ export class VehiculoFormComponent implements OnInit {
     return this.polizas.filter(no_poliza => no_poliza.no_poliza.toLowerCase().includes(filterValue));
   }
 
-  loadMarcasV() {
+  loadMarcasV(newMarca?: boolean) {
+    let marcaSize = this.marcasV ? this.marcasV.length : 0;
     this.marcasServ.getActive().subscribe(res => {
       if (res.ok === true) {
         this.marcasV = res.marcas;
+        if (newMarca && this.vf) {
+          this.vf.marca_id.patchValue(this.marcasV[this.marcasV.length - 1].id)
+        }
       }
     }, error => {
       console.log(error);
     })
   }
 
-  loadCategoriasV() {
+  loadCategoriasV(newCat?: boolean) {
+    let catSize = this.categoriasV ? this.categoriasV.length : 0;
     this.categoriaVehiculoServ.getActive().subscribe(res => {
       if (res.ok === true) {
         this.categoriasV = res.categorias;
+        if(newCat && this.vf) {
+          this.vf.categoria_vehiculo_id.patchValue(this.categoriasV[this.categoriasV.length - 1].id);
+        }
       }
     }, error =>  {
       console.log(error);
@@ -278,7 +286,7 @@ export class VehiculoFormComponent implements OnInit {
         this.generalServ.dismissLoading();
         if (res.ok == true) {
           this.toastServ.presentToast('success', res.message, 'top');
-          this.loadMarcasV();
+          this.loadMarcasV(true);
           this.newMarcaV = false;
         }
       }, error => {
@@ -303,19 +311,26 @@ export class VehiculoFormComponent implements OnInit {
     if (_data) {
       this.generalServ.presentLoading();
       let payload = {
-        categoria: _data
+        categoria: {
+          categoria: _data
+        }
       }
       this.categoriaVehiculoServ.saveUpdate(payload).subscribe(res => {
         this.generalServ.dismissLoading();
         if (res.ok == true) {
           this.toastServ.presentToast('success', res.message, 'top');
-          this.loadCategoriasV();
+          this.loadCategoriasV(true);
           this.newCatV = false;
         }
       }, error => {
         console.log(error);
         this.generalServ.dismissLoading();
-        this.toastServ.presentToast('error', error.error.errors[0], 'top');
+        if(error.status === 500) {
+          this.toastServ.presentToast('error','Error al guardar - 500', 'top');
+        } else {
+          this.toastServ.presentToast('error', error.error.errors[0], 'top');
+        }
+
         this.newCatV = false;
       });
     }
