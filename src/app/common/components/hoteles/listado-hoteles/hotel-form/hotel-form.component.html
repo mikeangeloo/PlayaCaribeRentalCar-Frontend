@@ -80,12 +80,28 @@
                 </ion-col>
               </ion-row>
               <ion-row class="ion-no-padding ion-no-margin">
-                <ion-col size="12">
+                <ion-col size="fill">
                   <mat-checkbox
                     class="example-margin"
                     [labelPosition]="'after'"
                     formControlName="paga_cupon"
                   > ¿Puede aplicar cupón?
+                  </mat-checkbox>
+                </ion-col>
+                <ion-col size="fill">
+                  <mat-checkbox
+                    class="example-margin"
+                    [labelPosition]="'after'"
+                    formControlName="activar_descuentos"
+                  > ¿Puede aplicar aplicar descuentos?
+                  </mat-checkbox>
+                </ion-col>
+                <ion-col size="fill">
+                  <mat-checkbox
+                    class="example-margin"
+                    [labelPosition]="'after'"
+                    formControlName="acceso_externo"
+                  > Activar acceso externo
                   </mat-checkbox>
                 </ion-col>
               </ion-row>
@@ -111,13 +127,37 @@
             <tbody>
             <ng-container *ngFor="let tHotel of tarifasHotelPayload">
               <tr>
-                <td>{{tHotel.clase}}</td>
+                <td>
+                  <ng-container *ngIf="ef.activar_descuentos.value === true && tHotel.tarifas_apollo?.length > 0">
+                    <ion-button size="small" color="light" *ngIf="!tHotel.view_frequency" (click)="viewFrequencyDiscount(tHotel, true)">
+                      <ion-icon color="secondary" name="pricetag-outline"></ion-icon>
+                      <ion-icon color="secondary" slot="icon-only" name="caret-down"></ion-icon>
+                    </ion-button>
+                    <ion-button size="small" color="light" *ngIf="tHotel.view_frequency" (click)="viewFrequencyDiscount(tHotel, false)">
+                      <ion-icon color="secondary" name="pricetag-outline"></ion-icon>
+                      <ion-icon color="secondary" slot="icon-only" name="caret-up"></ion-icon>
+                    </ion-button>
+                    &nbsp;
+                  </ng-container>
+
+                  {{tHotel.clase}}
+                </td>
                 <td>
                   <div class="table-input">
-                    <input type="text" autocomplete="off" [ngModel]="tHotel.precio | currency"
+                    <input type="text" autocomplete="off" [ngModel]="tHotel.precio_renta | currency"
                            [ngModelOptions]="{updateOn:'blur'}"
                            (ngModelChange)="captureFinalPrice(tHotel, $event)">
                   </div>
+                </td>
+              </tr>
+              <tr *ngIf="tHotel.view_frequency && tHotel.tarifas_apollo?.length > 0">
+                <td colspan="5">
+                  <app-frecuencia-conf [modelo]="'tarifas_hoteles'"
+                                       [modelo_id]="tHotel.id"
+                                       [precio_base]="tHotel.precio_renta"
+                                       [tarifaApolloPayload]="tHotel.tarifas_apollo ? tHotel.tarifas_apollo : null"
+                                       [isResume]="true"
+                  ></app-frecuencia-conf>
                 </td>
               </tr>
               <tr *ngIf="tHotel.errors && tHotel.errors.length > 0" class="error-feed">

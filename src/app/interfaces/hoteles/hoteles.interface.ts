@@ -1,6 +1,5 @@
 import {TarifaHotelesI} from '../tarifas/tarifa-hoteles.interface';
 
-
 export interface HotelesI
 {
   id: number;
@@ -14,4 +13,5 @@ export interface HotelesI
   paga_cupon?: boolean;
 
   tarifas?: TarifaHotelesI[];
+
 }

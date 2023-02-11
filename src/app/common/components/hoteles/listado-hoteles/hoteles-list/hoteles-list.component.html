@@ -9,9 +9,12 @@
           <ion-card-content>
 
             <ion-row>
-              <ion-col size="12" size-md="2" class="ion-align-self-center" *ngIf="isModal === false || !isModal">
+              <ion-col size="12" size-md="fill" class="ion-align-self-center" *ngIf="isModal === false || !isModal">
 <!--                <button mat-raised-button color="primary">Nuevo</button>-->
                 <ion-button color="primary" class="btn-shadow no-contrast" (click)="openEmpresaForm()">Nuevo</ion-button>
+              </ion-col>
+              <ion-col size="12" size-md="fill" class="ion-align-self-center" *ngIf="isModal === false || !isModal">
+                <ion-button color="primary" class="btn-shadow no-contrast" (click)="openTarifasApolloConfForm()">Ajustar Porcentajes</ion-button>
               </ion-col>
               <ion-col size="12" size-md="10">
                 <!--<div class="input-group mb-3 filter-form">

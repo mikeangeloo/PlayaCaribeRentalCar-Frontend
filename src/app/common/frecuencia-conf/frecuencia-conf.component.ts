@@ -9,11 +9,13 @@ import {TarifasApolloConfService} from '../../services/tarifas-apollo-conf.servi
 })
 export class FrecuenciaConfComponent implements OnInit, OnChanges {
 
-  @Input() modelo: 'vehiculo' | 'tarifas_categorias';
+  @Input() modelo: 'vehiculo' | 'tarifas_categorias' | 'tarifas_hoteles';
   @Input() modelo_id: number;
   @Input() precio_base: number;
 
   @Input() tarifaApolloPayload: TarifaApolloI[];
+  @Input() isResume: boolean = false;
+
   applyTarifasRules = false;
   constructor(
     private tarifasApolloConfSer: TarifasApolloConfService

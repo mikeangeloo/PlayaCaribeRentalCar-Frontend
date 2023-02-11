@@ -2016,15 +2016,15 @@ export class ContratoPage implements OnInit, AfterViewInit {
       console.log('setVehiculoClaseData -->', _clases);
       if (_clases) {
         this.gf.vehiculo_clase.patchValue(_clases.clase);
-        this.gf.vehiculo_clase_precio.patchValue(_clases.precio);
+        this.gf.vehiculo_clase_precio.patchValue(_clases.precio_renta);
         this.gf.precio_unitario_inicial.patchValue(null); // TODO: agregar precio unitario al escoger vehiculo data
-        this.gf.precio_unitario_final.patchValue(_clases.precio);
+        this.gf.precio_unitario_final.patchValue(_clases.precio_renta);
 
         this.gf.tarifa_modelo.patchValue(ModelsEnum.TARIFASHOTEL);
         this.gf.tarifa_modelo_id.patchValue(_clases.id);
         this.gf.tarifa_apollo_id.patchValue(null);
         this.gf.tarifa_modelo_label.patchValue(_clases.clase);
-        this.gf.tarifa_modelo_precio.patchValue(_clases.precio);
+        this.gf.tarifa_modelo_precio.patchValue(_clases.precio_renta);
         this.gf.tarifa_modelo_obj.patchValue(_clases);
 
         if (withInitRules === true) {

@@ -45,7 +45,9 @@ export class HotelFormComponent implements OnInit {
       direccion: [null, Validators.required],
       tel_contacto: [null, Validators.required],
       activo: [null],
-      paga_cupon: [null]
+      paga_cupon: [null],
+      activar_descuentos: [null],
+      acceso_externo: [null]
     });
   }
 
@@ -72,6 +74,8 @@ export class HotelFormComponent implements OnInit {
       tel_contacto: (data && data.tel_contacto) ? data.tel_contacto : null,
       activo: (data && data.activo) ? data.activo : 0,
       paga_cupon: (data && data.paga_cupon) ? data.paga_cupon : 0,
+      activar_descuentos: (data && data.activar_descuentos) ? data.activar_descuentos : 0,
+      acceso_externo: (data && data.acceso_externo) ? data.acceso_externo : 0,
     });
     this.hotelForm.controls.activo.disable();
   }
@@ -89,7 +93,7 @@ export class HotelFormComponent implements OnInit {
         activo: true,
         clase_id: this.clasesVehiculos[i].id,
         clase: this.clasesVehiculos[i].clase,
-        precio: null,
+        precio_renta: null,
         id: null,
         errors: []
       });
@@ -124,8 +128,8 @@ export class HotelFormComponent implements OnInit {
     }
   }
 
-  captureFinalPrice(tarifaHotel, event) {
-    tarifaHotel.precio =  event.replace(/[$,]/g, "");
+  captureFinalPrice(tarifaHotel: TarifaHotelesI, event) {
+    tarifaHotel.precio_renta =  event.replace(/[$,]/g, "");
     this.reviewTarifaCapture();
   }
 
@@ -133,7 +137,7 @@ export class HotelFormComponent implements OnInit {
     let _haveErrors;
     if (this.tarifasHotelPayload && this.tarifasHotelPayload.length > 0) {
       for (let i = 0; i < this.tarifasHotelPayload.length; i++) {
-        if (!this.tarifasHotelPayload[i].precio || this.tarifasHotelPayload[i].precio == 0) {
+        if (!this.tarifasHotelPayload[i].precio_renta || this.tarifasHotelPayload[i].precio_renta == 0) {
           if (!this.tarifasHotelPayload[i].errors.find(x => x === 'Debe indicar un precio valído')) {
             this.tarifasHotelPayload[i].errors.push('Debe indicar un precio valído');
           }
@@ -174,6 +178,7 @@ export class HotelFormComponent implements OnInit {
     }, error => {
       console.log(error);
       this.generalServ.dismissLoading();
+      this.sweetMsg.printStatusArray(error.error.errors, 'error')
     });
   }
 
@@ -181,6 +186,10 @@ export class HotelFormComponent implements OnInit {
     this.modalCtrl.dismiss({
       reload
     });
+  }
+
+  viewFrequencyDiscount(tHotel: TarifaHotelesI, view: boolean) {
+    tHotel.view_frequency = view
   }
 
   /**
