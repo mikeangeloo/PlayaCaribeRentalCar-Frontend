@@ -47,9 +47,9 @@ export class ContratosService {
     }));
   }
 
-  public sendAndGenerateReservaPDF(_id, idioma: string) {
+  public sendAndGenerateReservaPDF(_id, idioma: string, sendMailToClient: boolean) {
     // @ts-ignore
-    return this.httpClient.get<any>(`${this.dashURL}/reservas/pdf/${_id}/${idioma}`, {responseType: 'blob'}).pipe(map(response => {
+    return this.httpClient.get<any>(`${this.dashURL}/reservas/pdf/${_id}/${idioma}/${sendMailToClient}`, {responseType: 'blob'}).pipe(map(response => {
       return response;
     }));
   }

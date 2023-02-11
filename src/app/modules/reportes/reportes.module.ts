@@ -10,13 +10,23 @@ import { ReportesRoutingModule } from './reportes-routing.module';
 import { EstatusVehiculosComponent } from './estatus-vehiculos/estatus-vehiculos.component';
 import { MantenimientoVehiculosComponent } from './mantenimiento-vehiculos/mantenimiento-vehiculos.component';
 import { ExedenteKilometrajeGasolinaComponent } from './exedente-kilometraje-gasolina/exedente-kilometraje-gasolina.component';
+import { PolizasSegurosComponent } from './polizas-seguros/polizas-seguros.component';
+import {DetallePagosComponent} from './detalle-pagos/detalle-pagos.component';
+import {RentasPorVehiculoComponent} from './rentas-por-vehiculo/rentas-por-vehiculo.component';
+import {RentasPorComisionistasComponent} from './rentas-por-comisionistas/rentas-por-comisionistas.component';
+import {ReporteGeneralComponent} from './reporte-general/reporte-general.component';
 
 
 @NgModule({
   declarations: [
     EstatusVehiculosComponent,
     MantenimientoVehiculosComponent,
-    ExedenteKilometrajeGasolinaComponent
+    ExedenteKilometrajeGasolinaComponent,
+    PolizasSegurosComponent,
+    DetallePagosComponent,
+    RentasPorVehiculoComponent,
+    RentasPorComisionistasComponent,
+    ReporteGeneralComponent
   ],
   imports: [
     CommonModule,

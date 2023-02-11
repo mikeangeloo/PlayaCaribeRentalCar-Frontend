@@ -1,4 +1,4 @@
-import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
+import {CUSTOM_ELEMENTS_SCHEMA, DEFAULT_CURRENCY_CODE, LOCALE_ID, NgModule} from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouteReuseStrategy } from '@angular/router';
 
@@ -13,6 +13,15 @@ import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
 import {NgxMaterialTimepickerModule} from "ngx-material-timepicker";
 import { NgxSpinnerModule } from "ngx-spinner";
+
+import locateESMX from '@angular/common/locales/es-MX'
+import {registerLocaleData} from '@angular/common';
+import {AppCommonModule} from './common/common.module';
+import {DirectivesModule} from './directives/directives.module';
+
+
+registerLocaleData(locateESMX, 'es-MX')
+
 @NgModule({
   declarations: [
     AppComponent
@@ -34,6 +43,8 @@ import { NgxSpinnerModule } from "ngx-spinner";
     }),
     NgxMaterialTimepickerModule,
     NgxSpinnerModule,
+    AppCommonModule,
+    DirectivesModule,
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   providers: [
@@ -42,9 +53,13 @@ import { NgxSpinnerModule } from "ngx-spinner";
       useClass: IonicRouteStrategy,
     },
     { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
+    {
+      provide: LOCALE_ID, useValue: 'es-MX'
+    },
+    { provide: DEFAULT_CURRENCY_CODE, useValue: '' },
   ],
   bootstrap: [
     AppComponent
-  ],
+  ]
 })
 export class AppModule {}

@@ -1,12 +1,13 @@
-import { NgModule } from '@angular/core';
-import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
-import {AuthGuard} from "./guards/auth.guard";
-import { VehiculosC } from './interfaces/catalogo-vehiculos/vehiculos.interface';
+import {NgModule} from '@angular/core';
+import {PreloadAllModules, RouterModule, Routes} from '@angular/router';
+import {AuthGuard} from './guards/auth.guard';
+import {RolesScopeGuard} from './guards/roles-scope.guard';
+import {RoleLevelsEnum} from './enums/role-levels.enum';
 
 const routes: Routes = [
   {
     path: '',
-    redirectTo: 'dashboard',
+    redirectTo: 'welcome',
     pathMatch: 'full'
   },
   {
@@ -23,95 +24,122 @@ const routes: Routes = [
     canActivateChild: [AuthGuard],
     children: [
       {
+        path: 'welcome',
+        loadChildren: () => import('./welcome/welcome.module').then(m => m.WelcomePageModule)
+      },
+      {
         path: 'dashboard',
+        canActivate: [RolesScopeGuard],
+        data: {allowedLevels: [RoleLevelsEnum.ADMINISTRATOR]},
         loadChildren: () => import('./home/home.module').then( m => m.HomePageModule)
       },
       {
         path: 'contratos',
+        canActivate: [RolesScopeGuard],
+        data: {allowedLevels: [RoleLevelsEnum.ADMINISTRATOR, RoleLevelsEnum.MANAGAER, RoleLevelsEnum.SALESAGENT]},
         loadChildren: () => import('./modules/contratos/contrato/contrato.module').then( m => m.ContratoPageModule)
       },
       {
         path: 'vehiculos/list',
+        canActivate: [RolesScopeGuard],
+        data: {allowedLevels: [RoleLevelsEnum.ADMINISTRATOR, RoleLevelsEnum.MANAGAER, RoleLevelsEnum.SALESAGENT]},
         loadChildren: () => import('./modules/vehiculos/listado-vehiculos/listado-vehiculos.module').then(m=> m.ListadoVehiculosPageModule)
       },
       // region REPORTES
       {
         path: 'reportes',
+        canActivate: [RolesScopeGuard],
+        data: {allowedLevels: [RoleLevelsEnum.ADMINISTRATOR, RoleLevelsEnum.MANAGAER]},
         loadChildren: () => import('./modules/reportes/reportes.module').then(m => m.ReportesModule)
       },
       // endregion
-      //region ADMINISTRACION
 
+      //region ADMINISTRACION
+      {
+        path: 'administracion',
+        canActivate: [RolesScopeGuard],
+        data: {allowedLevels: [RoleLevelsEnum.ADMINISTRATOR, RoleLevelsEnum.MANAGAER]},
+        children: [
           //region CATALOGO VEHICULOS
           {
-            path: 'administracion/catalogo-vehiculos/listado-vehiculos',
+            path: 'catalogo-vehiculos/listado-vehiculos',
             loadChildren: () => import('./modules/catalogo-vehiculos/vehiculos/vehiculos.module').then(m => m.VehiculosPageModule)
           },
           {
-            path: 'administracion/catalogo-vehiculos/categorias-vehiculos',
+            path: 'catalogo-vehiculos/categorias-vehiculos',
             loadChildren: () => import('./modules/catalogo-vehiculos/categorias-vehiculos/categorias-vehiculos.module').then(m => m.CategoriasVehiculosPageModule)
           },
           {
-            path: 'administracion/catalogo-vehiculos/marcas-vehiculos',
+            path: 'catalogo-vehiculos/marcas-vehiculos',
             loadChildren: () => import('./modules/catalogo-vehiculos/marcas-vehiculos/marcas-vehiculos.module').then(m => m.MarcasVehiculosPageModule)
           },
           {
-            path: 'administracion/catalogo-vehiculos/clases-vehiculos',
+            path: 'catalogo-vehiculos/clases-vehiculos',
             loadChildren: () => import('./modules/catalogo-vehiculos/clases-vehiculos/clases-vehiculos.module').then(m => m.ClasesVehiculosPageModule)
+          },
+          {
+            path: 'catalogo-vehiculos/polizas',
+            loadChildren: () => import('./modules/polizas/polizas.module').then( m => m.PolizasPageModule)
           },
           //endregion
 
           //region CONTROL ACCESSO
           {
-            path: 'administracion/control-acceso/listado-usuarios',
+            path: 'control-acceso/listado-usuarios',
             loadChildren: () => import('./modules/control-acceso/users/users.module').then(m => m.UsersPageModule)
           },
           {
-            path: 'administracion/control-acceso/listado-sucursales',
+            path: 'control-acceso/listado-sucursales',
             loadChildren: () => import('./modules/control-acceso/sucursales/sucursales.module').then(m => m.SucursalesPageModule)
           },
           {
-            path: 'administracion/control-acceso/listado-roles',
+            path: 'control-acceso/listado-roles',
             loadChildren: () => import('./modules/control-acceso/roles/roles.module').then(m => m.RolesPageModule)
           },
           {
-            path: 'administracion/control-acceso/listado-areas-trabajo',
+            path: 'control-acceso/listado-areas-trabajo',
             loadChildren: () => import('./modules/control-acceso/areas-trabajo/areas-trabajo.module').then(m => m.AreasTrabajoPageModule)
           },
           //endregion
 
           //region HOTELES
           {
-            path: 'administracion/hoteles/listado-hoteles',
+            path: 'hoteles/listado-hoteles',
             loadChildren: () => import('./modules/hoteles/listado-hoteles/listado-hoteles.module').then(m => m.ListadoHotelesPageModule)
           },
           //endregion
 
           //#region COMISIONISTAS
           {
-            path: 'administracion/comisionistas/listado-comisionistas',
+            path: 'comisionistas/listado-comisionistas',
             loadChildren: () => import('./modules/comisionistas/comisionistas.module').then(m => m.ComisionistasPageModule)
           },
           //#endregion
 
           //region CLIENTES
           {
-            path: 'administracion/clientes/listado-clientes',
+            path: 'clientes/listado-clientes',
             loadChildren: () => import('./modules/clientes/listado-clientes/listado-clientes.module').then( m => m.ListadoClientesPageModule)
           },
           //endregion
 
           //region CONFIGURACION
           {
-            path: 'administracion/catalogos',
+            path: 'catalogos',
             loadChildren: () => import('./modules/configuracion/configuracion.module').then( m => m.ConfiguracionModule)
           },
-         //endregion
-
+          //endregion
+        ]
+      }
       //endregion
 
     ]
   },
+  {
+    path: 'welcome',
+    loadChildren: () => import('./welcome/welcome.module').then( m => m.WelcomePageModule)
+  },
+
 
 ];
 

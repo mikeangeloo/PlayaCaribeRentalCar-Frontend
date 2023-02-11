@@ -1,0 +1,137 @@
+$cols-sm: 3;
+$cols-md: 8;
+$cols-lg: 14;
+
+.table-container, .footer-tables {
+
+  table {
+    overflow: auto;
+    width: 120%;
+    text-align: center;
+    display: grid;
+
+    @media (min-width: 1380px) {
+      display: block;
+      width: 100%;
+      .mat-header-row {
+        display: table-row;
+      }
+    }
+
+    .mat-focus-indicator {
+      position: initial !important;
+    }
+    .mat-sort-header-arrow {
+      position: absolute !important;
+      right: 0 !important;
+    }
+  }
+  th.mat-header-cell {
+    border: none;
+  }
+  td.mat-cell {
+    font-size: 12px;
+  }
+  .mat-header-row {
+    display: flex;
+    align-items: center;
+    background: #e8c58f42 !important;
+    th {
+      color: var(--ion-color-primary) !important;
+    }
+
+  }
+  .mat-header-row, .mat-row {
+    justify-content: space-between;
+  }
+
+  overflow: scroll;
+
+  th, td {
+    &:first-of-type {
+      padding-left: 0rem;
+      max-width: calc(100vw / #{$cols-sm});
+      width: calc(100vw / #{$cols-sm});
+
+      @media (min-width: 576px) {
+        max-width: calc(100vw / #{$cols-md});
+        width: calc(100vw / #{$cols-md});
+      }
+
+      @media (min-width: 992px) {
+        max-width: calc(100vw / #{$cols-lg});
+        width: calc(100vw / #{$cols-lg});
+      }
+    }
+    justify-content: center !important;
+    overflow: inherit;
+    max-width: calc(100vw / #{$cols-sm});
+    width: calc(100vw / #{$cols-sm});
+
+    @media (min-width: 576px) {
+      max-width: calc(100vw / #{$cols-md});
+      width: calc(100vw / #{$cols-md});
+    }
+
+    @media (min-width: 992px) {
+      max-width: calc(100vw / #{$cols-lg});
+      width: calc(100vw / #{$cols-lg});
+    }
+    //word-break: break-all;
+    text-align: center;
+    padding: 0;
+  }
+  mat-footer-cell{
+    justify-content: center;
+  }
+
+  th {
+
+    padding-left: 1rem;
+
+    ::ng-deep {
+      .mat-sort-header-container {
+        justify-content: center !important;
+      }
+    }
+
+  }
+
+  .column {
+    width: 90%;
+    margin: 0 auto;
+    p {
+      margin: 0;
+      font-size: 12px;
+    }
+  }
+
+
+  tr.example-detail-row {
+    height: 0;
+  }
+
+  tr.example-element-row:not(.example-expanded-row):hover {
+    border: 2px dotted #ffffff
+  }
+
+  tr.example-element-row:not(.example-expanded-row):active {
+    background: #0000000a;
+  }
+
+  .example-element-row td {
+    border-bottom-width: 0;
+
+  }
+
+  .example-element-detail {
+    overflow: hidden;
+    display: flex;
+    background: #c4c0c036;
+  }
+
+  .with-expanded-info {
+    text-align: left !important;
+  }
+}
+

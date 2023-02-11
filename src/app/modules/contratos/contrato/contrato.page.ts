@@ -7,7 +7,7 @@ import {CardI} from '../../../interfaces/cards/card.interface';
 import {TarjetaFormComponent} from '../../../common/components/tarjetas/tarjeta-form/tarjeta-form.component';
 import {ActionSheetController, AlertController, ModalController} from '@ionic/angular';
 import {MultiTableFilterComponent} from '../../../common/components/multi-table-filter/multi-table-filter.component';
-import {FormBuilder, FormGroup, Validator, Validators} from '@angular/forms';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {DateConv} from '../../../helpers/date-conv';
 import {SessionService} from '../../../services/session.service';
 import {SucursalesI} from '../../../interfaces/sucursales.interface';
@@ -33,8 +33,8 @@ import {ModelsEnum} from '../../../enums/models.enum';
 import {ToastMessageService} from '../../../services/toast-message.service';
 import {UbicacionesI} from '../../../interfaces/configuracion/ubicaciones.interface';
 import {UbicacionesService} from '../../../services/ubicaciones.service';
-import {map, Observable, single, startWith} from 'rxjs';
-import {CobranzaProgI} from '../../../interfaces/cobranza/cobranza-prog.interface';
+import {map, Observable, startWith} from 'rxjs';
+import {CobranzaProgI, CobranzaTipo} from '../../../interfaces/cobranza/cobranza-prog.interface';
 import {CobranzaService} from '../../../services/cobranza.service';
 import {TarifasCategoriasI} from '../../../interfaces/configuracion/tarifas-categorias.interface';
 import {TarifasCategoriasService} from '../../../services/tarifas-categorias.service';
@@ -42,16 +42,24 @@ import {CobranzaTipoE} from '../../../enums/cobranza-tipo.enum';
 import {InputModalComponent} from '../../../common/components/input-modal/input-modal.component';
 import {DragObjProperties} from '../../../common/draggable-resizable/draggable-resizable.component';
 import {ModelosDocsComponent} from '../../../common/components/modelos-docs/modelos-docs.component';
-import {ModalDragElementDetailsComponent} from '../../../common/components/modal-drag-element-details/modal-drag-element-details.component';
+import {
+  ModalDragElementDetailsComponent
+} from '../../../common/components/modal-drag-element-details/modal-drag-element-details.component';
 import {CheckListTypeEnum} from '../../../enums/check-list-type.enum';
 import {NotasService} from '../../../services/notas.service';
 import {CheckListService} from '../../../services/check-list.service';
-import { SignatureCaptureComponent } from 'src/app/common/components/signature-capture/signature-capture.component';
+import {SignatureCaptureComponent} from 'src/app/common/components/signature-capture/signature-capture.component';
 import html2canvas from 'html2canvas';
-import { CargosExtrasI } from 'src/app/interfaces/configuracion/cargos-extras.interface';
-import { CargosRetornoExtrasService } from 'src/app/services/cargos-retorno-extras.service';
-import { NgxSpinnerService } from "ngx-spinner";
-import { ActivatedRoute, Router } from '@angular/router';
+import {CargosExtraI} from 'src/app/interfaces/configuracion/cargos-extras.interface';
+import {CargosRetornoExtrasService} from 'src/app/services/cargos-retorno-extras.service';
+import {NgxSpinnerService} from 'ngx-spinner';
+import {ActivatedRoute, Router} from '@angular/router';
+import {VehiculosStatusE} from '../../../enums/vehiculos-status.enum';
+import {
+  CobroDepositoModalComponent
+} from '../../../common/components/cobro-deposito-modal/cobro-deposito-modal.component';
+import {CategoriaVehiculosService} from '../../../services/categoria-vehiculos.service';
+
 
 @Component({
   selector: 'app-contrato',
@@ -182,6 +190,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
   dragObjs: DragObjProperties[] = [];
   selectedDragObj: DragObjProperties;
   vehicleOutlineBackground: string;
+  externalLayoutPresent: boolean;
   checkListForm: FormGroup;
   public check_list_img;
   //#endregion
@@ -196,7 +205,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
   retornoDataForm: FormGroup;
   cargos_extras_toggle = false;
   frecuencia_extras_toggle = false;
-  cargosExtras: CargosExtrasI[];
+  cargosExtras: CargosExtraI[];
   extraFrecuency: number;
   public cobranzaRetornoI: CobranzaCalcI[] = [];
 
@@ -233,6 +242,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
     public ubicacionesServ: UbicacionesService,
     public cobranzaServ: CobranzaService,
     public tarifasCatServ: TarifasCategoriasService,
+    public categoriaVehiculoServ: CategoriaVehiculosService,
     public actionSheetController: ActionSheetController,
     public alertController: AlertController,
     public notasServ: NotasService,
@@ -309,17 +319,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
     //await this.reloadAll();
 
-    this.exitPlacesOptions$ = this.gf.ub_salida_id.valueChanges.pipe(
-        startWith(''),
-        map(value => (typeof value === 'string' ? value: value.alias)),
-        map(alias => (alias ? this._filterUbicacion(alias): this.ubicaciones.slice())),
-    );
 
-    this.returnPlacesOptions$ = this.gf.ub_retorno_id.valueChanges.pipe(
-        startWith(''),
-        map(value => (typeof value === 'string' ? value: value.alias)),
-        map(alias => (alias ? this._filterUbicacion(alias): this.ubicaciones.slice())),
-    );
 
   }
 
@@ -401,18 +401,33 @@ export class ContratoPage implements OnInit, AfterViewInit {
               this.initGeneralForm();
             }
 
+            // Si tenemos vehiculoId pasado desde routing
+            let vehiculoIdRouting = this.route.snapshot.paramMap.get('vehicle_id')
             let _datosVehiculo = this.contractData.etapas_guardadas.find(x => x === 'datos_vehiculo');
-            if (_datosVehiculo) {
+
+            if (_datosVehiculo) { // evaluamos de acuerdo a la etapa de guardada en contratos
               console.log('datos_vehiculo');
               if (this.contractData.vehiculo || this.contractData.estatus === ContratosStatusE.RESERVA) {
                 this.step = 3;
                 this.vehiculoData = this.contractData.vehiculo;
-                this.vehicleOutlineBackground = this.vehiculoData.categoria.categoria.toLowerCase();
+                this.setVehiculoBackgroundLayout(this.vehiculoData.categoria_vehiculo_id, this.vehiculoData.categoria.categoria);
+                //this.vehicleOutlineBackground = this.vehiculoData.categoria.categoria.toLowerCase();
                 console.log(this.vehicleOutlineBackground);
                 this.initVehiculoForm(this.contractData);
 
               }
 
+            } else if (vehiculoIdRouting) {
+                let vehiculosPayload = {
+                  vehicle_id: vehiculoIdRouting
+                }
+                this.generalServ.getList('vehiculos', vehiculosPayload).subscribe(res => {
+                  if (res.ok) {
+                    this.vehiculoData = res.fullData[0]
+                    this.setVehiculoBackgroundLayout(this.vehiculoData.categoria_vehiculo_id, this.vehiculoData.categoria.categoria);
+                    this.initVehiculoForm(this.vehiculoData);
+                  }
+                })
             } else {
               this.initVehiculoForm();
             }
@@ -422,7 +437,8 @@ export class ContratoPage implements OnInit, AfterViewInit {
               console.log('cobranza');
               this.cobranzaProgData = this.contractData.cobranza.filter(x => x.cobranza_seccion == 'salida' || x.cobranza_seccion == 'reserva');
               console.log(this.cobranzaProgData)
-              if (this.balancePorPagar == 0) {
+              this.recalBalancePorCobrar();
+              if (this.balancePorPagar <= 0 && this.pagadoAutTotal > 0) {
                 this.step = 4;
               };
 
@@ -606,7 +622,6 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
     this.generalDataForm = this.fb.group({
       num_contrato: [(data && data.num_contrato ? data.num_contrato : null)],
-      //vehiculo_id: [(data && data.vehiculo && data.vehiculo.id ? data.vehiculo.id : (this.vehiculoData && this.vehiculoData.id) ? this.vehiculoData.id : null), Validators.required],
       tipo_tarifa_id: [(data && data.tipo_tarifa_id) ? data.tipo_tarifa_id : (_tipoTarifaApollo && _tipoTarifaApollo.id ? _tipoTarifaApollo.id : null), Validators.required],
       tipo_tarifa: [(data && data.tipo_tarifa) ? data.tipo_tarifa : (_tipoTarifaApollo && _tipoTarifaApollo.tarifa ? _tipoTarifaApollo.tarifa : null), Validators.required],
 
@@ -650,8 +665,8 @@ export class ContratoPage implements OnInit, AfterViewInit {
       cobranza_calc: [(data && data.cobranza_calc ? data.cobranza_calc : null), Validators.required],
 
       total_dias: [(data && data.total_dias) ? data.total_dias : null, Validators.required],
-      ub_salida_id: [(data && data.ub_salida_id) ? data.ub_salida_id : 1, Validators.required],
-      ub_retorno_id: [(data && data.ub_retorno_id) ? data.ub_retorno_id : 1, Validators.required],
+      ub_salida_id: [(data && data.ub_salida_id) ? data.ub_salida_id : null, Validators.required],
+      ub_retorno_id: [(data && data.ub_retorno_id) ? data.ub_retorno_id : null, Validators.required],
     });
 
     if (data && data.id) {
@@ -693,6 +708,18 @@ export class ContratoPage implements OnInit, AfterViewInit {
     if (data && data.total_dias) {
       this.setBaseRentFrequency();
     }
+
+    this.exitPlacesOptions$ = this.generalDataForm.controls.ub_salida_id.valueChanges.pipe(
+      startWith(''),
+      map(value => (typeof value === 'string' ? value: value.alias)),
+      map(alias => (alias ? this._filterUbicacion(alias): this.ubicaciones.slice())),
+    );
+
+    this.returnPlacesOptions$ = this.generalDataForm.controls.ub_retorno_id.valueChanges.pipe(
+      startWith(''),
+      map(value => (typeof value === 'string' ? value: value.alias)),
+      map(alias => (alias ? this._filterUbicacion(alias): this.ubicaciones.slice())),
+    );
 
   }
 
@@ -789,6 +816,24 @@ export class ContratoPage implements OnInit, AfterViewInit {
     this.enableDisableDescuentoFreq(true);
 
   }
+
+  setVehiculoBackgroundLayout(categoriaVehiculoId: number, categoria: string) {
+    this.categoriaVehiculoServ.getDataById(categoriaVehiculoId).subscribe(res => {
+      if (res.ok) {
+        if (res.layout?.file) {
+          this.vehicleOutlineBackground = res.layout?.file;
+          this.externalLayoutPresent = true;
+        } else {
+          this.vehicleOutlineBackground = categoria.toLowerCase();
+          this.externalLayoutPresent = false;
+        }
+      }
+    }, error => {
+      console.log(error);
+      this.vehicleOutlineBackground = categoria.toLowerCase();
+      this.externalLayoutPresent = false;
+    })
+  }
   //#endregion
 
   //#region CLIENT FORM FUNCTIONS
@@ -816,7 +861,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
   initRetornoForm(data?) {
     this.retornoDataForm = this.fb.group({
       cant_combustible_retorno: [(data && data.cant_combustible_retorno ? data.cant_combustible_retorno : null), Validators.required],
-      km_final: [(data && data.km_final ? data.km_final: null), [Validators.required, Validators.min(this.vf.km_inicial.value)]],
+      km_final: [(data && data.km_final ? data.km_final: null), [Validators.required, Validators.min(this.vehiculoForm?.controls.km_inicial.value)]],
       cargos_extras_retorno_ids: [(data && data.cargos_retorno_extras_ids ? data.cargos_retorno_extras_ids : null)],
       cargos_extras_retorno: [(data && data.cargos_retorno_extras ? data.cargos_retorno_extras : null)],
       frecuencia_extra: [(data && data.frecuencia_extra ? data.frecuencia_extra : null)],
@@ -1509,7 +1554,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
           {
             text: 'Pago con Tarjeta',
             icon: 'card',
-            cssClass:   this.balancePorPagar == 0 ? 'disable' : '',
+            cssClass:   this.balancePorPagar <= 0 ? 'disable' : '',
             handler: () => {
               console.log('Capturar Pago con Tarjeta clicked');
               this.agregarTarjetaForm(CobranzaTipoE.PAGOTARJETA,cobranza_seccion , null, true);
@@ -1518,11 +1563,11 @@ export class ContratoPage implements OnInit, AfterViewInit {
           {
             text: 'Pago Efectivo',
             icon: 'cash',
-            cssClass: this.balancePorPagar == 0 ? 'disable' : '',
+            cssClass: this.balancePorPagar <= 0 ? 'disable' : '',
             handler: () => {
               console.log('Pago Efectivo clicked');
               //this.attachFiles();
-              this.agregarEfectivo(null,cobranza_seccion);
+              this.capturarCobroInput(null, cobranza_seccion, 'efectivo');
             },
           },
           {
@@ -1559,7 +1604,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
           {
             text: 'Pago con Tarjeta',
             icon: 'card',
-            cssClass:   this.balanceRetornoPorPagar == 0 ? 'disable' : '',
+            cssClass:   this.balanceRetornoPorPagar <= 0 ? 'disable' : '',
             handler: () => {
               console.log('Capturar Pago con Tarjeta clicked');
               this.agregarTarjetaForm(CobranzaTipoE.PAGOTARJETA, cobranza_seccion, null, true);
@@ -1568,11 +1613,21 @@ export class ContratoPage implements OnInit, AfterViewInit {
           {
             text: 'Pago Efectivo',
             icon: 'cash',
-            cssClass: this.balanceRetornoPorPagar == 0 ? 'disable' : '',
+            cssClass: this.balanceRetornoPorPagar <= 0 ? 'disable' : '',
             handler: () => {
               console.log('Pago Efectivo clicked');
               //this.attachFiles();
-              this.agregarEfectivo(null, cobranza_seccion);
+              this.capturarCobroInput(null, cobranza_seccion, 'efectivo');
+            },
+          },
+          {
+            text: 'Pago con Depósito',
+            icon: 'cash',
+            cssClass: this.balanceRetornoPorPagar <= 0 ? 'disable' : '',
+            handler: () => {
+              console.log('Pago Depósito clicked');
+              //this.attachFiles();
+             this.capturaDeposito('retorno')
             },
           },
           {
@@ -1609,10 +1664,11 @@ export class ContratoPage implements OnInit, AfterViewInit {
         'returnCapture': true,
         'needCaptureAmount': true,
         'cod_banco': (cobranza && cobranza.cod_banco) ? cobranza.cod_banco : null,
-        'monto': (cobranza && cobranza.monto) ? cobranza.monto : null,
+        'montoCobrado': (cobranza && cobranza.monto_cobrado) ? cobranza.monto_cobrado : null,
         'tipoPago': tipo,
         'titularTarj': _titular,
-        'montoCobrar': (cobranza_seccion == 'salida') ? this.balancePorPagar : this.balanceRetornoPorPagar
+        'montoCobrar': (cobranza_seccion == 'salida') ? this.balancePorPagar : this.balanceRetornoPorPagar,
+        'divisa_id': (cobranza && cobranza.tipo_cambio_usado?.divisa_base_id) ? cobranza.tipo_cambio_usado.divisa_base_id : null
       },
       swipeToClose: true,
       cssClass: 'edit-form',
@@ -1635,9 +1691,13 @@ export class ContratoPage implements OnInit, AfterViewInit {
           fecha_cargo: null,
           fecha_procesado: null,
           fecha_reg: null,
+          tipo_cambio_id: data.info.tipoCambio.id,
+          tipo_cambio: data.info.tipoCambio.tipo_cambio,
           cobranza_seccion: cobranza_seccion,
           moneda: this.baseCurrency,
+          moneda_cobrada: data.info.tipoCambio.divisa_base,
           monto: data.info.monto,
+          monto_cobrado: data.info.monto_cobrado,
           tipo: data.info.c_charge_method,
           res_banco: null,
           updated_at: null,
@@ -1654,14 +1714,15 @@ export class ContratoPage implements OnInit, AfterViewInit {
     }
   }
 
-  async agregarEfectivo(cobranza: CobranzaProgI = null, cobranza_seccion) {
+  async capturarCobroInput(cobranza: CobranzaProgI = null, cobranza_seccion, cobranzaTipo: CobranzaTipo) {
     const modal = await this.modalCtr.create({
       component: InputModalComponent,
       componentProps: {
         'asModal': true,
-        'monto': (cobranza && cobranza.monto) ? cobranza.monto : null,
+        'montoCobrado': (cobranza && cobranza.monto_cobrado) ? cobranza.monto_cobrado : null,
         'balanceCobro':(cobranza_seccion == 'salida') ?  this.balancePorPagar : this.balanceRetornoPorPagar,
-        'cobranza_id': (cobranza && cobranza.id) ? cobranza.id : null
+        'cobranza_id': (cobranza && cobranza.id) ? cobranza.id : null,
+        'divisa_id': (cobranza && cobranza.tipo_cambio_usado?.divisa_base_id) ? cobranza.tipo_cambio_usado.divisa_base_id : null
       },
       swipeToClose: true,
       cssClass: 'small-form',
@@ -1684,8 +1745,12 @@ export class ContratoPage implements OnInit, AfterViewInit {
         fecha_cargo: null,
         fecha_procesado: null,
         fecha_reg: null,
+        tipo_cambio_id: data.info.tipoCambio.id,
+        tipo_cambio: data.info.tipoCambio.tipo_cambio,
         moneda: this.baseCurrency,
+        moneda_cobrada: data.info.tipoCambio.divisa_base,
         monto: data.info.monto,
+        monto_cobrado: data.info.monto_cobrado,
         tipo: CobranzaTipoE.PAGOEFECTIVO,
         res_banco: null,
         updated_at: null,
@@ -1700,6 +1765,34 @@ export class ContratoPage implements OnInit, AfterViewInit {
       return null;
     }
   }
+
+  async capturaDeposito(cobranza_seccion: 'salida' | 'retorno') {
+    const modal = await this.modalCtr.create({
+      component: CobroDepositoModalComponent,
+      componentProps: {
+        'asModal': true,
+        'balanceCobro':(cobranza_seccion == 'salida') ?  this.balancePorPagar : this.balanceRetornoPorPagar,
+        'contrato_id': this.contract_id,
+        'num_contrato': this.num_contrato,
+        'cliente_id': this.contractData.cliente.id
+      },
+      swipeToClose: true,
+      cssClass: 'large-form'
+      //presentingElement: pageEl
+    });
+    await modal.present();
+    const {data} = await modal.onWillDismiss();
+    if (data) {
+      console.log(data)
+      if (data.reload) {
+        await this.reloadAll();
+      }
+    } else {
+      return null;
+    }
+  }
+
+
   //#endregion
 
   //#region SIGNATURE MANAGEMENT
@@ -1716,7 +1809,8 @@ export class ContratoPage implements OnInit, AfterViewInit {
     if (this.selectedTarifaCat && this.selectedTarifaCat.id) {
       _payload = {
         orderBy: 'tarifa_categoria_id',
-        tarifa_categoria_id: this.selectedTarifaCat.id
+        tarifa_categoria_id: this.selectedTarifaCat.id,
+        estatus: VehiculosStatusE.DISPONIBLE
       }
     }
     const modal = await this.modalCtr.create({
@@ -1747,7 +1841,8 @@ export class ContratoPage implements OnInit, AfterViewInit {
           break;
         case 'vehiculo':
           this.vehiculoData = data;
-          this.vehicleOutlineBackground = this.vehiculoData.categoria.categoria.toLowerCase();
+          this.setVehiculoBackgroundLayout(this.vehiculoData.categoria_vehiculo_id, this.vehiculoData.categoria.categoria);
+          //this.vehicleOutlineBackground = this.vehiculoData.categoria.categoria.toLowerCase();
           this.initVehiculoForm(this.vehiculoData);
           //this.gf.vehiculo_id.patchValue(this.vehiculoData.id);
           //this.gf.vehiculo_clase_id.patchValue(this.vehiculoData.clase_id);
@@ -2508,13 +2603,17 @@ export class ContratoPage implements OnInit, AfterViewInit {
   //#endregion
 
   //#region COBRANZAPROG FUNCTIONS
-  async editCobro(tipo: CobranzaTipoE.PAGOTARJETA | CobranzaTipoE.PREAUTHORIZACION | CobranzaTipoE.PAGOEFECTIVO, cobranza_seccion, cobro: CobranzaProgI) {
+  async editCobro(tipo: CobranzaTipoE.PAGOTARJETA | CobranzaTipoE.PREAUTHORIZACION | CobranzaTipoE.PAGOEFECTIVO | CobranzaTipoE.PAGODEPOSITO, cobranza_seccion, cobro: CobranzaProgI) {
     if (tipo === CobranzaTipoE.PREAUTHORIZACION || tipo === CobranzaTipoE.PAGOTARJETA) {
-      await this.agregarTarjetaForm(cobro.tipo, cobro.tarjeta, cobranza_seccion, true, cobro);
+      await this.agregarTarjetaForm(cobro.tipo, cobranza_seccion, cobro.tarjeta, true, cobro);
     }
 
     if (tipo === CobranzaTipoE.PAGOEFECTIVO) {
-      await this.agregarEfectivo(cobro, cobranza_seccion);
+      await this.capturarCobroInput(cobro, cobranza_seccion, 'efectivo');
+    }
+
+    if (tipo === CobranzaTipoE.PAGODEPOSITO) {
+      await this.capturaDeposito(cobranza_seccion)
     }
   }
   enableDisableEditCobro(cobro: CobranzaProgI, enable: boolean) {
@@ -2566,7 +2665,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
         total =  parseFloat(Number(Number(total) + Number(_data[i].monto)).toFixed(2));
       }
     }
-    if (this.balancePorPagar < total) {
+    if ((total - this.balancePorPagar) > 50) {
       this.sweetMsgServ.printStatus('El monto aculamado de cobro es mayor al balance por cobrar', 'warning');
     }
     this.balancePorPagar = Number(this.balancePorPagar -  total);
@@ -2577,7 +2676,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
   recalBalanceRetornoPorCobrar() {
     let total = 0;
     this.balanceRetornoPorPagar = this.retornoDataForm.controls.total_retorno.value;
-    let _data = this.cobranzaProgRetornoData.filter(x => x.tipo == 2 || x.tipo == 3);
+    let _data = this.cobranzaProgRetornoData.filter(x => x.tipo == 2 || x.tipo == 3 || x.tipo == 4);
     if (_data && _data.length > 0) {
       for (let i = 0; i < _data.length; i++) {
         total =  parseFloat(Number(Number(total) + Number(_data[i].monto)).toFixed(2));
@@ -2594,7 +2693,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
   setTotalRetornoPago() {
     this.pagadoRetornoAutTotal = 0;
     this.pagadoRetornoTotal = 0;
-    let _dataPagado = this.cobranzaProgRetornoData.filter(x => x.tipo == CobranzaTipoE.PAGOTARJETA || x.tipo == CobranzaTipoE.PAGOEFECTIVO);
+    let _dataPagado = this.cobranzaProgRetornoData.filter(x => x.tipo == CobranzaTipoE.PAGOTARJETA || x.tipo == CobranzaTipoE.PAGOEFECTIVO || x.tipo == CobranzaTipoE.PAGODEPOSITO);
     if (_dataPagado && _dataPagado.length > 0) {
       for (let i = 0; i < _dataPagado.length; i++) {
         this.pagadoRetornoTotal =  parseFloat(Number(Number(this.pagadoRetornoTotal) + Number(_dataPagado[i].monto)).toFixed(2));
@@ -2632,7 +2731,10 @@ export class ContratoPage implements OnInit, AfterViewInit {
     this.sweetMsgServ.confirmRequest(mensaje).then(async (data) => {
       if (data.value) {
         await this.saveProcess(section);
-        await this.sendAndGeneratePDF();
+        setTimeout(async () => {
+          await this.sendAndGeneratePDF();
+        }, 500);
+
       }
     })
   }

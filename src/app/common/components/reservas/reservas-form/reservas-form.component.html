@@ -17,7 +17,7 @@
           <ion-col size="6">
             <mat-form-field appearance="legacy">
               <mat-label>Idioma del archivo</mat-label>
-              <mat-select  [(ngModel)]="idioma">
+              <mat-select [(ngModel)]="idioma">
                 <mat-option value="es">Español</mat-option>
                 <mat-option value="en">Ingles</mat-option>
               </mat-select>
@@ -41,7 +41,7 @@
                   </mat-panel-description>
                 </mat-expansion-panel-header>
 
-                <ion-card [disabled]="step >= 4" >
+                <ion-card [disabled]="step >= 4">
                   <ion-card-content>
                     <form [formGroup]="clienteDataForm" *ngIf="clienteDataForm">
                       <ion-row>
@@ -57,17 +57,17 @@
                         <ion-col>
                           <mat-form-field appearance="legacy">
                             <mat-label>NOMBRE(S)</mat-label>
-                            <input type="text" matInput formControlName="nombre" autocomplete="off">
+                            <input type="text" matInput formControlName="nombre" autocomplete="off" maxlength="150">
                             <mat-error *ngIf="cf.nombre.errors?.required">Campo requerido</mat-error>
                           </mat-form-field>
                         </ion-col>
-    <!--                    <ion-col>-->
-    <!--                      <mat-form-field appearance="legacy">-->
-    <!--                        <mat-label>APELLIDO(S)</mat-label>-->
-    <!--                        <input type="text" matInput formControlName="apellidos" autocomplete="off">-->
-    <!--                        <mat-error *ngIf="cf.apellidos.errors?.required">Campo requerido</mat-error>-->
-    <!--                      </mat-form-field>-->
-    <!--                    </ion-col>-->
+                        <!--                    <ion-col>-->
+                        <!--                      <mat-form-field appearance="legacy">-->
+                        <!--                        <mat-label>APELLIDO(S)</mat-label>-->
+                        <!--                        <input type="text" matInput formControlName="apellidos" autocomplete="off">-->
+                        <!--                        <mat-error *ngIf="cf.apellidos.errors?.required">Campo requerido</mat-error>-->
+                        <!--                      </mat-form-field>-->
+                        <!--                    </ion-col>-->
                       </ion-row>
 
                       <ion-row>
@@ -92,7 +92,7 @@
                         <ion-col>
                           <mat-form-field appearance="legacy">
                             <mat-label>DIRECCIÓN</mat-label>
-                            <textarea matInput formControlName="direccion" autocomplete="off"></textarea>
+                            <textarea matInput formControlName="direccion" autocomplete="off" maxlength="100"></textarea>
                             <mat-error *ngIf="cf.direccion.errors?.required">Campo requerido</mat-error>
                           </mat-form-field>
                         </ion-col>
@@ -102,7 +102,7 @@
                         <ion-col>
                           <mat-form-field appearance="legacy">
                             <mat-label>Número de Licencia</mat-label>
-                            <input type="text" matInput formControlName="num_licencia" autocomplete="off">
+                            <input type="text" matInput formControlName="num_licencia" autocomplete="off" maxlength="50">
                             <mat-error *ngIf="cf.num_licencia.errors?.required">Campo requerido</mat-error>
                           </mat-form-field>
                         </ion-col>
@@ -110,7 +110,8 @@
                           <mat-form-field appearance="legacy">
                             <mat-label>Mes Exp.</mat-label>
                             <mat-select formControlName="licencia_mes" autocomplete="off">
-                              <mat-option *ngFor="let month of months" value="{{month.digit}}">{{month.month}}</mat-option>
+                              <mat-option *ngFor="let month of months"
+                                          value="{{month.digit}}">{{month.month}}</mat-option>
                             </mat-select>
                             <mat-icon matSuffix>date_range</mat-icon>
                             <mat-error *ngIf="cf.licencia_mes.errors?.required">Campo requerido</mat-error>
@@ -130,7 +131,8 @@
 
                     </form>
 
-                    <app-modelos-docs model="clientes" docType="licencia_conducir" [fullSize]="true" [justButton]="true" [model_id_value]="clienteDataForm && clienteDataForm.controls.cliente_id.value ? clienteDataForm.controls.cliente_id.value : null">
+                    <app-modelos-docs model="clientes" docType="licencia_conducir" [fullSize]="true" [justButton]="true"
+                                      [model_id_value]="clienteDataForm && clienteDataForm.controls.cliente_id.value ? clienteDataForm.controls.cliente_id.value : null">
                       <legend name="legend">Doc. Cliente</legend>
                     </app-modelos-docs>
 
@@ -158,7 +160,7 @@
 
           <mat-accordion>
             <div class="accordion-margin" [formGroup]="generalDataForm" *ngIf="generalDataForm">
-              <mat-expansion-panel [expanded]="step === 1" hideToggle [disabled] = "step == 0">
+              <mat-expansion-panel [expanded]="step === 1" hideToggle [disabled]="step == 0">
                 <mat-expansion-panel-header>
                   <mat-panel-title>
                     Datos Generales
@@ -168,7 +170,7 @@
                   </mat-panel-description>
                 </mat-expansion-panel-header>
                 <form [formGroup]="generalDataForm">
-                  <ion-card [disabled]="step >= 4" >
+                  <ion-card [disabled]="step >= 4">
                     <ion-card-content>
 
                       <ion-row>
@@ -189,8 +191,10 @@
                             <mat-label>Lugar de Salida</mat-label>
                             <mat-select formControlName="ub_salida_id" (openedChange)="ubSalidaSearch.value = null">
                               <mat-form-field appearance="legacy" style="padding: 0.8em;">
-                                <input (input)="gf.ub_salida_id.patchValue($event.target['value'])" matInput placeholder="Buscador" autocomplete="off" #ubSalidaSearch>
-                                <button mat-icon-button matSuffix (click)="ubSalidaSearch.value = null; gf.ub_salida_id.patchValue('')">
+                                <input (input)="gf.ub_salida_id.patchValue($event.target['value'])" matInput
+                                       placeholder="Buscador" autocomplete="off" #ubSalidaSearch>
+                                <button mat-icon-button matSuffix
+                                        (click)="ubSalidaSearch.value = null; gf.ub_salida_id.patchValue('')">
                                   <mat-icon>clear</mat-icon>
                                 </button>
                               </mat-form-field>
@@ -216,8 +220,11 @@
                             <mat-label>Lugar de retorno</mat-label>
                             <mat-select formControlName="ub_retorno_id" (openedChange)="ubRetornoSearch.value = null">
                               <mat-form-field appearance="legacy" style="padding: 0.8em">
-                                <input type="text" matInput (input)="gf.ub_retorno_id.patchValue($event.target['value'])" placeholder="Buscador" autocomplete="off" #ubRetornoSearch>
-                                <button mat-icon-button matSuffix (click)="ubRetornoSearch.value = null; gf.ub_retorno_id.patchValue('')">
+                                <input type="text" matInput
+                                       (input)="gf.ub_retorno_id.patchValue($event.target['value'])"
+                                       placeholder="Buscador" autocomplete="off" #ubRetornoSearch>
+                                <button mat-icon-button matSuffix
+                                        (click)="ubRetornoSearch.value = null; gf.ub_retorno_id.patchValue('')">
                                   <mat-icon>clear</mat-icon>
                                 </button>
                               </mat-form-field>
@@ -241,9 +248,11 @@
                           <ion-col size="12" size-md="4" *ngIf="useCalendar === false">
                             <mat-form-field appearance="legacy">
                               <mat-label>Días de renta</mat-label>
-                              <input type="number" max="30" #totalDays matInput formControlName="total_dias" (input)="setReturnDateChange(totalDays.value, true)">
+                              <input type="number" max="30" #totalDays matInput formControlName="total_dias"
+                                     (input)="setReturnDateChange(totalDays.value, true)">
                               <span matSuffix>{{(gf.total_dias.value > 1 ? 'días' : 'día')}}</span>
-                              <mat-hint style="font-size: 1.1em" *ngIf="rangoFechas.fecha_retorno.value && rangoFechas.fecha_salida.value">
+                              <mat-hint style="font-size: 1.1em"
+                                        *ngIf="rangoFechas.fecha_retorno.value && rangoFechas.fecha_salida.value">
                                 <mat-icon style="font-size: 1.1em; vertical-align: middle;">event</mat-icon>
                                 {{dateConv.transFormDate(rangoFechas.fecha_salida.value, 'slash')}} -
                                 {{dateConv.transFormDate(rangoFechas.fecha_retorno.value, 'slash')}}
@@ -254,25 +263,34 @@
                           <ion-col size="12" size-md="4" *ngIf="useCalendar === true">
                             <mat-form-field appearance="legacy">
                               <mat-label>Fecha salida - retorno</mat-label>
-                              <mat-date-range-input  [rangePicker]="fechaRetornoRegreso" [formGroup]="rangoFechasGroup" [min]="_today" [max]="_maxDate">
-                                <input matStartDate formControlName="fecha_salida" placeholder="Start date" readonly autocomplete="off" (dateChange)="startDateChange()">
-                                <input matEndDate formControlName="fecha_retorno" placeholder="End date" (dateChange)="setReturnDateChange()" readonly autocomplete="off">
+                              <mat-date-range-input [rangePicker]="fechaRetornoRegreso" [formGroup]="rangoFechasGroup"
+                                                    [min]="_today" [max]="_maxDate">
+                                <input matStartDate formControlName="fecha_salida" placeholder="Start date" readonly
+                                       autocomplete="off" (dateChange)="startDateChange()">
+                                <input matEndDate formControlName="fecha_retorno" placeholder="End date"
+                                       (dateChange)="setReturnDateChange()" readonly autocomplete="off">
                               </mat-date-range-input>
                               <mat-datepicker-toggle matSuffix [for]="fechaRetornoRegreso"></mat-datepicker-toggle>
                               <mat-date-range-picker #fechaRetornoRegreso></mat-date-range-picker>
                               <mat-hint>{{gf.total_dias.value}} {{(gf.total_dias.value > 1) ? 'días' : 'dia'}}</mat-hint>
-                              <mat-error *ngIf="rangoFechas.fecha_salida.errors?.required">La fecha de salida es obligatoria</mat-error>
-                              <mat-error *ngIf="rangoFechas.fecha_retorno.errors?.required">La fecha de retorno es obligatoria</mat-error>
+                              <mat-error *ngIf="rangoFechas.fecha_salida.errors?.required">La fecha de salida es
+                                obligatoria
+                              </mat-error>
+                              <mat-error *ngIf="rangoFechas.fecha_retorno.errors?.required">La fecha de retorno es
+                                obligatoria
+                              </mat-error>
                             </mat-form-field>
                           </ion-col> <!-- Dias de renta date range picker -->
                         </ng-container> <!-- Días de renta group -->
 
 
                         <ion-col size="12" size-md="4">
-                          <mat-form-field appearance="legacy" >
+                          <mat-form-field appearance="legacy">
                             <mat-label>Tipo Tarifa</mat-label>
-                            <mat-select #tipoTarifa (selectionChange)="initTipoTarifaRule();" formControlName="tipo_tarifa">
-                              <mat-option *ngFor="let tarifa of tiposTarifas" value="{{tarifa.tarifa}}">{{tarifa.tarifa}}</mat-option>
+                            <mat-select #tipoTarifa (selectionChange)="initTipoTarifaRule();"
+                                        formControlName="tipo_tarifa">
+                              <mat-option *ngFor="let tarifa of tiposTarifas"
+                                          value="{{tarifa.tarifa}}">{{tarifa.tarifa}}</mat-option>
                             </mat-select>
                           </mat-form-field>
                         </ion-col> <!-- tipo de tarifa picker -->
@@ -281,7 +299,8 @@
                           <mat-form-field appearance="legacy" *ngIf="gf.tipo_tarifa.value !== 'Hotel'">
                             <mat-label>Categoría Vehículo</mat-label>
                             <mat-select (selectionChange)="setTarifasCat(true)" formControlName="tarifa_modelo_id">
-                              <mat-option  *ngFor="let tarifaCat of tarifasCategorias" [value]="tarifaCat.id">{{tarifaCat.categoria}}</mat-option>
+                              <mat-option *ngFor="let tarifaCat of tarifasCategorias"
+                                          [value]="tarifaCat.id">{{tarifaCat.categoria}}</mat-option>
                             </mat-select>
                             <mat-error *ngIf="gf.tarifa_modelo_id.errors?.required">Este campo es requerido</mat-error>
                           </mat-form-field> <!-- Tarifa x Categoría -->
@@ -308,14 +327,15 @@
                       <ion-row>
                         <ion-col size="12" size-md="6">
                           <ion-row>
-                            <ion-col size="12" >
+                            <ion-col size="12">
                               <div class="datos-generales-precioU">
                                 <h2>Valor unitario x día</h2>
                                 <p>{{(gf.precio_unitario_final && gf.precio_unitario_final.value ? (gf.precio_unitario_final.value | currency) : '--')}}</p>
                               </div>
                             </ion-col> <!-- precio unitario -->
-                            <ion-col size="12"  class="ion-text-center ion-align-self-center">
-                              <div style="display: flex; flex-direction: column; align-items: flex-start; padding-left: 12px">
+                            <ion-col size="12" class="ion-text-center ion-align-self-center">
+                              <div
+                                style="display: flex; flex-direction: column; align-items: flex-start; padding-left: 12px">
                                 <mat-checkbox
                                   class="example-margin"
                                   [labelPosition]="'after'"
@@ -334,15 +354,18 @@
                                   Aplicar Descuento ?
                                 </mat-checkbox>
                               </div>
-                              <mat-form-field *ngIf="gf.tipo_tarifa.value !== 'Hotel' && (gf.con_descuento.value == 1 || gf.con_descuento.value == true)">
+                              <mat-form-field
+                                *ngIf="gf.tipo_tarifa.value !== 'Hotel' && (gf.con_descuento.value == 1 || gf.con_descuento.value == true)">
                                 <mat-label>Descuento %</mat-label>
                                 <mat-select formControlName="tarifa_apollo_id" (selectionChange)="makeCalc()">
-                                  <ng-container *ngFor="let confDes of selectedTarifaCat.tarifas" >
-                                    <mat-option *ngIf="confDes.ap_descuento" [value]="confDes.id" [disabled]="confDes.enable === false">{{confDes.valor_descuento}}</mat-option>
+                                  <ng-container *ngFor="let confDes of selectedTarifaCat.tarifas">
+                                    <mat-option *ngIf="confDes.ap_descuento" [value]="confDes.id"
+                                                [disabled]="confDes.enable === false">{{confDes.valor_descuento}}</mat-option>
                                   </ng-container>
 
                                 </mat-select>
-                                <mat-error *ngIf="gf.tarifa_apollo_id.errors?.required">Este campo es requerido</mat-error>
+                                <mat-error *ngIf="gf.tarifa_apollo_id.errors?.required">Este campo es requerido
+                                </mat-error>
                               </mat-form-field> <!-- cantidad de descuento -->
 
                             </ion-col> <!-- aplicar IVA | aplicar descuento -->
@@ -352,7 +375,8 @@
                         <ion-col size="12" size-md="6">
                           <div style="text-align: center">
                             <p style="margin: 0; padding: 1rem;">Desgloce Cobro</p>
-                            <small *ngIf="cobranzaI && cobranzaI.length === 0">En espera para iniciar calculo ....</small>
+                            <small *ngIf="cobranzaI && cobranzaI.length === 0">En espera para iniciar calculo
+                              ....</small>
                           </div>
                           <table class="desgloce-cobro-table" *ngIf="cobranzaI && cobranzaI.length > 0">
                             <thead>
@@ -366,7 +390,8 @@
                             <tbody>
                             {{getExtraRows()}}
                             <ng-container *ngFor="let cobranza of cobranzaI; let i = index">
-                              <tr *ngIf=" cobranza.element !== 'extra'" [ngClass]="{'total-row': cobranza.element === 'total'}">
+                              <tr *ngIf=" cobranza.element !== 'extra'"
+                                  [ngClass]="{'total-row': cobranza.element === 'total'}">
                                 <td>{{cobranza.element_label}}</td>
                                 <td>{{cobranza.value | currency}}</td>
                                 <td>{{cobranza.quantity}} {{cobranza.quantity_type}}</td>
@@ -383,7 +408,9 @@
                                   <td>
                                     <div class="table-input">
                                       <div style="display: flex;align-items: center;">
-                                        <input type="number" autocomplete="off" [(ngModel)]="cobranza.quantity" (ngModelChange)="makeCalc('extra', cobranza)" [ngModelOptions]="{standalone: true}">
+                                        <input type="number" autocomplete="off" [(ngModel)]="cobranza.quantity"
+                                               (ngModelChange)="makeCalc('extra', cobranza)"
+                                               [ngModelOptions]="{standalone: true}">
                                         <span>x {{gf.total_dias.value}} días</span>
                                       </div>
 
@@ -401,7 +428,7 @@
 
                     </ion-card-content>
                     <div class="card-action-buttons">
-                      <ion-button  color="success" (click)="saveProcess('datos_generales')">SIGUIENTE</ion-button>
+                      <ion-button color="success" (click)="saveProcess('datos_generales')">SIGUIENTE</ion-button>
                     </div>
                   </ion-card>
 
@@ -423,7 +450,7 @@
 
           <mat-accordion>
             <div class="accordion-margin">
-              <mat-expansion-panel [expanded]="step === 2" hideToggle [disabled] = "step == 0 || step == 1">
+              <mat-expansion-panel [expanded]="step === 2" hideToggle [disabled]="step == 0 || step == 1">
                 <mat-expansion-panel-header>
                   <mat-panel-title>
                     Cobranza
@@ -433,7 +460,7 @@
                   </mat-panel-description>
                 </mat-expansion-panel-header>
 
-                <ion-card [disabled]="step >= 6" >
+                <ion-card [disabled]="step >= 6">
                   <ion-card-content>
                     <h4 style="font-weight: 500">DESCRIPCION DE LOS CARGOS</h4>
                     <br>
@@ -441,12 +468,17 @@
                     <br>
                     <ion-row>
                       <ion-col size="6">
-                        <h4 style="margin: 0; padding: 0;">Total: <span style="color: var(--ion-color-success)">{{(generalDataForm && generalDataForm.controls.total.value) ? (generalDataForm.controls.total.value | currency) : '--'}}</span></h4>
-                        <h4 style="margin: 0; padding: 0;">Balance por saldar: <span [ngClass]="{'danger-color': balancePorPagar > 0}">{{(balancePorPagar) ? (balancePorPagar | currency) : ('0' | currency)}}</span></h4>
+                        <h4 style="margin: 0; padding: 0;">Total: <span
+                          style="color: var(--ion-color-success)">${{(generalDataForm && generalDataForm.controls.total.value) ? (generalDataForm.controls.total.value | currency) : '--'}}
+                          MXN</span></h4>
+                        <h4 style="margin: 0; padding: 0;">Balance por saldar: $<span
+                          [ngClass]="{'danger-color': balancePorPagar > 0}">{{(balancePorPagar) ? (balancePorPagar | currency) : ('0' | currency)}}
+                          MXN</span></h4>
                       </ion-col>
                       <ion-col size="6" class="ion-text-end">
                         <button mat-raised-button class="button-secondary" (click)="agregarPagoOpt('reserva')">
-                          <span style="font-size: 1.3rem;margin-right: 0.5rem;">+</span>&nbsp;Cobro&nbsp;<ion-icon name="wallet"></ion-icon>
+                          <span style="font-size: 1.3rem;margin-right: 0.5rem;">+</span>&nbsp;Cobro&nbsp;<ion-icon
+                          name="wallet"></ion-icon>
                         </button>
                       </ion-col>
                     </ion-row>
@@ -457,20 +489,22 @@
                           <ion-card-content>
                             <div class="accordion-title">
                               <span class="icon">
-                                 <ion-icon name="checkmark-circle" [color]="(balancePorPagar == 0) ? 'success': ''"></ion-icon>
+                                 <ion-icon name="checkmark-circle"
+                                           [color]="(balancePorPagar <= 0) ? 'success': ''"></ion-icon>
                               </span>
                               <span>
                                 Pagado
                               </span>
                               <span>
-                                {{pagadoTotal | currency}}
+                                ${{pagadoTotal | currency}} {{baseCurrency}}
                               </span>
                             </div>
 
                             <mat-accordion>
                               <ng-container *ngFor="let cobranzaPago of cobranzaProgData">
-                                <mat-expansion-panel style="margin-top: 1rem" *ngIf="cobranzaPago.tipo === cobranzaTipos.PAGOTARJETA">
-                                  <mat-expansion-panel-header >
+                                <mat-expansion-panel style="margin-top: 1rem"
+                                                     *ngIf="cobranzaPago.tipo === cobranzaTipos.PAGOTARJETA">
+                                  <mat-expansion-panel-header>
                                     <mat-panel-title>
                                       Tarjeta
                                     </mat-panel-title>
@@ -483,20 +517,32 @@
                                         {{(cobranzaPago.tarjeta && cobranzaPago.tarjeta.c_cn4) ? cobranzaPago.tarjeta.c_cn4 : '--'}}
                                       </span>
                                         <span>
-                                           {{(cobranzaPago.monto) ? (cobranzaPago.monto | currency) : ('0' | currency) }} {{cobranzaPago.moneda}}
+                                           {{(cobranzaPago.monto_cobrado) ? (cobranzaPago.monto_cobrado | currency) : ('0' | currency) }} {{cobranzaPago.moneda_cobrada}}
                                       </span>
                                       </div>
                                     </mat-panel-description>
                                   </mat-expansion-panel-header>
                                   <ion-row class="border-ion-row">
+                                    <ion-col size="12" *ngIf="cobranzaPago.tipo_cambio && cobranzaPago.tipo_cambio_id">
+                                      <div style="display: flex; justify-content: space-between;">
+                                        <span>Tipo Cambio</span>
+                                        <span>1 {{cobranzaPago.moneda_cobrada}}
+                                          = {{cobranzaPago.tipo_cambio}} {{cobranzaPago.moneda}}</span>
+                                      </div>
+                                    </ion-col>
                                     <ion-col size="12">
                                       <ion-row>
                                         <ion-col size="fill">
                                           <div class="action-buttons">
-                                            <button *ngIf="cobranzaPago.id && cobranzaPago.edit !== true" (click)="cancelCobro(cobranzaPago, 'reserva')" class="mat-elevation-z0" mat-mini-fab color="warn">
+                                            <button *ngIf="cobranzaPago.id && cobranzaPago.edit !== true"
+                                                    (click)="cancelCobro(cobranzaPago, 'reserva')"
+                                                    class="mat-elevation-z0" mat-mini-fab color="warn">
                                               <mat-icon>remove</mat-icon>
                                             </button>
-                                            <button *ngIf="cobranzaPago.edit !== true && cobranzaPago.id" (click)="editCobro(cobranzaTipos.PAGOTARJETA, 'reserva', cobranzaPago)" style="margin-top: 10px" class="mat-elevation-z0" mat-mini-fab color="accent">
+                                            <button *ngIf="cobranzaPago.edit !== true && cobranzaPago.id"
+                                                    (click)="editCobro(cobranzaTipos.PAGOTARJETA, 'reserva', cobranzaPago)"
+                                                    style="margin-top: 10px" class="mat-elevation-z0" mat-mini-fab
+                                                    color="accent">
                                               <mat-icon>edit</mat-icon>
                                             </button>
                                           </div>
@@ -512,13 +558,13 @@
                                             <div class="info-row">
                                               <span>Num. Tarjeta: </span>
                                               <p>
-                                                {{(cobranzaPago.tarjeta && (cobranzaPago.tarjeta.c_cn1 && cobranzaPago.tarjeta.c_cn4)) ? cobranzaPago.tarjeta.c_cn1 + '*' + cobranzaPago.tarjeta.c_cn4: '--'}}
+                                                {{(cobranzaPago.tarjeta && (cobranzaPago.tarjeta.c_cn1 && cobranzaPago.tarjeta.c_cn4)) ? cobranzaPago.tarjeta.c_cn1 + '*' + cobranzaPago.tarjeta.c_cn4 : '--'}}
                                               </p>
                                             </div>
                                             <div class="info-row">
                                               <span>Mes / Año: </span>
                                               <p>
-                                                {{(cobranzaPago.tarjeta && (cobranzaPago.tarjeta.c_month && cobranzaPago.tarjeta.c_year)) ? cobranzaPago.tarjeta.c_month + '/' + cobranzaPago.tarjeta.c_year: '--'}}
+                                                {{(cobranzaPago.tarjeta && (cobranzaPago.tarjeta.c_month && cobranzaPago.tarjeta.c_year)) ? cobranzaPago.tarjeta.c_month + '/' + cobranzaPago.tarjeta.c_year : '--'}}
                                               </p>
                                             </div>
                                             <div class="info-row">
@@ -530,7 +576,7 @@
                                             <div class="info-row">
                                               <span>Monto: </span>
                                               <p>
-                                                {{cobranzaPago.monto | currency}} {{cobranzaPago.moneda}}
+                                                {{cobranzaPago.monto_cobrado | currency}} {{cobranzaPago.moneda_cobrada}}
                                               </p>
                                             </div>
                                           </div>
@@ -538,13 +584,16 @@
                                       </ion-row>
                                     </ion-col>
                                     <ion-col size="12" class="ion-no-padding">
-                                      <app-modelos-docs model="cobranza" docType="voucher" btnSize="small" [justButton]="true" [fullSize]="true" [model_id_value]="cobranzaPago.id">
+                                      <app-modelos-docs model="cobranza" docType="voucher" btnSize="small"
+                                                        [justButton]="true" [fullSize]="true"
+                                                        [model_id_value]="cobranzaPago.id">
                                         <legend name="legend">Img. Voucher</legend>
                                       </app-modelos-docs>
                                     </ion-col>
                                   </ion-row>
                                 </mat-expansion-panel>
-                                <mat-expansion-panel style="margin-top: 1rem"  *ngIf="cobranzaPago.tipo === cobranzaTipos.PAGOEFECTIVO" >
+                                <mat-expansion-panel style="margin-top: 1rem"
+                                                     *ngIf="cobranzaPago.tipo === cobranzaTipos.PAGOEFECTIVO">
                                   <mat-expansion-panel-header #panelH>
                                     <mat-panel-title>
                                       Efectivo
@@ -552,18 +601,29 @@
                                     <mat-panel-description>
                                       <div class="tarjeta-resume">
                                     <span style="padding-right: 0.5em">
-                                      {{cobranzaPago.monto | currency}} {{cobranzaPago.moneda}}
+                                      {{cobranzaPago.monto_cobrado | currency}} {{cobranzaPago.moneda_cobrada}}
                                     </span>
                                       </div>
                                     </mat-panel-description>
                                   </mat-expansion-panel-header>
                                   <ion-row>
+                                    <ion-col size="12" *ngIf="cobranzaPago.tipo_cambio && cobranzaPago.tipo_cambio_id">
+                                      <div style="display: flex; justify-content: space-between;">
+                                        <span>Tipo Cambio</span>
+                                        <span>1 {{cobranzaPago.moneda_cobrada}}
+                                          = {{cobranzaPago.tipo_cambio}} {{cobranzaPago.moneda}}</span>
+                                      </div>
+                                    </ion-col>
                                     <ion-col size="12">
                                       <div style="display: flex; justify-content: space-evenly;">
-                                        <button *ngIf="cobranzaPago.id && cobranzaPago.edit !== true" (click)="cancelCobro(cobranzaPago, 'salida')" class="mat-elevation-z0" mat-mini-fab color="warn">
+                                        <button *ngIf="cobranzaPago.id && cobranzaPago.edit !== true"
+                                                (click)="cancelCobro(cobranzaPago, 'salida')" class="mat-elevation-z0"
+                                                mat-mini-fab color="warn">
                                           <mat-icon>remove</mat-icon>
                                         </button>
-                                        <button *ngIf="cobranzaPago.edit !== true && cobranzaPago.id" (click)="editCobro(cobranzaTipos.PAGOEFECTIVO, 'salida' ,cobranzaPago)" class="mat-elevation-z0" mat-mini-fab color="accent">
+                                        <button *ngIf="cobranzaPago.edit !== true && cobranzaPago.id"
+                                                (click)="editCobro(cobranzaTipos.PAGOEFECTIVO, 'salida' ,cobranzaPago)"
+                                                class="mat-elevation-z0" mat-mini-fab color="accent">
                                           <mat-icon>edit</mat-icon>
                                         </button>
                                       </div>
@@ -583,7 +643,9 @@
 
                   </ion-card-content>
                   <div class="card-action-buttons">
-                    <ion-button  color="success" *ngIf="balancePorPagar == 0" (click)="sendAndGeneratePDF()">Terminar y Guardar</ion-button>
+                    <ion-button color="success" *ngIf="balancePorPagar == 0" (click)="sendAndGeneratePDF()">Terminar y
+                      Guardar
+                    </ion-button>
                   </div>
 
                 </ion-card>

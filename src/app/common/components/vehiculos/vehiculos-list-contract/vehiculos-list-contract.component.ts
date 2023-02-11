@@ -328,8 +328,13 @@ export class VehiculosListContractComponent implements OnInit {
   }
 
 
-  nuevoContrato(data?) {
-    this.router.navigateByUrl('/contratos/nuevo')
+  nuevoContrato(vehicle_id?: number) {
+    if (vehicle_id) {
+      this.router.navigateByUrl('/contratos/nuevo/' + vehicle_id)
+    } else {
+      this.router.navigateByUrl('/contratos/nuevo')
+    }
+
   }
 
 

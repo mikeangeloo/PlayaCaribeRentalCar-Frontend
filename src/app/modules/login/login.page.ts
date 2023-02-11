@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
-import {environment} from "../../../environments/environment";
 import {SessionService} from "../../services/session.service";
 import {AlertController, NavController} from "@ionic/angular";
 import {ActivatedRoute, Router} from "@angular/router";
@@ -15,15 +14,11 @@ import {GeneralService} from "../../services/general.service";
 })
 export class LoginPage implements OnInit {
 
-  returnUrl: string;
-  popupWindow: any;
   loginForm: FormGroup;
   public spinner = false;
   public token: any;
 
   public status: string;
-  public message_success: string;
-  public app_title = environment.app_name;
 
   public canShow = true;
 
@@ -79,8 +74,6 @@ export class LoginPage implements OnInit {
       (res) => {
         this.spinner = false;
         if (res.ok === true) {
-          // this.status = 'success';
-          // this.message_success = 'Bienvenido nuevamente';
           if (res.validateCode && res.validateCode === true) {
             this.sweetMsg.printStatus('Necesitamos verificar tu cuenta, para ello te hemos enviado un correo con instrucciones', 'warning');
             this.generalServ.verifyEmail$.next(_data.username);
@@ -90,14 +83,15 @@ export class LoginPage implements OnInit {
           this.token = res.token;
           sessionStorage.setItem(this.sessionService.JWToken, this.token);
           sessionStorage.setItem(this.sessionService.profileToken, JSON.stringify(res.data));
+          sessionStorage.setItem(this.sessionService.levelScopeKey, JSON.stringify(res.data.levelScope))
           this.sessionService.$profileData.next(res.data);
-          this.sessionService.$role.next(res.data.rol.rol);
+          this.sessionService.$roleLevelsScope.next(res.data.levelScope);
+          this.sessionService.logged$.next(true)
 
           this.loginForm.reset();
           this.sweetMsg.printStatus(res.message, 'success');
 
-          this.navigate.navigateRoot(['dashboard']);
-          //this.router.navigate(['dashboard']);
+          this.navigate.navigateRoot(['welcome']);
         }
       },
       (error: HttpErrorResponse) => {
@@ -106,24 +100,11 @@ export class LoginPage implements OnInit {
         this.loginForm.controls.password.setValue(null);
         if (error.statusText === 'Unauthorized') {
           this.sweetMsg.printStatusArray(error.error.errors, 'error');
-          // this.errorAlert('', 'Unauthorized', error.error.errors, 'OK');
         } else if (error.error.errors) {
           this.sweetMsg.printStatusArray(error.error.errors, 'error');
-          // this.errorAlert(
-          //   '',
-          //   'Credenciales Invalidas',
-          //   error.error.errors[0],
-          //   'OK'
-          // );
         }
         if (error.status === 500 || error.status === 404) {
           this.sweetMsg.printStatus('Error al conectar con el servidor', 'error');
-          // this.errorAlert(
-          //   '',
-          //   'Error ' + error.status,
-          //   'Error al conectar con el servidor',
-          //   'OK'
-          // );
         }
       }
     );

@@ -26,14 +26,14 @@
                 <ion-col size="12" size-md="6">
                   <mat-form-field appearance="legacy">
                     <mat-label>Categoría</mat-label>
-                    <input matInput type="text" formControlName="categoria">
+                    <input matInput type="text" formControlName="categoria" maxlength="70" autocomplete="off">
                     <mat-error *ngIf="tc.categoria.errors?.required">Campo requerido</mat-error>
                   </mat-form-field>
                 </ion-col>
                 <ion-col size="12" size-md="6">
                   <mat-form-field appearance="legacy">
                     <mat-label>Precio</mat-label>
-                    <input matInput type="number" formControlName="precio_renta">
+                    <input matInput type="number" formControlName="precio_renta" autocomplete="off">
                     <mat-error *ngIf="tc.precio_renta.errors?.required">Campo requerido</mat-error>
                   </mat-form-field>
                 </ion-col>
@@ -51,7 +51,7 @@
                   </mat-form-field>
                 </ion-col>
               </ion-row>
-              <br />
+              <br/>
               <ion-button class="btn-shadow" color="secondary" expand="full" (click)="saveUpdate()">
                 Guardar
               </ion-button>
@@ -62,7 +62,9 @@
 
       <mat-divider></mat-divider>
 
-      <app-frecuencia-conf  modelo="tarifas_categorias" [modelo_id]="tarifa_categoria_id" [precio_base]="tc.precio_renta.value" [tarifaApolloPayload]="tarifasCat && tarifasCat.tarifas ? tarifasCat.tarifas : null"></app-frecuencia-conf>
+      <app-frecuencia-conf modelo="tarifas_categorias" [modelo_id]="tarifa_categoria_id"
+                           [precio_base]="tc.precio_renta.value"
+                           [tarifaApolloPayload]="tarifasCat && tarifasCat.tarifas ? tarifasCat.tarifas : null"></app-frecuencia-conf>
 
     </ion-card-content>
   </ion-card>

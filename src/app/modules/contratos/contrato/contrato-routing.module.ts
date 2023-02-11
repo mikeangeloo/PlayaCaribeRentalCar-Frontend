@@ -11,6 +11,10 @@ const routes: Routes = [
   {
     path: 'view/:contract_number',
     component: ContratoPage
+  },
+  {
+    path: 'nuevo/:vehicle_id',
+    component: ContratoPage
   }
 ];
 

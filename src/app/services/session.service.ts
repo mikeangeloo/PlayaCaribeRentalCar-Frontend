@@ -4,6 +4,7 @@ import {environment} from "../../environments/environment";
 import {BehaviorSubject, map, Observable} from "rxjs";
 import {NavController} from "@ionic/angular";
 import {ProfileDataI} from "../interfaces/profile/profile-data.interface";
+import {RoleLevelsTypes} from '../enums/role-levels.enum';
 
 class Router {
 }
@@ -17,9 +18,11 @@ export class SessionService {
   public JWToken = 'TK1983!';
   public profileToken = 'PF849!';
   public permissionToken = 'PSK2358!';
+  public levelScopeKey = 'LVSCOPE';
 
   public $profileData = new BehaviorSubject<ProfileDataI>(null);
-  public $role = new BehaviorSubject<string>(null);
+  public $roleLevelsScope = new BehaviorSubject<RoleLevelsTypes>(null);
+  public logged$ = new BehaviorSubject<boolean>(false)
 
   public role;
   public dashURL: string;
@@ -99,15 +102,15 @@ export class SessionService {
 
 
   // Obtiene el rol almacenado en sessionStorage, si no existe devuleve null
-  public getRole(): string {
-    if (!sessionStorage.getItem(this.profileToken)) {
+  public getRoleLevel(): RoleLevelsTypes {
+    if (!sessionStorage.getItem(this.levelScopeKey)) {
       return null;
     }
-    const role = sessionStorage.getItem(this.profileToken);
-    if (role != 'undefined') {
-      let _parseRole = JSON.parse(role).rol.rol;
-      this.$role.next(_parseRole);
-      return  _parseRole;
+    const roleLevel = sessionStorage.getItem(this.levelScopeKey);
+    if (roleLevel != 'undefined') {
+      let _parseRoleLevel = JSON.parse(roleLevel);
+      this.$roleLevelsScope.next(_parseRoleLevel);
+      return  Number(_parseRoleLevel) as RoleLevelsTypes;
     } else {
       return null;
     }
@@ -130,8 +133,17 @@ export class SessionService {
     sessionStorage.removeItem(this.JWToken);
     sessionStorage.removeItem(this.profileToken);
     sessionStorage.removeItem(this.permissionToken);
+    sessionStorage.removeItem(this.levelScopeKey);
+    this.logged$.next(false);
+    this.flushSubjectsSession();
     // Redireccionar
     this.navCtrl.navigateRoot(['/login']);
+  }
+
+  flushSubjectsSession() {
+    this.$profileData.next(null);
+    this.$roleLevelsScope.next(null);
+    this.logged$.next(null);
   }
 
   reloadPage() {

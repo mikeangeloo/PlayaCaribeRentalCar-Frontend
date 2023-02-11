@@ -1,10 +1,10 @@
 import {Component, OnDestroy} from '@angular/core';
-import {ActivatedRoute, NavigationEnd, Router, RouterEvent, RouterLinkActive} from "@angular/router";
-import {MenuController, Platform} from "@ionic/angular";
-import {BehaviorSubject, filter, Subject, takeUntil} from "rxjs";
-import {SessionService} from "./services/session.service";
-import {ProfileDataI} from "./interfaces/profile/profile-data.interface";
-import * as module from "module";
+import {ActivatedRoute, NavigationEnd, Router, RouterEvent} from '@angular/router';
+import {MenuController, Platform} from '@ionic/angular';
+import {filter, Subject, takeUntil} from 'rxjs';
+import {SessionService} from './services/session.service';
+import {RoleLevelsEnum, RoleLevelsTypes} from './enums/role-levels.enum';
+
 export interface MenuTreeI
 {
   module: string;
@@ -13,6 +13,7 @@ export interface MenuTreeI
   label: string;
   route?: string;
   active: boolean;
+  roleScopes: RoleLevelsTypes[]
   children?: MenuTreeI [];
 }
 @Component({
@@ -30,33 +31,16 @@ export class AppComponent implements OnDestroy {
   public _navRoute: string;
   public selectedMenu: MenuTreeI;
   public openMenu: MenuTreeI;
-  public demoMenu: MenuTreeI[] = [
+  public menuTreeSideBar: MenuTreeI[] = [
     {
       module: 'dashboard',
       icon: 'apps-outline',
       label: 'Dashboard',
       route: '/dashboard',
       level: 0,
-      active: false
+      active: false,
+      roleScopes: [RoleLevelsEnum.ADMINISTRATOR]
     },
-    // {
-    //   module: 'contratos',
-    //   icon: 'clipboard-outline',
-    //   label: 'Contratos',
-    //   route: null,
-    //   level: 0,
-    //   active: false,
-    //   children: [
-    //     {
-    //       module: 'contratos',
-    //       icon: 'document-outline',
-    //       label: 'Nuevo Contrato',
-    //       route: '/contratos/nuevo',
-    //       level: 1,
-    //       active: false
-    //     },
-    //   ]
-    // },
     {
       module: 'vehiculos',
       icon: 'car-sport-outline',
@@ -64,6 +48,7 @@ export class AppComponent implements OnDestroy {
       route: null,
       level: 0,
       active: false,
+      roleScopes: [RoleLevelsEnum.ADMINISTRATOR, RoleLevelsEnum.MANAGAER, RoleLevelsEnum.SALESAGENT],
       children: [
         {
           module: 'vehiculos',
@@ -71,7 +56,8 @@ export class AppComponent implements OnDestroy {
           label: 'Lista de Vehiculos  | Estatus',
           route: 'vehiculos/list',
           level: 1,
-          active: false
+          active: false,
+          roleScopes: [RoleLevelsEnum.NOPROTECTION]
         },
       ]
     },
@@ -82,6 +68,7 @@ export class AppComponent implements OnDestroy {
       route: null,
       level: 0,
       active: false,
+      roleScopes: [RoleLevelsEnum.ADMINISTRATOR, RoleLevelsEnum.MANAGAER],
       children: [
         {
           module: 'reportes',
@@ -89,7 +76,8 @@ export class AppComponent implements OnDestroy {
           label: 'Estatus de los Vehiculos',
           route: 'reportes/estatus-vehiculos',
           level: 1,
-          active: false
+          active: false,
+          roleScopes: [RoleLevelsEnum.NOPROTECTION]
         },
         {
           module: 'reportes',
@@ -97,7 +85,8 @@ export class AppComponent implements OnDestroy {
           label: 'Servicios de Mantenimiento',
           route: 'reportes/mantenimiento-vehiculos',
           level: 1,
-          active: false
+          active: false,
+          roleScopes: [RoleLevelsEnum.NOPROTECTION]
         },
         {
           module: 'reportes',
@@ -105,6 +94,52 @@ export class AppComponent implements OnDestroy {
           label: 'Exedentes de Kilometraje y Gasolina ',
           route: 'reportes/exedente-kilometraje-gasolina',
           level: 1,
+          roleScopes: [RoleLevelsEnum.NOPROTECTION],
+          active: false
+        },
+        {
+          module: 'reportes',
+          icon: 'document-outline',
+          label: 'Polizas y seguros ',
+          route: 'reportes/polizas-seguros',
+          level: 1,
+          roleScopes: [RoleLevelsEnum.NOPROTECTION],
+          active: false
+        },
+        {
+          module: 'reportes',
+          icon: 'document-outline',
+          label: 'Detalle Pagos',
+          route: 'reportes/detalle-pagos',
+          level: 1,
+          roleScopes: [RoleLevelsEnum.NOPROTECTION],
+          active: false
+        },
+        {
+          module: 'reportes',
+          icon: 'document-outline',
+          label: 'Rentas por Vehículo',
+          route: 'reportes/rentas-por-vehiculo',
+          level: 1,
+          roleScopes: [RoleLevelsEnum.NOPROTECTION],
+          active: false
+        },
+        {
+          module: 'reportes',
+          icon: 'document-outline',
+          label: 'Rentas por Comisionistas',
+          route: 'reportes/rentas-por-comisionistas',
+          level: 1,
+          roleScopes: [RoleLevelsEnum.NOPROTECTION],
+          active: false
+        },
+        {
+          module: 'reportes',
+          icon: 'document-outline',
+          label: 'Reporte General',
+          route: 'reportes/reporte-general',
+          level: 1,
+          roleScopes: [RoleLevelsEnum.NOPROTECTION],
           active: false
         },
       ]
@@ -116,6 +151,7 @@ export class AppComponent implements OnDestroy {
       route: null,
       level: 0,
       active: false,
+      roleScopes: [RoleLevelsEnum.ADMINISTRATOR, RoleLevelsEnum.MANAGAER],
       children: [
         {
           module: 'catalogo-vehiculos',
@@ -124,13 +160,15 @@ export class AppComponent implements OnDestroy {
           route: null,
           level: 1,
           active: false,
+          roleScopes: [RoleLevelsEnum.NOPROTECTION],
           children: [
             {
               module: 'catalogo-vehiculos',
               icon: 'bookmarks',
-              label: 'Listado de Vehículos',
+              label: 'Inventario de Vehículos',
               route: '/administracion/catalogo-vehiculos/listado-vehiculos',
               level: 2,
+              roleScopes: [RoleLevelsEnum.NOPROTECTION],
               active: false,
             },
             {
@@ -139,6 +177,7 @@ export class AppComponent implements OnDestroy {
               label: 'Listado de Categorías',
               route: '/administracion/catalogo-vehiculos/categorias-vehiculos',
               level: 2,
+              roleScopes: [RoleLevelsEnum.NOPROTECTION],
               active: false,
             },
             {
@@ -147,6 +186,7 @@ export class AppComponent implements OnDestroy {
               label: 'Listado de Marcas',
               route: '/administracion/catalogo-vehiculos/marcas-vehiculos',
               level: 2,
+              roleScopes: [RoleLevelsEnum.NOPROTECTION],
               active: false,
             },
             {
@@ -155,6 +195,16 @@ export class AppComponent implements OnDestroy {
               label: 'Listado de Clases',
               route: '/administracion/catalogo-vehiculos/clases-vehiculos',
               level: 2,
+              roleScopes: [RoleLevelsEnum.NOPROTECTION],
+              active: false,
+            },
+            {
+              module: 'catalogo-vehiculos',
+              icon: 'bookmarks',
+              label: 'Listado de Polizas',
+              route: '/administracion/catalogo-vehiculos/polizas',
+              level: 2,
+              roleScopes: [RoleLevelsEnum.NOPROTECTION],
               active: false,
             }
           ]
@@ -166,6 +216,7 @@ export class AppComponent implements OnDestroy {
           route: null,
           level: 1,
           active: false,
+          roleScopes: [RoleLevelsEnum.NOPROTECTION],
           children: [
             {
               module: 'control-acceso',
@@ -173,6 +224,7 @@ export class AppComponent implements OnDestroy {
               label: 'Listado de Usuarios',
               route: '/administracion/control-acceso/listado-usuarios',
               level: 2,
+              roleScopes: [RoleLevelsEnum.NOPROTECTION],
               active: false,
             },
             {
@@ -181,22 +233,25 @@ export class AppComponent implements OnDestroy {
               label: 'Listado de Sucursales',
               route: '/administracion/control-acceso/listado-sucursales',
               level: 2,
+              roleScopes: [RoleLevelsEnum.NOPROTECTION],
               active: false,
             },
-            {
-              module: 'control-acceso',
-              icon: 'bookmarks',
-              label: 'Listado de Roles',
-              route: '/administracion/control-acceso/listado-roles',
-              level: 2,
-              active: false,
-            },
+            // {
+            //   module: 'control-acceso',
+            //   icon: 'bookmarks',
+            //   label: 'Listado de Roles',
+            //   route: '/administracion/control-acceso/listado-roles',
+            //   level: 2,
+            //   roleScopes: [RoleLevelsEnum.NOPROTECTION],
+            //   active: false,
+            // },
             {
               module: 'control-acceso',
               icon: 'bookmarks',
               label: 'Listado de Aréas de trabajo',
               route: '/administracion/control-acceso/listado-areas-trabajo',
               level: 2,
+              roleScopes: [RoleLevelsEnum.NOPROTECTION],
               active: false,
             },
           ]
@@ -208,6 +263,7 @@ export class AppComponent implements OnDestroy {
           route: null,
           level: 1,
           active: false,
+          roleScopes: [RoleLevelsEnum.NOPROTECTION],
           children: [
             {
               module: 'hoteles',
@@ -215,6 +271,7 @@ export class AppComponent implements OnDestroy {
               label: 'Listado de Hoteles',
               route: 'administracion/hoteles/listado-hoteles',
               level: 2,
+              roleScopes: [RoleLevelsEnum.NOPROTECTION],
               active: false,
             },
           ]
@@ -226,6 +283,7 @@ export class AppComponent implements OnDestroy {
           route: null,
           level: 1,
           active: false,
+          roleScopes: [RoleLevelsEnum.NOPROTECTION],
           children: [
             {
               module: 'comisionistas',
@@ -233,6 +291,7 @@ export class AppComponent implements OnDestroy {
               label: 'Listado de Comisionistas',
               route: 'administracion/comisionistas/listado-comisionistas',
               level: 2,
+              roleScopes: [RoleLevelsEnum.NOPROTECTION],
               active: false,
             }
           ]
@@ -243,6 +302,7 @@ export class AppComponent implements OnDestroy {
           label: 'Clientes',
           route: null,
           level: 1,
+          roleScopes: [RoleLevelsEnum.NOPROTECTION],
           active: false,
           children: [
             {
@@ -251,6 +311,7 @@ export class AppComponent implements OnDestroy {
               label: 'Listado de Clientes',
               route: '/administracion/clientes/listado-clientes',
               level: 2,
+              roleScopes: [RoleLevelsEnum.NOPROTECTION],
               active: false,
             }
           ]
@@ -262,6 +323,7 @@ export class AppComponent implements OnDestroy {
           route: null,
           level: 1,
           active: false,
+          roleScopes: [RoleLevelsEnum.NOPROTECTION],
           children: [
             {
               module: 'catalogos',
@@ -270,6 +332,7 @@ export class AppComponent implements OnDestroy {
               route: null,
               level: 2,
               active: false,
+              roleScopes: [RoleLevelsEnum.NOPROTECTION],
               children: [
                 {
                   module: 'catalogos',
@@ -278,6 +341,7 @@ export class AppComponent implements OnDestroy {
                   route: '/administracion/catalogos/precios/tarifas-categorias',
                   level: 3,
                   active: false,
+                  roleScopes: [RoleLevelsEnum.NOPROTECTION],
                 },
                 {
                   module: 'catalogos',
@@ -286,6 +350,7 @@ export class AppComponent implements OnDestroy {
                   route: '/administracion/catalogos/precios/tarifas-extras',
                   level: 3,
                   active: false,
+                  roleScopes: [RoleLevelsEnum.NOPROTECTION],
                 },
                 {
                   module: 'catalogos',
@@ -294,6 +359,16 @@ export class AppComponent implements OnDestroy {
                   route: '/administracion/catalogos/precios/cargos-extras',
                   level: 3,
                   active: false,
+                  roleScopes: [RoleLevelsEnum.NOPROTECTION],
+                },
+                {
+                  module: 'catalogos',
+                  icon: 'pricetags',
+                  label: 'Tipos Cambio',
+                  route: '/administracion/catalogos/tipos-cambio',
+                  level: 3,
+                  active: false,
+                  roleScopes: [RoleLevelsEnum.NOPROTECTION],
                 }
               ]
             },
@@ -304,6 +379,7 @@ export class AppComponent implements OnDestroy {
               route: '/administracion/catalogos/ubicaciones',
               level: 2,
               active: false,
+              roleScopes: [RoleLevelsEnum.NOPROTECTION],
             }
           ]
         }
@@ -335,8 +411,11 @@ export class AppComponent implements OnDestroy {
         }
       });
 
-      this.sessionService.getRole();
+      this.sessionService.getRoleLevel();
       this.sessionService.getProfile();
+      if (this.sessionService.isLogged()) {
+        this.sessionService.logged$.next(true);
+      }
 
     });
   }
@@ -347,10 +426,6 @@ export class AppComponent implements OnDestroy {
   }
 
   menuItemHandler(node: MenuTreeI): void {
-
-    console.log('selected node --->', this.selectedMenu);
-    console.log('node -->', node);
-
     if (this.selectedMenu && (this.selectedMenu.module !== node.module && this.selectedMenu.level === node.level)) {
       this.selectedMenu.active = false;
     }
@@ -383,15 +458,15 @@ export class AppComponent implements OnDestroy {
   }
 
   returnInsignia(): string {
-    if (this.sessionService.$role.value) {
-      switch (this.sessionService.$role.value.toLowerCase()) {
-        case 'administrador':
+    if (this.sessionService.$roleLevelsScope.value) {
+      switch (this.sessionService.$roleLevelsScope.value) {
+        case 20:
           return 'assets/img/insignias/admin.png';
           break;
-        case 'vendedor':
-          return 'assets/img/insignias/sales.png';
-        case 'gerente':
+        case 15:
           return 'assets/img/insignias/manager.png';
+        case 5:
+          return 'assets/img/insignias/sales.png';
         default:
           return 'assets/img/insignias/sales.png';
       }

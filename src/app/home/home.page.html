@@ -1,18 +1,175 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>
-     Dashboard
-    </ion-title>
-    <ion-buttons slot="start">
-      <ion-menu-button></ion-menu-button>
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header>
-
 <ion-content [fullscreen]="true">
 
-  <div id="container">
-    <strong>Dashboard</strong>
-    <p style="color: var(--ion-color-primary)">En construcción</p>
+  <div class="main-content">
+    <ion-row>
+      <ion-col size="12">
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>
+              Info General
+            </ion-card-title>
+            <ion-card-subtitle>
+              {{fecha}}
+            </ion-card-subtitle>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-row>
+              <ion-col size="12">
+                <ion-row class="ion-justify-content-between">
+                  <ion-col size="12" size-sm="4" size-md="4" size-xl="3">
+                    <ion-card class="ion-no-margin">
+                      <ion-card-header>
+                        <ion-card-subtitle>Tipo de Cambio</ion-card-subtitle>
+                      </ion-card-header>
+                      <ion-card-content>
+                        <span class="info-color" style="font-weight: 600">1 UDS = ${{tipoCambio?.tipo_cambio | currency}} MXN</span>
+                      </ion-card-content>
+                    </ion-card>
+                  </ion-col>
+                  <ion-col size="12" size-sm="4" size-md="4" size-xl="3">
+                    <ion-card class="ion-no-margin">
+                      <ion-card-header>
+                        <ion-card-subtitle>Usuarios Activos</ion-card-subtitle>
+                      </ion-card-header>
+                      <ion-card-content>
+                        <span class="success-color" style="font-weight: 600">{{totalUsuariosActivos}}</span>
+                      </ion-card-content>
+                    </ion-card>
+                  </ion-col>
+                  <ion-col size="12" size-sm="4" size-md="4" size-xl="3">
+                    <ion-card class="ion-no-margin">
+                      <ion-card-header>
+                        <ion-card-subtitle>Comisionistas Activos</ion-card-subtitle>
+                      </ion-card-header>
+                      <ion-card-content>
+                        <span class="success-color" style="font-weight: 600">{{totalComisionistasActivos}}</span>
+                      </ion-card-content>
+                    </ion-card>
+                  </ion-col>
+
+                </ion-row>
+              </ion-col>
+
+            </ion-row>
+          </ion-card-content>
+        </ion-card>
+      </ion-col> <!-- INFO GENERAL -->
+      <ion-col size="12">
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>
+              Info Contratos
+            </ion-card-title>
+            <ion-card-subtitle>
+              {{fecha}}
+            </ion-card-subtitle>
+          </ion-card-header>
+
+          <ion-card-content>
+            <ion-row>
+              <ion-col size="12">
+                <ion-row class="ion-justify-content-between">
+                  <ion-col size="12" size-sm="4" size-md="3" size-xl="3">
+                    <ion-card class="ion-no-margin">
+                      <ion-card-header>
+                        <ion-card-subtitle>Rentados</ion-card-subtitle>
+                      </ion-card-header>
+                      <ion-card-content>
+                        <span class="success-color" style="font-weight: 600">${{totalRentados | currency}}</span>
+                      </ion-card-content>
+                    </ion-card>
+                  </ion-col>
+                  <ion-col size="12" size-sm="4" size-md="3" size-xl="3">
+                    <ion-card class="ion-no-margin">
+                      <ion-card-header>
+                        <ion-card-subtitle>Cerrados</ion-card-subtitle>
+                      </ion-card-header>
+                      <ion-card-content>
+                        <span class="success-color" style="font-weight: 600">${{totalCerrados | currency}}</span>
+                      </ion-card-content>
+                    </ion-card>
+                  </ion-col>
+                  <ion-col size="12" size-sm="4" size-md="3" size-xl="3">
+                    <ion-card class="ion-no-margin">
+                      <ion-card-header>
+                        <ion-card-subtitle>Cancelados</ion-card-subtitle>
+                      </ion-card-header>
+                      <ion-card-content>
+                        <span class="danger-color" style="font-weight: 600">${{totalCancelados | currency}}</span>
+                      </ion-card-content>
+                    </ion-card>
+                  </ion-col>
+                  <ion-col size="12" size-sm="4" size-md="3" size-xl="3">
+                    <ion-card class="ion-no-margin">
+                      <ion-card-header>
+                        <ion-card-subtitle>Reservados</ion-card-subtitle>
+                      </ion-card-header>
+                      <ion-card-content>
+                        <span class="app-color" style="font-weight: 600">${{totalReservados | currency}}</span>
+                      </ion-card-content>
+                    </ion-card>
+                  </ion-col>
+                </ion-row>
+              </ion-col>
+
+            </ion-row>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>  <!-- INFO CONTRATOS -->
+      <ion-col size="12">
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>
+              Info Vehículos
+            </ion-card-title>
+            <ion-card-subtitle>
+              {{fecha}}
+            </ion-card-subtitle>
+          </ion-card-header>
+
+          <ion-card-content>
+            <ion-row>
+              <ion-col size="12">
+                <ion-row class="ion-justify-content-between">
+                  <ion-col size="12" size-sm="4" size-md="3" size-xl="3">
+                    <ion-card class="ion-no-margin">
+                      <ion-card-header>
+                        <ion-card-subtitle>Disponibles</ion-card-subtitle>
+                      </ion-card-header>
+                      <ion-card-content>
+                        <span class="success-color" style="font-weight: 600">{{vehiculosDisponibles}}</span>
+                      </ion-card-content>
+                    </ion-card>
+                  </ion-col>
+                  <ion-col size="12" size-sm="4" size-md="3" size-xl="3">
+                    <ion-card class="ion-no-margin">
+                      <ion-card-header>
+                        <ion-card-subtitle>Corralón</ion-card-subtitle>
+                      </ion-card-header>
+                      <ion-card-content>
+                        <span class="danger-color" style="font-weight: 600">{{vehiculosCorralon}}</span>
+                      </ion-card-content>
+                    </ion-card>
+                  </ion-col>
+                  <ion-col size="12" size-sm="4" size-md="3" size-xl="3">
+                    <ion-card class="ion-no-margin">
+                      <ion-card-header>
+                        <ion-card-subtitle>Taller</ion-card-subtitle>
+                      </ion-card-header>
+                      <ion-card-content>
+                        <span class="dark-tint-color" style="font-weight: 600">{{vehiculosTaller}}</span>
+                      </ion-card-content>
+                    </ion-card>
+                  </ion-col>
+                </ion-row>
+              </ion-col>
+
+            </ion-row>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>  <!-- INFO VEHICULOS -->
+    </ion-row>
+
+
   </div>
 </ion-content>

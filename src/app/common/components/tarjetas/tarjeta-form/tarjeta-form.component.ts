@@ -12,6 +12,8 @@ import {GeneralService} from "../../../../services/general.service";
 import {ToastMessageService} from "../../../../services/toast-message.service";
 import {CobranzaTipoE} from '../../../../enums/cobranza-tipo.enum';
 import { StringMap } from '@angular/compiler/src/compiler_facade_interface';
+import {ConversionMonedaService} from '../../../../services/conversion-moneda.service';
+import {TiposCambioI} from '../../../../interfaces/configuracion/tipos-cambio';
 
 @Component({
   selector: 'app-tarjeta-form',
@@ -34,10 +36,12 @@ export class TarjetaFormComponent implements OnInit {
   @Input() loadLoading = true;
   @Input() needCaptureAmount = false;
   @Input() cod_banco: string;
-  @Input() monto: number;
+  @Input() montoCobrado: number;
   @Input() tipoPago = null;
   @Input() titularTarj = null;
   @Input() montoCobrar: number;
+
+  @Input() divisa_id: number = 1;
 
   public title = 'Formulario Tarjeta';
 
@@ -51,6 +55,8 @@ export class TarjetaFormComponent implements OnInit {
 
   public minValidDate = moment().format('YYYY-MM-DD');
 
+  public converionSaldo: number;
+  public tipoCambioTomado: TiposCambioI;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -58,7 +64,8 @@ export class TarjetaFormComponent implements OnInit {
     public modalCtrl: ModalController,
     public tarjetaServ: TarjetaService,
     public generalServ: GeneralService,
-    private toastServ: ToastMessageService
+    private toastServ: ToastMessageService,
+    public convMonedaServ: ConversionMonedaService
   ) { }
 
   ngOnInit() {
@@ -69,6 +76,10 @@ export class TarjetaFormComponent implements OnInit {
       this.loadTarjetaData();
     } else {
       this.fillCardForm();
+    }
+
+    if (this.divisa_id && this.divisa_id !== 1) {
+      this.handleDivisaChange();
     }
   }
 
@@ -127,7 +138,7 @@ export class TarjetaFormComponent implements OnInit {
       c_charge_method: (data && data.c_charge_method) ? data.c_charge_method : this.tipoPago,
 
       cod_banco: this.cod_banco ? this.cod_banco : null,
-      monto: this.monto ? this.monto : null
+      monto: this.montoCobrado ? this.montoCobrado : null
     });
   }
 
@@ -228,6 +239,20 @@ export class TarjetaFormComponent implements OnInit {
 
   //#endregion
 
+  handleDivisaChange() {
+    this.tipoCambioTomado = this.convMonedaServ.tiposCambio.find(tipoC => tipoC.divisa_base_id === this.divisa_id);
+    if (this.tipoCambioTomado && this.tipoCambioTomado.divisa_base !== 'MXN') {
+      this.converionSaldo = (this.montoCobrar / Number(this.tipoCambioTomado.tipo_cambio));
+    } else {
+      this.converionSaldo = this.montoCobrar;
+      this.tipoCambioTomado = {
+        id: null,
+        tipo_cambio: 1,
+        divisa_base: 'MXN'
+      };
+    }
+  }
+
   saveUpdate() {
 
     if (this.cardForm.invalid) {
@@ -236,7 +261,7 @@ export class TarjetaFormComponent implements OnInit {
       return;
     }
     if (this.cardForm.controls.c_charge_method.value === CobranzaTipoE.PAGOTARJETA) {
-      if (!this.card_id && this.cardForm.controls.monto.value > this.montoCobrar){
+      if (!this.card_id && this.cardForm.controls.monto.value > this.converionSaldo){
         this.messageService.printStatus('El monto es mayor al saldo a cobrar', 'warning');
         return;
       }
@@ -248,6 +273,10 @@ export class TarjetaFormComponent implements OnInit {
       String(cardData.c_cn3) +
       String(cardData.c_cn4);
 
+    let montoBase = cardData.monto;
+    if (this.tipoCambioTomado && this.tipoCambioTomado.divisa_base !== 'MXN') {
+      montoBase = (cardData.monto * Number(this.tipoCambioTomado.tipo_cambio));
+    }
     const card = {
       id: (this.card_id) ? this.card_id : null,
       c_number,
@@ -268,7 +297,10 @@ export class TarjetaFormComponent implements OnInit {
       c_zip: (cardData.c_zip) ? cardData.c_zip : null,
       cliente_id: (this.cliente_id) ? this.cliente_id : null,
       cod_banco: cardData.cod_banco,
-      monto: cardData.monto
+      monto: montoBase,
+      monto_cobrado: cardData.monto,
+      tipoCambio: this.tipoCambioTomado,
+      divisaId: this.divisa_id
     };
 
 

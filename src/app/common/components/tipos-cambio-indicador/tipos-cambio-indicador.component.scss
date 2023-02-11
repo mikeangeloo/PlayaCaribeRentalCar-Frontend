@@ -1,0 +1,15 @@
+.tipo-cambio-container {
+  display: flex;
+  align-items: center;
+  max-width: 245px;
+  justify-content: space-evenly;
+  color: var(--ion-color-dark);
+  font-weight: 600;
+
+  .divisa-base {
+    ion-button {
+      --background: var(--app-blue-light);
+      --color: white;
+    }
+  }
+}

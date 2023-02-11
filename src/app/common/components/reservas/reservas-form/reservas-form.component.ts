@@ -11,18 +11,14 @@ import { TxtConv } from 'src/app/helpers/txt-conv';
 import { CardI } from 'src/app/interfaces/cards/card.interface';
 import { CobranzaCalcI } from 'src/app/interfaces/cobranza/cobranza-calc.interface';
 import { CobranzaProgI } from 'src/app/interfaces/cobranza/cobranza-prog.interface';
-import { ComisionistasI } from 'src/app/interfaces/comisionistas/comisionistas.interface';
 import { TarifasCategoriasI } from 'src/app/interfaces/configuracion/tarifas-categorias.interface';
 import { TarifasExtrasI } from 'src/app/interfaces/configuracion/tarifas-extras.interface';
 import { TiposTarifasI } from 'src/app/interfaces/configuracion/tipos-tarifas.interface';
 import { UbicacionesI } from 'src/app/interfaces/configuracion/ubicaciones.interface';
 import { ContratoI } from 'src/app/interfaces/contratos/contrato.interface';
-import { HotelesI } from 'src/app/interfaces/hoteles/hoteles.interface';
-import { ReservaI } from 'src/app/interfaces/reservas/reserva.interface';
 import { DocDataTransfer } from 'src/app/interfaces/shared/doc-data-tranfer.interface';
 import { Months } from 'src/app/interfaces/shared/months';
 import { SucursalesI } from 'src/app/interfaces/sucursales.interface';
-import { TarifaHotelesI } from 'src/app/interfaces/tarifas/tarifa-hoteles.interface';
 import { CargosRetornoExtrasService } from 'src/app/services/cargos-retorno-extras.service';
 import { CobranzaService } from 'src/app/services/cobranza.service';
 import { ContratosService } from 'src/app/services/contratos.service';
@@ -1069,6 +1065,7 @@ export class ReservasFormComponent implements OnInit {
         'tipoPago': tipo,
         'titularTarj': _titular,
         'montoCobrar': this.balancePorPagar,
+        'divisa_id': (cobranza && cobranza.tipo_cambio_usado?.divisa_base_id) ? cobranza.tipo_cambio_usado.divisa_base_id : null
       },
       swipeToClose: true,
       cssClass: 'edit-form',
@@ -1091,9 +1088,13 @@ export class ReservasFormComponent implements OnInit {
           fecha_cargo: null,
           fecha_procesado: null,
           fecha_reg: null,
+          tipo_cambio_id: data.info.tipoCambio.id,
+          tipo_cambio: data.info.tipoCambio.tipo_cambio,
           cobranza_seccion: cobranza_seccion,
           moneda: this.baseCurrency,
+          moneda_cobrada: data.info.tipoCambio.divisa_base,
           monto: data.info.monto,
+          monto_cobrado: data.info.monto_cobrado,
           tipo: data.info.c_charge_method,
           res_banco: null,
           updated_at: null,
@@ -1117,7 +1118,8 @@ export class ReservasFormComponent implements OnInit {
         'asModal': true,
         'monto': (cobranza && cobranza.monto) ? cobranza.monto : null,
         'balanceCobro': this.balancePorPagar,
-        'cobranza_id': (cobranza && cobranza.id) ? cobranza.id : null
+        'cobranza_id': (cobranza && cobranza.id) ? cobranza.id : null,
+        'divisa_id': (cobranza && cobranza.tipo_cambio_usado?.divisa_base_id) ? cobranza.tipo_cambio_usado.divisa_base_id : null
       },
       swipeToClose: true,
       cssClass: 'small-form',
@@ -1140,8 +1142,12 @@ export class ReservasFormComponent implements OnInit {
         fecha_cargo: null,
         fecha_procesado: null,
         fecha_reg: null,
+        tipo_cambio_id: data.info.tipoCambio.id,
+        tipo_cambio: data.info.tipoCambio.tipo_cambio,
         moneda: this.baseCurrency,
+        moneda_cobrada: data.info.tipoCambio.divisa_base,
         monto: data.info.monto,
+        monto_cobrado: data.info.monto_cobrado,
         tipo: CobranzaTipoE.PAGOEFECTIVO,
         res_banco: null,
         updated_at: null,
@@ -1161,7 +1167,7 @@ export class ReservasFormComponent implements OnInit {
   //#region COBRANZAPROG FUNCTIONS
   async editCobro(tipo: CobranzaTipoE.PAGOTARJETA | CobranzaTipoE.PREAUTHORIZACION | CobranzaTipoE.PAGOEFECTIVO, cobranza_seccion, cobro: CobranzaProgI) {
     if (tipo === CobranzaTipoE.PREAUTHORIZACION || tipo === CobranzaTipoE.PAGOTARJETA) {
-      await this.agregarTarjetaForm(cobro.tipo, cobro.tarjeta, cobranza_seccion, true, cobro);
+      await this.agregarTarjetaForm(cobro.tipo, cobranza_seccion, cobro.tarjeta, true, cobro);
     }
 
     if (tipo === CobranzaTipoE.PAGOEFECTIVO) {
@@ -1522,7 +1528,12 @@ export class ReservasFormComponent implements OnInit {
   async sendAndGeneratePDF() {
     this.spinner.show();
     this.contratosServ.flushReservaData();
-    this.contratosServ.sendAndGenerateReservaPDF(this.contract_id, this.idioma).subscribe(res => {
+    let sendPDFToClient = false;
+    let msgResponse = await this.sweetMsgServ.confirmRequest('¿Quieres enviar una copia del la reserva en PDF al cliente?', ' ');
+    if (msgResponse.value) {
+      sendPDFToClient = true;
+    }
+    this.contratosServ.sendAndGenerateReservaPDF(this.contract_id, this.idioma, sendPDFToClient).subscribe(res => {
       const url = URL.createObjectURL(res);
       this.dismiss(true);
       this.spinner.hide();

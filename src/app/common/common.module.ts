@@ -54,6 +54,28 @@ import { EstatusVehiculosTableComponent } from './components/reportes/estatus-ve
 import { MantenimientoVehiculosTableComponent } from './components/reportes/mantenimiento-vehiculos-table/mantenimiento-vehiculos-table.component';
 import { VehiculosEstatusFormComponent } from './components/vehiculos/vehiculos-estatus-form/vehiculos-estatus-form.component';
 import { ExedenteKilometrajeGasolinaTableComponent } from './components/reportes/exedente-kilometraje-gasolina-table/exedente-kilometraje-gasolina-table.component';
+import {PolizasTableComponent} from './components/polizas/polizas-table/polizas-table.component';
+import {PolizaFormComponent} from './components/polizas/poliza-form/poliza-form.component';
+import {CobroDepositoModalComponent} from './components/cobro-deposito-modal/cobro-deposito-modal.component';
+import { PolizasSegurosTableComponent } from './components/reportes/polizas-seguros-table/polizas-seguros-table.component';
+import {DetallesPagosTableComponent} from './components/reportes/detalle-pagos-table/detalles-pagos-table.component';
+import {
+  RentasPorVehiculoTableComponent
+} from './components/reportes/rentas-por-vehiculo-table/rentas-por-vehiculo-table.component';
+import {
+  RentasPorComisionistasTableComponent
+} from './components/reportes/rentas-por-comisionistas-table/rentas-por-comisionistas-table.component';
+import {
+  ReporteGeneralTableComponent
+} from './components/reportes/reporte-general-table/reporte-general-table.component';
+import {SearchControlsComponent} from './search-controls/search-controls.component';
+import {HeaderComponent} from './header/header.component';
+import {
+  TiposCambiosTableComponent
+} from './components/configuracion/precios/tipos-cambios-table/tipos-cambios-table.component';
+import {TipoCambioFormComponent} from './components/configuracion/precios/tipo-cambio-form/tipo-cambio-form.component';
+import {TiposCambioIndicadorComponent} from './components/tipos-cambio-indicador/tipos-cambio-indicador.component';
+import {RoleNamePipe} from '../pipes/role-name.pipe';
 
 
 @NgModule({
@@ -106,7 +128,22 @@ import { ExedenteKilometrajeGasolinaTableComponent } from './components/reportes
     EstatusVehiculosTableComponent,
     MantenimientoVehiculosTableComponent,
     VehiculosEstatusFormComponent,
-    ExedenteKilometrajeGasolinaTableComponent
+    ExedenteKilometrajeGasolinaTableComponent,
+    PolizasTableComponent,
+    PolizaFormComponent,
+    CobroDepositoModalComponent,
+    PolizaFormComponent,
+    PolizasSegurosTableComponent,
+    DetallesPagosTableComponent,
+    RentasPorVehiculoTableComponent,
+    RentasPorComisionistasTableComponent,
+    ReporteGeneralTableComponent,
+    SearchControlsComponent,
+    TiposCambioIndicadorComponent,
+    HeaderComponent,
+    TiposCambiosTableComponent,
+    TipoCambioFormComponent,
+    RoleNamePipe
   ],
   exports: [
     HotelesListComponent,
@@ -157,7 +194,22 @@ import { ExedenteKilometrajeGasolinaTableComponent } from './components/reportes
     EstatusVehiculosTableComponent,
     MantenimientoVehiculosTableComponent,
     VehiculosEstatusFormComponent,
-    ExedenteKilometrajeGasolinaTableComponent
+    ExedenteKilometrajeGasolinaTableComponent,
+    PolizasTableComponent,
+    PolizaFormComponent,
+    PolizasSegurosTableComponent,
+    PolizaFormComponent,
+    CobroDepositoModalComponent,
+    DetallesPagosTableComponent,
+    RentasPorVehiculoTableComponent,
+    RentasPorComisionistasTableComponent,
+    ReporteGeneralTableComponent,
+    SearchControlsComponent,
+    TiposCambioIndicadorComponent,
+    HeaderComponent,
+    TiposCambiosTableComponent,
+    TipoCambioFormComponent,
+    RoleNamePipe
   ],
   entryComponents: [
     HotelesListComponent,
@@ -208,7 +260,21 @@ import { ExedenteKilometrajeGasolinaTableComponent } from './components/reportes
     EstatusVehiculosTableComponent,
     MantenimientoVehiculosTableComponent,
     VehiculosEstatusFormComponent,
-    ExedenteKilometrajeGasolinaTableComponent
+    ExedenteKilometrajeGasolinaTableComponent,
+    PolizasTableComponent,
+    PolizaFormComponent,
+    PolizasSegurosTableComponent,
+    PolizaFormComponent,
+    CobroDepositoModalComponent,
+    DetallesPagosTableComponent,
+    RentasPorVehiculoTableComponent,
+    RentasPorComisionistasTableComponent,
+    RentasPorComisionistasTableComponent,
+    SearchControlsComponent,
+    TiposCambioIndicadorComponent,
+    HeaderComponent,
+    TiposCambiosTableComponent,
+    TipoCambioFormComponent
   ],
     imports: [
         CommonModule,

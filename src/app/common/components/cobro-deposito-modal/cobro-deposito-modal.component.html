@@ -1,0 +1,98 @@
+<ion-header translucent *ngIf="asModal">
+  <ion-toolbar>
+    <ion-title>{{ title }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button class="close-btn" (click)="dismiss()">
+        <ion-icon name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content fullscreen>
+
+  <ion-card class="app-card">
+    <ion-card-content>
+      <ion-row>
+        <ion-col size="6">
+          <h4 style="margin: 0; padding: 0;">Balance por cobrar: <span class="danger-color">${{balanceCobro | currency}} MXN</span></h4>
+          <h4 style="margin: 0; padding: 0;">Total deposito: <span class="success-color">${{totalDeposito | currency}} MXN</span></h4>
+        </ion-col>
+        <ion-col size="6" class="ion-text-end">
+          <button mat-raised-button class="button-success" [disabled]="canSave()" (click)="saveUpdate()">Guardar</button>
+        </ion-col>
+        <ion-col size="12">
+          <table class="complement-table">
+            <thead>
+            <tr>
+              <th>Tarjeta</th>
+              <th>Pre-Autorización</th>
+              <th>Cobrar</th>
+              <th>Cód. Banco</th>
+            </tr>
+            </thead>
+            <tbody>
+            <ng-container *ngFor="let cobranzaD of cobranzaDepositos">
+              <tr>
+                <td style="font-size: 12px;">
+                  {{cobranzaD?.c_type | uppercase}} <br>
+                  {{cobranzaD?.c_cn4}}
+                </td>
+                <td>
+                  <div class="table-input">
+                    <input type="text"  autocomplete="off" [value]="'$' + (cobranzaD?.c_monto | currency) + ' ' + cobranzaD?.moneda_cobrada" [readOnly]="true">
+                    <p class="input-hint">Solo Lectura</p>
+                  </div>
+                  <div *ngIf="cobranzaD.moneda_cobrada !== 'MXN'">
+                    <small style="display: block;margin-top: 10px;">USD/MXN: ${{cobranzaD.tipo_cambio | currency}}</small>
+                  </div>
+                </td>
+                <td>
+                  <div class="table-input">
+                    <input type="number" autocomplete="off" [(ngModel)]="cobranzaD.monto_cobrado" (ngModelChange)="handleCobroCaptura(cobranzaD)">
+                    <div class="input-subfix">
+                      <span>$</span>
+                    </div>
+                    <div class="input-prefix">
+                      <span>{{cobranzaD.moneda_cobrada}}</span>
+                    </div>
+                  </div>
+
+                  <div *ngIf="cobranzaD.moneda_cobrada !== 'MXN' && cobranzaD.conversionCobro > 0">
+                    <small style="display: block;margin-top: 10px;">USD/MXN: ${{cobranzaD.conversionCobro | currency}}</small>
+                  </div>
+                </td>
+                <td>
+                  <div class="table-input">
+                    <input type="text" autocomplete="off" maxlength="50" [(ngModel)]="cobranzaD.cod_banco">
+                  </div>
+                </td>
+              </tr>
+              <tr class="error-feed" *ngIf="cobranzaD.errors && cobranzaD.errors.length > 0">
+                <td colspan="4">
+                  <ul style="text-align: left">
+                    <li *ngFor="let error of cobranzaD.errors">
+                      {{error}}
+                    </li>
+                  </ul>
+                </td>
+              </tr>
+            </ng-container>
+
+            </tbody>
+          </table>
+        </ion-col>
+      </ion-row>
+    </ion-card-content>
+  </ion-card>
+</ion-content>
+
+<ion-footer>
+  <ion-toolbar>
+    <ion-buttons slot="end">
+      <ion-button color="medium" (click)="dismiss()">
+        Cerrar Ventana
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-footer>

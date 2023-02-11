@@ -18,6 +18,12 @@
               <span style="font-weight: 500">Por saldar:</span> {{montoCobrar | currency}}
             </p>
           </div>
+          <ng-container *ngIf="tipoCambioTomado?.id">
+            <p style="color: #af0202;font-size: 1.1em; text-align: center;">
+              <span style="font-weight: bold; color: black;">ó</span> <span style="font-weight: 500"> </span>
+              ${{converionSaldo | currency}} {{tipoCambioTomado.divisa_base}}
+            </p>
+          </ng-container>
           <ng-container>
             <form [formGroup]="cardForm">
               <ion-row>
@@ -59,9 +65,11 @@
               <ion-row class="card-numbers">
                 <ion-col size="3" size-md="3">
                   <mat-form-field appearance="legacy">
-                    <input matInput formControlName="c_cn1" id="c_cn1" type="numeric" style="/*-webkit-text-security: disc;*/" inputmode="numeric" pattern="[0-9]*"
+                    <input matInput formControlName="c_cn1" id="c_cn1" type="numeric"
+                           style="/*-webkit-text-security: disc;*/" inputmode="numeric" pattern="[0-9]*"
                            [maxLength]="(cardConfig && cardConfig.l1) ? cardConfig.l1 : 4"
-                           (keyup)="keytab($event, (cardConfig && cardConfig?.l1) ? cardConfig.l1 : 4)" autocomplete="off">
+                           (keyup)="keytab($event, (cardConfig && cardConfig?.l1) ? cardConfig.l1 : 4)"
+                           autocomplete="off">
 
                     <mat-icon matSuffix>card</mat-icon>
                     <mat-error *ngIf="cardForm.controls['c_cn1'].errors?.required">Campo requerido.
@@ -74,7 +82,9 @@
                 <ion-col size="3" size-md="3">
                   <mat-form-field appearance="legacy">
                     <mat-label></mat-label>
-                    <input matInput formControlName="c_cn2" id="c_cn2" type="numeric" style="/*-webkit-text-security: disc;*/" inputmode="numeric" pattern="[0-9]*" autocomplete="off"
+                    <input matInput formControlName="c_cn2" id="c_cn2" type="numeric"
+                           style="/*-webkit-text-security: disc;*/" inputmode="numeric" pattern="[0-9]*"
+                           autocomplete="off"
                            [maxLength]="(cardConfig && cardConfig.l2) ? cardConfig.l2 : 4"
                            (keyup)="keytab($event, cardConfig?.l2)">
                     <mat-icon matSuffix>card</mat-icon>
@@ -88,7 +98,9 @@
                 <ion-col size="3" size-md="3">
                   <mat-form-field appearance="legacy">
                     <mat-label></mat-label>
-                    <input matInput formControlName="c_cn3" id="c_cn3" type="numeric" style="/*-webkit-text-security: disc;*/" inputmode="numeric" pattern="[0-9]*" autocomplete="off"
+                    <input matInput formControlName="c_cn3" id="c_cn3" type="numeric"
+                           style="/*-webkit-text-security: disc;*/" inputmode="numeric" pattern="[0-9]*"
+                           autocomplete="off"
                            [maxLength]="(cardConfig && cardConfig.l3) ? cardConfig.l3 : 4"
                            (keyup)="keytab($event, cardConfig?.l3)">
                     <mat-icon matSuffix>card</mat-icon>
@@ -102,7 +114,8 @@
                 <ion-col size="3" size-md="3">
                   <mat-form-field appearance="legacy">
                     <mat-label></mat-label>
-                    <input matInput formControlName="c_cn4" id="c_cn4" type="numeric" inputmode="numeric" pattern="[0-9]*" autocomplete="off"
+                    <input matInput formControlName="c_cn4" id="c_cn4" type="numeric" inputmode="numeric"
+                           pattern="[0-9]*" autocomplete="off"
                            [maxLength]="(cardConfig && cardConfig.l4) ? cardConfig.l4 : 4"
                            (keyup)="keytab($event, cardConfig?.l4)">
                     <mat-icon matSuffix>card</mat-icon>
@@ -147,7 +160,8 @@
                 <ion-col size="4">
                   <mat-form-field appearance="legacy">
                     <mat-label>Código CCV</mat-label>
-                    <input matInput formControlName="c_code" type="numeric" style="/*-webkit-text-security: disc;*/" inputmode="numeric" pattern="[0-9]*" autocomplete="off"
+                    <input matInput formControlName="c_code" type="numeric" style="/*-webkit-text-security: disc;*/"
+                           inputmode="numeric" pattern="[0-9]*" autocomplete="off"
                            [maxLength]="(cardConfig && cardConfig.lv) ? cardConfig.lv : 4">
 
                     <mat-icon matSuffix>call_to_action</mat-icon>
@@ -178,6 +192,16 @@
                     <input type="number" matInput formControlName="monto">
                     <mat-error *ngIf="cardForm.controls['monto'].errors?.required">Campo requerido
                     </mat-error>
+                  </mat-form-field>
+                </ion-col>
+                <ion-col size>
+                  <mat-form-field>
+                    <mat-label>Moneda</mat-label>
+                    <mat-select (selectionChange)="handleDivisaChange()" [(ngModel)]="divisa_id"
+                                [ngModelOptions]="{standalone: true}">
+                      <mat-option *ngFor="let divisa of convMonedaServ.divisas"
+                                  [value]="divisa.id">{{divisa.divisa_iso}}</mat-option>
+                    </mat-select>
                   </mat-form-field>
                 </ion-col>
               </ion-row>

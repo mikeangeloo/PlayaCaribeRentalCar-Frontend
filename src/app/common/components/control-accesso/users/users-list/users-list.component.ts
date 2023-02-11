@@ -154,10 +154,18 @@ export class UsersListComponent implements OnInit, OnChanges {
     }
   }
 
-  inactiveUsuario(usuario: UsersI) {
-    this.sweetServ.confirmRequest('¿Estás seguro de querer deshabilitar este registro ?').then((data) => {
+  enableDisableUsuario(usuario: UsersI, enable: boolean) {
+    let msg = '¿Estás seguro de querer deshabilitar este registro ?';
+    if (enable) {
+      msg = '¿Estás seguro de querer habilitar este registro ?'
+    }
+    this.sweetServ.confirmRequest(msg).then((data) => {
       if (data.value) {
-        this.usuariosServ.setInactive(usuario.id).subscribe(res => {
+        let payload = {
+          id: usuario.id,
+          activo: enable
+        }
+        this.usuariosServ.setEnable(payload).subscribe(res => {
           if (res.ok === true) {
             this.toastServ.presentToast('success', res.message, 'top');
             this.loadUsuariosTable();
@@ -170,10 +178,10 @@ export class UsersListComponent implements OnInit, OnChanges {
     });
   }
 
-  activeUsuario(usuario: UsersI) {
-    this.sweetServ.confirmRequest('¿Estás seguro de querer habilitar este registro ?').then((data) => {
+  deleteUsuario(usuario: UsersI) {
+    this.sweetServ.confirmDelete().then((data) => {
       if (data.value) {
-        this.usuariosServ.setEnable(usuario.id).subscribe(res => {
+        this.usuariosServ.deleteUser(usuario.id).subscribe(res => {
           if (res.ok === true) {
             this.toastServ.presentToast('success', res.message, 'top');
             this.loadUsuariosTable();

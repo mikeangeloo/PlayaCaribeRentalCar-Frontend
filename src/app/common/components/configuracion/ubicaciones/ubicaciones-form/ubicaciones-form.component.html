@@ -26,7 +26,7 @@
                 <ion-col size="12" size-md="4">
                   <mat-form-field appearance="legacy">
                     <mat-label>Alias</mat-label>
-                    <input matInput type="text" formControlName="alias" autocomplete="off">
+                    <input matInput type="text" formControlName="alias" autocomplete="off" maxlength="70">
                     <mat-error *ngIf="uf.alias.errors?.required">Campo requerido</mat-error>
                   </mat-form-field>
                 </ion-col>
@@ -53,14 +53,14 @@
                 <ion-col size="12" size-md="4">
                   <mat-form-field appearance="legacy">
                     <mat-label>Municipio</mat-label>
-                    <input matInput type="text" formControlName="municipio" autocomplete="off">
+                    <input matInput type="text" formControlName="municipio" autocomplete="off" maxlength="70">
                     <mat-error *ngIf="uf.municipio.errors?.required">Campo requerido</mat-error>
                   </mat-form-field>
                 </ion-col>
                 <ion-col size="12" size-md="4">
                   <mat-form-field appearance="legacy">
                     <mat-label>Colonia</mat-label>
-                    <input matInput type="text" formControlName="colonia" autocomplete="off">
+                    <input matInput type="text" formControlName="colonia" autocomplete="off" maxlength="70">
                     <mat-error *ngIf="uf.colonia.errors?.required">Campo requerido</mat-error>
                   </mat-form-field>
                 </ion-col>
@@ -77,14 +77,14 @@
                 <ion-col size="12" size-md="6">
                   <mat-form-field appearance="legacy">
                     <mat-label>Dirección</mat-label>
-                    <textarea matInput rows="5" formControlName="direccion"></textarea>
+                    <textarea matInput rows="5" formControlName="direccion" maxlength="150"></textarea>
                     <mat-error *ngIf="uf.direccion.errors?.required">Campo requerido</mat-error>
                   </mat-form-field>
                 </ion-col>
                 <ion-col size="12" size-md="6">
                   <mat-form-field appearance="legacy">
                     <mat-label>Referencias</mat-label>
-                    <textarea matInput rows="5" formControlName="referencias"></textarea>
+                    <textarea matInput rows="5" formControlName="referencias" maxlength="150"></textarea>
                     <mat-error *ngIf="uf.referencias.errors?.required">Campo requerido</mat-error>
                   </mat-form-field>
                 </ion-col>
@@ -102,7 +102,7 @@
                   </mat-form-field>
                 </ion-col>
               </ion-row>
-              <br />
+              <br/>
               <ion-button class="btn-shadow" color="secondary" expand="full" (click)="saveUpdate()">
                 Guardar
               </ion-button>

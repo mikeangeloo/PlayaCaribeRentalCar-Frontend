@@ -12,7 +12,7 @@ export class ContratosStatus
   static labelStatus(estatus) {
     switch (estatus) {
       case 0:
-        return 'ELIMINADO';
+        return 'CANCELADO';
       case 1:
         return 'BORRADOR';
       case 2:
@@ -21,6 +21,23 @@ export class ContratosStatus
         return 'CERRADO';
       case 4:
         return 'RESERVA';
+      default:
+        return '--'
+    }
+  }
+
+  static cssClassStatus(estatus) {
+    switch (estatus) {
+      case 0:
+        return 'cancelado';
+      case 1:
+        return 'borrador';
+      case 2:
+        return 'rentado';
+      case 3:
+        return 'cerrado';
+      case 4:
+        return 'reservado';
       default:
         return '--'
     }

@@ -10,243 +10,286 @@
 </ion-header>
 
 
+<ion-card class="app-card"
+          [ngClass]="{'disable': vehiculoData?.estatus === vehiculoE.RENTADO || vehiculoData?.estatus === vehiculoE.RESERVADO}">
+  <ion-card-content>
 
-  <ion-card class="app-card">
-    <ion-card-content>
-
-      <ion-row style="height: 100%; align-content: center; justify-content: center">
-        <ion-col size="12" style="height: 90%">
-          <div class="title-container">
-          </div>
-          <ion-row>
-            <ion-col size="6">
-              <div style="display: flex;align-items: center;" *ngIf="vehiculoData && vehiculoData.estatus">
-                <ion-label style="margin-right: 1em;font-weight: 500;">Estatus</ion-label>
-                <ion-chip class="{{vehiculoData.estatus}}" title="{{vehiculoC.getLabel(vehiculoData.estatus)}}">
-                  <ion-label>{{vehiculoC.getLabel(vehiculoData.estatus)}}</ion-label>
-                </ion-chip>
-              </div>
-            </ion-col>
-            <ion-col size="6" class="ion-text-end">
-              <button mat-raised-button class="button-success" (click)="saveUpdate()">Guardar</button>
-            </ion-col>
-          </ion-row>
-          <form [formGroup]="vehiculoForm">
-            <div class="form-content">
-
-              <ion-row class="ion-no-padding ion-no-margin">
-                <ion-col size>
-                  <mat-form-field appearance="legacy">
-                    <mat-label>Código Vehículo</mat-label>
-                    <input type="text" matInput formControlName="codigo">
-                    <mat-error *ngIf="vf.codigo.errors?.required">Campo requerido</mat-error>
-                  </mat-form-field>
-                </ion-col>
-                <ion-col size>
-                  <mat-form-field appearance="legacy">
-                    <mat-label>Modelo</mat-label>
-                    <input type="text" matInput formControlName="modelo">
-                    <mat-error *ngIf="vf.modelo.errors?.required">Campo requerido</mat-error>
-                  </mat-form-field>
-                </ion-col>
-                <ion-col size>
-                  <mat-form-field appearance="legacy">
-                    <mat-label>Modelo Año</mat-label>
-                    <input type="text" matInput formControlName="modelo_ano">
-                    <mat-error *ngIf="vf.modelo_ano.errors?.required">Campo requerido</mat-error>
-                  </mat-form-field>
-                </ion-col>
-                <ion-col size>
-                  <mat-form-field appearance="legacy">
-                    <mat-label>Version</mat-label>
-                    <mat-select formControlName="version">
-                      <mat-option [value]="1">Estándar</mat-option>
-                      <mat-option [value]="2">Automático</mat-option>
-                    </mat-select>
-                    <mat-error *ngIf="vf.version.errors?.required">Campo requerido</mat-error>
-                  </mat-form-field>
-                </ion-col>
-              </ion-row>
-
-              <ion-row class="ion-no-padding ion-no-margin">
-                <ion-col size>
-                  <div>
-                    <ion-button size="small" color="success" (click)="showNewMarca(true)"><ion-icon name="add"></ion-icon></ion-button>
-
-                    <div style="float: right;" *ngIf="newMarcaV">
-                      <ion-button size="small" color="primary" (click)="saveNewMarca()">Guardar</ion-button>
-                      <ion-button size="small" color="medium" (click)="showNewMarca(false)"><ion-icon name="close"></ion-icon></ion-button>
-                    </div>
-                  </div>
-
-                  <mat-form-field appearance="legacy" [ngClass]="{hide: newMarcaV}">
-                    <mat-label>Marca</mat-label>
-                    <mat-select formControlName="marca_id">
-                      <mat-option *ngFor="let marca of marcasV" [value]="marca.id">{{marca.marca}}</mat-option>
-                    </mat-select>
-                    <mat-error *ngIf="vf.marca_id.errors?.required">Campo requerido</mat-error>
-                  </mat-form-field>
-
-                  <div *ngIf="newMarcaV">
-                    <mat-form-field appearance="legacy">
-                      <mat-label>Nueva Marca</mat-label>
-                      <input matInput #newMarcaI>
-                    </mat-form-field>
-                  </div>
-                </ion-col>
-
-                <ion-col size>
-                  <div>
-                    <ion-button size="small" color="success" (click)="showNewCatV(true)"><ion-icon name="add"></ion-icon></ion-button>
-
-                    <div style="float: right;" *ngIf="newCatV">
-                      <ion-button size="small" color="primary" (click)="saveNewCatV()">Guardar</ion-button>
-                      <ion-button size="small" color="medium" (click)="showNewCatV(false)"><ion-icon name="close"></ion-icon></ion-button>
-                    </div>
-                  </div>
-                  <mat-form-field appearance="legacy" [ngClass]="{hide: newCatV}">
-                    <mat-label>Categoría</mat-label>
-                    <mat-select formControlName="categoria_vehiculo_id">
-                      <mat-option *ngFor="let cat of categoriasV" [value]="cat.id">{{cat.categoria}}</mat-option>
-                    </mat-select>
-                    <mat-error *ngIf="vf.categoria_vehiculo_id.errors?.required">Campo requerido</mat-error>
-                  </mat-form-field>
-
-                  <div *ngIf="newCatV">
-                    <mat-form-field appearance="legacy">
-                      <mat-label>Nueva Cateogoría</mat-label>
-                      <input matInput #newCatVI>
-                    </mat-form-field>
-                  </div>
-                </ion-col>
-
-                <ion-col size>
-                  <div>
-                    <ion-button fill="clear" size="small"></ion-button>
-                  </div>
-                  <mat-form-field appearance="legacy">
-                    <mat-label>Clase</mat-label>
-                    <mat-select formControlName="clase_id">
-                      <mat-option *ngFor="let clase of clasesV" [value]="clase.id">{{clase.clase}}</mat-option>
-                    </mat-select>
-                    <mat-error *ngIf="vf.clase_id.errors?.required">Campo requerido</mat-error>
-                  </mat-form-field>
-                </ion-col>
-
-                <ion-col size>
-                  <div>
-                    <ion-button fill="clear" size="small"></ion-button>
-                  </div>
-                  <mat-form-field appearance="legacy">
-                    <mat-label>Color</mat-label>
-                    <input type="text" matInput formControlName="color">
-                    <mat-error *ngIf="vf.color.errors?.required">Campo requerido</mat-error>
-                  </mat-form-field>
-                </ion-col>
-
-              </ion-row>
-
-              <ion-row class="ion-no-padding ion-no-margin">
-
-                <ion-col size>
-                  <mat-form-field appearance="legacy">
-                    <mat-label>Núm. Serie</mat-label>
-                    <input type="text" matInput formControlName="num_serie">
-                    <mat-error *ngIf="vf.num_serie.errors?.required">Campo requerido</mat-error>
-                  </mat-form-field>
-                </ion-col>
-
-                <ion-col size>
-                  <mat-form-field appearance="legacy">
-                    <mat-label>No. Placas</mat-label>
-                    <input matInput type="text" formControlName="placas">
-                    <mat-error *ngIf="vf.placas.errors?.required">Campo requerido</mat-error>
-                  </mat-form-field>
-                </ion-col>
-
-                <ion-col size>
-                  <mat-form-field appearance="legacy">
-                    <mat-label>No. Poliza Seguro</mat-label>
-                    <input matInput type="text" formControlName="num_poliza_seg">
-                    <mat-error *ngIf="vf.num_poliza_seg.errors?.required">Campo requerido</mat-error>
-                  </mat-form-field>
-                </ion-col>
-              </ion-row>
-
-              <ion-row class="ion-no-padding ion-no-margin">
-                <ion-col size="6">
-                  <mat-form-field appearance="legacy">
-                    <mat-label>Km Recorridos</mat-label>
-                    <input matInput type="number" formControlName="km_recorridos">
-                    <mat-error *ngIf="vf.km_recorridos.errors?.required">Campo requerido</mat-error>
-                  </mat-form-field>
-                </ion-col>
-
-                <ion-col size="6">
-                  <mat-form-field appearance="legacy">
-                    <mat-label>Prox. Servicio</mat-label>
-                    <input matInput type="number" formControlName="prox_servicio">
-                    <mat-error *ngIf="vf.prox_servicio.errors?.required">Campo requerido</mat-error>
-                  </mat-form-field>
-                </ion-col>
-              </ion-row>
-
-              <ion-row class="ion-no-padding ion-no-margin">
-                <ion-col size="6">
-                  <mat-form-field appearance="legacy">
-                    <mat-label>Cantidad Combustible</mat-label>
-                    <mat-select formControlName="cant_combustible">
-                      <mat-option value="1/8">1/8</mat-option>
-                      <mat-option value="2/8">2/8</mat-option>
-                      <mat-option value="3/8">3/8</mat-option>
-                      <mat-option value="4/8">4/8</mat-option>
-                      <mat-option value="5/8">5/8</mat-option>
-                      <mat-option value="6/8">6/8</mat-option>
-                      <mat-option value="7/8">7/8</mat-option>
-                      <mat-option value="8/8">8/8</mat-option>
-                    </mat-select>
-                    <mat-error *ngIf="vf.cant_combustible.errors?.required">Campo requerido</mat-error>
-                  </mat-form-field>
-                </ion-col>
-
-                <ion-col size="6">
-                  <mat-form-field appearance="legacy">
-                    <mat-label>Capacidad Tanque</mat-label>
-                    <input matInput formControlName="cap_tanque">
-                    <mat-error *ngIf="vf.cap_tanque.errors?.required">Campo requerido</mat-error>
-                  </mat-form-field>
-                </ion-col>
-              </ion-row>
-
-
-              <ion-row class="ion-no-padding ion-no-margin">
-                <ion-col size="6">
-                  <mat-form-field appearance="legacy">
-                    <mat-label>Tarifa</mat-label>
-                    <mat-select formControlName="tarifa_categoria_id" (selectionChange)="setPrecioRenta()">
-                      <mat-option *ngFor="let tarifa of tarifasCategorias" [value]="tarifa.id">{{tarifa.categoria}} | {{tarifa.precio_renta | currency}}</mat-option>
-                    </mat-select>
-                    <mat-error *ngIf="vf.tarifa_categoria_id.errors?.required">Campo requerido</mat-error>
-                  </mat-form-field>
-                </ion-col>
-                <ion-col size="6">
-                  <mat-form-field appearance="legacy">
-                    <mat-label>Activo</mat-label>
-                    <mat-select formControlName="activo">
-                      <mat-option [value]="1">Si</mat-option>
-                      <mat-option [value]="0">No</mat-option>
-                    </mat-select>
-                    <mat-error *ngIf="vf.activo.errors?.required">Campo requerido</mat-error>
-                  </mat-form-field>
-                </ion-col>
-              </ion-row>
-              <br />
+    <ion-row style="height: 100%; align-content: center; justify-content: center">
+      <ion-col size="12" style="height: 90%">
+        <div class="title-container">
+        </div>
+        <ion-row>
+          <ion-col size="6">
+            <div style="display: flex;align-items: center;" *ngIf="vehiculoData && vehiculoData.estatus">
+              <ion-label style="margin-right: 1em;font-weight: 500;">Estatus</ion-label>
+              <ion-chip class="{{vehiculoData.estatus}}" title="{{vehiculoC.getLabel(vehiculoData.estatus)}}">
+                <ion-label>{{vehiculoC.getLabel(vehiculoData.estatus)}}</ion-label>
+              </ion-chip>
             </div>
-          </form>
-        </ion-col>
-      </ion-row>
-    </ion-card-content>
-  </ion-card>
+          </ion-col>
+          <ion-col size="6" class="ion-text-end">
+            <button mat-raised-button class="button-success" (click)="saveUpdate()">Guardar</button>
+          </ion-col>
+        </ion-row>
+        <form [formGroup]="vehiculoForm">
+          <div class="form-content">
+
+            <ion-row class="ion-no-padding ion-no-margin">
+              <ion-col size>
+                <mat-form-field appearance="legacy">
+                  <mat-label>Código Vehículo</mat-label>
+                  <input type="text" matInput formControlName="codigo" maxlength="50" autocomplete="off">
+                  <mat-error *ngIf="vf.codigo.errors?.required">Campo requerido</mat-error>
+                </mat-form-field>
+              </ion-col>
+              <ion-col size>
+                <mat-form-field appearance="legacy">
+                  <mat-label>Modelo</mat-label>
+                  <input type="text" matInput formControlName="modelo" maxlength="50" autocomplete="off">
+                  <mat-error *ngIf="vf.modelo.errors?.required">Campo requerido</mat-error>
+                </mat-form-field>
+              </ion-col>
+              <ion-col size>
+                <mat-form-field appearance="legacy">
+                  <mat-label>Modelo Año</mat-label>
+                  <input type="number" matInput formControlName="modelo_ano" autocomplete="off">
+                  <mat-error *ngIf="vf.modelo_ano.errors?.required">Campo requerido</mat-error>
+                </mat-form-field>
+              </ion-col>
+              <ion-col size>
+                <mat-form-field appearance="legacy">
+                  <mat-label>Version</mat-label>
+                  <mat-select formControlName="version">
+                    <mat-option [value]="1">Estándar</mat-option>
+                    <mat-option [value]="2">Automático</mat-option>
+                  </mat-select>
+                  <mat-error *ngIf="vf.version.errors?.required">Campo requerido</mat-error>
+                </mat-form-field>
+              </ion-col>
+            </ion-row>
+
+            <ion-row class="ion-no-padding ion-no-margin">
+              <ion-col size>
+                <div>
+                  <ion-button size="small" color="success" (click)="showNewMarca(true)">
+                    <ion-icon name="add"></ion-icon>
+                  </ion-button>
+
+                  <div style="float: right;" *ngIf="newMarcaV">
+                    <ion-button size="small" color="primary" (click)="saveNewMarca()">Guardar</ion-button>
+                    <ion-button size="small" color="medium" (click)="showNewMarca(false)">
+                      <ion-icon name="close"></ion-icon>
+                    </ion-button>
+                  </div>
+                </div>
+
+                <mat-form-field appearance="legacy" [ngClass]="{hide: newMarcaV}">
+                  <mat-label>Marca</mat-label>
+                  <mat-select formControlName="marca_id">
+                    <mat-option *ngFor="let marca of marcasV" [value]="marca.id">{{marca.marca}}</mat-option>
+                  </mat-select>
+                  <mat-error *ngIf="vf.marca_id.errors?.required">Campo requerido</mat-error>
+                </mat-form-field>
+
+                <div *ngIf="newMarcaV">
+                  <mat-form-field appearance="legacy">
+                    <mat-label>Nueva Marca</mat-label>
+                    <input matInput #newMarcaI>
+                  </mat-form-field>
+                </div>
+              </ion-col>
+
+              <ion-col size>
+                <div>
+                  <ion-button size="small" color="success" (click)="showNewCatV(true)">
+                    <ion-icon name="add"></ion-icon>
+                  </ion-button>
+
+                  <div style="float: right;" *ngIf="newCatV">
+                    <ion-button size="small" color="primary" (click)="saveNewCatV()">Guardar</ion-button>
+                    <ion-button size="small" color="medium" (click)="showNewCatV(false)">
+                      <ion-icon name="close"></ion-icon>
+                    </ion-button>
+                  </div>
+                </div>
+                <mat-form-field appearance="legacy" [ngClass]="{hide: newCatV}">
+                  <mat-label>Categoría</mat-label>
+                  <mat-select formControlName="categoria_vehiculo_id">
+                    <mat-option *ngFor="let cat of categoriasV" [value]="cat.id">{{cat.categoria}}</mat-option>
+                  </mat-select>
+                  <mat-error *ngIf="vf.categoria_vehiculo_id.errors?.required">Campo requerido</mat-error>
+                </mat-form-field>
+
+                <div *ngIf="newCatV">
+                  <mat-form-field appearance="legacy">
+                    <mat-label>Nueva Cateogoría</mat-label>
+                    <input matInput #newCatVI maxlength="80" autocomplete="off">
+                  </mat-form-field>
+                </div>
+              </ion-col>
+
+              <ion-col size>
+                <div>
+                  <ion-button fill="clear" size="small"></ion-button>
+                </div>
+                <mat-form-field appearance="legacy">
+                  <mat-label>Clase</mat-label>
+                  <mat-select formControlName="clase_id">
+                    <mat-option *ngFor="let clase of clasesV" [value]="clase.id">{{clase.clase}}</mat-option>
+                  </mat-select>
+                  <mat-error *ngIf="vf.clase_id.errors?.required">Campo requerido</mat-error>
+                </mat-form-field>
+              </ion-col>
+
+              <ion-col size>
+                <div>
+                  <ion-button fill="clear" size="small"></ion-button>
+                </div>
+                <mat-form-field appearance="legacy">
+                  <mat-label>Color</mat-label>
+                  <input type="text" matInput formControlName="color" maxlength="50" autocomplete="off">
+                  <mat-error *ngIf="vf.color.errors?.required">Campo requerido</mat-error>
+                </mat-form-field>
+              </ion-col>
+
+            </ion-row>
+
+            <ion-row class="ion-no-padding ion-no-margin">
+
+              <ion-col size>
+                <div>
+                  <ion-button fill="clear" size="small"></ion-button>
+                </div>
+                <mat-form-field appearance="legacy">
+                  <mat-label>Núm. Serie</mat-label>
+                  <input type="text" matInput formControlName="num_serie" autocomplete="off" maxlength="80">
+                  <mat-error *ngIf="vf.num_serie.errors?.required">Campo requerido</mat-error>
+                </mat-form-field>
+              </ion-col>
+
+              <ion-col size>
+                <div>
+                  <ion-button fill="clear" size="small"></ion-button>
+                </div>
+                <mat-form-field appearance="legacy">
+                  <mat-label>No. Placas</mat-label>
+                  <input matInput type="text" formControlName="placas" maxlength="10" autocomplete="off">
+                  <mat-error *ngIf="vf.placas.errors?.required">Campo requerido</mat-error>
+                </mat-form-field>
+              </ion-col>
+
+              <ion-col size>
+                <div>
+                  <ion-button size="small" color="success" (click)="newPoliza()">
+                    <ion-icon name="add"></ion-icon>
+                  </ion-button>
+                </div>
+                <mat-form-field appearance="legacy">
+                  <mat-label>No. Póliza Seguro</mat-label>
+                  <mat-select formControlName="poliza_id" (openedChange)="true">
+                    <mat-form-field appearance="legacy" style="padding: 0.8em;">
+                      <input (input)="vf.poliza_id.patchValue($event.target['value'])" matInput
+                             placeholder="Buscador No. Póliza ..." autocomplete="off" #polizasSearch>
+                      <button mat-icon-button matSuffix
+                              (click)="polizasSearch.value = null; vf.poliza_id.patchValue('')">
+                        <mat-icon>clear</mat-icon>
+                      </button>
+                    </mat-form-field>
+                    <mat-option *ngFor="let poliza of polizas$ | async" [value]="poliza.id">{{poliza.no_poliza}}
+                      | {{poliza.tipo_poliza}}</mat-option>
+                  </mat-select>
+                  <mat-error *ngIf="vf.poliza_id.errors?.required">Campo requerido</mat-error>
+                </mat-form-field>
+              </ion-col>
+            </ion-row>
+
+            <ion-row class="ion-no-padding ion-no-margin">
+              <ion-col size="4">
+                <mat-form-field appearance="legacy">
+                  <mat-label>Km Recorridos</mat-label>
+                  <input matInput type="number" formControlName="km_recorridos" autocomplete="off">
+                  <mat-error *ngIf="vf.km_recorridos.errors?.required">Campo requerido</mat-error>
+                </mat-form-field>
+              </ion-col>
+
+              <ion-col size="4">
+                <mat-form-field appearance="legacy">
+                  <mat-label>Prox. Km Servicio</mat-label>
+                  <input matInput type="number" formControlName="prox_km_servicio" autocomplete="off">
+                  <mat-error *ngIf="vf.prox_km_servicio.errors?.required">Campo requerido</mat-error>
+                </mat-form-field>
+              </ion-col>
+
+              <ion-col size="4">
+                <mat-form-field appearance="legacy">
+                  <mat-label>Fecha Prox. Servicio</mat-label>
+                  <input matInput [matDatepicker]="fecha_prox_servicio" formControlName="fecha_prox_servicio"
+                         (click)="fecha_prox_servicio.open()">
+                  <mat-hint>MM/DD/YYYY</mat-hint>
+                  <mat-datepicker-toggle matSuffix [for]="fecha_prox_servicio"></mat-datepicker-toggle>
+                  <mat-datepicker #fecha_prox_servicio></mat-datepicker>
+                  <mat-error *ngIf="vf.fecha_prox_servicio.errors?.required">Campo requerido</mat-error>
+                </mat-form-field>
+              </ion-col>
+            </ion-row>
+
+            <ion-row class="ion-no-padding ion-no-margin">
+              <ion-col size="6">
+                <mat-form-field appearance="legacy">
+                  <mat-label>Cantidad Combustible</mat-label>
+                  <mat-select formControlName="cant_combustible_anterior">
+                    <mat-option value="1/8">1/8</mat-option>
+                    <mat-option value="2/8">2/8</mat-option>
+                    <mat-option value="3/8">3/8</mat-option>
+                    <mat-option value="4/8">4/8</mat-option>
+                    <mat-option value="5/8">5/8</mat-option>
+                    <mat-option value="6/8">6/8</mat-option>
+                    <mat-option value="7/8">7/8</mat-option>
+                    <mat-option value="8/8">8/8</mat-option>
+                  </mat-select>
+                  <mat-error *ngIf="vf.cant_combustible_anterior.errors?.required">Campo requerido</mat-error>
+                </mat-form-field>
+              </ion-col>
+
+              <ion-col size="6">
+                <mat-form-field appearance="legacy">
+                  <mat-label>Capacidad Tanque</mat-label>
+                  <input matInput formControlName="cap_tanque" autocomplete="off" maxlength="10">
+                  <mat-error *ngIf="vf.cap_tanque.errors?.required">Campo requerido</mat-error>
+                </mat-form-field>
+              </ion-col>
+            </ion-row>
+
+
+            <ion-row class="ion-no-padding ion-no-margin">
+              <ion-col size="6">
+                <mat-form-field appearance="legacy">
+                  <mat-label>Tarifa</mat-label>
+                  <mat-select formControlName="tarifa_categoria_id" (selectionChange)="setPrecioRenta()">
+                    <mat-option *ngFor="let tarifa of tarifasCategorias" [value]="tarifa.id">{{tarifa.categoria}}
+                      | {{tarifa.precio_renta | currency}}</mat-option>
+                  </mat-select>
+                  <mat-error *ngIf="vf.tarifa_categoria_id.errors?.required">Campo requerido</mat-error>
+                </mat-form-field>
+              </ion-col>
+              <ion-col size="6">
+                <mat-form-field appearance="legacy">
+                  <mat-label>Activo</mat-label>
+                  <mat-select formControlName="activo">
+                    <mat-option [value]="1">Si</mat-option>
+                    <mat-option [value]="0">No</mat-option>
+                  </mat-select>
+                  <mat-error *ngIf="vf.activo.errors?.required">Campo requerido</mat-error>
+                </mat-form-field>
+              </ion-col>
+            </ion-row>
+            <br/>
+          </div>
+        </form>
+      </ion-col>
+    </ion-row>
+  </ion-card-content>
+</ion-card>
 
 
 <ion-footer *ngIf="asModal === true">

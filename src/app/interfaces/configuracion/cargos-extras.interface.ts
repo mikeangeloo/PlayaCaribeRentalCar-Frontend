@@ -1,4 +1,4 @@
-export interface CargosExtrasI
+export interface CargosExtraI
 {
     id?: number;
     nombre?: string;

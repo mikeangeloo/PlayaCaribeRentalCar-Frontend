@@ -1,10 +1,8 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {FormBuilder} from '@angular/forms';
 import {ModalController} from '@ionic/angular';
-import {TarifasExtrasService} from '../../../../../services/tarifas-extras.service';
 import {GeneralService} from '../../../../../services/general.service';
 import {SweetMessagesService} from '../../../../../services/sweet-messages.service';
-import {ToastMessageService} from '../../../../../services/toast-message.service';
 import {TarifasApolloConfService} from '../../../../../services/tarifas-apollo-conf.service';
 import {TarifaApolloConfI} from '../../../../../interfaces/tarifas/tarifa-apollo-conf.interface';
 
@@ -24,8 +22,7 @@ export class TarifasApolloConfFormComponent implements OnInit {
       private fb: FormBuilder,
       private tarifasApolloConfServ: TarifasApolloConfService,
       private generalServ: GeneralService,
-      private sweetMsg: SweetMessagesService,
-      private toastServ: ToastMessageService
+      private sweetMsg: SweetMessagesService
   ) {
     this.title = 'Formulario Tarifas, Frecuencias, Descuentos Apollo Conf.';
   }

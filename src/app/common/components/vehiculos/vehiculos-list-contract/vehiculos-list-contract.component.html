@@ -190,7 +190,7 @@
                       <!-- <button mat-icon-button aria-label="Rentar">
                         <mat-icon>car-rental</mat-icon>
                       </button> -->
-                      <ion-button fill="clear" (click)="nuevoContrato()" *ngIf="row.estatus == 'disponible'" title="Rentar">
+                      <ion-button fill="clear" (click)="nuevoContrato(row.id)" *ngIf="row.estatus == 'disponible'" title="Rentar">
                         <ion-icon  name="car" color="secondary"></ion-icon>
                       </ion-button>
                       <ion-button fill="clear" (click)="retornar(row)"  *ngIf="row.estatus == 'rentado' || row.estatus == 'reservado'" title="{{(row.estatus == 'reservado') ? 'Rentar' : 'Retornar'}}">

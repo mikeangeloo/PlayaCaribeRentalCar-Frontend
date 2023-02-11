@@ -4,8 +4,11 @@
 
 export const environment = {
   production: false,
-  dashUrl: 'http://192.168.1.101:8020/api/dash', // url del backend
-  globalUrl: 'http://192.168.1.101:8020/api',
+  //dashUrl: 'http://localhost:8020/api/dash', // url del backend
+  //globalUrl: 'http://localhost:8020/api',
+
+  dashUrl: 'https://apollo-backend.codimex360.com/api/dash', // url del backend
+  globalUrl: 'https://apollo-backend.codimex360.com/api',
   app_name: 'Apollo App',
 };
 

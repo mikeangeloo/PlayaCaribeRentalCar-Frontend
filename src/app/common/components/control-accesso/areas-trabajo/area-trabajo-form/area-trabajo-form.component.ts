@@ -18,7 +18,6 @@ export class AreaTrabajoFormComponent implements OnInit {
   @Input() areaTrabajo_id: number;
   public title: string;
   public areaTrabajoForm: FormGroup;
-  public areaTrabajoData: AreaTrabajoI;
   constructor(
     public modalCtrl: ModalController,
     private fb: FormBuilder,

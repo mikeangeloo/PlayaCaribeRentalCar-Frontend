@@ -35,10 +35,47 @@ export class ReportesService {
       return response;
     }));
   }
-
-  public getExedenteKilometrajeGasolina(): Observable<any> {
-    return this.httpClient.get<any>(`${this.dashURL}/reportes/exedente-kilometraje-gasolina`).pipe(map(response => {
+  public getVehiculosPoliza(payload): Observable<any> {
+    return this.httpClient.post<any>(`${this.dashURL}/reportes/polizas-seguros`, payload).pipe(map(response => {
       return response;
     }));
   }
+
+  public getExedenteKilometrajeGasolina(payload?): Observable<any> {
+    return this.httpClient.post<any>(`${this.dashURL}/reportes/exedente-kilometraje-gasolina`, payload).pipe(map(response => {
+      return response;
+    }));
+  }
+
+  public getReportePagos(payload): Observable<any> {
+    return this.httpClient.post<any>(`${this.dashURL}/reportes/detalle-pagos`, payload).pipe(map(response => {
+      return response;
+    }));
+  }
+
+  public getReporteRentasPorVehiculo(payload): Observable<any> {
+    return this.httpClient.post<any>(`${this.dashURL}/reportes/rentas-por-vehiculo`, payload).pipe(map(response => {
+      return response;
+    }));
+  }
+
+  public getReporteRentasPorComisionista(payload?): Observable<any> {
+    return this.httpClient.post<any>(`${this.dashURL}/reportes/rentas-comisionistas`, payload).pipe(map(response => {
+      return response;
+    }));
+  }
+
+  public getReporteGeneral(payload?): Observable<any> {
+    return this.httpClient.post<any>(`${this.dashURL}/reportes/general`, payload).pipe(map(response => {
+      return response;
+    }));
+  }
+
+  public getDashboardInfo(payload?): Observable<any> {
+    return this.httpClient.get<any>(`${this.dashURL}/dashboard-info`, payload).pipe(map(response => {
+      return response;
+    }));
+  }
+
+
 }

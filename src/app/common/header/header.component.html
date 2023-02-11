@@ -1,0 +1,11 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title *ngIf="generalServ.headerTitle">
+      {{generalServ.headerTitle}}
+    </ion-title>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <app-tipos-cambio-indicador *ngIf="sessionServ.isLogged()" #tipoCambioIndicator slot="end"></app-tipos-cambio-indicador>
+  </ion-toolbar>
+</ion-header>

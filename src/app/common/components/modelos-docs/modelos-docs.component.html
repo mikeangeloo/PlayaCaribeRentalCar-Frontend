@@ -110,7 +110,7 @@
             <!--                            <ion-icon class="wrong-upload" name="close-sharp" *ngIf="imgData.success === false"></ion-icon>-->
             <div class="file-name">
               <label for="">Etiqueta</label>
-              <input type="text" autocomplete="off" value="{{imgData.etiqueta}}" [(ngModel)]="imgData.etiqueta" [disabled]="(imgData.file_id && imgData.file_id > 0 ? true : false)" [ngModelOptions]="{standalone: true}">
+              <input type="text" maxlength="100" autocomplete="off" value="{{imgData.etiqueta}}" [(ngModel)]="imgData.etiqueta" [disabled]="(imgData.file_id && imgData.file_id > 0 ? true : false)" [ngModelOptions]="{standalone: true}">
               <small class="error" *ngIf="imgData.fileErrors">{{imgData.fileErrors}}</small>
             </div>
           </div>
