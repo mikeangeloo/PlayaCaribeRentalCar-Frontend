@@ -2194,7 +2194,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
         });
 
         // Verificamos si tenemos descuento
-        if (_tarifa && (_tarifa.ap_descuento == true || _tarifa.ap_descuento == 1) && this.gf.tarifa_apollo_id.value && (this.gf.con_descuento.value == true || this.gf.con_descuento.value == 1)) {
+        if (_tarifa && (_tarifa.ap_descuento == true || _tarifa.ap_descuento == 1) && (this.gf.tarifa_apollo_id.value) && (this.gf.con_descuento.value == true || this.gf.con_descuento.value == 1)) {
           let tarifaApolloConf = _tarifas.find(x => x.id === this.gf.tarifa_apollo_id.value);
           if (tarifaApolloConf) {
             this.cobranzaI.push({
