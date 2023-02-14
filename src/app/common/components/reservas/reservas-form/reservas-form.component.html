@@ -358,7 +358,7 @@
                                 *ngIf="gf.tipo_tarifa.value !== 'Hotel' && (gf.con_descuento.value == 1 || gf.con_descuento.value == true)">
                                 <mat-label>Descuento %</mat-label>
                                 <mat-select formControlName="tarifa_apollo_id" (selectionChange)="makeCalc()">
-                                  <ng-container *ngFor="let confDes of selectedTarifaCat.tarifas">
+                                  <ng-container *ngFor="let confDes of selectedTarifaCat.tarifas_apollo">
                                     <mat-option *ngIf="confDes.ap_descuento" [value]="confDes.id"
                                                 [disabled]="confDes.enable === false">{{confDes.valor_descuento}}</mat-option>
                                   </ng-container>

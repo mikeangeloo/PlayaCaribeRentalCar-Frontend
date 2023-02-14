@@ -90,7 +90,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
   exitPlacesOptions$: Observable<UbicacionesI[]>;
   returnPlacesOptions$: Observable<UbicacionesI[]>;
   tarifasCategorias: TarifasCategoriasI[];
-  selectedTarifaCat: TarifasCategoriasI;
+  selectedTarifaCat: TarifasCategoriasI | TarifaHotelesI;
   //#endregion
 
   //#region DATOS CLIENTE ATTRIBUTES
@@ -675,7 +675,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
     if (data && data.tarifa_modelo_id && TxtConv.txtCon(data.tipo_tarifa, 'uppercase') !== 'HOTEL') {
       let tarifaCat: TarifasCategoriasI = this.tarifasCategorias.find(x => x.id === this.gf.tarifa_modelo_id.value);
-      if (!tarifaCat.tarifas || tarifaCat.tarifas.length === 0) {
+      if (!tarifaCat.tarifas_apollo || tarifaCat.tarifas_apollo.length === 0) {
         this.sweetMsgServ.printStatus('Esta opción no aplica para descuento', 'warning');
       }
       this.selectedTarifaCat = tarifaCat;
@@ -1891,8 +1891,8 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
         this.gf.modelo.patchValue(ModelsEnum.HOTELES);
         this.gf.precio_unitario_final.patchValue(null);
-        this.selectedTarifaCat = null;
-        this.gf.con_descuento.patchValue(null);
+        //this.selectedTarifaCat = null;
+        //this.gf.con_descuento.patchValue(null);
         //this.resetTarifasData();
         break;
       case 'COMISIONISTA':
@@ -1936,7 +1936,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
   setTarifasCat(withMakeCalc: boolean) {
     let tarifaCat: TarifasCategoriasI = this.tarifasCategorias.find(x => x.id === this.gf.tarifa_modelo_id.value);
-    if (!tarifaCat.tarifas || tarifaCat.tarifas.length === 0) {
+    if (!tarifaCat.tarifas_apollo || tarifaCat.tarifas_apollo.length === 0) {
       this.sweetMsgServ.printStatus('Esta opción no aplica para descuento', 'warning');
     }
     this.selectedTarifaCat = null;
@@ -1963,27 +1963,27 @@ export class ContratoPage implements OnInit, AfterViewInit {
     }
   }
 
-  prepareDescuentos(tarifaCat: TarifasCategoriasI, enable: boolean) {
-    if (tarifaCat && tarifaCat.tarifas && tarifaCat.tarifas.length > 0) {
-      for (let i = 0; i < tarifaCat.tarifas.length; i++) {
-        tarifaCat.tarifas[i].enable = enable;
+  prepareDescuentos(tarifaCat: TarifasCategoriasI | TarifaHotelesI, enable: boolean) {
+    if (tarifaCat && tarifaCat.tarifas_apollo && tarifaCat.tarifas_apollo.length > 0) {
+      for (let i = 0; i < tarifaCat.tarifas_apollo.length; i++) {
+        tarifaCat.tarifas_apollo[i].enable = enable;
       }
     }
   }
 
   enableDisableDescuentoFreq(enable: boolean) {
-    if (this.gf.total_dias.value && this.selectedTarifaCat && this.selectedTarifaCat.tarifas) {
+    if (this.gf.total_dias.value && this.selectedTarifaCat && this.selectedTarifaCat.tarifas_apollo) {
       let _totalDias = this.gf.total_dias.value;
-      for (let i = 0; i < this.selectedTarifaCat.tarifas.length; i++) {
-        if (this.selectedTarifaCat.tarifas[i].frecuencia_ref == 'weeks' && (_totalDias >= 7)) {
-          this.selectedTarifaCat.tarifas[i].enable = enable;
+      for (let i = 0; i < this.selectedTarifaCat.tarifas_apollo.length; i++) {
+        if (this.selectedTarifaCat.tarifas_apollo[i].frecuencia_ref == 'weeks' && (_totalDias >= 7)) {
+          this.selectedTarifaCat.tarifas_apollo[i].enable = enable;
           this.gf.con_descuento.enable();
-        } else if (this.selectedTarifaCat.tarifas[i].frecuencia_ref === 'months' && _totalDias >= 30) {
-          this.selectedTarifaCat.tarifas[i].enable = enable;
+        } else if (this.selectedTarifaCat.tarifas_apollo[i].frecuencia_ref === 'months' && _totalDias >= 30) {
+          this.selectedTarifaCat.tarifas_apollo[i].enable = enable;
           this.gf.con_descuento.enable();
         } else {
-          this.selectedTarifaCat.tarifas[i].enable = false;
-          if (this.gf.tarifa_apollo_id.value == this.selectedTarifaCat.tarifas[i].id) {
+          this.selectedTarifaCat.tarifas_apollo[i].enable = false;
+          if (this.gf.tarifa_apollo_id.value == this.selectedTarifaCat.tarifas_apollo[i].id) {
             this.gf.tarifa_apollo_id.patchValue(null);
           }
         }
@@ -2008,6 +2008,8 @@ export class ContratoPage implements OnInit, AfterViewInit {
     }
 
     this.setVehiculoClaseData(withInitRules);
+
+    this.selectedTarifaCat = _hotelTarifas.tarifas.find(tarifa => tarifa.clase_id === this.gf.vehiculo_clase_id.value);
   }
 
   setVehiculoClaseData(withInitRules: boolean) {
@@ -2022,7 +2024,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
         this.gf.tarifa_modelo.patchValue(ModelsEnum.TARIFASHOTEL);
         this.gf.tarifa_modelo_id.patchValue(_clases.id);
-        this.gf.tarifa_apollo_id.patchValue(null);
+        //this.gf.tarifa_apollo_id.patchValue(null);
         this.gf.tarifa_modelo_label.patchValue(_clases.clase);
         this.gf.tarifa_modelo_precio.patchValue(_clases.precio_renta);
         this.gf.tarifa_modelo_obj.patchValue(_clases);
@@ -2130,6 +2132,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
     switch (TxtConv.txtCon(this.gf.tipo_tarifa.value, 'uppercase')) {
       case 'APOLLO':
+      case 'HOTEL':
         console.log('makeCalc tarifa apollo');
         //TODO: borrar si ya no es necesario
         // if (!this.vehiculoData.tarifas) {
@@ -2146,7 +2149,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
           return;
         }
 
-        _tarifas = this.selectedTarifaCat.tarifas;
+        _tarifas = this.selectedTarifaCat.tarifas_apollo;
 
         this.gf.precio_unitario_inicial.patchValue(this.selectedTarifaCat.precio_renta);
         this.gf.precio_unitario_final.patchValue(this.selectedTarifaCat.precio_renta);
@@ -2207,28 +2210,28 @@ export class ContratoPage implements OnInit, AfterViewInit {
           }
         }
         break;
-      case 'HOTEL':
-        console.log('makeCalc', this.generalDataForm.value);
-        if (!this.gf.modelo_id.value) {
-          this.sweetMsgServ.printStatus('Seccione un hotel de la lista', 'warning');
-          this.gf.modelo_id.setValidators(Validators.required);
-          this.gf.modelo_id.markAllAsTouched();
-          return;
-        }
-        this.setVehiculoClaseData(false);
-        let _precioUnitario = this.gf.precio_unitario_final.value;
-
-        this.cobranzaI.push({
-          element: 'renta',
-          value: _precioUnitario,
-          quantity: _totalDias,
-          quantity_type: 'dias',
-          element_label: 'Renta',
-          number_sign: 'positive',
-          amount: parseFloat(Number(_precioUnitario * _totalDias).toFixed(2)),
-          currency: this.baseCurrency
-        });
-        break;
+      // case 'HOTEL':
+      //   console.log('makeCalc', this.generalDataForm.value);
+      //   if (!this.gf.modelo_id.value) {
+      //     this.sweetMsgServ.printStatus('Seccione un hotel de la lista', 'warning');
+      //     this.gf.modelo_id.setValidators(Validators.required);
+      //     this.gf.modelo_id.markAllAsTouched();
+      //     return;
+      //   }
+      //   this.setVehiculoClaseData(false);
+      //   let _precioUnitario = this.gf.precio_unitario_final.value;
+      //
+      //   this.cobranzaI.push({
+      //     element: 'renta',
+      //     value: _precioUnitario,
+      //     quantity: _totalDias,
+      //     quantity_type: 'dias',
+      //     element_label: 'Renta',
+      //     number_sign: 'positive',
+      //     amount: parseFloat(Number(_precioUnitario * _totalDias).toFixed(2)),
+      //     currency: this.baseCurrency
+      //   });
+      //   break;
       case 'COMISIONISTA':
         console.log('makeCalc form comisionistas');
         if (!this.selectedTarifaCat || !this.gf.tarifa_modelo_id.value) {
@@ -2247,7 +2250,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
           this.gf.comision.markAllAsTouched();
           return;
         }
-        _tarifas = this.selectedTarifaCat.tarifas;
+        _tarifas = this.selectedTarifaCat.tarifas_apollo;
 
         this.gf.precio_unitario_inicial.patchValue(this.selectedTarifaCat.precio_renta);
         let _nuevoPrecioUnitario = Number(this.gf.precio_unitario_inicial.value) + Number(this.gf.comision.value);

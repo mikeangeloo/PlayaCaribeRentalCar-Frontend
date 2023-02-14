@@ -1,4 +1,4 @@
-import {TarifaApolloI} from './tarifa-apollo.interface';
+import {TarifaApolloConfI} from './tarifa-apollo-conf.interface';
 
 export interface TarifaHotelesI
 {
@@ -12,7 +12,7 @@ export interface TarifaHotelesI
     updated_at?: string;
 
     errors?: string[];
-    tarifas_apollo?: TarifaApolloI[];
+    tarifas_apollo?: TarifaApolloConfI[];
 
     view_frequency?: boolean;
 }

@@ -366,7 +366,7 @@ export class ReservasFormComponent implements OnInit {
 
     if (data && data.tarifa_modelo_id && TxtConv.txtCon(data.tipo_tarifa, 'uppercase') !== 'HOTEL') {
       let tarifaCat: TarifasCategoriasI = this.tarifasCategorias.find(x => x.id === this.gf.tarifa_modelo_id.value);
-      if (!tarifaCat.tarifas || tarifaCat.tarifas.length === 0) {
+      if (!tarifaCat.tarifas_apollo || tarifaCat.tarifas_apollo.length === 0) {
         this.sweetMsgServ.printStatus('Esta opción no aplica para descuento', 'warning');
       }
       this.selectedTarifaCat = tarifaCat;
@@ -555,7 +555,7 @@ export class ReservasFormComponent implements OnInit {
 
   setTarifasCat(withMakeCalc: boolean) {
     let tarifaCat: TarifasCategoriasI = this.tarifasCategorias.find(x => x.id === this.gf.tarifa_modelo_id.value);
-    if (!tarifaCat.tarifas || tarifaCat.tarifas.length === 0) {
+    if (!tarifaCat.tarifas_apollo || tarifaCat.tarifas_apollo.length === 0) {
       this.sweetMsgServ.printStatus('Esta opción no aplica para descuento', 'warning');
     }
     this.selectedTarifaCat = null;
@@ -583,26 +583,26 @@ export class ReservasFormComponent implements OnInit {
   }
 
   prepareDescuentos(tarifaCat: TarifasCategoriasI, enable: boolean) {
-    if (tarifaCat && tarifaCat.tarifas && tarifaCat.tarifas.length > 0) {
-      for (let i = 0; i < tarifaCat.tarifas.length; i++) {
-        tarifaCat.tarifas[i].enable = enable;
+    if (tarifaCat && tarifaCat.tarifas_apollo && tarifaCat.tarifas_apollo.length > 0) {
+      for (let i = 0; i < tarifaCat.tarifas_apollo.length; i++) {
+        tarifaCat.tarifas_apollo[i].enable = enable;
       }
     }
   }
 
   enableDisableDescuentoFreq(enable: boolean) {
-    if (this.gf.total_dias.value && this.selectedTarifaCat && this.selectedTarifaCat.tarifas) {
+    if (this.gf.total_dias.value && this.selectedTarifaCat && this.selectedTarifaCat.tarifas_apollo) {
       let _totalDias = this.gf.total_dias.value;
-      for (let i = 0; i < this.selectedTarifaCat.tarifas.length; i++) {
-        if (this.selectedTarifaCat.tarifas[i].frecuencia_ref == 'weeks' && (_totalDias >= 7)) {
-          this.selectedTarifaCat.tarifas[i].enable = enable;
+      for (let i = 0; i < this.selectedTarifaCat.tarifas_apollo.length; i++) {
+        if (this.selectedTarifaCat.tarifas_apollo[i].frecuencia_ref == 'weeks' && (_totalDias >= 7)) {
+          this.selectedTarifaCat.tarifas_apollo[i].enable = enable;
           this.gf.con_descuento.enable();
-        } else if (this.selectedTarifaCat.tarifas[i].frecuencia_ref === 'months' && _totalDias >= 30) {
-          this.selectedTarifaCat.tarifas[i].enable = enable;
+        } else if (this.selectedTarifaCat.tarifas_apollo[i].frecuencia_ref === 'months' && _totalDias >= 30) {
+          this.selectedTarifaCat.tarifas_apollo[i].enable = enable;
           this.gf.con_descuento.enable();
         } else {
-          this.selectedTarifaCat.tarifas[i].enable = false;
-          if (this.gf.tarifa_apollo_id.value == this.selectedTarifaCat.tarifas[i].id) {
+          this.selectedTarifaCat.tarifas_apollo[i].enable = false;
+          if (this.gf.tarifa_apollo_id.value == this.selectedTarifaCat.tarifas_apollo[i].id) {
             this.gf.tarifa_apollo_id.patchValue(null);
           }
         }
@@ -701,7 +701,7 @@ export class ReservasFormComponent implements OnInit {
           return;
         }
 
-        _tarifas = this.selectedTarifaCat.tarifas;
+        _tarifas = this.selectedTarifaCat.tarifas_apollo;
 
         this.gf.precio_unitario_inicial.patchValue(this.selectedTarifaCat.precio_renta);
         this.gf.precio_unitario_final.patchValue(this.selectedTarifaCat.precio_renta);
