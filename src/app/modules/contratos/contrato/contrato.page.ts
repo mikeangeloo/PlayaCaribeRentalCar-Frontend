@@ -1590,6 +1590,20 @@ export class ContratoPage implements OnInit, AfterViewInit {
         ],
       });
 
+      // if (this.gf.folio_cupon.value) {
+      //   actionSheet.buttons.unshift(
+      //     {
+      //       text: 'Pago con cupón # ' + this.gf.folio_cupon.value ,
+      //       icon: 'card',
+      //       cssClass:   this.balancePorPagar <= 0 ? 'disable' : '',
+      //       handler: () => {
+      //         console.log('Capturar Pago con cupón clicked');
+      //         this.capturarCobroInput(null, cobranza_seccion, 'cupon');
+      //       },
+      //     }
+      //   )
+      // }
+
       await actionSheet.present();
 
       const { role } = await actionSheet.onDidDismiss();
@@ -1722,7 +1736,8 @@ export class ContratoPage implements OnInit, AfterViewInit {
         'montoCobrado': (cobranza && cobranza.monto_cobrado) ? cobranza.monto_cobrado : null,
         'balanceCobro':(cobranza_seccion == 'salida') ?  this.balancePorPagar : this.balanceRetornoPorPagar,
         'cobranza_id': (cobranza && cobranza.id) ? cobranza.id : null,
-        'divisa_id': (cobranza && cobranza.tipo_cambio_usado?.divisa_base_id) ? cobranza.tipo_cambio_usado.divisa_base_id : null
+        'divisa_id': (cobranza && cobranza.tipo_cambio_usado?.divisa_base_id) ? cobranza.tipo_cambio_usado.divisa_base_id : null,
+        'cobranzaTipo': cobranzaTipo
       },
       swipeToClose: true,
       cssClass: 'small-form',
@@ -2007,6 +2022,10 @@ export class ContratoPage implements OnInit, AfterViewInit {
       }
     }
 
+    // if (!withInitRules) {
+    //   this.gf.vehiculo_clase_id.patchValue(null);
+    // }
+
     this.setVehiculoClaseData(withInitRules);
 
     this.selectedTarifaCat = _hotelTarifas.tarifas.find(tarifa => tarifa.clase_id === this.gf.vehiculo_clase_id.value);
@@ -2028,6 +2047,8 @@ export class ContratoPage implements OnInit, AfterViewInit {
         this.gf.tarifa_modelo_label.patchValue(_clases.clase);
         this.gf.tarifa_modelo_precio.patchValue(_clases.precio_renta);
         this.gf.tarifa_modelo_obj.patchValue(_clases);
+
+        this.selectedTarifaCat = this.tarifasHotel.find(tarifa => tarifa.clase_id === this.gf.vehiculo_clase_id.value);
 
         if (withInitRules === true) {
           this.initTipoTarifaRule(withInitRules);
@@ -2116,7 +2137,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
     this.gf.modelo_id.removeValidators(Validators.required);
     this.gf.comision.removeValidators(Validators.required);
 
-    if (!this.gf.con_descuento.value || this.gf.tipo_tarifa.value == 'Hotel') {
+    if (!this.gf.con_descuento.value) {
       this.gf.tarifa_apollo_id.patchValue(null);
       this.gf.tarifa_apollo_id.removeValidators(Validators.required);
     } else {
@@ -2143,7 +2164,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
         // let _tarifas = this.vehiculoData.tarifas;
 
         console.log('test', this.gf.tarifa_modelo_id.value);
-        if (!this.selectedTarifaCat || !this.gf.tarifa_modelo_id.value) {
+        if (!this.gf.tarifa_modelo_id.value) {
           //this.sweetMsgServ.printStatus('Debe seleccionar una tarifa x categoría valída', 'error');
           this.gf.tarifa_modelo_id.markAllAsTouched();
           return;
@@ -2167,12 +2188,13 @@ export class ContratoPage implements OnInit, AfterViewInit {
         this.setBaseRentFrequency();
 
         _tarifa = _tarifas.find(x => x.frecuencia_ref == this.baseRentFrequency);
-        _tarifa.enable = true;
+
         console.log('tarifa baseRentFrequency -->', this.baseRentFrequency);
         console.log('tarifa select -->', _tarifa);
 
-        if (this.gf.tarifa_modelo_id.value &&  _tarifa.ap_descuento === true || _tarifa.ap_descuento == 1) {
+        if (_tarifa && this.gf.tarifa_modelo_id.value &&  (_tarifa.ap_descuento === true || _tarifa.ap_descuento == 1)) {
           this.gf.con_descuento.enable();
+          _tarifa.enable = true;
         } else {
           this.gf.con_descuento.disable();
           this.gf.con_descuento.patchValue(null);
@@ -2209,6 +2231,21 @@ export class ContratoPage implements OnInit, AfterViewInit {
             });
           }
         }
+
+        // Veriricamos si tenemos cupón
+        if (this.gf.folio_cupon.value) {
+          this.cobranzaI.push({
+            element: 'descuento_cupon',
+            value: null,
+            quantity: 100,
+            quantity_type: '%',
+            element_label: 'Descuento Cupón',
+            number_sign: 'negative',
+            amount: parseFloat(Number(_precioBase * _totalDias).toFixed(2)),
+            currency: this.baseCurrency
+          });
+        }
+
         break;
       // case 'HOTEL':
       //   console.log('makeCalc', this.generalDataForm.value);

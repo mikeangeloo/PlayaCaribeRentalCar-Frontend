@@ -31,4 +31,4 @@ export interface CobranzaProgI
     tipo_cambio_usado?: TiposCambioI
 }
 
-export type CobranzaTipo = 'tarjeta' | 'efectivo' | 'deposito';
+export type CobranzaTipo = 'tarjeta' | 'efectivo' | 'deposito' | 'cupon';
