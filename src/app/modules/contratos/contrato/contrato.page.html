@@ -304,7 +304,7 @@
                           <ion-col size="12" name="extra-form">
                             <mat-form-field appearance="legacy">
                               <mat-label>Folio Cupón</mat-label>
-                              <input matInput type="text" autocomplete="off" formControlName="folio_cupon" maxlength="50">
+                              <input matInput type="text" autocomplete="off" formControlName="folio_cupon" maxlength="50" (change)="makeCalc()">
                               <mat-error></mat-error>
                             </mat-form-field>
                           </ion-col>
