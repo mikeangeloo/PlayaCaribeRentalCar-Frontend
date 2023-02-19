@@ -47,7 +47,7 @@ import {ModalDragElementDetailsComponent} from './components/modal-drag-element-
 import {CargosExtrasTableComponent} from './components/configuracion/precios/cargos-extras-table/cargos-extras-table.component';
 import { CargosExtrasFormComponent } from './components/configuracion/precios/cargos-extras-form/cargos-extras-form.component';
 import { VehiculosListContractComponent } from './components/vehiculos/vehiculos-list-contract/vehiculos-list-contract.component';
-import { ReservasFormComponent } from './components/reservas/reservas-form/reservas-form.component';
+//import { ReservasFormComponent } from '../modules/contratos/contrato/reservas/reservas-form/reservas-form.component';
 import { LayoutModalComponent } from './components/categorias-vehiculos/layout-modal/layout-modal.component';
 import { AddLayaoutModalComponent } from './components/categorias-vehiculos/add-layaout-modal/add-layaout-modal.component';
 import { EstatusVehiculosTableComponent } from './components/reportes/estatus-vehiculos-table/estatus-vehiculos-table.component';
@@ -122,7 +122,6 @@ import {RoleNamePipe} from '../pipes/role-name.pipe';
     CargosExtrasTableComponent,
     CargosExtrasFormComponent,
     VehiculosListContractComponent,
-    ReservasFormComponent,
     LayoutModalComponent,
     AddLayaoutModalComponent,
     EstatusVehiculosTableComponent,
@@ -188,7 +187,6 @@ import {RoleNamePipe} from '../pipes/role-name.pipe';
     CargosExtrasTableComponent,
     CargosExtrasFormComponent,
     VehiculosListContractComponent,
-    ReservasFormComponent,
     LayoutModalComponent,
     AddLayaoutModalComponent,
     EstatusVehiculosTableComponent,
@@ -254,7 +252,6 @@ import {RoleNamePipe} from '../pipes/role-name.pipe';
     CargosExtrasTableComponent,
     CargosExtrasFormComponent,
     VehiculosListContractComponent,
-    ReservasFormComponent,
     LayoutModalComponent,
     AddLayaoutModalComponent,
     EstatusVehiculosTableComponent,
@@ -276,15 +273,15 @@ import {RoleNamePipe} from '../pipes/role-name.pipe';
     TiposCambiosTableComponent,
     TipoCambioFormComponent
   ],
-    imports: [
-        CommonModule,
-        FormsModule,
-        MaterialModule,
-        IonicModule,
-        RouterModule,
-        ReactiveFormsModule,
-        MatChipsModule
-    ],
+  imports: [
+    CommonModule,
+    FormsModule,
+    MaterialModule,
+    IonicModule,
+    RouterModule,
+    ReactiveFormsModule,
+    MatChipsModule
+  ],
   providers: [
     CurrencyPipe
   ]

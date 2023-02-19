@@ -26,7 +26,7 @@
           </ion-col>
         </ion-row>
       </div>
-      <ion-row style="height: 100%; align-content: center; justify-content: center">
+      <!--<ion-row style="height: 100%; align-content: center; justify-content: center">
         <ion-col size="12" style="height: 90%">
 
           <mat-accordion>
@@ -61,13 +61,13 @@
                             <mat-error *ngIf="cf.nombre.errors?.required">Campo requerido</mat-error>
                           </mat-form-field>
                         </ion-col>
-                        <!--                    <ion-col>-->
-                        <!--                      <mat-form-field appearance="legacy">-->
-                        <!--                        <mat-label>APELLIDO(S)</mat-label>-->
-                        <!--                        <input type="text" matInput formControlName="apellidos" autocomplete="off">-->
-                        <!--                        <mat-error *ngIf="cf.apellidos.errors?.required">Campo requerido</mat-error>-->
-                        <!--                      </mat-form-field>-->
-                        <!--                    </ion-col>-->
+                        &lt;!&ndash;                    <ion-col>&ndash;&gt;
+                        &lt;!&ndash;                      <mat-form-field appearance="legacy">&ndash;&gt;
+                        &lt;!&ndash;                        <mat-label>APELLIDO(S)</mat-label>&ndash;&gt;
+                        &lt;!&ndash;                        <input type="text" matInput formControlName="apellidos" autocomplete="off">&ndash;&gt;
+                        &lt;!&ndash;                        <mat-error *ngIf="cf.apellidos.errors?.required">Campo requerido</mat-error>&ndash;&gt;
+                        &lt;!&ndash;                      </mat-form-field>&ndash;&gt;
+                        &lt;!&ndash;                    </ion-col>&ndash;&gt;
                       </ion-row>
 
                       <ion-row>
@@ -145,18 +145,18 @@
                 </ion-card>
 
 
-                <!-- <mat-action-row>
+                &lt;!&ndash; <mat-action-row>
                   <button (click)="prevStep()" mat-flat-button style="font-size: 1.5rem;">
                     <ion-icon name="chevron-back-outline" style="color: var(&#45;&#45;ion-color-medium);"></ion-icon>
                   </button> &nbsp; &nbsp;
 
                   <button (click)="nextStep()" mat-flat-button style="font-size: 1.5rem;">
-                    <ion-icon name="chevron-forward-outline" style="color: var(--ion-color-medium);"></ion-icon>
+                    <ion-icon name="chevron-forward-outline" style="color: var(&#45;&#45;ion-color-medium);"></ion-icon>
                   </button>
-                </mat-action-row> -->
+                </mat-action-row> &ndash;&gt;
               </mat-expansion-panel>
             </div>
-          </mat-accordion> <!-- Datos Cliente -->
+          </mat-accordion> &lt;!&ndash; Datos Cliente &ndash;&gt;
 
           <mat-accordion>
             <div class="accordion-margin" [formGroup]="generalDataForm" *ngIf="generalDataForm">
@@ -175,7 +175,7 @@
 
                       <ion-row>
                         <ion-col size="12" size-md="6">
-                          <!--<ion-row>
+                          &lt;!&ndash;<ion-row>
                             <ion-col size="6" class="ion-no-padding">
                               <h4 style="margin: 0; padding: 0;">Ubicaciones</h4>
                             </ion-col>
@@ -186,7 +186,7 @@
                                 </ion-button>
                               </div>
                             </ion-col>
-                          </ion-row>-->
+                          </ion-row>&ndash;&gt;
                           <mat-form-field appearance="legacy">
                             <mat-label>Lugar de Salida</mat-label>
                             <mat-select formControlName="ub_salida_id" (openedChange)="ubSalidaSearch.value = null">
@@ -205,17 +205,17 @@
 
                             <mat-error *ngIf="gf.ub_salida_id.errors?.required">Campo requerido</mat-error>
                           </mat-form-field>
-                        </ion-col> <!-- Lugar de salida -->
+                        </ion-col> &lt;!&ndash; Lugar de salida &ndash;&gt;
                         <ion-col size="12" size-md="6">
-                          <!--                          <ion-row>-->
-                          <!--                            <ion-col size="12">-->
-                          <!--                              <div class="search-row-buttons">-->
-                          <!--                                <ion-button size="small" color="secondary" (click)="openModalSearch('ubicaciones', 'ubicacionRetorno')">-->
-                          <!--                                  <ion-icon name="search"></ion-icon>-->
-                          <!--                                </ion-button>-->
-                          <!--                              </div>-->
-                          <!--                            </ion-col>-->
-                          <!--                          </ion-row>-->
+                          &lt;!&ndash;                          <ion-row>&ndash;&gt;
+                          &lt;!&ndash;                            <ion-col size="12">&ndash;&gt;
+                          &lt;!&ndash;                              <div class="search-row-buttons">&ndash;&gt;
+                          &lt;!&ndash;                                <ion-button size="small" color="secondary" (click)="openModalSearch('ubicaciones', 'ubicacionRetorno')">&ndash;&gt;
+                          &lt;!&ndash;                                  <ion-icon name="search"></ion-icon>&ndash;&gt;
+                          &lt;!&ndash;                                </ion-button>&ndash;&gt;
+                          &lt;!&ndash;                              </div>&ndash;&gt;
+                          &lt;!&ndash;                            </ion-col>&ndash;&gt;
+                          &lt;!&ndash;                          </ion-row>&ndash;&gt;
                           <mat-form-field appearance="legacy">
                             <mat-label>Lugar de retorno</mat-label>
                             <mat-select formControlName="ub_retorno_id" (openedChange)="ubRetornoSearch.value = null">
@@ -234,8 +234,8 @@
                             </mat-select>
                             <mat-error *ngIf="gf.ub_retorno_id.errors?.required">Campo requerido</mat-error>
                           </mat-form-field>
-                        </ion-col> <!-- Lugar de retorno -->
-                      </ion-row> <!-- Ubicacion de salida y retorno -->
+                        </ion-col> &lt;!&ndash; Lugar de retorno &ndash;&gt;
+                      </ion-row> &lt;!&ndash; Ubicacion de salida y retorno &ndash;&gt;
                       <mat-divider></mat-divider>
                       <ion-row>
                         <ng-container>
@@ -243,7 +243,7 @@
                             <mat-slide-toggle [(ngModel)]="useCalendar" [ngModelOptions]="{standalone: true}">
                               Usar calendario
                             </mat-slide-toggle>
-                          </ion-col>  <!-- toogle usar calendario -->
+                          </ion-col>  &lt;!&ndash; toogle usar calendario &ndash;&gt;
 
                           <ion-col size="12" size-md="4" *ngIf="useCalendar === false">
                             <mat-form-field appearance="legacy">
@@ -258,7 +258,7 @@
                                 {{dateConv.transFormDate(rangoFechas.fecha_retorno.value, 'slash')}}
                               </mat-hint>
                             </mat-form-field>
-                          </ion-col> <!-- Días de renta -->
+                          </ion-col> &lt;!&ndash; Días de renta &ndash;&gt;
 
                           <ion-col size="12" size-md="4" *ngIf="useCalendar === true">
                             <mat-form-field appearance="legacy">
@@ -280,8 +280,8 @@
                                 obligatoria
                               </mat-error>
                             </mat-form-field>
-                          </ion-col> <!-- Dias de renta date range picker -->
-                        </ng-container> <!-- Días de renta group -->
+                          </ion-col> &lt;!&ndash; Dias de renta date range picker &ndash;&gt;
+                        </ng-container> &lt;!&ndash; Días de renta group &ndash;&gt;
 
 
                         <ion-col size="12" size-md="4">
@@ -293,7 +293,7 @@
                                           value="{{tarifa.tarifa}}">{{tarifa.tarifa}}</mat-option>
                             </mat-select>
                           </mat-form-field>
-                        </ion-col> <!-- tipo de tarifa picker -->
+                        </ion-col> &lt;!&ndash; tipo de tarifa picker &ndash;&gt;
 
                         <ion-col size="12" size-md="4">
                           <mat-form-field appearance="legacy" *ngIf="gf.tipo_tarifa.value !== 'Hotel'">
@@ -303,14 +303,14 @@
                                           [value]="tarifaCat.id">{{tarifaCat.categoria}}</mat-option>
                             </mat-select>
                             <mat-error *ngIf="gf.tarifa_modelo_id.errors?.required">Este campo es requerido</mat-error>
-                          </mat-form-field> <!-- Tarifa x Categoría -->
+                          </mat-form-field> &lt;!&ndash; Tarifa x Categoría &ndash;&gt;
 
-                        </ion-col> <!-- Categoría vehículo | clase vehiculo -->
+                        </ion-col> &lt;!&ndash; Categoría vehículo | clase vehiculo &ndash;&gt;
 
 
-                      </ion-row> <!-- Días de renta | tarifa x categoría | tipo tarifa -->
+                      </ion-row> &lt;!&ndash; Días de renta | tarifa x categoría | tipo tarifa &ndash;&gt;
 
-                      <!-- <ion-row>
+                      &lt;!&ndash; <ion-row>
                         <ion-col size="12" size-md="4">
                           <mat-form-field appearance="legacy">
                             <mat-label>Extras</mat-label>
@@ -320,7 +320,7 @@
                           </mat-form-field>
                         </ion-col>
 
-                      </ion-row>  Extras-->
+                      </ion-row>  Extras&ndash;&gt;
 
                       <mat-divider></mat-divider>
 
@@ -330,9 +330,9 @@
                             <ion-col size="12">
                               <div class="datos-generales-precioU">
                                 <h2>Valor unitario x día</h2>
-                                <p>{{(gf.precio_unitario_final && gf.precio_unitario_final.value ? (gf.precio_unitario_final.value | currency) : '--')}}</p>
+                                <p>{{(gf.precio_unitario_final && gf.precio_unitario_final.value ? (gf.precio_unitario_final.value | currency) : '&#45;&#45;')}}</p>
                               </div>
-                            </ion-col> <!-- precio unitario -->
+                            </ion-col> &lt;!&ndash; precio unitario &ndash;&gt;
                             <ion-col size="12" class="ion-text-center ion-align-self-center">
                               <div
                                 style="display: flex; flex-direction: column; align-items: flex-start; padding-left: 12px">
@@ -366,11 +366,11 @@
                                 </mat-select>
                                 <mat-error *ngIf="gf.tarifa_apollo_id.errors?.required">Este campo es requerido
                                 </mat-error>
-                              </mat-form-field> <!-- cantidad de descuento -->
+                              </mat-form-field> &lt;!&ndash; cantidad de descuento &ndash;&gt;
 
-                            </ion-col> <!-- aplicar IVA | aplicar descuento -->
+                            </ion-col> &lt;!&ndash; aplicar IVA | aplicar descuento &ndash;&gt;
                           </ion-row>
-                        </ion-col> <!-- precio unitario | aplicar IVA | aplicar descuento -->
+                        </ion-col> &lt;!&ndash; precio unitario | aplicar IVA | aplicar descuento &ndash;&gt;
 
                         <ion-col size="12" size-md="6">
                           <div style="text-align: center">
@@ -423,8 +423,8 @@
 
                             </tbody>
                           </table>
-                        </ion-col> <!-- desbloce de cobro -->
-                      </ion-row> <!-- precio unitario | aplicar IVA | aplicar descuento | desbloce de cobro -->
+                        </ion-col> &lt;!&ndash; desbloce de cobro &ndash;&gt;
+                      </ion-row> &lt;!&ndash; precio unitario | aplicar IVA | aplicar descuento | desbloce de cobro &ndash;&gt;
 
                     </ion-card-content>
                     <div class="card-action-buttons">
@@ -435,18 +435,18 @@
                 </form>
 
 
-                <!-- <mat-action-row>
+                &lt;!&ndash; <mat-action-row>
                   <button (click)="prevStep()" mat-flat-button style="font-size: 1.5rem;">
-                    <ion-icon name="chevron-back-outline" style="color: var(--ion-color-medium);"></ion-icon>
+                    <ion-icon name="chevron-back-outline" style="color: var(&#45;&#45;ion-color-medium);"></ion-icon>
                   </button> &nbsp; &nbsp;
 
                   <button (click)="nextStep()" mat-flat-button style="font-size: 1.5rem;">
-                    <ion-icon name="chevron-forward-outline" style="color: var(--ion-color-medium);"></ion-icon>
+                    <ion-icon name="chevron-forward-outline" style="color: var(&#45;&#45;ion-color-medium);"></ion-icon>
                   </button>
-                </mat-action-row> -->
+                </mat-action-row> &ndash;&gt;
               </mat-expansion-panel>
             </div>
-          </mat-accordion> <!-- Datos Generales -->
+          </mat-accordion> &lt;!&ndash; Datos Generales &ndash;&gt;
 
           <mat-accordion>
             <div class="accordion-margin">
@@ -469,7 +469,7 @@
                     <ion-row>
                       <ion-col size="6">
                         <h4 style="margin: 0; padding: 0;">Total: <span
-                          style="color: var(--ion-color-success)">${{(generalDataForm && generalDataForm.controls.total.value) ? (generalDataForm.controls.total.value | currency) : '--'}}
+                          style="color: var(&#45;&#45;ion-color-success)">${{(generalDataForm && generalDataForm.controls.total.value) ? (generalDataForm.controls.total.value | currency) : '&#45;&#45;'}}
                           MXN</span></h4>
                         <h4 style="margin: 0; padding: 0;">Balance por saldar: $<span
                           [ngClass]="{'danger-color': balancePorPagar > 0}">{{(balancePorPagar) ? (balancePorPagar | currency) : ('0' | currency)}}
@@ -511,10 +511,10 @@
                                     <mat-panel-description>
                                       <div class="tarjeta-resume">
                                       <span class="tipo-tarjeta">
-                                        {{(cobranzaPago.tarjeta && cobranzaPago.tarjeta.c_type) ? cobranzaPago.tarjeta.c_type : '--'}}
+                                        {{(cobranzaPago.tarjeta && cobranzaPago.tarjeta.c_type) ? cobranzaPago.tarjeta.c_type : '&#45;&#45;'}}
                                       </span>
                                         <span>
-                                        {{(cobranzaPago.tarjeta && cobranzaPago.tarjeta.c_cn4) ? cobranzaPago.tarjeta.c_cn4 : '--'}}
+                                        {{(cobranzaPago.tarjeta && cobranzaPago.tarjeta.c_cn4) ? cobranzaPago.tarjeta.c_cn4 : '&#45;&#45;'}}
                                       </span>
                                         <span>
                                            {{(cobranzaPago.monto_cobrado) ? (cobranzaPago.monto_cobrado | currency) : ('0' | currency) }} {{cobranzaPago.moneda_cobrada}}
@@ -552,19 +552,19 @@
                                             <div class="info-row">
                                               <span>Tipo Tarjeta: </span>
                                               <p>
-                                                {{(cobranzaPago.tarjeta && cobranzaPago.tarjeta.c_type) ? cobranzaPago.tarjeta.c_type : '--'}}
+                                                {{(cobranzaPago.tarjeta && cobranzaPago.tarjeta.c_type) ? cobranzaPago.tarjeta.c_type : '&#45;&#45;'}}
                                               </p>
                                             </div>
                                             <div class="info-row">
                                               <span>Num. Tarjeta: </span>
                                               <p>
-                                                {{(cobranzaPago.tarjeta && (cobranzaPago.tarjeta.c_cn1 && cobranzaPago.tarjeta.c_cn4)) ? cobranzaPago.tarjeta.c_cn1 + '*' + cobranzaPago.tarjeta.c_cn4 : '--'}}
+                                                {{(cobranzaPago.tarjeta && (cobranzaPago.tarjeta.c_cn1 && cobranzaPago.tarjeta.c_cn4)) ? cobranzaPago.tarjeta.c_cn1 + '*' + cobranzaPago.tarjeta.c_cn4 : '&#45;&#45;'}}
                                               </p>
                                             </div>
                                             <div class="info-row">
                                               <span>Mes / Año: </span>
                                               <p>
-                                                {{(cobranzaPago.tarjeta && (cobranzaPago.tarjeta.c_month && cobranzaPago.tarjeta.c_year)) ? cobranzaPago.tarjeta.c_month + '/' + cobranzaPago.tarjeta.c_year : '--'}}
+                                                {{(cobranzaPago.tarjeta && (cobranzaPago.tarjeta.c_month && cobranzaPago.tarjeta.c_year)) ? cobranzaPago.tarjeta.c_month + '/' + cobranzaPago.tarjeta.c_year : '&#45;&#45;'}}
                                               </p>
                                             </div>
                                             <div class="info-row">
@@ -639,7 +639,7 @@
                         </ion-card>
 
                       </ion-col>
-                    </ion-row> <!-- Pagado | PreAutorización -->
+                    </ion-row> &lt;!&ndash; Pagado | PreAutorización &ndash;&gt;
 
                   </ion-card-content>
                   <div class="card-action-buttons">
@@ -650,20 +650,22 @@
 
                 </ion-card>
 
-                <!-- <mat-action-row>
+                &lt;!&ndash; <mat-action-row>
                   <button (click)="prevStep()" mat-flat-button style="font-size: 1.5rem;">
-                    <ion-icon name="chevron-back-outline" style="color: var(--ion-color-medium);"></ion-icon>
+                    <ion-icon name="chevron-back-outline" style="color: var(&#45;&#45;ion-color-medium);"></ion-icon>
                   </button> &nbsp; &nbsp;
 
                   <button (click)="nextStep()" mat-flat-button style="font-size: 1.5rem;">
-                    <ion-icon name="chevron-forward-outline" style="color: var(--ion-color-medium);"></ion-icon>
+                    <ion-icon name="chevron-forward-outline" style="color: var(&#45;&#45;ion-color-medium);"></ion-icon>
                   </button>
-                </mat-action-row> -->
+                </mat-action-row> &ndash;&gt;
               </mat-expansion-panel>
             </div>
-          </mat-accordion> <!-- COBRANZA Detalle cargos y pre-autorizaciones -->
+          </mat-accordion> &lt;!&ndash; COBRANZA Detalle cargos y pre-autorizaciones &ndash;&gt;
         </ion-col>
-      </ion-row>
+      </ion-row>-->
+
+      <app-contrato [idioma]="idioma" [isReserva]="true"></app-contrato>
     </ion-card-content>
   </ion-card>
 </ion-content>

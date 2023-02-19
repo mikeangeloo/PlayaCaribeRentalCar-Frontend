@@ -31,9 +31,9 @@ import { TarifasExtrasService } from 'src/app/services/tarifas-extras.service';
 import { TiposTarifasService } from 'src/app/services/tipos-tarifas.service';
 import { ToastMessageService } from 'src/app/services/toast-message.service';
 import { UbicacionesService } from 'src/app/services/ubicaciones.service';
-import { InputModalComponent } from '../../input-modal/input-modal.component';
-import { MultiTableFilterComponent } from '../../multi-table-filter/multi-table-filter.component';
-import { TarjetaFormComponent } from '../../tarjetas/tarjeta-form/tarjeta-form.component';
+import { InputModalComponent } from '../../../../../common/components/input-modal/input-modal.component';
+import { MultiTableFilterComponent } from '../../../../../common/components/multi-table-filter/multi-table-filter.component';
+import { TarjetaFormComponent } from '../../../../../common/components/tarjetas/tarjeta-form/tarjeta-form.component';
 import { NgxSpinnerService } from "ngx-spinner";
 import { ActivatedRoute, Router } from '@angular/router';
 

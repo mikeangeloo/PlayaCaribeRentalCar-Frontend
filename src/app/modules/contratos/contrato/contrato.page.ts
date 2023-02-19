@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, Input, OnChanges, OnInit, SimpleChanges, ViewChild} from '@angular/core';
 import {NgxMaterialTimepickerTheme} from 'ngx-material-timepicker';
 import {Months} from '../../../interfaces/shared/months';
 import * as moment from 'moment';
@@ -68,6 +68,10 @@ import {CategoriaVehiculosService} from '../../../services/categoria-vehiculos.s
 })
 
 export class ContratoPage implements OnInit, AfterViewInit {
+
+  @Input() isReserva: boolean = false;
+  @Input() idioma: 'es' | 'en' = 'es';
+
   @ViewChild(SignatureCaptureComponent) signatureComponent;
 
   public loading = false;
@@ -249,12 +253,19 @@ export class ContratoPage implements OnInit, AfterViewInit {
     public checkListServ: CheckListService,
     public spinner: NgxSpinnerService,
     public router: Router,
-    public route: ActivatedRoute
+    public route: ActivatedRoute,
+    public modalCtrl: ModalController,
 
   ) { }
 
-  ngOnInit() {
+  async ngOnInit() {
     this.validYears = this.getYears();
+
+    if (this.isReserva) {
+      this.contratosServ.flushReservaData()
+      this.contratosServ.flushContractData()
+      await this.ionViewWillEnter();
+    }
   }
 
   async ionViewWillEnter() {
@@ -2899,6 +2910,9 @@ export class ContratoPage implements OnInit, AfterViewInit {
         break;
     }
 
+    if (this.isReserva) {
+      _payload.reserva = true;
+    }
     _payload.seccion = section;
     _payload.num_contrato = this.num_contrato;
 
@@ -2946,6 +2960,10 @@ export class ContratoPage implements OnInit, AfterViewInit {
   }
 
   async sendAndGeneratePDF() {
+    if (this.isReserva) {
+      this.sendAndGeneratePDFReserva();
+      return;
+    }
     this.spinner.show();
     this.contratosServ.sendAndGeneratePDF(this.contract_id).subscribe(res => {
       const url = URL.createObjectURL(res);
@@ -2963,6 +2981,44 @@ export class ContratoPage implements OnInit, AfterViewInit {
         this.sweetMsgServ.printStatusArray(errors.errors, 'error');
       });
       fr.readAsText(error.error);
+    });
+  }
+
+  async sendAndGeneratePDFReserva() {
+    this.spinner.show();
+
+    let sendPDFToClient = false;
+    let msgResponse = await this.sweetMsgServ.confirmRequest('¿Quieres enviar una copia del la reserva en PDF al cliente?', ' ');
+    if (msgResponse.value) {
+      sendPDFToClient = true;
+    }
+    this.contratosServ.sendAndGenerateReservaPDF(this.contract_id, this.idioma, sendPDFToClient).subscribe(res => {
+      const url = URL.createObjectURL(res);
+      this.contratosServ.flushReservaData();
+      this.contratosServ.flushContractData();
+
+      this.spinner.hide();
+      if (this.detectIOS() === true) {
+        window.location.assign(url);
+      } else {
+        window.open(url, '_blank');
+      }
+
+      this.dismiss(true);
+    }, error => {
+      this.spinner.hide();
+      const fr = new FileReader();
+      fr.addEventListener('loadend', (e: any) => {
+        const errors = JSON.parse(e.srcElement.result);
+        this.sweetMsgServ.printStatusArray(errors.errors, 'error');
+      });
+      fr.readAsText(error.error);
+    });
+  }
+
+  dismiss(reload?) {
+    this.modalCtrl.dismiss({
+      reload
     });
   }
 
