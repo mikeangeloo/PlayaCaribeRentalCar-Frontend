@@ -2389,6 +2389,9 @@ export class ContratoPage implements OnInit, AfterViewInit {
         }
       }
 
+      //recalculamos balance x cobrar
+      this.recalBalancePorCobrar()
+
     }
 
     // sacamos subtotal, iva y total final

@@ -4,7 +4,7 @@
       <ion-col size="12" [ngClass]="{hide: !hoteles || hoteles.length === 0}">
         <ion-card class="ion-no-margin ion-no-padding">
           <ion-card-header>
-            <h2>Listado de Hoteles</h2>
+            <h2>Listado de Externos</h2>
           </ion-card-header>
           <ion-card-content>
 
@@ -55,6 +55,18 @@
                     <div class="column">
                       <p>
                         {{row.nombre}}
+                      </p>
+                    </div>
+                  </mat-cell>
+                </ng-container>
+
+                <!-- tipo_externo -->
+                <ng-container matColumnDef="tipo_externo">
+                  <mat-header-cell *matHeaderCellDef mat-sort-header>Tipo</mat-header-cell>
+                  <mat-cell *matCellDef="let row">
+                    <div class="column">
+                      <p>
+                        {{(row.tipo_externo ? row.tipo_externo?.descripcion : '--')}}
                       </p>
                     </div>
                   </mat-cell>

@@ -11,6 +11,8 @@ import {ComisionistaFormComponent} from "../../../comisionistas/comisionista-for
 import {TarifaHotelesI} from '../../../../../interfaces/tarifas/tarifa-hoteles.interface';
 import {ClasesVehiculosI} from '../../../../../interfaces/catalogo-vehiculos/clases-vehiculos.interface';
 import {ClasesVehiculosService} from '../../../../../services/clases-vehiculos.service';
+import {TipoExternoI} from '../../../../../interfaces/hoteles/tipo-externo.interface';
+import {TiposExternosService} from '../../../../../services/tipos-externos.service';
 
 @Component({
   selector: 'app-hotel-form',
@@ -24,6 +26,8 @@ export class HotelFormComponent implements OnInit {
   public hotelForm: FormGroup;
   public hotelData: HotelesI;
 
+  public tipoExternos: TipoExternoI[] = []
+
   public tarifasHotelPayload: TarifaHotelesI[];
   public clasesVehiculos: ClasesVehiculosI[];
 
@@ -34,10 +38,11 @@ export class HotelFormComponent implements OnInit {
     private generalServ: GeneralService,
     private sweetMsg: SweetMessagesService,
     private toastServ: ToastMessageService,
+    private tipoExternoServ: TiposExternosService,
     public modalCtr: ModalController,
     public claseVehiculosServ: ClasesVehiculosService
   ) {
-    this.title = 'Formulario Hotel';
+    this.title = 'Formulario Externos';
     this.hotelForm = this.fb.group({
       id: [null],
       nombre: [null, Validators.required],
@@ -47,7 +52,8 @@ export class HotelFormComponent implements OnInit {
       activo: [null],
       paga_cupon: [null],
       activar_descuentos: [null],
-      acceso_externo: [null]
+      acceso_externo: [null],
+      tipo_id: [null]
     });
   }
 
@@ -56,6 +62,7 @@ export class HotelFormComponent implements OnInit {
   }
 
   async ngOnInit() {
+    this.loadTipoExternos();
     await this.loadClasesVehiculos();
     if (this.hotel_id) {
       this.loadHotelesData();
@@ -76,6 +83,7 @@ export class HotelFormComponent implements OnInit {
       paga_cupon: (data && data.paga_cupon) ? data.paga_cupon : 0,
       activar_descuentos: (data && data.activar_descuentos) ? data.activar_descuentos : 0,
       acceso_externo: (data && data.acceso_externo) ? data.acceso_externo : 0,
+      tipo_id: (data && data.tipo_id) ? data.tipo_id : null,
     });
     this.hotelForm.controls.activo.disable();
   }
@@ -126,6 +134,16 @@ export class HotelFormComponent implements OnInit {
     if (res.ok) {
       this.clasesVehiculos = res.datas;
     }
+  }
+
+  loadTipoExternos() {
+    this.tipoExternoServ.getActive().subscribe(res => {
+      if (res.ok) {
+        this.tipoExternos = res.data;
+      }
+    }, error => {
+      console.log(error)
+    })
   }
 
   captureFinalPrice(tarifaHotel: TarifaHotelesI, event) {

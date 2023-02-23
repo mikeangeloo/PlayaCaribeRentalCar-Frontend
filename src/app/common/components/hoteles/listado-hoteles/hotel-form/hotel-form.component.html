@@ -60,7 +60,7 @@
 
               <ion-row class="ion-no-padding ion-no-margin">
 
-                <ion-col size="6">
+                <ion-col size="4">
                   <mat-form-field appearance="legacy">
                     <mat-label>Tel. Contacto</mat-label>
                     <input matInput type="tel" formControlName="tel_contacto" autocomplete="off">
@@ -68,7 +68,16 @@
                   </mat-form-field>
                 </ion-col>
 
-                <ion-col size="6">
+                <ion-col size="4">
+                  <mat-form-field appearance="legacy">
+                    <mat-label>Tipo Externo</mat-label>
+                    <mat-select formControlName="tipo_id">
+                      <mat-option *ngFor="let tipoE of tipoExternos" [value]="tipoE.id">{{tipoE.descripcion}}</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </ion-col>
+
+                <ion-col size="4">
                   <mat-form-field appearance="legacy">
                     <mat-label>Activo</mat-label>
                     <mat-select formControlName="activo">

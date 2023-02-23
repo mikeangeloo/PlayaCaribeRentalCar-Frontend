@@ -31,6 +31,7 @@ export class HotelesListComponent implements OnInit, OnChanges {
   displayedColumns: string[] = [
     'id',
     'nombre',
+    'tipo_externo',
     'rfc',
     'direccion',
     'tel_contacto',
