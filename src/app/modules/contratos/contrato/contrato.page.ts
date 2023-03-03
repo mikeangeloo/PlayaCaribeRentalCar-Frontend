@@ -541,7 +541,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
               this.cobranzaProgRetornoData = [];
             }
 
-            if(this.contractData.estatus == ContratosStatusE.RESERVA && !_datosVehiculo) {
+            if(this.contractData.estatus == ContratosStatusE.RESERVA && !_datosVehiculo && !this.isReserva) {
               this.step = 2;
             }
 
@@ -671,7 +671,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
       total: [(data && data.total ? data.total : null), Validators.required],
 
       folio_cupon: [(data && data.folio_cupon ? data.folio_cupon : null)],
-      //valor_cupon: [(data && data.valor_cupon ? data.valor_cupon : null)],
+      valor_cupon: [(data && data.valor_cupon ? data.valor_cupon : null)],
 
       cobranza_calc: [(data && data.cobranza_calc ? data.cobranza_calc : null), Validators.required],
 
@@ -2131,6 +2131,8 @@ export class ContratoPage implements OnInit, AfterViewInit {
       this.gf.tipo_tarifa.markAllAsTouched();
       return;
     }
+
+    this.gf.valor_cupon.patchValue(null)
     // if (this.gf.vehiculo_id.invalid) {
     //   this.sweetMsgServ.printStatus('Selecciona un vehículo primero', 'warning');
     //   this.gf.vehiculo_id.markAllAsTouched();
@@ -2244,6 +2246,10 @@ export class ContratoPage implements OnInit, AfterViewInit {
         }
 
         // Veriricamos si tenemos cupón
+        let descuentoCupon = 0;
+        for (let cobro of this.cobranzaI) {
+          descuentoCupon =  descuentoCupon + (cobro.number_sign === 'negative' ? -cobro.amount : +cobro.amount)
+        }
         if (this.gf.folio_cupon.value) {
           this.cobranzaI.push({
             element: 'descuento_cupon',
@@ -2252,10 +2258,13 @@ export class ContratoPage implements OnInit, AfterViewInit {
             quantity_type: '%',
             element_label: 'Descuento Cupón',
             number_sign: 'negative',
-            amount: parseFloat(Number(_precioBase * _totalDias).toFixed(2)),
+            amount: parseFloat(Number(descuentoCupon).toFixed(2)),
             currency: this.baseCurrency
           });
         }
+
+        //colocamos valor del cupón
+        this.gf.valor_cupon.patchValue(descuentoCupon)
 
         break;
       // case 'HOTEL':

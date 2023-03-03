@@ -454,174 +454,176 @@
             </mat-expansion-panel>
           </div>
         </mat-accordion> <!-- Datos Generales -->
-        <mat-accordion *ngIf="!contractData || (contractData && contractData.estatus != 2 )">
-          <div class="accordion-margin">
-            <mat-expansion-panel [expanded]="step === 2" hideToggle [disabled]="step == 1 || step == 0">
-              <mat-expansion-panel-header>
-                <mat-panel-title>
-                  Datos Vehículo
-                </mat-panel-title>
-                <mat-panel-description style="margin: 0; justify-content: flex-end;">
-                  <ion-icon name="car"></ion-icon>
-                </mat-panel-description>
-              </mat-expansion-panel-header>
+        <ng-container *ngIf="!isReserva">
+          <mat-accordion *ngIf="!contractData || (contractData && contractData.estatus != 2 )">
+            <div class="accordion-margin">
+              <mat-expansion-panel [expanded]="step === 2" hideToggle [disabled]="step == 1 || step == 0">
+                <mat-expansion-panel-header>
+                  <mat-panel-title>
+                    Datos Vehículo
+                  </mat-panel-title>
+                  <mat-panel-description style="margin: 0; justify-content: flex-end;">
+                    <ion-icon name="car"></ion-icon>
+                  </mat-panel-description>
+                </mat-expansion-panel-header>
 
-              <ion-card [disabled]="step >= 4 && contractData.estatus !== 4">
-                <ion-card-content>
-                  <ion-row>
-                    <ion-col size="12">
-                      <form *ngIf="vehiculoData" [formGroup]="vehiculoForm">
-                        <ion-row>
-                          <ion-col size="12">
-                            <div class="search-row-buttons">
-                              <ion-button size="small" color="secondary"
-                                          (click)="openModalSearch('vehiculos', 'vehiculo')">
-                                <ion-icon name="search"></ion-icon>
-                              </ion-button>
-                            </div>
-                          </ion-col>
-                        </ion-row> <!-- openModalSearch -->
-                        <ion-row class="ion-no-padding ion-no-margin">
-                          <ion-col size>
-                            <mat-form-field appearance="legacy">
-                              <mat-label>Código Vehículo</mat-label>
-                              <input type="text" autocomplete="off" maxlength="50" matInput [disabled]="true"
-                                     [value]="vehiculoData && vehiculoData.codigo ? vehiculoData.codigo : null">
+                <ion-card [disabled]="step >= 4 && contractData.estatus !== 4">
+                  <ion-card-content>
+                    <ion-row>
+                      <ion-col size="12">
+                        <form *ngIf="vehiculoData" [formGroup]="vehiculoForm">
+                          <ion-row>
+                            <ion-col size="12">
+                              <div class="search-row-buttons">
+                                <ion-button size="small" color="secondary"
+                                            (click)="openModalSearch('vehiculos', 'vehiculo')">
+                                  <ion-icon name="search"></ion-icon>
+                                </ion-button>
+                              </div>
+                            </ion-col>
+                          </ion-row> <!-- openModalSearch -->
+                          <ion-row class="ion-no-padding ion-no-margin">
+                            <ion-col size>
+                              <mat-form-field appearance="legacy">
+                                <mat-label>Código Vehículo</mat-label>
+                                <input type="text" autocomplete="off" maxlength="50" matInput [disabled]="true"
+                                       [value]="vehiculoData && vehiculoData.codigo ? vehiculoData.codigo : null">
+                                <mat-hint>Solo lectura</mat-hint>
+                              </mat-form-field>
+                            </ion-col> <!--Código Vehículo-->
+                            <ion-col size>
+                              <mat-form-field appearance="legacy">
+                                <mat-label>Marca</mat-label>
+                                <input type="text" matInput autocomplete="off" maxlength="50" [disabled]="true"
+                                       [value]="vehiculoData && vehiculoData.marca && vehiculoData.marca.marca ? vehiculoData.marca.marca : null">
+                                <mat-hint>Solo lectura</mat-hint>
+                              </mat-form-field>
+                            </ion-col> <!--Marca-->
+                            <ion-col size>
+                              <mat-form-field appearance="legacy">
+                                <mat-label>Modelo</mat-label>
+                                <input type="text" autocomplete="off" maxlength="50" matInput [disabled]="true"
+                                       [value]="vehiculoData && vehiculoData.modelo ? vehiculoData.modelo : null">
+                                <mat-hint>Solo lectura</mat-hint>
+                              </mat-form-field>
+                            </ion-col> <!--Modelo-->
+                            <ion-col size>
+                              <mat-form-field appearance="legacy">
+                                <mat-label>Color</mat-label>
+                                <input type="text" matInput maxlength="20" autocomplete="off" [disabled]="true"
+                                       [value]="vehiculoData && vehiculoData.color ? vehiculoData.color : null">
+                                <mat-hint>Solo lectura</mat-hint>
+                              </mat-form-field>
+                            </ion-col> <!--Color-->
+                          </ion-row> <!-- Código Vehículo  Marca  Modelo  Color -->
+                          <ion-row class="ion-no-padding ion-no-margin">
+                            <ion-col size size-md="4">
+                              <mat-form-field appearance="legacy">
+                                <mat-label>No. Placas</mat-label>
+                                <input type="text" matInput maxlength="10" autocomplete="off" [disabled]="true"
+                                       [value]="vehiculoData && vehiculoData.placas ? vehiculoData.placas : null">
+                                <mat-hint>Solo lectura</mat-hint>
+                              </mat-form-field>
+                            </ion-col> <!--No. Placas-->
+                            <ion-col size size-md="4">
+                              <mat-form-field appearance="legacy">
+                                <mat-label>No. Serie</mat-label>
+                                <input type="text" matInput maxlength="40" autocomplete="off" [disabled]="true"
+                                       [value]="vehiculoData && vehiculoData.num_serie ? vehiculoData.num_serie : null">
+                                <mat-hint>Solo lectura</mat-hint>
+                              </mat-form-field>
+                            </ion-col> <!--No. Serie-->
+                            <ion-col size size-md="4">
+                              <mat-form-field appearance="legacy">
+                                <mat-label>No. Poliza</mat-label>
+                                <input type="text" matInput maxlength="30" autocomplete="off" [disabled]="true"
+                                       [value]="vehiculoData && vehiculoData.num_poliza_seg ? vehiculoData.num_poliza_seg : null">
+                                <mat-hint>Solo lectura</mat-hint>
+                              </mat-form-field>  <!--Poliza-->
+                            </ion-col>
+                            <ion-col size size-md="4">
+                              <mat-form-field appearance="legacy">
+                                <mat-label>Capacidad Tanque</mat-label>
+                                <input type="number" autocomplete="off" matInput [disabled]="true"
+                                       [value]="vehiculoData && vehiculoData.cap_tanque ? vehiculoData.cap_tanque : null"
+                                       style="text-align: right;">
+                                <span matSuffix>LT</span>
+                                <mat-hint>Solo lectura</mat-hint>
+                              </mat-form-field>
+                            </ion-col> <!--Capacidad Tanque-->
+                            <ion-col size size-md="4">
+                              <mat-form-field appearance="legacy">
+                                <mat-label>Cant. Combustible anterior</mat-label>
+                                <input formControlName="cant_combustible_anterior" autocomplete="off" type="text" matInput [disabled]="true"
+                                       [value]="vehiculoData && vehiculoData.cant_combustible_anterior ? vehiculoData.cant_combustible_anterior : null"
+                                       style="text-align: right;">
+                                <span matSuffix>LT</span>
+                                <mat-hint>Solo lectura</mat-hint>
+                              </mat-form-field>
+                            </ion-col> <!--Capacidad Tanque-->
+                            <ion-col size size-md="4">
+                              <mat-form-field appearance="legacy">
+                                <mat-label>Cant. Combustible Salida</mat-label>
+                                <mat-select formControlName="cant_combustible_salida">
+                                  <mat-option value="1/8">1/8</mat-option>
+                                  <mat-option value="2/8">2/8</mat-option>
+                                  <mat-option value="3/8">3/8</mat-option>
+                                  <mat-option value="4/8">4/8</mat-option>
+                                  <mat-option value="5/8">5/8</mat-option>
+                                  <mat-option value="6/8">6/8</mat-option>
+                                  <mat-option value="7/8">7/8</mat-option>
+                                  <mat-option value="8/8">8/8</mat-option>
+                                </mat-select>
+                                <mat-error *ngIf="vf.cant_combustible_salida.errors?.required">Campo requerido</mat-error>
+                                <mat-hint *ngIf="vf.cant_combustible_salida.disabled">Solo lectura</mat-hint>
+                              </mat-form-field> <!-- Cant. Combustible salida -->
+                            </ion-col>
+                            <ion-col size size-md="6">
+                              <mat-form-field appearance="legacy">
+                                <mat-label>Km. Anterior</mat-label>
+                                <input matInput type="number" formControlName="km_anterior" autocomplete="off">
+                              </mat-form-field> <!-- Km. Anterior-->
                               <mat-hint>Solo lectura</mat-hint>
-                            </mat-form-field>
-                          </ion-col> <!--Código Vehículo-->
-                          <ion-col size>
-                            <mat-form-field appearance="legacy">
-                              <mat-label>Marca</mat-label>
-                              <input type="text" matInput autocomplete="off" maxlength="50" [disabled]="true"
-                                     [value]="vehiculoData && vehiculoData.marca && vehiculoData.marca.marca ? vehiculoData.marca.marca : null">
-                              <mat-hint>Solo lectura</mat-hint>
-                            </mat-form-field>
-                          </ion-col> <!--Marca-->
-                          <ion-col size>
-                            <mat-form-field appearance="legacy">
-                              <mat-label>Modelo</mat-label>
-                              <input type="text" autocomplete="off" maxlength="50" matInput [disabled]="true"
-                                     [value]="vehiculoData && vehiculoData.modelo ? vehiculoData.modelo : null">
-                              <mat-hint>Solo lectura</mat-hint>
-                            </mat-form-field>
-                          </ion-col> <!--Modelo-->
-                          <ion-col size>
-                            <mat-form-field appearance="legacy">
-                              <mat-label>Color</mat-label>
-                              <input type="text" matInput maxlength="20" autocomplete="off" [disabled]="true"
-                                     [value]="vehiculoData && vehiculoData.color ? vehiculoData.color : null">
-                              <mat-hint>Solo lectura</mat-hint>
-                            </mat-form-field>
-                          </ion-col> <!--Color-->
-                        </ion-row> <!-- Código Vehículo  Marca  Modelo  Color -->
-                        <ion-row class="ion-no-padding ion-no-margin">
-                          <ion-col size size-md="4">
-                            <mat-form-field appearance="legacy">
-                              <mat-label>No. Placas</mat-label>
-                              <input type="text" matInput maxlength="10" autocomplete="off" [disabled]="true"
-                                     [value]="vehiculoData && vehiculoData.placas ? vehiculoData.placas : null">
-                              <mat-hint>Solo lectura</mat-hint>
-                            </mat-form-field>
-                          </ion-col> <!--No. Placas-->
-                          <ion-col size size-md="4">
-                            <mat-form-field appearance="legacy">
-                              <mat-label>No. Serie</mat-label>
-                              <input type="text" matInput maxlength="40" autocomplete="off" [disabled]="true"
-                                     [value]="vehiculoData && vehiculoData.num_serie ? vehiculoData.num_serie : null">
-                              <mat-hint>Solo lectura</mat-hint>
-                            </mat-form-field>
-                          </ion-col> <!--No. Serie-->
-                          <ion-col size size-md="4">
-                            <mat-form-field appearance="legacy">
-                              <mat-label>No. Poliza</mat-label>
-                              <input type="text" matInput maxlength="30" autocomplete="off" [disabled]="true"
-                                     [value]="vehiculoData && vehiculoData.num_poliza_seg ? vehiculoData.num_poliza_seg : null">
-                              <mat-hint>Solo lectura</mat-hint>
-                            </mat-form-field>  <!--Poliza-->
-                          </ion-col>
-                          <ion-col size size-md="4">
-                            <mat-form-field appearance="legacy">
-                              <mat-label>Capacidad Tanque</mat-label>
-                              <input type="number" autocomplete="off" matInput [disabled]="true"
-                                     [value]="vehiculoData && vehiculoData.cap_tanque ? vehiculoData.cap_tanque : null"
-                                     style="text-align: right;">
-                              <span matSuffix>LT</span>
-                              <mat-hint>Solo lectura</mat-hint>
-                            </mat-form-field>
-                          </ion-col> <!--Capacidad Tanque-->
-                          <ion-col size size-md="4">
-                            <mat-form-field appearance="legacy">
-                              <mat-label>Cant. Combustible anterior</mat-label>
-                              <input formControlName="cant_combustible_anterior" autocomplete="off" type="text" matInput [disabled]="true"
-                                     [value]="vehiculoData && vehiculoData.cant_combustible_anterior ? vehiculoData.cant_combustible_anterior : null"
-                                     style="text-align: right;">
-                              <span matSuffix>LT</span>
-                              <mat-hint>Solo lectura</mat-hint>
-                            </mat-form-field>
-                          </ion-col> <!--Capacidad Tanque-->
-                          <ion-col size size-md="4">
-                            <mat-form-field appearance="legacy">
-                              <mat-label>Cant. Combustible Salida</mat-label>
-                              <mat-select formControlName="cant_combustible_salida">
-                                <mat-option value="1/8">1/8</mat-option>
-                                <mat-option value="2/8">2/8</mat-option>
-                                <mat-option value="3/8">3/8</mat-option>
-                                <mat-option value="4/8">4/8</mat-option>
-                                <mat-option value="5/8">5/8</mat-option>
-                                <mat-option value="6/8">6/8</mat-option>
-                                <mat-option value="7/8">7/8</mat-option>
-                                <mat-option value="8/8">8/8</mat-option>
-                              </mat-select>
-                              <mat-error *ngIf="vf.cant_combustible_salida.errors?.required">Campo requerido</mat-error>
-                              <mat-hint *ngIf="vf.cant_combustible_salida.disabled">Solo lectura</mat-hint>
-                            </mat-form-field> <!-- Cant. Combustible salida -->
-                          </ion-col>
-                          <ion-col size size-md="6">
-                            <mat-form-field appearance="legacy">
-                              <mat-label>Km. Anterior</mat-label>
-                              <input matInput type="number" formControlName="km_anterior" autocomplete="off">
-                            </mat-form-field> <!-- Km. Anterior-->
-                            <mat-hint>Solo lectura</mat-hint>
-                          </ion-col>
-                          <ion-col size size-md="6">
-                            <mat-form-field appearance="legacy">
-                              <mat-label>Km. Inicio</mat-label>
-                              <input matInput type="number" formControlName="km_inicial" autocomplete="off">
-                              <mat-error *ngIf="vf.km_inicial.errors?.required">Campo requerido</mat-error>
-                              <mat-hint *ngIf="vf.km_inicial.disabled">Solo lectura</mat-hint>
-                            </mat-form-field> <!-- Km. Inicio-->
-                          </ion-col>
-                        </ion-row> <!-- No. Placas  No.Serie  Capacidad Tanque  -->
+                            </ion-col>
+                            <ion-col size size-md="6">
+                              <mat-form-field appearance="legacy">
+                                <mat-label>Km. Inicio</mat-label>
+                                <input matInput type="number" formControlName="km_inicial" autocomplete="off">
+                                <mat-error *ngIf="vf.km_inicial.errors?.required">Campo requerido</mat-error>
+                                <mat-hint *ngIf="vf.km_inicial.disabled">Solo lectura</mat-hint>
+                              </mat-form-field> <!-- Km. Inicio-->
+                            </ion-col>
+                          </ion-row> <!-- No. Placas  No.Serie  Capacidad Tanque  -->
 
-                        <div class="card-action-buttons">
-                          <ion-button color="success" (click)="saveProcess('datos_vehiculo')">SIGUIENTE</ion-button>
+                          <div class="card-action-buttons">
+                            <ion-button color="success" (click)="saveProcess('datos_vehiculo')">SIGUIENTE</ion-button>
+                          </div>
+                        </form>
+                        <div *ngIf="!vehiculoData">
+                          <ion-row>
+                            <ion-col size="12">
+                              <div class="ion-text-center">
+                                Seleccione un vehículo
+                                &nbsp;
+                                <ion-button size="small" color="secondary"
+                                            (click)="openModalSearch('vehiculos', 'vehiculo')">
+                                  <ion-icon name="search"></ion-icon>
+                                </ion-button>
+                              </div>
+                            </ion-col>
+                          </ion-row> <!-- openModalSearch -->
                         </div>
-                      </form>
-                      <div *ngIf="!vehiculoData">
-                        <ion-row>
-                          <ion-col size="12">
-                            <div class="ion-text-center">
-                              Seleccione un vehículo
-                              &nbsp;
-                              <ion-button size="small" color="secondary"
-                                          (click)="openModalSearch('vehiculos', 'vehiculo')">
-                                <ion-icon name="search"></ion-icon>
-                              </ion-button>
-                            </div>
-                          </ion-col>
-                        </ion-row> <!-- openModalSearch -->
-                      </div>
-                    </ion-col> <!-- datos vehiculo -->
-                  </ion-row>
-                </ion-card-content>
-              </ion-card>
-            </mat-expansion-panel>
-          </div>
-        </mat-accordion> <!-- Datos vehiculo -->
+                      </ion-col> <!-- datos vehiculo -->
+                    </ion-row>
+                  </ion-card-content>
+                </ion-card>
+              </mat-expansion-panel>
+            </div>
+          </mat-accordion> <!-- Datos vehiculo -->
+        </ng-container>
         <mat-accordion *ngIf="!contractData || (contractData && contractData.estatus != 2 )">
           <div class="accordion-margin">
-            <mat-expansion-panel [expanded]="step === 3" hideToggle [disabled]="step == 0 || step == 1 || step == 2">
+            <mat-expansion-panel [expanded]="step === 3" hideToggle [disabled]="step == 0 || step == 1 || (step == 2 && !isReserva)">
               <mat-expansion-panel-header>
                 <mat-panel-title>
                   Cobranza

@@ -137,7 +137,7 @@
             <ng-container *ngFor="let tHotel of tarifasHotelPayload">
               <tr>
                 <td>
-                  <ng-container *ngIf="ef.activar_descuentos.value === true && tHotel.tarifas_apollo?.length > 0">
+                  <ng-container *ngIf="ef.activar_descuentos.value === true || tHotel.tarifas_apollo?.length > 0">
                     <ion-button size="small" color="light" *ngIf="!tHotel.view_frequency" (click)="viewFrequencyDiscount(tHotel, true)">
                       <ion-icon color="secondary" name="pricetag-outline"></ion-icon>
                       <ion-icon color="secondary" slot="icon-only" name="caret-down"></ion-icon>

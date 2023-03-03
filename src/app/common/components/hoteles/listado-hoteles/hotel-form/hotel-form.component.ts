@@ -88,24 +88,55 @@ export class HotelFormComponent implements OnInit {
     this.hotelForm.controls.activo.disable();
   }
 
-  initTarifaHotelPayload(data?) {
-    if (data) {
-      this.tarifasHotelPayload = null;
-      this.tarifasHotelPayload = data;
-      return;
-    }
+  initTarifaHotelPayload(data?: TarifaHotelesI[]) {
+    let tarifasClasesMissing = this.clasesVehiculos?.filter((clase) => !data?.some((tarifa) => clase.id === tarifa.clase_id));
     this.tarifasHotelPayload = [];
-    for (let i = 0; i < this.clasesVehiculos.length; i++) {
-      this.tarifasHotelPayload.push({
-        hotel_id: this.hotel_id,
-        activo: true,
-        clase_id: this.clasesVehiculos[i].id,
-        clase: this.clasesVehiculos[i].clase,
-        precio_renta: null,
-        id: null,
-        errors: []
-      });
+
+    if (data || tarifasClasesMissing?.length > 0) {
+      if (data) {
+        this.tarifasHotelPayload = data;
+      }
+      if (tarifasClasesMissing) {
+        for (let i = 0; i < tarifasClasesMissing.length; i++) {
+          this.tarifasHotelPayload.push({
+            hotel_id: this.hotel_id,
+            activo: true,
+            clase_id: tarifasClasesMissing[i].id,
+            clase: tarifasClasesMissing[i].clase,
+            precio_renta: null,
+            id: null,
+            errors: []
+          });
+        }
+      }
+    } else {
+      for (let i = 0; i < this.clasesVehiculos.length; i++) {
+        this.tarifasHotelPayload.push({
+          hotel_id: this.hotel_id,
+          activo: true,
+          clase_id: this.clasesVehiculos[i].id,
+          clase: this.clasesVehiculos[i].clase,
+          precio_renta: null,
+          id: null,
+          errors: []
+        });
+      }
     }
+
+    this.tarifasHotelPayload.sort((a, b) => {
+      const nameA = a.clase.toUpperCase(); // ignore upper and lowercase
+      const nameB = b.clase.toUpperCase(); // ignore upper and lowercase
+      if (nameA < nameB) {
+        return -1;
+      }
+      if (nameA > nameB) {
+        return 1;
+      }
+
+      // names must be equal
+      return 0;
+    })
+
   }
 
   loadHotelesData() {
