@@ -1,0 +1,27 @@
+#Initialize mod_rewrite
+RewriteEngine On
+<FilesMatch "\.(html|htm|js|css)$">
+  FileETag None
+  <IfModule mod_headers.c>
+    Header unset ETag
+    Header set Cache-Control "max-age=0, no-cache, no-store, must-revalidate"
+    Header set Pragma "no-cache"
+    Header set Expires "Wed, 12 Jan 1980 05:00:00 GMT"
+  </IfModule>
+</FilesMatch>
+
+<IfModule mod_rewrite.c>
+	RewriteEngine On
+
+ 	# -- REDIRECTION to https (optional):
+	# If you need this, uncomment the next two commands
+	RewriteCond %{HTTPS} !on
+  	RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI} [L]
+	# --
+
+	RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI} -f [OR]
+	RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI} -d
+
+	RewriteRule ^.*$ - [NC,L]
+	RewriteRule ^(.*) index.html [NC,L]
+</IfModule>
