@@ -15,6 +15,8 @@ interface ReportePagosDataI {
   folio: string
   fecha: string
   automovil: string
+  folio_cupon: string
+  valor_cupon: number
   cobranza_tarjeta_mxn: number
   cobranza_tarjeta_usd: number
   cobranza_efectivo_mxn: number
@@ -59,6 +61,7 @@ export class DetallesPagosTableComponent implements OnChanges {
     'folio',
     'fecha',
     'automovil',
+    'folio_cupon',
     'cobranza_tarjeta_mxn',
     'cobranza_tarjeta_usd',
     'cobranza_efectivo_mxn',
@@ -112,6 +115,8 @@ export class DetallesPagosTableComponent implements OnChanges {
           }
           let _report: ReportePagosDataI = {
             automovil: vehiculoData,
+            folio_cupon: reporte.folio_cupon,
+            valor_cupon: reporte.valor_cupon,
             cobranza_deposito_mxn: reporte.cobranza_deposito_mxn?.total,
             cobranza_deposito_usd: reporte.cobranza_deposito_usd?.total,
             cobranza_efectivo_mxn: reporte.cobranza_efectivo_mxn?.total,

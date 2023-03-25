@@ -104,7 +104,7 @@ const routes: Routes = [
 
           //region HOTELES
           {
-            path: 'hoteles/listado-hoteles',
+            path: 'externos/listado-externos',
             loadChildren: () => import('./modules/hoteles/listado-hoteles/listado-hoteles.module').then(m => m.ListadoHotelesPageModule)
           },
           //endregion

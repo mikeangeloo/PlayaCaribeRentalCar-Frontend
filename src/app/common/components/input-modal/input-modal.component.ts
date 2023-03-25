@@ -3,6 +3,7 @@ import {ModalController} from '@ionic/angular';
 import {SweetMessagesService} from '../../../services/sweet-messages.service';
 import {TiposCambioI} from '../../../interfaces/configuracion/tipos-cambio';
 import {ConversionMonedaService} from '../../../services/conversion-moneda.service';
+import {CobranzaTipo} from '../../../interfaces/cobranza/cobranza-prog.interface';
 
 @Component({
   selector: 'app-input-modal',
@@ -16,6 +17,7 @@ export class InputModalComponent implements OnInit {
   @Input() balanceCobro: number;
   @Input() cobranza_id: number;
   @Input() divisa_id: number = 1;
+  @Input() cobranzaTipo: CobranzaTipo;
 
   public title: string;
 
@@ -31,7 +33,7 @@ export class InputModalComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.title = 'Captura de efectivo';
+    this.title = `Captura de efectivo ${this.cobranzaTipo}`;
     if (this.divisa_id && this.divisa_id !== 1) {
       this.handleDivisaChange();
     }

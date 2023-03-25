@@ -25,4 +25,7 @@ export interface ReporteDataI {
   fullData?: ReporteEndpointI
 
   desgloce_cobranza: CobranzaCapturada[]
+
+  folio_cupon: string
+  valor_cupon: number
 }

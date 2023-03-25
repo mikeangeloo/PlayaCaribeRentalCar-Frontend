@@ -9,21 +9,25 @@ import { ContratoPageRoutingModule } from './contrato-routing.module';
 import { ContratoPage } from './contrato.page';
 import {MaterialModule} from "../../../material/material.module";
 import {NgxMaterialTimepickerModule} from "ngx-material-timepicker";
-import {AppCommonModule} from "../../../common/common.module";
 import { NgxSpinnerModule } from 'ngx-spinner';
+import {ReservasFormComponent} from './reservas/reservas-form/reservas-form.component';
+import {AppCommonModule} from '../../../common/common.module';
 
 @NgModule({
-    imports: [
-      CommonModule,
-      FormsModule,
-      IonicModule,
-      ContratoPageRoutingModule,
-      MaterialModule,
-      NgxMaterialTimepickerModule,
-      AppCommonModule,
-      ReactiveFormsModule,
-      NgxSpinnerModule,
-    ],
-  declarations: [ContratoPage]
+  imports: [
+    CommonModule,
+    FormsModule,
+    IonicModule,
+    ContratoPageRoutingModule,
+    MaterialModule,
+    NgxMaterialTimepickerModule,
+    ReactiveFormsModule,
+    NgxSpinnerModule,
+    AppCommonModule
+  ],
+  exports: [
+    ContratoPage
+  ],
+  declarations: [ContratoPage, ReservasFormComponent]
 })
 export class ContratoPageModule {}

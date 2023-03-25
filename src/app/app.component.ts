@@ -259,7 +259,7 @@ export class AppComponent implements OnDestroy {
         {
           module: 'hoteles',
           icon: 'business',
-          label: 'Hoteles',
+          label: 'Externos',
           route: null,
           level: 1,
           active: false,
@@ -268,8 +268,8 @@ export class AppComponent implements OnDestroy {
             {
               module: 'hoteles',
               icon: 'business',
-              label: 'Listado de Hoteles',
-              route: 'administracion/hoteles/listado-hoteles',
+              label: 'Listado de Externos',
+              route: 'administracion/externos/listado-externos',
               level: 2,
               roleScopes: [RoleLevelsEnum.NOPROTECTION],
               active: false,

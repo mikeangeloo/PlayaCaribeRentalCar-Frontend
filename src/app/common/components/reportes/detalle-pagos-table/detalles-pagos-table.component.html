@@ -54,6 +54,16 @@
                 <td mat-cell *matCellDef="let element">{{element.automovil}}</td>
               </ng-container>
 
+              <ng-container matColumnDef="folio_cupon">
+                <th mat-header-cell mat-sort-header *matHeaderCellDef>Pago Cupón</th>
+                <td mat-cell *matCellDef="let element">
+                  <div class="column">
+                    <p>{{element.folio_cupon}}</p>
+                    <p *ngIf="element.valor_cupon">${{element.valor_cupon | currency}}</p>
+                  </div>
+                </td>
+              </ng-container>
+
               <ng-container matColumnDef="cobranza_tarjeta_mxn">
                 <th mat-header-cell mat-sort-header *matHeaderCellDef>Tarjeta MXN</th>
                 <td mat-cell *matCellDef="let element">${{element.cobranza_tarjeta_mxn | currency}}</td>

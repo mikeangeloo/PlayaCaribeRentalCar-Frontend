@@ -179,6 +179,7 @@ export class VehiculosListComponent implements OnInit, OnChanges {
     }
   }
 
+  /** @deprecated */
   async openTarifasApolloConfForm() {
     const modal = await this.modalCtr.create({
       component: TarifasApolloConfFormComponent,

@@ -11,6 +11,9 @@ import {TxtConv} from "../../../../../helpers/txt-conv";
 import {HotelFormComponent} from "../hotel-form/hotel-form.component";
 import {SweetMessagesService} from "../../../../../services/sweet-messages.service";
 import {ToastMessageService} from "../../../../../services/toast-message.service";
+import {
+  TarifasApolloConfFormComponent
+} from '../../../configuracion/precios/tarifas-apollo-conf-form/tarifas-apollo-conf-form.component';
 
 
 @Component({
@@ -28,6 +31,7 @@ export class HotelesListComponent implements OnInit, OnChanges {
   displayedColumns: string[] = [
     'id',
     'nombre',
+    'tipo_externo',
     'rfc',
     'direccion',
     'tel_contacto',
@@ -179,5 +183,23 @@ export class HotelesListComponent implements OnInit, OnChanges {
         });
       }
     });
+  }
+
+
+  async openTarifasApolloConfForm() {
+    const modal = await this.modalCtr.create({
+      component: TarifasApolloConfFormComponent,
+      componentProps: {
+        'asModal': true,
+        'model': 'tarifas_hoteles'
+      },
+      swipeToClose: true,
+      cssClass: 'edit-form'
+    });
+    await modal.present();
+    const {data} = await modal.onWillDismiss();
+    if (data.reload && data.reload === true) {
+      this.loadHotelesTable(this.hoteles);
+    }
   }
 }
