@@ -5,6 +5,8 @@ export interface ReporteEndpointI {
   created_at: string;
   fecha_salida: string;
   hora_salida: string;
+  folio_cupon?: string
+  valor_cupon?: number
   fecha_retorno: string;
   hora_retorno: string;
   num_contrato: string;

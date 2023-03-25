@@ -145,7 +145,9 @@ export class ReporteGeneralTableComponent implements OnInit, OnChanges {
             estatus: reporte.estatus,
             fullData: reporte,
             desgloce_cobranza: reporte.cobranza?.map((cobro) => { return new CobranzaCapturada(cobro)}),
-            estatus_color: ContratosStatus.cssClassStatus(reporte.estatus)
+            estatus_color: ContratosStatus.cssClassStatus(reporte.estatus),
+            folio_cupon: reporte.folio_cupon,
+            valor_cupon: reporte.valor_cupon
           }
 
           this.reporteDataSource.push(_report);

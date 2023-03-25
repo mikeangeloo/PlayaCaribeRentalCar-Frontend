@@ -11,6 +11,8 @@ import {ComisionistaFormComponent} from "../../../comisionistas/comisionista-for
 import {TarifaHotelesI} from '../../../../../interfaces/tarifas/tarifa-hoteles.interface';
 import {ClasesVehiculosI} from '../../../../../interfaces/catalogo-vehiculos/clases-vehiculos.interface';
 import {ClasesVehiculosService} from '../../../../../services/clases-vehiculos.service';
+import {TipoExternoI} from '../../../../../interfaces/hoteles/tipo-externo.interface';
+import {TiposExternosService} from '../../../../../services/tipos-externos.service';
 
 @Component({
   selector: 'app-hotel-form',
@@ -24,6 +26,8 @@ export class HotelFormComponent implements OnInit {
   public hotelForm: FormGroup;
   public hotelData: HotelesI;
 
+  public tipoExternos: TipoExternoI[] = []
+
   public tarifasHotelPayload: TarifaHotelesI[];
   public clasesVehiculos: ClasesVehiculosI[];
 
@@ -34,10 +38,11 @@ export class HotelFormComponent implements OnInit {
     private generalServ: GeneralService,
     private sweetMsg: SweetMessagesService,
     private toastServ: ToastMessageService,
+    private tipoExternoServ: TiposExternosService,
     public modalCtr: ModalController,
     public claseVehiculosServ: ClasesVehiculosService
   ) {
-    this.title = 'Formulario Hotel';
+    this.title = 'Formulario Externos';
     this.hotelForm = this.fb.group({
       id: [null],
       nombre: [null, Validators.required],
@@ -45,7 +50,10 @@ export class HotelFormComponent implements OnInit {
       direccion: [null, Validators.required],
       tel_contacto: [null, Validators.required],
       activo: [null],
-      paga_cupon: [null]
+      paga_cupon: [null],
+      activar_descuentos: [null],
+      acceso_externo: [null],
+      tipo_id: [null]
     });
   }
 
@@ -54,6 +62,7 @@ export class HotelFormComponent implements OnInit {
   }
 
   async ngOnInit() {
+    this.loadTipoExternos();
     await this.loadClasesVehiculos();
     if (this.hotel_id) {
       this.loadHotelesData();
@@ -72,28 +81,62 @@ export class HotelFormComponent implements OnInit {
       tel_contacto: (data && data.tel_contacto) ? data.tel_contacto : null,
       activo: (data && data.activo) ? data.activo : 0,
       paga_cupon: (data && data.paga_cupon) ? data.paga_cupon : 0,
+      activar_descuentos: (data && data.activar_descuentos) ? data.activar_descuentos : 0,
+      acceso_externo: (data && data.acceso_externo) ? data.acceso_externo : 0,
+      tipo_id: (data && data.tipo_id) ? data.tipo_id : null,
     });
     this.hotelForm.controls.activo.disable();
   }
 
-  initTarifaHotelPayload(data?) {
-    if (data) {
-      this.tarifasHotelPayload = null;
-      this.tarifasHotelPayload = data;
-      return;
-    }
+  initTarifaHotelPayload(data?: TarifaHotelesI[]) {
+    let tarifasClasesMissing = this.clasesVehiculos?.filter((clase) => !data?.some((tarifa) => clase.id === tarifa.clase_id));
     this.tarifasHotelPayload = [];
-    for (let i = 0; i < this.clasesVehiculos.length; i++) {
-      this.tarifasHotelPayload.push({
-        hotel_id: this.hotel_id,
-        activo: true,
-        clase_id: this.clasesVehiculos[i].id,
-        clase: this.clasesVehiculos[i].clase,
-        precio: null,
-        id: null,
-        errors: []
-      });
+
+    if (data || tarifasClasesMissing?.length > 0) {
+      if (data) {
+        this.tarifasHotelPayload = data;
+      }
+      if (tarifasClasesMissing) {
+        for (let i = 0; i < tarifasClasesMissing.length; i++) {
+          this.tarifasHotelPayload.push({
+            hotel_id: this.hotel_id,
+            activo: true,
+            clase_id: tarifasClasesMissing[i].id,
+            clase: tarifasClasesMissing[i].clase,
+            precio_renta: null,
+            id: null,
+            errors: []
+          });
+        }
+      }
+    } else {
+      for (let i = 0; i < this.clasesVehiculos.length; i++) {
+        this.tarifasHotelPayload.push({
+          hotel_id: this.hotel_id,
+          activo: true,
+          clase_id: this.clasesVehiculos[i].id,
+          clase: this.clasesVehiculos[i].clase,
+          precio_renta: null,
+          id: null,
+          errors: []
+        });
+      }
     }
+
+    this.tarifasHotelPayload.sort((a, b) => {
+      const nameA = a.clase.toUpperCase(); // ignore upper and lowercase
+      const nameB = b.clase.toUpperCase(); // ignore upper and lowercase
+      if (nameA < nameB) {
+        return -1;
+      }
+      if (nameA > nameB) {
+        return 1;
+      }
+
+      // names must be equal
+      return 0;
+    })
+
   }
 
   loadHotelesData() {
@@ -124,8 +167,18 @@ export class HotelFormComponent implements OnInit {
     }
   }
 
-  captureFinalPrice(tarifaHotel, event) {
-    tarifaHotel.precio =  event.replace(/[$,]/g, "");
+  loadTipoExternos() {
+    this.tipoExternoServ.getActive().subscribe(res => {
+      if (res.ok) {
+        this.tipoExternos = res.data;
+      }
+    }, error => {
+      console.log(error)
+    })
+  }
+
+  captureFinalPrice(tarifaHotel: TarifaHotelesI, event) {
+    tarifaHotel.precio_renta =  event.replace(/[$,]/g, "");
     this.reviewTarifaCapture();
   }
 
@@ -133,7 +186,7 @@ export class HotelFormComponent implements OnInit {
     let _haveErrors;
     if (this.tarifasHotelPayload && this.tarifasHotelPayload.length > 0) {
       for (let i = 0; i < this.tarifasHotelPayload.length; i++) {
-        if (!this.tarifasHotelPayload[i].precio || this.tarifasHotelPayload[i].precio == 0) {
+        if (!this.tarifasHotelPayload[i].precio_renta || this.tarifasHotelPayload[i].precio_renta == 0) {
           if (!this.tarifasHotelPayload[i].errors.find(x => x === 'Debe indicar un precio valído')) {
             this.tarifasHotelPayload[i].errors.push('Debe indicar un precio valído');
           }
@@ -174,6 +227,7 @@ export class HotelFormComponent implements OnInit {
     }, error => {
       console.log(error);
       this.generalServ.dismissLoading();
+      this.sweetMsg.printStatusArray(error.error.errors, 'error')
     });
   }
 
@@ -181,6 +235,10 @@ export class HotelFormComponent implements OnInit {
     this.modalCtrl.dismiss({
       reload
     });
+  }
+
+  viewFrequencyDiscount(tHotel: TarifaHotelesI, view: boolean) {
+    tHotel.view_frequency = view
   }
 
   /**

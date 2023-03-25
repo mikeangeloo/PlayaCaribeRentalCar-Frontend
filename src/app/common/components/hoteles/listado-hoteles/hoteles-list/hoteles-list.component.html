@@ -1,17 +1,20 @@
 <div class="main-content">
 
     <ion-row>
-      <ion-col size="12" [ngClass]="{hide: !hoteles || hoteles.length === 0}">
+      <ion-col size="12">
         <ion-card class="ion-no-margin ion-no-padding">
           <ion-card-header>
-            <h2>Listado de Hoteles</h2>
+            <h2>Listado de Externos</h2>
           </ion-card-header>
           <ion-card-content>
 
             <ion-row>
-              <ion-col size="12" size-md="2" class="ion-align-self-center" *ngIf="isModal === false || !isModal">
+              <ion-col size="12" size-md="fill" class="ion-align-self-center" *ngIf="isModal === false || !isModal">
 <!--                <button mat-raised-button color="primary">Nuevo</button>-->
                 <ion-button color="primary" class="btn-shadow no-contrast" (click)="openEmpresaForm()">Nuevo</ion-button>
+              </ion-col>
+              <ion-col size="12" size-md="fill" class="ion-align-self-center" *ngIf="isModal === false || !isModal">
+                <ion-button color="primary" class="btn-shadow no-contrast" (click)="openTarifasApolloConfForm()">Ajustar Porcentajes</ion-button>
               </ion-col>
               <ion-col size="12" size-md="10">
                 <!--<div class="input-group mb-3 filter-form">
@@ -52,6 +55,18 @@
                     <div class="column">
                       <p>
                         {{row.nombre}}
+                      </p>
+                    </div>
+                  </mat-cell>
+                </ng-container>
+
+                <!-- tipo_externo -->
+                <ng-container matColumnDef="tipo_externo">
+                  <mat-header-cell *matHeaderCellDef mat-sort-header>Tipo</mat-header-cell>
+                  <mat-cell *matCellDef="let row">
+                    <div class="column">
+                      <p>
+                        {{(row.tipo_externo ? row.tipo_externo?.descripcion : '--')}}
                       </p>
                     </div>
                   </mat-cell>

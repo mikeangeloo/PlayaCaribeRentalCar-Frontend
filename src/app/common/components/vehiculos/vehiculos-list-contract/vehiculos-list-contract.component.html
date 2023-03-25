@@ -230,13 +230,14 @@
 
                         </div>
                         <div style="display: table-row">
-                          <div style="display: table-cell;  width:34%"><span style="font-weight: bold ;">Elaboró:</span> {{row.contrato.usuario.nombre}}  </div>
+                          <div style="display: table-cell;  width:34%"><span style="font-weight: bold ;">Elaboró:</span> {{row.contrato.usuario?.nombre}}  </div>
                           <div style="display: table-cell;  width:34%"><span style="font-weight: bold ;">Fecha Retorno:</span> {{row.contrato.fecha_retorno}}  </div>
-                          <div style="display: table-cell;  width:34%"><span style="font-weight: bold ;">Cliente:</span> {{row.contrato.cliente.nombre}}  </div>
+                          <div style="display: table-cell;  width:34%"><span style="font-weight: bold ;">Cliente:</span> {{row.contrato.cliente?.nombre}}  </div>
                         </div>
                         <div style="display: table-row">
                           <div style="display: table-cell;  width:34%"><span style="font-weight: bold ;">Estatus:</span> <ion-chip [outline]="true" [style]="{'color': row.contrato != null && (row.contrato.dias_vencido  > 0 || row.contrato.horas_vencido  > 0) ? 'red': 'black'}">{{row.contrato != null && (row.contrato.dias_vencido  > 0 || row.contrato.horas_vencido  > 0) ? row.contrato.tipo_vencido == 'dias' ? 'Vencido por ' + row.contrato.dias_vencido + ' dias'  : 'Vencido por ' + row.contrato.horas_vencido + ' horas' : statusC.labelStatus(row.contrato.estatus)}}</ion-chip></div>
                           <div style="display: table-cell;  width:34%" ><span style="font-weight: bold ; ">Total:</span> {{row.contrato.total}}  </div>
+                          <div style="display: table-cell;  width:34%" *ngIf="row.contrato.folio_cupon"><span style="font-weight: bold ; ">Cupón Aplicado:</span> {{row.contrato.folio_cupon}}  </div>
                         </div>
                     </div>
                   </div>

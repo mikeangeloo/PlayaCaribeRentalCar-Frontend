@@ -172,7 +172,17 @@
 
               <ng-container matColumnDef="total_cobrado">
                 <th mat-header-cell mat-sort-header *matHeaderCellDef>Total Cobrado</th>
-                <td mat-cell *matCellDef="let element">${{element.total_cobrado | currency}}</td>
+                <td mat-cell *matCellDef="let element">
+                  <div class="column">
+                    <ng-container *ngIf="element.folio_cupon; else totalCobrado">
+                      <p>Cupón: {{element.folio_cupon}}</p>
+                      <p *ngIf="element.valor_cupon">${{element.valor_cupon | currency}}</p>
+                    </ng-container>
+                    <ng-template #totalCobrado>
+                      ${{element.total_cobrado | currency}}
+                    </ng-template>
+                  </div>
+                </td>
               </ng-container>
 
               <ng-container matColumnDef="fecha_cierre">
