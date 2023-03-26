@@ -125,7 +125,7 @@
 
                   </form>
 
-                  <app-modelos-docs model="clientes" docType="licencia_conducir" [fullSize]="true" [justButton]="true"
+                  <app-modelos-docs #docsClient model="clientes" docType="licencia_conducir" [fullSize]="true" [justButton]="true"
                                     [model_id_value]="clienteDataForm && clienteDataForm.controls.cliente_id.value ? clienteDataForm.controls.cliente_id.value : null">
                     <legend name="legend">Doc. Cliente</legend>
                   </app-modelos-docs>
@@ -591,6 +591,7 @@
                                 <input matInput type="number" formControlName="km_inicial" autocomplete="off">
                                 <mat-error *ngIf="vf.km_inicial.errors?.required">Campo requerido</mat-error>
                                 <mat-hint *ngIf="vf.km_inicial.disabled">Solo lectura</mat-hint>
+                                <mat-error *ngIf="vf.km_inicial.errors?.min">El km Inicial debe ser mayor al km anterior.</mat-error>
                               </mat-form-field> <!-- Km. Inicio-->
                             </ion-col>
                           </ion-row> <!-- No. Placas  No.Serie  Capacidad Tanque  -->
@@ -757,7 +758,7 @@
                                     </ion-row>
                                   </ion-col>
                                   <ion-col size="12" class="ion-no-padding">
-                                    <app-modelos-docs model="cobranza" docType="voucher" btnSize="small"
+                                    <app-modelos-docs #docsVoucherCobrosTarjetaSalida model="cobranza" docType="voucher" btnSize="small"
                                                       [justButton]="true" [fullSize]="true"
                                                       [model_id_value]="cobranzaPago.id">
                                       <legend name="legend">Img. Voucher</legend>
@@ -909,7 +910,7 @@
                                     </ion-row>
                                   </ion-col>
                                   <ion-col size="12" class="ion-no-padding">
-                                    <app-modelos-docs model="cobranza" docType="voucher" btnSize="small"
+                                    <app-modelos-docs #docsVoucherCobrosAuth model="cobranza" docType="voucher" btnSize="small"
                                                       [justButton]="true" [fullSize]="true"
                                                       [model_id_value]="cobranzaAuth.id">
                                       <legend name="legend">Img. Voucher</legend>

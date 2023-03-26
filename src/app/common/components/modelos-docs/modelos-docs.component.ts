@@ -12,9 +12,9 @@ import {IonButtons, ModalController} from '@ionic/angular';
 export class ModelosDocsComponent implements OnInit, OnChanges {
 
   //#region IMAGES MANAGEMENT ATTRIBUTES
-  public clientes_docs: DocDataTransfer[] = [];
+  //public clientes_docs: DocDataTransfer[] = [];
   public docData_docs: DocDataTransfer[] = [];
-  public cobranza_docs: DocDataTransfer[] = [];
+  //public cobranza_docs: DocDataTransfer[] = [];
 
   @Input() model_id_value: number;
   @Input() docType: 'licencia_conducir' | 'cupon' | 'voucher' | 'check_indicator' | 'layout';
@@ -23,6 +23,8 @@ export class ModelosDocsComponent implements OnInit, OnChanges {
   @Input() btnSize: 'small' | 'default' | 'large' = 'default';
   @Input() fullSize: boolean;
   @Input() asModal: boolean = false;
+
+  shouldGetDocs = false;
 
   saveProcess$ = new EventEmitter();
   //#endregion
@@ -37,7 +39,7 @@ export class ModelosDocsComponent implements OnInit, OnChanges {
   }
 
   async ngOnInit() {
-    if (this.model_id_value && this.asModal) {
+    if (this.model_id_value && this.asModal && this.shouldGetDocs === false) {
       await this.getDocs(this.docType, this.model, this.model_id_value);
     }
   }
@@ -45,14 +47,14 @@ export class ModelosDocsComponent implements OnInit, OnChanges {
   async ngOnChanges(changes: SimpleChanges) {
     let _modelId = changes.model_id_value;
     if (_modelId.isFirstChange() === true || _modelId.firstChange === false) {
-      if (this.model_id_value) {
+      if (this.model_id_value && this.shouldGetDocs === false) {
         await this.getDocs(this.docType, this.model, this.model_id_value);
       }
     }
   }
 
   //#region CAPTURE IMG FUNCTIONS
-  processDataImage(event: {imgUrl: string, image: File, type: string, fileName: string}, model = this.model) {
+  processDataImage(event: {imgUrl: string, image: File, type: string, fileName: string}) {
 
     this.docData_docs.push({
       file: event.image,
@@ -60,7 +62,9 @@ export class ModelosDocsComponent implements OnInit, OnChanges {
       uploading: false,
       success: null,
       mime_type: event.type,
-      fileName: event.fileName
+      fileName: event.fileName,
+      model: this.model,
+      model_id: this.model_id_value
     });
 
     console.log('processDataImage model: ${model} --->' , this.docData_docs);
@@ -82,7 +86,7 @@ export class ModelosDocsComponent implements OnInit, OnChanges {
     return true;
   }
 
-  uploadArrayDatasImg(doc_type = this.docType, model = this.model, model_id) {
+  uploadArrayDatasImg(doc_type = this.docType, model = this.model, model_id): Promise<boolean> {
     if (this.docData_docs.length === 0 ) {
       this.sweetMsgServ.printStatus('Debe adjuntar una imagen', 'warning');
       return;
@@ -95,7 +99,7 @@ export class ModelosDocsComponent implements OnInit, OnChanges {
 
     //let _model_id_value;
 
-    this.sweetMsgServ.confirmRequest().then(async (data) => {
+    return this.sweetMsgServ.confirmRequest('A continuación se iniciara el guardado de la documentación', '¿Está de acuerdo?').then(async (data) => {
       if (data.value) {
 
         console.log('here');
@@ -108,7 +112,7 @@ export class ModelosDocsComponent implements OnInit, OnChanges {
 
           if (!this.docData_docs[i].success || this.docData_docs[i].success === false || !this.docData_docs[i].file_id || this.docData_docs[i].file_id === null) {
             if (!this.docData_docs[i].etiqueta) {
-              this.docData_docs[i].fileErrors = 'Ingrese un valor valido';
+              this.docData_docs[i].fileErrors = 'Ingrese una etiqueta para este archivo.';
 
             } else {
               this.docData_docs[i].fileErrors = null;
@@ -134,7 +138,9 @@ export class ModelosDocsComponent implements OnInit, OnChanges {
         formData.set('etiquetas', JSON.stringify(_etiquetas));
 
         if (formData.has('files[]') === false) {
-          return;
+          return new Promise(resolve => {
+            resolve(true)
+          })
         }
 
         let res = await this.filesServ.storeDocs(formData);
@@ -146,8 +152,8 @@ export class ModelosDocsComponent implements OnInit, OnChanges {
           for (let i = 0; i < _resPayload.length; i++) {
             this.docData_docs[_resPayload[i].position].success = _resPayload[i].success;
             this.docData_docs[_resPayload[i].position].file_id = _resPayload[i].file_id;
-            this.docData_docs[_resPayload[i].position].model = _resPayload[i].model;
-            this.docData_docs[_resPayload[i].position].model_id = _resPayload[i].model_id;
+            this.docData_docs[_resPayload[i].position].model = _resPayload[i].modelo;
+            this.docData_docs[_resPayload[i].position].model_id = _resPayload[i].modelo_id;
             //this[`${model}_docs`][_resPayload[i].position].model_id_value = _resPayload[i].model_id_value;
             this.docData_docs[_resPayload[i].position].position = _resPayload[i].position;
             this.docData_docs[_resPayload[i].position].doc_type = _resPayload[i].doc_type;
@@ -169,16 +175,25 @@ export class ModelosDocsComponent implements OnInit, OnChanges {
           console.log('all saved');
           this.sweetMsgServ.printStatus('Se han guardado sus imagenes de manera correcta', 'success');
           this.saveProcess$.emit(true);
+
+          return new Promise(resolve => {
+            resolve(true)
+          })
           // if (model === 'contratos') {
           //   this.saveProcess$('datos_generales', true);
           // }
         } else {
+          this.saveProcess$.emit(false);
           console.log('error', _lastServError);
           if (_lastServError) {
             this.sweetMsgServ.printStatusArray(_lastServError, 'error');
           } else {
             this.sweetMsgServ.printStatus('Se produjo un error al guardar una de sus imagenes, intentelo nuevamente o eliminela de la cola', 'error');
           }
+
+          return new Promise(resolve => {
+            resolve(false)
+          })
         }
       }
     });

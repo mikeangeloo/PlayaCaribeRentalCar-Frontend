@@ -5,7 +5,7 @@ export interface DocDataTransfer
     file_id?: number;
     doc_type?: string;
     model?: string;
-    model_id?: string;
+    model_id?: number;
     //model_id_value?: string;
     mime_type?: string;
     file?: File | string;
