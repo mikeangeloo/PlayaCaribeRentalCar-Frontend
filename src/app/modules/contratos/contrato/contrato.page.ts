@@ -2700,7 +2700,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
     if(section === 'firma' && !this.reviewVouchersCapture()) {
       return;
     }
-    let mensaje: string = (section == 'firma') ? '¿Estás seguro de desea guardar el contrato?, ya que no podra ser editable' : '¿Estás seguro de desea guardar las cargos extras al contrato?'
+    let mensaje: string = (section == 'firma') ? '¿Estás seguro de desea guardar el contrato?, ya que no podrá ser editable' : '¿Estás seguro de desea guardar las cargos extras al contrato?'
     this.sweetMsgServ.confirmRequest(mensaje).then(async (data) => {
       if (data.value) {
         this.saveProcess(section);
