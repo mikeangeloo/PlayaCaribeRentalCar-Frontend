@@ -973,7 +973,7 @@
                             <span>Sin daños</span>
                           </div>
 
-                          <ng-container *ngIf="freeFromDamages === false || freeFromDamages === 0">
+                          <ng-container *ngIf="!!freeFromDamages">
                             <div class="top-button">
                               <button class="button-blue-light" mat-raised-button
                                       (click)="addDraggedBtn('radio_button_unchecked', 'Abolladura')">
@@ -1067,7 +1067,7 @@
                                      [style.width.px]="816"></ion-img>
                           </ng-container>
 
-                          <div class="checklist-inspector-zone" [ngClass]="{disable: freeFromDamages === true || freeFromDamages === 1}">
+                          <div class="checklist-inspector-zone" [ngClass]="{disable: !!freeFromDamages}">
                             <app-draggable-resizable *ngFor="let dragObj of dragObjs"
                                                      (dragObjSaved)="saveDragObj($event)"
                                                      (dragObjSelected)="catchPickedObj($event)"

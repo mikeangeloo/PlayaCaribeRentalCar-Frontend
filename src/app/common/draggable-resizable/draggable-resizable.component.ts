@@ -56,7 +56,7 @@ export interface DragObjProperties {
   saved?: boolean;
   created_at?: string;
   updated_at?: string;
-  freeFromDamages?: boolean
+  freeFromDamages?: boolean | number
 }
 
 
