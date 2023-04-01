@@ -85,6 +85,14 @@
     font-weight: bolder;
   }
 }
+.free-from-damages {
+  mat-icon {
+    font-size: 140px;
+    height: 140px;
+    width: 140px;
+    color: darkgreen;
+  }
+}
 ::ng-deep {
   .default {
     color: var(--ion-color-primary) !important;

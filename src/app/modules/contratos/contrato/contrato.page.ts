@@ -42,7 +42,7 @@ import {ModelsEnum} from '../../../enums/models.enum';
 import {ToastMessageService} from '../../../services/toast-message.service';
 import {UbicacionesI} from '../../../interfaces/configuracion/ubicaciones.interface';
 import {UbicacionesService} from '../../../services/ubicaciones.service';
-import {lastValueFrom, map, Observable, startWith} from 'rxjs';
+import {from, lastValueFrom, map, Observable, startWith, take, takeUntil} from 'rxjs';
 import {CobranzaProgI, CobranzaTipo} from '../../../interfaces/cobranza/cobranza-prog.interface';
 import {CobranzaService} from '../../../services/cobranza.service';
 import {TarifasCategoriasI} from '../../../interfaces/configuracion/tarifas-categorias.interface';
@@ -215,6 +215,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
   public signature: any | string;
   public signature_matrix = '';
   public terminos=false;
+  public freeFromDamages = false
   //#endregion
 
   //#region RETORNO ATTRIBUTES
@@ -381,6 +382,8 @@ export class ContratoPage implements OnInit, AfterViewInit {
       let res = await this.contratosServ._getContractData(this.num_contrato);
         if (res.ok) {
 
+          this.freeFromDamages = res.data.freeFromDamages;
+
           if (this.num_contrato !== res.data.num_contrato) {
             await this.router.navigate(['contratos/view'], res.data.num_contrato);
             return;
@@ -460,28 +463,9 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
             let _checkListSalidaData = this.contractData.etapas_guardadas.find(x => x === 'check_list_salida');
             if (_checkListSalidaData) {
-              this.dragObjs = this.contractData.check_list_salida;
-
-              let _dataFromStorage: DragObjProperties[] = this.returnIfCheckListInStorage();
-
-              if (_dataFromStorage.length === 0){
-                localStorage.removeItem(this.generalServ.dragObjStorageKey);
-                for (let i = 0; i < this.dragObjs.length; i++) {
-                  this.dragObjs[i].enable = false;
-                }
-              }
-
-              if (_dataFromStorage.length > 0) {
-                let _firstUnSaved = _dataFromStorage.find(x => x.saved == false);
-                this.catchPickedObj(_firstUnSaved ? _firstUnSaved : _dataFromStorage[0]);
-                // for (let i = 0; i < _dataFromStorage.length; i++) {
-                //   this.saveDragObj(_dataFromStorage[i]);
-                // }
-                this.dragObjs = [... _dataFromStorage];
-              }
-
-
+              this.fetchDragObjsFromApi(this.contractData.check_list_salida)
             }
+
             let _checkFormListData = this.contractData.etapas_guardadas.find(x => x === 'check_form_list');
             if (_checkFormListData) {
 
@@ -910,22 +894,22 @@ export class ContratoPage implements OnInit, AfterViewInit {
   initCheckListForm(data?) {
     this.checkListForm = this.fb.group({
       check_form_list_id: [(data && data.id ? data.id : null)],
-      tarjeta_circulacion: [(data && data.tarjeta_circulacion ? data.tarjeta_circulacion : null)],
-      tapetes: [(data && data.tapetes ? data.tapetes: null),],
+      tarjeta_circulacion: [(data && data.tarjeta_circulacion ? data.tarjeta_circulacion : null), Validators.required],
+      tapetes: [(data && data.tapetes ? data.tapetes: null),Validators.required],
       //silla_bebes: [(data && data.silla_bebes ? data.silla_bebes: null), ],
-      espejos: [(data && data.espejos ? data.espejos: null), ],
-      tapones_rueda: [(data && data.tapones_rueda ? data.tapones_rueda: null), ],
-      tapon_gas: [(data && data.tapon_gas ? data.tapon_gas: null), ],
-      senalamientos: [(data && data.senalamientos ? data.senalamientos: null), ],
-      gato: [(data && data.gato ? data.gato: null), ],
-      llave_rueda: [(data && data.llave_rueda ? data.llave_rueda: null), ],
-      limpiadores: [(data && data.limpiadores ? data.limpiadores: null), ],
-      antena: [(data && data.antena ? data.antena: null), ],
-      navegador: [(data && data.navegador ? data.navegador: null), ],
-      placas: [(data && data.placas ? data.placas: null), ],
-      radio: [(data && data.radio ? data.radio: null), ],
-      llantas: [(data && data.llantas ? data.llantas: null), ],
-      observaciones: [(data && data.observaciones ? data.observaciones: null), ],
+      espejos: [(data && data.espejos ? data.espejos: null), Validators.required],
+      tapones_rueda: [(data && data.tapones_rueda ? data.tapones_rueda: null), Validators.required],
+      tapon_gas: [(data && data.tapon_gas ? data.tapon_gas: null), Validators.required],
+      senalamientos: [(data && data.senalamientos ? data.senalamientos: null), Validators.required],
+      gato: [(data && data.gato ? data.gato: null), Validators.required],
+      llave_rueda: [(data && data.llave_rueda ? data.llave_rueda: null), Validators.required],
+      limpiadores: [(data && data.limpiadores ? data.limpiadores: null), Validators.required],
+      antena: [(data && data.antena ? data.antena: null), Validators.required],
+      navegador: [(data && data.navegador ? data.navegador: null), Validators.required],
+      placas: [(data && data.placas ? data.placas: null), Validators.required],
+      radio: [(data && data.radio ? data.radio: null), Validators.required],
+      llantas: [(data && data.llantas ? data.llantas: null), Validators.required],
+      observaciones: [(data && data.observaciones ? data.observaciones: null)],
     });
   }
 
@@ -1075,6 +1059,60 @@ export class ContratoPage implements OnInit, AfterViewInit {
     }
   }
 
+  async freeOffDamages(indicatorIcon, indicatorTitle) {
+
+    if (!this.freeFromDamages) {
+      this.freeFromDamages = true
+      this.selectedDragObj = null
+
+      if (this.dragObjs.length > 0) {
+        for (let dragObj of this.dragObjs) {
+          console.log('deleting dragObj')
+          dragObj.action = 'remove'
+          this.saveDragObj(dragObj);
+        }
+      }
+    } else {
+      this.freeFromDamages = false
+      const freeObjDamage = this.dragObjs.find((x) => x.freeFromDamages)
+      if (freeObjDamage) {
+        freeObjDamage.action = 'remove'
+        this.saveDragObj(freeObjDamage)
+      }
+    }
+
+    if (this.freeFromDamages) {
+      console.log('add freeImageIcon')
+      let randIndex = Math.floor(Math.random() * (100 - 1)) + 1;
+      let position = 100 + Math.floor(Math.random() * (100 - 1));
+      let findDraggId = this.dragObjs.find((x) => x.freeFromDamages === true)
+
+      let draggableObj: DragObjProperties = {
+        id: findDraggId,
+        contrato_id: this.contract_id,
+        tipo: CheckListTypeEnum.SALIDA,
+        width: 140,
+        height: 140,
+        containerPost: null,
+        boxPosition: null,
+        objId: randIndex,
+        top: 0,
+        left: 0,
+        action: 'position',
+        levelColor: 'default',
+        levelTxt: 'Normal',
+        indicatorIcon: indicatorIcon,
+        indicatorTitle: indicatorTitle,
+        enable: false,
+        saved: false,
+        lock: true,
+        freeFromDamages: true
+      }
+      this.dragObjs.push(draggableObj);
+    }
+
+  }
+
   addDraggedBtn(indicatorIcon, indicatorTitle) {
     let randIndex = Math.floor(Math.random() * (100 - 1)) + 1;
     let position = 100 + Math.floor(Math.random() * (100 - 1));
@@ -1113,35 +1151,40 @@ export class ContratoPage implements OnInit, AfterViewInit {
           }
           break;
         case 'remove':
-          this.checkListServ.remove(dragObj.id).subscribe(res => {
-            if (res.ok) {
+          const dragObjId = dragObj.id;
 
-              let localObjs = null;
-              if (localStorage.getItem(this.generalServ.dragObjStorageKey)) {
-                localObjs = JSON.parse(localStorage.getItem(this.generalServ.dragObjStorageKey));
-              }
-              if (localObjs) {
-                let findIndexLocalObj = localObjs.findIndex(x => x.objId == dragObj.objId);
-                if (findIndexLocalObj + 1) {
-                  localObjs.splice(findIndexLocalObj, 1);
-                  localStorage.setItem(this.generalServ.dragObjStorageKey, JSON.stringify(localObjs));
-                }
-              }
-
-              let findIndexObj = this.dragObjs.findIndex(x => x.objId === dragObj.objId);
-              if (findIndexObj + 1) {
-                this.cancelActionDragObj(dragObj);
-                this.dragObjs.splice(findIndexObj, 1);
-              }
-              if (this.dragObjs.length === 0) {
-                localStorage.removeItem(this.generalServ.dragObjStorageKey);
-              }
-              this.toastServ.presentToast('success', res.message, 'top');
+          let localObjs = null;
+          if (localStorage.getItem(this.generalServ.dragObjStorageKey)) {
+            localObjs = JSON.parse(localStorage.getItem(this.generalServ.dragObjStorageKey));
+          }
+          if (localObjs) {
+            let findIndexLocalObj = localObjs.findIndex(x => x.objId == dragObj.objId);
+            if (findIndexLocalObj !== -1) {
+              localObjs.splice(findIndexLocalObj, 1);
+              localStorage.setItem(this.generalServ.dragObjStorageKey, JSON.stringify(localObjs));
             }
-          }, error => {
-            console.log(error);
-            this.sweetMsgServ.printStatusArray(error.error.errors, 'error');
-          })
+          }
+
+          let findIndexObj = this.dragObjs.findIndex(x => x.objId === dragObj.objId);
+          if (findIndexObj !== -1) {
+            this.cancelActionDragObj(dragObj);
+            this.dragObjs.splice(findIndexObj, 1);
+          }
+          if (this.dragObjs.length === 0) {
+            localStorage.removeItem(this.generalServ.dragObjStorageKey);
+          }
+
+          if (dragObjId) {
+            this.checkListServ.remove(dragObjId).subscribe(res => {
+              if (res.ok) {
+                this.toastServ.presentToast('success', res.message, 'top');
+              }
+            }, error => {
+              console.log(error);
+              this.sweetMsgServ.printStatusArray(error.error.errors, 'error');
+            })
+          }
+
 
           break;
       }
@@ -1178,6 +1221,25 @@ export class ContratoPage implements OnInit, AfterViewInit {
   blockUnblockDragObj(dragObj: DragObjProperties, lock: boolean) {
     dragObj.lock = lock;
     this.saveDragObj(dragObj);
+  }
+
+  fetchDragObjsFromApi(check_list_salida: DragObjProperties[]) {
+    this.dragObjs = check_list_salida;
+
+    let _dataFromStorage: DragObjProperties[] = this.returnIfCheckListInStorage();
+
+    if (_dataFromStorage.length === 0){
+      localStorage.removeItem(this.generalServ.dragObjStorageKey);
+      for (let i = 0; i < this.dragObjs.length; i++) {
+        this.dragObjs[i].enable = false;
+      }
+    }
+
+    if (_dataFromStorage.length > 0) {
+      let _firstUnSaved = _dataFromStorage.find(x => x.saved == false);
+      this.catchPickedObj(_firstUnSaved ? _firstUnSaved : _dataFromStorage[0]);
+      this.dragObjs = [... _dataFromStorage];
+    }
   }
 
   async openModelosDocModal(dragObj: DragObjProperties) {
@@ -1270,15 +1332,16 @@ export class ContratoPage implements OnInit, AfterViewInit {
   }
 
 
-  saveCheckListDB() {
+  saveCheckListDB(skipReload?: boolean) {
     if (!this.contract_id) {
       this.sweetMsgServ.printStatus('Debe primero capturar información en datos generales o datos del cliente y guardar su avance para continuar', 'warning');
       return;
     }
     let _payload = {
-      payload: this.dragObjs
+      payload: this.dragObjs,
+      freeFromDamages: this.freeFromDamages
     }
-    this.saveProcess('check_in_salida', null, _payload);
+    this.saveProcess('check_in_salida', null, _payload, skipReload);
   }
 
   returnIfCheckListInStorage() {
@@ -2708,9 +2771,12 @@ export class ContratoPage implements OnInit, AfterViewInit {
     })
   }
 
-  async saveProcess(section: 'datos_generales' | 'datos_cliente' | 'datos_vehiculo' | 'cobranza' | 'check_in_salida' | 'check_form_list' |  'firma' | 'retorno' | 'cobranza_retorno', ignoreMsg?: boolean, payload?) {
+  async saveProcess(section: 'datos_generales' | 'datos_cliente' | 'datos_vehiculo' | 'cobranza' | 'check_in_salida' | 'check_form_list' |  'firma' | 'retorno' | 'cobranza_retorno', ignoreMsg?: boolean, payload?, skipReload?: boolean) {
     //this.sweetMsgServ.printStatus('Acción en desarrollo', 'warning');
-    this.spinner.show();
+    if (!skipReload) {
+      this.spinner.show();
+    }
+
     let _payload;
     switch (section) {
       case 'datos_generales':
@@ -2783,6 +2849,19 @@ export class ContratoPage implements OnInit, AfterViewInit {
         _payload = payload
         break;
       case 'check_form_list':
+        if (this.dragObjs.length === 0) {
+          this.spinner.hide();
+          this.sweetMsgServ.printStatus('Agrega un elemento de verificación', 'warning');
+          return;
+        }
+
+        this.saveCheckListDB(true);
+
+        if (this.checkListForm.invalid) {
+          this.checkListForm.markAllAsTouched();
+          return;
+        }
+
         let canvas = await html2canvas(document.querySelector("#check-list-canvas"), { logging: true, allowTaint: false , useCORS: true });
 
         let check_img = canvas.toDataURL();
@@ -2858,8 +2937,14 @@ export class ContratoPage implements OnInit, AfterViewInit {
         if (section === 'check_in_salida') {
           localStorage.removeItem(this.generalServ.dragObjStorageKey);
           this.selectedDragObj = null;
+
+          if (res.check_list_salida) {
+            this.fetchDragObjsFromApi(res.check_list_salida);
+          }
         }
-        this.sweetMsgServ.printStatus(res.message, 'success');
+        if (!skipReload) {
+          this.sweetMsgServ.printStatus(res.message, 'success');
+        }
 
         if (section === 'cobranza' || section == 'check_in_salida') {
           this.step = this.step;
@@ -2883,8 +2968,9 @@ export class ContratoPage implements OnInit, AfterViewInit {
             this.router.navigateByUrl('vehiculos/list');
           }
         }
-
-        await this.reloadAll();
+        if (!skipReload) {
+          await this.reloadAll();
+        }
       }
     }, error => {
       this.spinner.hide();

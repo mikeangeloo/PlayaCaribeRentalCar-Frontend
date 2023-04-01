@@ -20,7 +20,7 @@ const enum Status {
 }
 
 export interface DragObjProperties {
-  id: number;
+  id: any;
   contrato_id: number;
   tipo: number;
   objId: number;
@@ -55,7 +55,8 @@ export interface DragObjProperties {
   lock?: boolean | number;
   saved?: boolean;
   created_at?: string;
-  updated_at?: string
+  updated_at?: string;
+  freeFromDamages?: boolean
 }
 
 
