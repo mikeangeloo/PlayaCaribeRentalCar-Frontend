@@ -125,7 +125,7 @@
 
                   </form>
 
-                  <app-modelos-docs model="clientes" docType="licencia_conducir" [fullSize]="true" [justButton]="true"
+                  <app-modelos-docs #docsClient model="clientes" docType="licencia_conducir" [fullSize]="true" [justButton]="true"
                                     [model_id_value]="clienteDataForm && clienteDataForm.controls.cliente_id.value ? clienteDataForm.controls.cliente_id.value : null">
                     <legend name="legend">Doc. Cliente</legend>
                   </app-modelos-docs>
@@ -591,6 +591,7 @@
                                 <input matInput type="number" formControlName="km_inicial" autocomplete="off">
                                 <mat-error *ngIf="vf.km_inicial.errors?.required">Campo requerido</mat-error>
                                 <mat-hint *ngIf="vf.km_inicial.disabled">Solo lectura</mat-hint>
+                                <mat-error *ngIf="vf.km_inicial.errors?.min">El km Inicial debe ser mayor al km anterior.</mat-error>
                               </mat-form-field> <!-- Km. Inicio-->
                             </ion-col>
                           </ion-row> <!-- No. Placas  No.Serie  Capacidad Tanque  -->
@@ -757,7 +758,7 @@
                                     </ion-row>
                                   </ion-col>
                                   <ion-col size="12" class="ion-no-padding">
-                                    <app-modelos-docs model="cobranza" docType="voucher" btnSize="small"
+                                    <app-modelos-docs #docsVoucherCobrosTarjetaSalida model="cobranza" docType="voucher" btnSize="small"
                                                       [justButton]="true" [fullSize]="true"
                                                       [model_id_value]="cobranzaPago.id">
                                       <legend name="legend">Img. Voucher</legend>
@@ -909,7 +910,7 @@
                                     </ion-row>
                                   </ion-col>
                                   <ion-col size="12" class="ion-no-padding">
-                                    <app-modelos-docs model="cobranza" docType="voucher" btnSize="small"
+                                    <app-modelos-docs #docsVoucherCobrosAuth model="cobranza" docType="voucher" btnSize="small"
                                                       [justButton]="true" [fullSize]="true"
                                                       [model_id_value]="cobranzaAuth.id">
                                       <legend name="legend">Img. Voucher</legend>
@@ -966,35 +967,46 @@
 
                           <div class="top-button">
                             <button class="button-blue-light" mat-raised-button
-                                    (click)="addDraggedBtn('radio_button_unchecked', 'Abolladura')">
-                              <mat-icon>radio_button_unchecked</mat-icon>
+                                    (click)="freeOffDamages('download_done', 'Sin Daños')">
+                              <mat-icon>no_crash</mat-icon>
                             </button>
-                            <span>Abolladura</span>
+                            <span>Sin daños</span>
                           </div>
 
-                          <div class="top-button">
-                            <button class="button-blue-light" mat-raised-button
-                                    (click)="addDraggedBtn('horizontal_rule', 'Rayon')">
-                              <mat-icon>horizontal_rule</mat-icon>
-                            </button>
-                            <span>Rayon</span>
-                          </div>
+                          <ng-container *ngIf="!freeFromDamages">
+                            <div class="top-button">
+                              <button class="button-blue-light" mat-raised-button
+                                      (click)="addDraggedBtn('radio_button_unchecked', 'Abolladura')">
+                                <mat-icon>radio_button_unchecked</mat-icon>
+                              </button>
+                              <span>Abolladura</span>
+                            </div>
 
-                          <div class="top-button">
-                            <button class="button-blue-light" mat-raised-button
-                                    (click)="addDraggedBtn('close', 'Golpes')">
-                              <mat-icon>close</mat-icon>
-                            </button>
-                            <span>Golpes</span>
-                          </div>
+                            <div class="top-button">
+                              <button class="button-blue-light" mat-raised-button
+                                      (click)="addDraggedBtn('horizontal_rule', 'Rayon')">
+                                <mat-icon>horizontal_rule</mat-icon>
+                              </button>
+                              <span>Rayon</span>
+                            </div>
 
-                          <div class="top-button">
-                            <button class="button-blue-light" mat-raised-button
-                                    (click)="addDraggedBtn('change_history', 'Rotura')">
-                              <mat-icon>change_history</mat-icon>
-                            </button>
-                            <span>Rotura</span>
-                          </div>
+                            <div class="top-button">
+                              <button class="button-blue-light" mat-raised-button
+                                      (click)="addDraggedBtn('close', 'Golpes')">
+                                <mat-icon>close</mat-icon>
+                              </button>
+                              <span>Golpes</span>
+                            </div>
+
+                            <div class="top-button">
+                              <button class="button-blue-light" mat-raised-button
+                                      (click)="addDraggedBtn('change_history', 'Rotura')">
+                                <mat-icon>change_history</mat-icon>
+                              </button>
+                              <span>Rotura</span>
+                            </div>
+                          </ng-container>
+
                         </div>
                         <br>
                       </ion-col>
@@ -1003,9 +1015,9 @@
                         </mat-error>
                       </ion-col>
                       <ion-col size="12" size-md="2" class="ion-text-center">
-                        <button *ngIf="selectedDragObj && !selectedDragObj.saved" mat-raised-button class="button-success"
-                                (click)="saveCheckListDB()">Guardar
-                        </button>
+<!--                        <button *ngIf="selectedDragObj && !selectedDragObj.saved" mat-raised-button class="button-success"-->
+<!--                                (click)="saveCheckListDB()">Guardar-->
+<!--                        </button>-->
 
                         <div class="checklist-left-buttons" *ngIf="selectedDragObj && selectedDragObj.enable === true">
 
@@ -1055,7 +1067,7 @@
                                      [style.width.px]="816"></ion-img>
                           </ng-container>
 
-                          <div class="checklist-inspector-zone">
+                          <div class="checklist-inspector-zone" [ngClass]="{disable: !!freeFromDamages}">
                             <app-draggable-resizable *ngFor="let dragObj of dragObjs"
                                                      (dragObjSaved)="saveDragObj($event)"
                                                      (dragObjSelected)="catchPickedObj($event)"
@@ -1081,6 +1093,7 @@
                                   <mat-option value="0">0</mat-option>
                                   <mat-option value="1">1</mat-option>
                                 </mat-select>
+                                <mat-error *ngIf="checkListForm.controls.tarjeta_circulacion.errors?.required">Indique una opción en este campo</mat-error>
                               </mat-form-field>
                             </ion-col>
                             <ion-col>
@@ -1099,6 +1112,7 @@
                                   <mat-option value="9">9</mat-option>
                                   <mat-option value="10">10</mat-option>
                                 </mat-select>
+                                <mat-error *ngIf="checkListForm.controls.tapetes.errors?.required">Indique una opción en este campo</mat-error>
                               </mat-form-field>
                             </ion-col>
                             <ion-col>
@@ -1110,7 +1124,7 @@
                                   <mat-option value="2">2</mat-option>
                                   <mat-option value="3">3</mat-option>
                                 </mat-select>
-
+                                <mat-error *ngIf="checkListForm.controls.espejos.errors?.required">Indique una opción en este campo</mat-error>
                               </mat-form-field>
                             </ion-col>
                           </ion-row>
@@ -1125,6 +1139,7 @@
                                   <mat-option value="3">3</mat-option>
                                   <mat-option value="4">4</mat-option>
                                 </mat-select>
+                                <mat-error *ngIf="checkListForm.controls.tapones_rueda.errors?.required">Indique una opción en este campo</mat-error>
                               </mat-form-field>
                             </ion-col>
                             <ion-col>
@@ -1134,6 +1149,7 @@
                                   <mat-option value="0">0</mat-option>
                                   <mat-option value="1">1</mat-option>
                                 </mat-select>
+                                <mat-error *ngIf="checkListForm.controls.tapon_gas.errors?.required">Indique una opción en este campo</mat-error>
                               </mat-form-field>
                             </ion-col>
                             <ion-col>
@@ -1144,6 +1160,7 @@
                                   <mat-option value="1">1</mat-option>
                                   <mat-option value="2">2</mat-option>
                                 </mat-select>
+                                <mat-error *ngIf="checkListForm.controls.senalamientos.errors?.required">Indique una opción en este campo</mat-error>
                               </mat-form-field>
                             </ion-col>
                             <ion-col>
@@ -1153,6 +1170,7 @@
                                   <mat-option value="0">0</mat-option>
                                   <mat-option value="1">1</mat-option>
                                 </mat-select>
+                                <mat-error *ngIf="checkListForm.controls.gato.errors?.required">Indique una opción en este campo</mat-error>
                               </mat-form-field>
                             </ion-col>
                           </ion-row>
@@ -1164,6 +1182,7 @@
                                   <mat-option value="0">0</mat-option>
                                   <mat-option value="1">1</mat-option>
                                 </mat-select>
+                                <mat-error *ngIf="checkListForm.controls.llave_rueda.errors?.required">Indique una opción en este campo</mat-error>
                               </mat-form-field>
                             </ion-col>
                             <ion-col>
@@ -1175,6 +1194,7 @@
                                   <mat-option value="2">2</mat-option>
                                   <mat-option value="3">3</mat-option>
                                 </mat-select>
+                                <mat-error *ngIf="checkListForm.controls.limpiadores.errors?.required">Indique una opción en este campo</mat-error>
                               </mat-form-field>
                             </ion-col>
                             <ion-col>
@@ -1185,6 +1205,7 @@
                                   <mat-option value="1">1</mat-option>
                                   <mat-option value="2">2</mat-option>
                                 </mat-select>
+                                <mat-error *ngIf="checkListForm.controls.antena.errors?.required">Indique una opción en este campo</mat-error>
                               </mat-form-field>
                             </ion-col>
                             <ion-col>
@@ -1194,6 +1215,7 @@
                                   <mat-option value="0">0</mat-option>
                                   <mat-option value="1">1</mat-option>
                                 </mat-select>
+                                <mat-error *ngIf="checkListForm.controls.navegador.errors?.required">Indique una opción en este campo</mat-error>
                               </mat-form-field>
                             </ion-col>
                           </ion-row>
@@ -1206,6 +1228,7 @@
                                   <mat-option value="1">1</mat-option>
                                   <mat-option value="2">2</mat-option>
                                 </mat-select>
+                                <mat-error *ngIf="checkListForm.controls.placas.errors?.required">Indique una opción en este campo</mat-error>
                               </mat-form-field>
                             </ion-col>
                             <ion-col>
@@ -1215,6 +1238,7 @@
                                   <mat-option value="0">0</mat-option>
                                   <mat-option value="1">1</mat-option>
                                 </mat-select>
+                                <mat-error *ngIf="checkListForm.controls.radio.errors?.required">Indique una opción en este campo</mat-error>
                               </mat-form-field>
                             </ion-col>
                             <ion-col>
@@ -1228,6 +1252,7 @@
                                   <mat-option value="4">4</mat-option>
                                   <mat-option value="5">5</mat-option>
                                 </mat-select>
+                                <mat-error *ngIf="checkListForm.controls.llantas.errors?.required">Indique una opción en este campo</mat-error>
                               </mat-form-field>
                             </ion-col>
                           </ion-row>
@@ -1238,6 +1263,7 @@
                                        autocomplete="off">
                                 <mat-label>Observaciones</mat-label>
                               </mat-form-field>
+                              <mat-error *ngIf="checkListForm.controls.observaciones.errors?.required">Indique una opción en este campo</mat-error>
                             </ion-col>
                           </ion-row>
 

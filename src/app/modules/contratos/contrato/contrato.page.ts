@@ -1,4 +1,13 @@
-import {AfterViewInit, Component, Input, OnChanges, OnInit, SimpleChanges, ViewChild} from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  Input,
+  OnChanges,
+  OnInit, QueryList,
+  SimpleChanges,
+  ViewChild,
+  ViewChildren
+} from '@angular/core';
 import {NgxMaterialTimepickerTheme} from 'ngx-material-timepicker';
 import {Months} from '../../../interfaces/shared/months';
 import * as moment from 'moment';
@@ -33,7 +42,7 @@ import {ModelsEnum} from '../../../enums/models.enum';
 import {ToastMessageService} from '../../../services/toast-message.service';
 import {UbicacionesI} from '../../../interfaces/configuracion/ubicaciones.interface';
 import {UbicacionesService} from '../../../services/ubicaciones.service';
-import {map, Observable, startWith} from 'rxjs';
+import {from, lastValueFrom, map, Observable, startWith, take, takeUntil} from 'rxjs';
 import {CobranzaProgI, CobranzaTipo} from '../../../interfaces/cobranza/cobranza-prog.interface';
 import {CobranzaService} from '../../../services/cobranza.service';
 import {TarifasCategoriasI} from '../../../interfaces/configuracion/tarifas-categorias.interface';
@@ -99,6 +108,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
   //#region DATOS CLIENTE ATTRIBUTES
   clienteDataForm: FormGroup;
+  @ViewChild('docsClient', {static: false}) docsClientComponent: ModelosDocsComponent
   //#endregion
 
   //#region DATOS VEHICULO
@@ -145,6 +155,8 @@ export class ContratoPage implements OnInit, AfterViewInit {
   //#endregion
 
   //#region COBRANZA ATTRIBUTES
+  @ViewChildren('docsVoucherCobrosTarjetaSalida') docsVoucherCobrosTarjetaSalida: QueryList<ModelosDocsComponent>
+  @ViewChildren('docsVoucherCobrosAuth') docsVoucherCobrosAuth: QueryList<ModelosDocsComponent>
   baseCurrency: 'USD' | 'MXN' = 'MXN';
   baseRentCost = 1500;
   baseRentFrequency: 'hours' | 'days' | 'weeks' | 'months' = 'days';
@@ -203,6 +215,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
   public signature: any | string;
   public signature_matrix = '';
   public terminos=false;
+  public freeFromDamages = false
   //#endregion
 
   //#region RETORNO ATTRIBUTES
@@ -260,7 +273,6 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
   async ngOnInit() {
     this.validYears = this.getYears();
-
     if (this.isReserva) {
       this.contratosServ.flushReservaData()
       this.contratosServ.flushContractData()
@@ -270,7 +282,6 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
   async ionViewWillEnter() {
     this.spinner.show();
-    console.log('view enter');
 
     await this.loadTiposTarifas();
     await this.loadTarifasCat();
@@ -286,7 +297,6 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
     let contract_number = this.route.snapshot.paramMap.get('contract_number');
 
-    console.log(contract_number);
     if(contract_number) {
       this.contratosServ.setContractData(contract_number);
       await this.reloadAll();
@@ -361,9 +371,8 @@ export class ContratoPage implements OnInit, AfterViewInit {
     //
     //   }
     // }
-    console.log('execute reloadAll');
+
     // verificamos si tenemos guardado un contract_id en local storage para continuar con la edición
-    console.log(this.contratosServ.getContractNumber());
 
     if (this.contratosServ.getContractNumber()) {
       this.contractTypePrefix = this.contratosServ.getContractTypePrefix(this.contratosServ.getContractNumber());
@@ -373,8 +382,9 @@ export class ContratoPage implements OnInit, AfterViewInit {
       let res = await this.contratosServ._getContractData(this.num_contrato);
         if (res.ok) {
 
+          this.freeFromDamages = res.data.freeFromDamages;
+
           if (this.num_contrato !== res.data.num_contrato) {
-            console.log('Fue reserva ahora es contrato')
             await this.router.navigate(['contratos/view'], res.data.num_contrato);
             return;
           }
@@ -392,10 +402,9 @@ export class ContratoPage implements OnInit, AfterViewInit {
           if (this.contractData.etapas_guardadas && this.contractData.etapas_guardadas.length > 0) {
             let _datosClienteEtapa = this.contractData.etapas_guardadas.find(x => x === 'datos_cliente');
             if (_datosClienteEtapa) {
-              console.log('datos_cliente');
               let _clientesPayload = this.contractData.cliente;
               this.initClientForm(_clientesPayload);
-              this.getDocs('licencia_conducir', 'clientes', _clientesPayload.id);
+              //this.getDocs('licencia_conducir', 'clientes', _clientesPayload.id);
               this.step = 1;
             } else {
               this.initClientForm();
@@ -403,9 +412,8 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
             let _datosGeneralesEtapa = this.contractData.etapas_guardadas.find(x => x === 'datos_generales');
             if (_datosGeneralesEtapa) {
-              console.log('datos_generales');
               this.initGeneralForm(this.contractData);
-              this.getDocs('cupon', 'contratos', this.contractData.id);
+              //this.getDocs('cupon', 'contratos', this.contractData.id);
               this.step = 2;
 
             } else {
@@ -417,13 +425,10 @@ export class ContratoPage implements OnInit, AfterViewInit {
             let _datosVehiculo = this.contractData.etapas_guardadas.find(x => x === 'datos_vehiculo');
 
             if (_datosVehiculo) { // evaluamos de acuerdo a la etapa de guardada en contratos
-              console.log('datos_vehiculo');
               if (this.contractData.vehiculo || this.contractData.estatus === ContratosStatusE.RESERVA) {
                 this.step = 3;
                 this.vehiculoData = this.contractData.vehiculo;
                 this.setVehiculoBackgroundLayout(this.vehiculoData.categoria_vehiculo_id, this.vehiculoData.categoria.categoria);
-                //this.vehicleOutlineBackground = this.vehiculoData.categoria.categoria.toLowerCase();
-                console.log(this.vehicleOutlineBackground);
                 this.initVehiculoForm(this.contractData);
 
               }
@@ -445,9 +450,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
             let _cobranzaData = this.contractData.etapas_guardadas.find(x => x === 'cobranza');
             if (_cobranzaData && (this.contractData.cobranza && this.contractData.cobranza.length > 0)) {
-              console.log('cobranza');
               this.cobranzaProgData = this.contractData.cobranza.filter(x => x.cobranza_seccion == 'salida' || x.cobranza_seccion == 'reserva');
-              console.log(this.cobranzaProgData)
               this.recalBalancePorCobrar();
               if (this.balancePorPagar <= 0 && this.pagadoAutTotal > 0) {
                 this.step = 4;
@@ -460,37 +463,11 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
             let _checkListSalidaData = this.contractData.etapas_guardadas.find(x => x === 'check_list_salida');
             if (_checkListSalidaData) {
-              console.log('check_list_salida');
-              this.dragObjs = this.contractData.check_list_salida;
-              console.log('dragObjs', this.dragObjs);
-
-              let _dataFromStorage: DragObjProperties[] = this.returnIfCheckListInStorage();
-
-              if (_dataFromStorage.length === 0){
-                localStorage.removeItem(this.generalServ.dragObjStorageKey);
-                for (let i = 0; i < this.dragObjs.length; i++) {
-                  this.dragObjs[i].enable = false;
-                }
-              }
-
-              if (_dataFromStorage.length > 0) {
-
-                console.log('localstorage', _dataFromStorage);
-                let _firstUnSaved = _dataFromStorage.find(x => x.saved == false);
-                this.catchPickedObj(_firstUnSaved ? _firstUnSaved : _dataFromStorage[0]);
-                // for (let i = 0; i < _dataFromStorage.length; i++) {
-                //   this.saveDragObj(_dataFromStorage[i]);
-                // }
-                this.dragObjs = [... _dataFromStorage];
-
-                console.log('dragObjs', this.dragObjs);
-              }
-
-
+              this.fetchDragObjsFromApi(this.contractData.check_list_salida)
             }
+
             let _checkFormListData = this.contractData.etapas_guardadas.find(x => x === 'check_form_list');
             if (_checkFormListData) {
-              console.log('check_form_list');
 
               if (this.contractData.check_form_list) {
                 this.step = 5;
@@ -503,7 +480,6 @@ export class ContratoPage implements OnInit, AfterViewInit {
             }
             let _firma = this.contractData.etapas_guardadas.find(x => x === 'firma');
             if (_firma) {
-              console.log('firma');
               this.terminos = true;
               this.signature_matrix = this.contractData.firma_matrix;
               this.signature = {
@@ -515,7 +491,6 @@ export class ContratoPage implements OnInit, AfterViewInit {
             let _retorno = this.contractData.etapas_guardadas.find(x => x === 'retorno');
             if (_retorno) {
               this.step = 7;
-              console.log('retorno');
               this.initRetornoForm(this.contractData);
               if(this.contractData.cargos_retorno_extras){
                 this.cargos_extras_toggle = true;
@@ -533,10 +508,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
             let _cobranzaRetornoData = this.contractData.etapas_guardadas.find(x => x === 'cobranza_retorno');
             if (_cobranzaRetornoData && (this.contractData.cobranza && this.contractData.cobranza.length > 0)) {
-              console.log('cobranza_retorno');
               this.cobranzaProgRetornoData = this.contractData.cobranza.filter(x => x.cobranza_seccion == 'retorno' );
-              console.log(this.cobranzaProgRetornoData)
-
             } else {
               this.cobranzaProgRetornoData = [];
             }
@@ -554,21 +526,12 @@ export class ContratoPage implements OnInit, AfterViewInit {
           if (this.retornoDataForm.controls.total_retorno.value) {
             this.recalBalanceRetornoPorCobrar();
           }
-
-          console.log(this.step);
           this.spinner.hide();
         } else {
           console.log(res.errors);
           this.sweetMsgServ.printStatusArray(res.errors.error.errors, 'error');
           this.contratosServ.flushContractData();
           this.router.navigateByUrl('/contratos/nuevo')
-          // this.initGeneralForm();
-          // this.initClientForm();
-          // this.initVehiculoForm();
-          // this.initCheckListForm();
-          // this.initRetornoForm();
-          // this.cobranzaProgRetornoData = [];
-          // this.cobranzaProgData = [];
           this.spinner.hide();
         }
     } else {
@@ -619,7 +582,6 @@ export class ContratoPage implements OnInit, AfterViewInit {
   initGeneralForm(data?: ContratoI) {
     let _todayHour = DateConv.transFormDate(moment.now(), 'time');
     let _tipoTarifaApollo = this.tiposTarifas.find(x => TxtConv.txtCon(x.tarifa, 'uppercase') === 'APOLLO');
-    console.log(_tipoTarifaApollo);
     let _usrProfile = this.sessionServ.getProfile();
     if (_usrProfile && _usrProfile.sucursal) {
       this.userSucursal = _usrProfile.sucursal;
@@ -696,7 +658,6 @@ export class ContratoPage implements OnInit, AfterViewInit {
       this._today = data.fecha_salida;
       this.contractFechaSalida = data.fecha_salida;
       this._maxDate = DateConv.transFormDate(this._today, 'moment').add(30, 'days');
-      console.log('new min date --->', this._today);
     }
 
     if (data && data.cobranza_calc && data.cobranza_calc.length) {
@@ -918,11 +879,6 @@ export class ContratoPage implements OnInit, AfterViewInit {
     }
 
     this.extraFrecuency = parseInt(this.extraFrecuency.toFixed(0));
-    console.log('_fechaRetornoM -->', _fechaRetornoM);
-    console.log('_fechaActualM -->', _fechaActualM);
-    console.log('cobranzaExtraPor --->', this.cobranzaExtraPor);
-    console.log('extraFrecuency -->', this.extraFrecuency);
-    console.log(this.retornoDataForm.controls.frecuencia_extra.value, this.extraFrecuency );
 
     if (this.retornoDataForm.controls.frecuencia_extra.value != null && this.retornoDataForm.controls.frecuencia_extra.value < this.extraFrecuency) {
       return;
@@ -938,22 +894,22 @@ export class ContratoPage implements OnInit, AfterViewInit {
   initCheckListForm(data?) {
     this.checkListForm = this.fb.group({
       check_form_list_id: [(data && data.id ? data.id : null)],
-      tarjeta_circulacion: [(data && data.tarjeta_circulacion ? data.tarjeta_circulacion : null)],
-      tapetes: [(data && data.tapetes ? data.tapetes: null),],
+      tarjeta_circulacion: [(data && data.tarjeta_circulacion ? data.tarjeta_circulacion : null), Validators.required],
+      tapetes: [(data && data.tapetes ? data.tapetes: null),Validators.required],
       //silla_bebes: [(data && data.silla_bebes ? data.silla_bebes: null), ],
-      espejos: [(data && data.espejos ? data.espejos: null), ],
-      tapones_rueda: [(data && data.tapones_rueda ? data.tapones_rueda: null), ],
-      tapon_gas: [(data && data.tapon_gas ? data.tapon_gas: null), ],
-      senalamientos: [(data && data.senalamientos ? data.senalamientos: null), ],
-      gato: [(data && data.gato ? data.gato: null), ],
-      llave_rueda: [(data && data.llave_rueda ? data.llave_rueda: null), ],
-      limpiadores: [(data && data.limpiadores ? data.limpiadores: null), ],
-      antena: [(data && data.antena ? data.antena: null), ],
-      navegador: [(data && data.navegador ? data.navegador: null), ],
-      placas: [(data && data.placas ? data.placas: null), ],
-      radio: [(data && data.radio ? data.radio: null), ],
-      llantas: [(data && data.llantas ? data.llantas: null), ],
-      observaciones: [(data && data.observaciones ? data.observaciones: null), ],
+      espejos: [(data && data.espejos ? data.espejos: null), Validators.required],
+      tapones_rueda: [(data && data.tapones_rueda ? data.tapones_rueda: null), Validators.required],
+      tapon_gas: [(data && data.tapon_gas ? data.tapon_gas: null), Validators.required],
+      senalamientos: [(data && data.senalamientos ? data.senalamientos: null), Validators.required],
+      gato: [(data && data.gato ? data.gato: null), Validators.required],
+      llave_rueda: [(data && data.llave_rueda ? data.llave_rueda: null), Validators.required],
+      limpiadores: [(data && data.limpiadores ? data.limpiadores: null), Validators.required],
+      antena: [(data && data.antena ? data.antena: null), Validators.required],
+      navegador: [(data && data.navegador ? data.navegador: null), Validators.required],
+      placas: [(data && data.placas ? data.placas: null), Validators.required],
+      radio: [(data && data.radio ? data.radio: null), Validators.required],
+      llantas: [(data && data.llantas ? data.llantas: null), Validators.required],
+      observaciones: [(data && data.observaciones ? data.observaciones: null)],
     });
   }
 
@@ -968,12 +924,14 @@ export class ContratoPage implements OnInit, AfterViewInit {
     this.vehiculoForm = this.fb.group({
       vehiculo_id: [(data && data.id ? data.id : null), Validators.required],
       km_anterior: [(data && data.km_anterior ? data.km_anterior : (data && data.km_recorridos) ? data.km_recorridos : null), Validators.required],
-      km_inicial: [(data && data.km_inicial ? data.km_inicial : null), Validators.required],
+      km_inicial: [(data && data.km_inicial ? data.km_inicial : null), [Validators.required]],
       km_final: [(data && data.km_final ? data.km_final : null)],
       cant_combustible_anterior: [(data && data.cant_combustible_anterior ? data.cant_combustible_anterior : null)],
       cant_combustible_salida: [(data && data.cant_combustible_salida ? data.cant_combustible_salida : null), Validators.required],
       cant_combustible_retorno: [(data && data.cant_combustible_retorno ? data.cant_combustible_retorno : null)],
     });
+
+    this.vehiculoForm.controls.km_inicial.setValidators([Validators.min(this.vehiculoForm?.controls.km_anterior.value)])
     this.checkVehiculoFormDisableFields();
   }
 
@@ -982,7 +940,6 @@ export class ContratoPage implements OnInit, AfterViewInit {
   }
 
   showRetornoExtras() {
-    console.log('showRetornoExtras --->', this.cargos_extras_toggle);
     if (this.cargos_extras_toggle === false) {
       this.rf.cargos_extras_retorno_ids.patchValue(null);
       this.rf.cargos_extras_retorno.patchValue(null);
@@ -1090,8 +1047,6 @@ export class ContratoPage implements OnInit, AfterViewInit {
     }
     let _height = document.body.offsetHeight - _fixHeight;
 
-    console.log('_height', _height);
-
     canvas.width = _width;
     //canvas.height = 800;
 
@@ -1102,6 +1057,60 @@ export class ContratoPage implements OnInit, AfterViewInit {
     background.onload = function(){
       ctx.drawImage(background,0,0);
     }
+  }
+
+  async freeOffDamages(indicatorIcon, indicatorTitle) {
+
+    if (!this.freeFromDamages) {
+      this.freeFromDamages = true
+      this.selectedDragObj = null
+
+      if (this.dragObjs.length > 0) {
+        for (let dragObj of this.dragObjs) {
+          console.log('deleting dragObj')
+          dragObj.action = 'remove'
+          this.saveDragObj(dragObj);
+        }
+      }
+    } else {
+      this.freeFromDamages = false
+      const freeObjDamage = this.dragObjs.find((x) => x.freeFromDamages)
+      if (freeObjDamage) {
+        freeObjDamage.action = 'remove'
+        this.saveDragObj(freeObjDamage)
+      }
+    }
+
+    if (this.freeFromDamages) {
+      console.log('add freeImageIcon')
+      let randIndex = Math.floor(Math.random() * (100 - 1)) + 1;
+      let position = 100 + Math.floor(Math.random() * (100 - 1));
+      let findDraggId = this.dragObjs.find((x) => x.freeFromDamages === true)
+
+      let draggableObj: DragObjProperties = {
+        id: findDraggId,
+        contrato_id: this.contract_id,
+        tipo: CheckListTypeEnum.SALIDA,
+        width: 140,
+        height: 140,
+        containerPost: null,
+        boxPosition: null,
+        objId: randIndex,
+        top: 0,
+        left: 0,
+        action: 'position',
+        levelColor: 'default',
+        levelTxt: 'Normal',
+        indicatorIcon: indicatorIcon,
+        indicatorTitle: indicatorTitle,
+        enable: false,
+        saved: false,
+        lock: true,
+        freeFromDamages: true
+      }
+      this.dragObjs.push(draggableObj);
+    }
+
   }
 
   addDraggedBtn(indicatorIcon, indicatorTitle) {
@@ -1130,7 +1139,6 @@ export class ContratoPage implements OnInit, AfterViewInit {
   }
 
   saveDragObj(dragObj: DragObjProperties) {
-    //console.log('catchDragObjSaved --->', dragObj);
     if (dragObj) {
       switch (dragObj.action) {
         case 'position':
@@ -1143,35 +1151,40 @@ export class ContratoPage implements OnInit, AfterViewInit {
           }
           break;
         case 'remove':
-          this.checkListServ.remove(dragObj.id).subscribe(res => {
-            if (res.ok) {
+          const dragObjId = dragObj.id;
 
-              let localObjs = null;
-              if (localStorage.getItem(this.generalServ.dragObjStorageKey)) {
-                localObjs = JSON.parse(localStorage.getItem(this.generalServ.dragObjStorageKey));
-              }
-              if (localObjs) {
-                let findIndexLocalObj = localObjs.findIndex(x => x.objId == dragObj.objId);
-                if (findIndexLocalObj + 1) {
-                  localObjs.splice(findIndexLocalObj, 1);
-                  localStorage.setItem(this.generalServ.dragObjStorageKey, JSON.stringify(localObjs));
-                }
-              }
-
-              let findIndexObj = this.dragObjs.findIndex(x => x.objId === dragObj.objId);
-              if (findIndexObj + 1) {
-                this.cancelActionDragObj(dragObj);
-                this.dragObjs.splice(findIndexObj, 1);
-              }
-              if (this.dragObjs.length === 0) {
-                localStorage.removeItem(this.generalServ.dragObjStorageKey);
-              }
-              this.toastServ.presentToast('success', res.message, 'top');
+          let localObjs = null;
+          if (localStorage.getItem(this.generalServ.dragObjStorageKey)) {
+            localObjs = JSON.parse(localStorage.getItem(this.generalServ.dragObjStorageKey));
+          }
+          if (localObjs) {
+            let findIndexLocalObj = localObjs.findIndex(x => x.objId == dragObj.objId);
+            if (findIndexLocalObj !== -1) {
+              localObjs.splice(findIndexLocalObj, 1);
+              localStorage.setItem(this.generalServ.dragObjStorageKey, JSON.stringify(localObjs));
             }
-          }, error => {
-            console.log(error);
-            this.sweetMsgServ.printStatusArray(error.error.errors, 'error');
-          })
+          }
+
+          let findIndexObj = this.dragObjs.findIndex(x => x.objId === dragObj.objId);
+          if (findIndexObj !== -1) {
+            this.cancelActionDragObj(dragObj);
+            this.dragObjs.splice(findIndexObj, 1);
+          }
+          if (this.dragObjs.length === 0) {
+            localStorage.removeItem(this.generalServ.dragObjStorageKey);
+          }
+
+          if (dragObjId) {
+            this.checkListServ.remove(dragObjId).subscribe(res => {
+              if (res.ok) {
+                this.toastServ.presentToast('success', res.message, 'top');
+              }
+            }, error => {
+              console.log(error);
+              this.sweetMsgServ.printStatusArray(error.error.errors, 'error');
+            })
+          }
+
 
           break;
       }
@@ -1210,6 +1223,25 @@ export class ContratoPage implements OnInit, AfterViewInit {
     this.saveDragObj(dragObj);
   }
 
+  fetchDragObjsFromApi(check_list_salida: DragObjProperties[]) {
+    this.dragObjs = check_list_salida;
+
+    let _dataFromStorage: DragObjProperties[] = this.returnIfCheckListInStorage();
+
+    if (_dataFromStorage.length === 0){
+      localStorage.removeItem(this.generalServ.dragObjStorageKey);
+      for (let i = 0; i < this.dragObjs.length; i++) {
+        this.dragObjs[i].enable = false;
+      }
+    }
+
+    if (_dataFromStorage.length > 0) {
+      let _firstUnSaved = _dataFromStorage.find(x => x.saved == false);
+      this.catchPickedObj(_firstUnSaved ? _firstUnSaved : _dataFromStorage[0]);
+      this.dragObjs = [... _dataFromStorage];
+    }
+  }
+
   async openModelosDocModal(dragObj: DragObjProperties) {
     if (!dragObj.id) {
       this.sweetMsgServ.printStatus('Debes guardar primero los cambios del indicador', 'warning');
@@ -1230,7 +1262,6 @@ export class ContratoPage implements OnInit, AfterViewInit {
     });
     await  modal.present();
     const {data} = await modal.onWillDismiss();
-    console.log('openModelosDocsModal data -->', data);
   }
 
   async addNote(draggObj: DragObjProperties) {
@@ -1254,7 +1285,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
           role: 'cancel',
           cssClass: 'secondary',
           handler: () => {
-            console.log('Confirm Cancel');
+
           }
         }, {
           text: 'Ok',
@@ -1278,9 +1309,6 @@ export class ContratoPage implements OnInit, AfterViewInit {
                 this.sweetMsgServ.printStatusArray(error.error.errors, 'error');
               })
             }
-            // console.log('Confirm Ok');
-            // console.log('handler -->', _dta);
-            // this.saveDragObj(this.selectedDragObj);
           }
         }
       ]
@@ -1301,19 +1329,19 @@ export class ContratoPage implements OnInit, AfterViewInit {
     });
     await  modal.present();
     const {data} = await modal.onWillDismiss();
-    console.log('openFullView data -->', data);
   }
 
 
-  saveCheckListDB() {
+  saveCheckListDB(skipReload?: boolean) {
     if (!this.contract_id) {
       this.sweetMsgServ.printStatus('Debe primero capturar información en datos generales o datos del cliente y guardar su avance para continuar', 'warning');
       return;
     }
     let _payload = {
-      payload: this.dragObjs
+      payload: this.dragObjs,
+      freeFromDamages: this.freeFromDamages
     }
-    this.saveProcess('check_in_salida', null, _payload);
+    this.saveProcess('check_in_salida', null, _payload, skipReload);
   }
 
   returnIfCheckListInStorage() {
@@ -1328,9 +1356,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
             localDragObjs[i].saved = false;
             _unSavedObjs.push(localDragObjs[i]);
           } else if (_unSavedDragObj && localDragObjs[i].saved == false) {
-            //_unSavedDragObj = localDragObjs[i];
             _unSavedObjs.push(localDragObjs[i]);
-            //console.log('entre --->', _unSavedDragObj);
           } else if (_unSavedDragObj) {
             _unSavedDragObj.enable = false;
             _unSavedObjs.push(_unSavedDragObj);
@@ -1358,9 +1384,13 @@ export class ContratoPage implements OnInit, AfterViewInit {
   }
   //#endregion
 
-  //#region CAPTURE IMG FUNCTIONS
+  //TODO: Ver si hay que quitar la lógica de IMG functions
+  /*//#region CAPTURE IMG FUNCTIONS
+  //TODO: Ver si hay que quitar la lógica de IMG functions
+  /!**
+   * @deprecated
+  * *!/
   processDataImage(event: {imgUrl: string, image: File, type: string, fileName: string}, model = this.docPayLoad.model) {
-
     this[`${model}_docs`].push({
       file: event.image,
       url: event.imgUrl,
@@ -1369,11 +1399,11 @@ export class ContratoPage implements OnInit, AfterViewInit {
       mime_type: event.type,
       fileName: event.fileName
     });
-
-    console.log(`processDataImage model: ${model} ---> `, this[`${model}_docs`]);
-
   }
 
+  /!**
+   * @deprecated
+   * *!/
   disableUploadButton(model = this.docPayLoad.model): boolean {
     if (!this[`${model}_docs`]) {
       return true;
@@ -1389,6 +1419,9 @@ export class ContratoPage implements OnInit, AfterViewInit {
     return true;
   }
 
+  /!**
+   * @deprecated
+   * *!/
   uploadArrayDatasImg(doc_type = this.docPayLoad.doc_type, model = this.docPayLoad.model, model_id) {
     if (this[`${model}_docs`].length === 0 ) {
       this.sweetMsgServ.printStatus('Debe adjuntar una imagen', 'warning');
@@ -1404,14 +1437,11 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
     this.sweetMsgServ.confirmRequest().then(async (data) => {
       if (data.value) {
-
-        console.log('here');
         let _lastServError = null;
         let formData = new FormData();
         let _positions = [];
         let _etiquetas = [];
         for (let i = 0; i< this[`${model}_docs`].length; i++) {
-          console.log('prepare formData info---->');
 
           if (!this[`${model}_docs`][i].success || this[`${model}_docs`][i].success === false || !this[`${model}_docs`][i].file_id || this[`${model}_docs`][i].file_id === null) {
             if (!this[`${model}_docs`][i].etiqueta) {
@@ -1464,8 +1494,6 @@ export class ContratoPage implements OnInit, AfterViewInit {
           _lastServError = res.error.errors;
         }
 
-        console.log('imgDatasTranfer -->', this[`${model}_docs`]);
-
         let successTotal = 0;
         for (let j = 0; j < this[`${model}_docs`].length; j++) {
           if (this[`${model}_docs`][j].success === true) {
@@ -1473,7 +1501,6 @@ export class ContratoPage implements OnInit, AfterViewInit {
           }
         }
         if (successTotal === this[`${model}_docs`].length) {
-          console.log('all saved');
           this.sweetMsgServ.printStatus('Se han guardado sus imagenes de manera correcta', 'success');
           if (model === 'contratos') {
             this.saveProcess('datos_generales', true);
@@ -1490,10 +1517,16 @@ export class ContratoPage implements OnInit, AfterViewInit {
     });
   }
 
+  /!**
+   * @deprecated
+   * *!/
   removeImg(index, model = this.docPayLoad.model) {
     this[`${model}_docs`].splice(index, 1);
   }
 
+  /!**
+   * @deprecated
+   * *!/
   async removeFromDisk(fileData: DocDataTransfer, index, model = this.docPayLoad.model) {
     await this.sweetMsgServ.confirmRequest('¿Estás seguro de querer eliminar el archivo?').then(async (data) => {
       if (data.value) {
@@ -1516,6 +1549,9 @@ export class ContratoPage implements OnInit, AfterViewInit {
     });
   }
 
+  /!**
+   * @deprecated
+   * *!/
   async getDocs(doc_type = this.docPayLoad.doc_type, model = this.docPayLoad.model, model_id: number) {
     let _payload = {
       doc_type,
@@ -1547,12 +1583,15 @@ export class ContratoPage implements OnInit, AfterViewInit {
     }
   }
 
+  /!**
+   * @deprecated
+   * *!/
   isImage(fileType: string): boolean {
     let imgTypes = ['image/png', 'image/jpg', 'image/jpeg'];
     let find = imgTypes.find(x => x === fileType);
     return find && find !== 'unknown';
   }
-  //#endregion
+  //#endregion*/
 
   //#region CARDS MANAGEMENT
   async agregarPagoOpt(cobranza_seccion) {
@@ -1567,7 +1606,6 @@ export class ContratoPage implements OnInit, AfterViewInit {
             icon: 'card',
             cssClass:   this.balancePorPagar <= 0 ? 'disable' : '',
             handler: () => {
-              console.log('Capturar Pago con Tarjeta clicked');
               this.agregarTarjetaForm(CobranzaTipoE.PAGOTARJETA,cobranza_seccion , null, true);
             },
           },
@@ -1576,8 +1614,6 @@ export class ContratoPage implements OnInit, AfterViewInit {
             icon: 'cash',
             cssClass: this.balancePorPagar <= 0 ? 'disable' : '',
             handler: () => {
-              console.log('Pago Efectivo clicked');
-              //this.attachFiles();
               this.capturarCobroInput(null, cobranza_seccion, 'efectivo');
             },
           },
@@ -1585,7 +1621,6 @@ export class ContratoPage implements OnInit, AfterViewInit {
             text: 'Captura Pre-Autorización',
             icon: 'card',
             handler: () => {
-              console.log('Captura Pre-Autorización clicked');
               this.agregarTarjetaForm(CobranzaTipoE.PREAUTHORIZACION, cobranza_seccion, null, true);
             },
           },
@@ -1595,30 +1630,14 @@ export class ContratoPage implements OnInit, AfterViewInit {
             role: 'cancel',
             cssClass: 'action-sheet-cancel',
             handler: () => {
-              console.log('Cancel clicked');
             },
           },
         ],
       });
 
-      // if (this.gf.folio_cupon.value) {
-      //   actionSheet.buttons.unshift(
-      //     {
-      //       text: 'Pago con cupón # ' + this.gf.folio_cupon.value ,
-      //       icon: 'card',
-      //       cssClass:   this.balancePorPagar <= 0 ? 'disable' : '',
-      //       handler: () => {
-      //         console.log('Capturar Pago con cupón clicked');
-      //         this.capturarCobroInput(null, cobranza_seccion, 'cupon');
-      //       },
-      //     }
-      //   )
-      // }
-
       await actionSheet.present();
 
       const { role } = await actionSheet.onDidDismiss();
-      console.log('onDidDismiss resolved with role', role);
 
     } else {
       const actionSheet = await this.actionSheetController.create({
@@ -1631,7 +1650,6 @@ export class ContratoPage implements OnInit, AfterViewInit {
             icon: 'card',
             cssClass:   this.balanceRetornoPorPagar <= 0 ? 'disable' : '',
             handler: () => {
-              console.log('Capturar Pago con Tarjeta clicked');
               this.agregarTarjetaForm(CobranzaTipoE.PAGOTARJETA, cobranza_seccion, null, true);
             },
           },
@@ -1640,8 +1658,6 @@ export class ContratoPage implements OnInit, AfterViewInit {
             icon: 'cash',
             cssClass: this.balanceRetornoPorPagar <= 0 ? 'disable' : '',
             handler: () => {
-              console.log('Pago Efectivo clicked');
-              //this.attachFiles();
               this.capturarCobroInput(null, cobranza_seccion, 'efectivo');
             },
           },
@@ -1650,8 +1666,6 @@ export class ContratoPage implements OnInit, AfterViewInit {
             icon: 'cash',
             cssClass: this.balanceRetornoPorPagar <= 0 ? 'disable' : '',
             handler: () => {
-              console.log('Pago Depósito clicked');
-              //this.attachFiles();
              this.capturaDeposito('retorno')
             },
           },
@@ -1661,7 +1675,6 @@ export class ContratoPage implements OnInit, AfterViewInit {
             role: 'cancel',
             cssClass: 'action-sheet-cancel',
             handler: () => {
-              console.log('Cancel clicked');
             },
           },
         ],
@@ -1669,15 +1682,12 @@ export class ContratoPage implements OnInit, AfterViewInit {
       await actionSheet.present();
 
       const { role } = await actionSheet.onDidDismiss();
-      console.log('onDidDismiss resolved with role', role);
     }
 
 
   }
 
   async agregarTarjetaForm(tipo: CobranzaTipoE.PAGOTARJETA | CobranzaTipoE.PREAUTHORIZACION, cobranza_seccion ,_data?: CardI, pushData?: boolean, cobranza: CobranzaProgI = null) {
-    //const pageEl: HTMLElement = document.querySelector('.ion-page');
-    //this.generalService.presentLoading();
     let _titular = this.cf.nombre.value;
     const modal = await this.modalCtr.create({
       component: TarjetaFormComponent,
@@ -1728,12 +1738,9 @@ export class ContratoPage implements OnInit, AfterViewInit {
           updated_at: null,
           cobranza_id: (cobranza && cobranza.id) ? cobranza.id : null
         }
-        //this.cobranzaProgData.push(_prepare);
         this.saveProcess((cobranza_seccion == 'salida') ? 'cobranza' : 'cobranza_retorno', null, _prepare);
       }
       return data.info
-      //console.log('data.info --->', data);
-      //this.loadClienteData();
     } else {
       return null;
     }
@@ -1782,11 +1789,8 @@ export class ContratoPage implements OnInit, AfterViewInit {
         updated_at: null,
         cobranza_id: (cobranza && cobranza.id) ? cobranza.id : null
       }
-      //this.cobranzaProgData.push(_prepare);
       this.saveProcess((cobranza_seccion == 'salida') ? 'cobranza' : 'cobranza_retorno', null, _prepare);
       return data.info
-      //console.log('data.info --->', data);
-      //this.loadClienteData();
     } else {
       return null;
     }
@@ -1863,7 +1867,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
           break;
         case 'cliente':
           this.initClientForm(data);
-          this.getDocs('licencia_conducir', 'clientes', data.id);
+          //this.getDocs('licencia_conducir', 'clientes', data.id);
           break;
         case 'vehiculo':
           this.vehiculoData = data;
@@ -1904,6 +1908,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
     switch (TxtConv.txtCon(_tipoTarifa.tarifa, 'uppercase')) {
       case 'APOLLO':
         this.gf.modelo_id.patchValue(null);
+        this.generalDataForm.controls.modelo_id.removeValidators([Validators.required])
         this.gf.modelo.patchValue(ModelsEnum.APOLLO);
         this.gf.folio_cupon.patchValue(null);
         //this.gf.valor_cupon.patchValue(null);
@@ -1913,6 +1918,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
       case 'HOTEL':
         if (!withInitRules) {
           this.gf.modelo_id.patchValue(null);
+          this.gf.modelo_id.removeValidators(Validators.required);
         }
 
         this.gf.modelo.patchValue(ModelsEnum.HOTELES);
@@ -1979,8 +1985,6 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
     this.selectedTarifaCat = tarifaCat;
 
-    console.log('setTarifasCat, selectedTarifaCat -->', this.selectedTarifaCat);
-
     this.prepareDescuentos(this.selectedTarifaCat, false);
 
     //TODO: makeCalc?
@@ -2045,7 +2049,6 @@ export class ContratoPage implements OnInit, AfterViewInit {
   setVehiculoClaseData(withInitRules: boolean) {
     if (TxtConv.txtCon(this.gf.tipo_tarifa.value, 'uppercase') === 'HOTEL') {
       let _clases = this.tarifasHotel.find(x => x.clase_id === this.gf.vehiculo_clase_id.value);
-      console.log('setVehiculoClaseData -->', _clases);
       if (_clases) {
         this.gf.vehiculo_clase.patchValue(_clases.clase);
         this.gf.vehiculo_clase_precio.patchValue(_clases.precio_renta);
@@ -2079,9 +2082,6 @@ export class ContratoPage implements OnInit, AfterViewInit {
       this.gf.precio_unitario_final.patchValue(null);
       this.initCalcComisionista();
     }
-
-    console.log('comision', this.gf.comision.value);
-
   }
 
   initCalcComisionista() {
@@ -2090,14 +2090,12 @@ export class ContratoPage implements OnInit, AfterViewInit {
   }
 
   startDateChange() {
-    console.log('startDateChange');
     if (this.contractFechaSalida) {
       this.rangoFechas.fecha_salida.patchValue(this.contractFechaSalida);
     }
   }
 
   setReturnDateChange(inputDays?, byDays?: boolean) {
-    console.log('setReturnDateChange', inputDays);
     this._maxDate = DateConv.transFormDate(this._today, 'moment').add(30, 'days');
     if (!inputDays && byDays) {
       this.gf.total_dias.patchValue( null);
@@ -2132,18 +2130,9 @@ export class ContratoPage implements OnInit, AfterViewInit {
       return;
     }
 
-    this.gf.valor_cupon.patchValue(null)
-    // if (this.gf.vehiculo_id.invalid) {
-    //   this.sweetMsgServ.printStatus('Selecciona un vehículo primero', 'warning');
-    //   this.gf.vehiculo_id.markAllAsTouched();
-    //   return;
-    // }
-
-    //console.log('precio inicial vehiculo --->', this.vehiculoData.precio_renta);
-
+    this.gf.valor_cupon.patchValue(null);
 
     let _tempExtrasCalc = this.cobranzaI.filter(x => x.element === 'extra');
-    console.log('tempExtrasCalc', _tempExtrasCalc);
     this.cobranzaI = [];
 
     let _totalDias = this.gf.total_dias.value;
@@ -2167,7 +2156,6 @@ export class ContratoPage implements OnInit, AfterViewInit {
     switch (TxtConv.txtCon(this.gf.tipo_tarifa.value, 'uppercase')) {
       case 'APOLLO':
       case 'HOTEL':
-        console.log('makeCalc tarifa apollo');
         //TODO: borrar si ya no es necesario
         // if (!this.vehiculoData.tarifas) {
         //   console.log('El vehículo seleccionado no cuenta con un plan tarifario, comuniquese con el administrador');
@@ -2175,8 +2163,6 @@ export class ContratoPage implements OnInit, AfterViewInit {
         //   return;
         // }
         // let _tarifas = this.vehiculoData.tarifas;
-
-        console.log('test', this.gf.tarifa_modelo_id.value);
         if (!this.gf.tarifa_modelo_id.value) {
           //this.sweetMsgServ.printStatus('Debe seleccionar una tarifa x categoría valída', 'error');
           this.gf.tarifa_modelo_id.markAllAsTouched();
@@ -2201,9 +2187,6 @@ export class ContratoPage implements OnInit, AfterViewInit {
         this.setBaseRentFrequency();
 
         _tarifa = _tarifas.find(x => x.frecuencia_ref == this.baseRentFrequency);
-
-        console.log('tarifa baseRentFrequency -->', this.baseRentFrequency);
-        console.log('tarifa select -->', _tarifa);
 
         if (_tarifa && this.gf.tarifa_modelo_id.value &&  (_tarifa.ap_descuento === true || _tarifa.ap_descuento == 1)) {
           this.gf.con_descuento.enable();
@@ -2290,7 +2273,6 @@ export class ContratoPage implements OnInit, AfterViewInit {
       //   });
       //   break;
       case 'COMISIONISTA':
-        console.log('makeCalc form comisionistas');
         if (!this.selectedTarifaCat || !this.gf.tarifa_modelo_id.value) {
           this.gf.tarifa_modelo_id.markAllAsTouched();
           return;
@@ -2317,8 +2299,6 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
         _tarifa = _tarifas.find(x => x.frecuencia_ref == this.baseRentFrequency);
         _tarifa.enable = true;
-        console.log('tarifa baseRentFrequency -->', this.baseRentFrequency);
-        console.log('tarifa select -->', _tarifa);
 
         if (this.gf.tarifa_modelo_id.value &&  _tarifa.ap_descuento === true || _tarifa.ap_descuento == 1) {
           this.gf.con_descuento.enable();
@@ -2328,8 +2308,6 @@ export class ContratoPage implements OnInit, AfterViewInit {
           this.gf.tarifa_apollo_id.patchValue(null);
           this.prepareDescuentos(this.selectedTarifaCat, false);
         }
-
-        console.log('makeCalc form comisionistas precio --->', this.gf.precio_unitario_final.value);
 
         this.cobranzaI.push({
           element: 'renta',
@@ -2404,13 +2382,11 @@ export class ContratoPage implements OnInit, AfterViewInit {
     }
 
     // sacamos subtotal, iva y total final
-    console.log('cobranzaI -->', this.cobranzaI);
     let _subtotal = 0;
     let _iva = 0;
     let _total = 0;
     for (let i = 0; i < this.cobranzaI.length; i++) {
       _subtotal = _subtotal + ((this.cobranzaI[i].amount * (this.cobranzaI[i].number_sign === 'positive' ? 1 : -1)));
-      console.log('_subtotal --->', _subtotal);
     }
     //_subtotal = parseFloat(Number(_subtotal).toFixed(2)) - parseFloat(Number(this.gf.precio_unitario_final.value * _totalDias).toFixed(2));
 
@@ -2494,22 +2470,18 @@ export class ContratoPage implements OnInit, AfterViewInit {
     console.log("Precio Dia----->", _precioExtraDia);
     console.log("Precio Hora----->", _precioExtraHora);
 
-
     // Verificamos si tenemos extras
     if (this.rf.cargos_extras_retorno.value && this.rf.cargos_extras_retorno.value.length > 0) {
 
       let _tempExtrasCalc = cobranza_temp.filter(x => x.element === 'cargoExtra');
       console.log('tempExtrasCalc', _tempExtrasCalc);
       if (elementType && elementType === 'extra' && cobro) {
-        console.log(elementType, cobro);
         this.cobranzaRetornoI.push(... _tempExtrasCalc);
 
         let _singleCobro = this.cobranzaRetornoI.find(x => x.element_label === cobro.element_label);
         let _extraInForm = this.rf.cargos_extras_retorno.value.find(x => x.nombre === cobro.element_label);
         let _index = this.cobranzaRetornoI.findIndex(x => x.element_label === cobro.element_label);
-        console.log(_index)
         if (_singleCobro && _extraInForm && (_index + 1)) {
-          console.log(_singleCobro,_extraInForm,_index)
           _singleCobro.quantity = cobro.quantity;
           _singleCobro.amount = parseFloat(Number(_extraInForm.precio * cobro.quantity ).toFixed(2))
           this.cobranzaRetornoI[_index] = _singleCobro;
@@ -2623,7 +2595,6 @@ export class ContratoPage implements OnInit, AfterViewInit {
       this.gf.cobros_extras.setValue(_extrasObj);
     }
     this.toastServ.presentToast('info','Revise la información de los cargos extra en especial la cantidad unitaria', 'top');
-    console.log('cobros extras --->', _extrasObj);
     await this.makeCalc();
   }
 
@@ -2645,7 +2616,6 @@ export class ContratoPage implements OnInit, AfterViewInit {
     }
 
     this.toastServ.presentToast('info','Revise la información de los cargos extra en especial la cantidad unitaria', 'top');
-    console.log('cargos retorno extras --->', _extrasObj);
     this.makeCalcRetorno();
   }
 
@@ -2731,7 +2701,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
     if ((total - this.balancePorPagar) > 50) {
       this.sweetMsgServ.printStatus('El monto aculamado de cobro es mayor al balance por cobrar', 'warning');
     }
-    this.balancePorPagar = Number(this.balancePorPagar -  total);
+    this.balancePorPagar = Number(Number(this.balancePorPagar -  total).toFixed(2));
 
     this.setTotalPago();
   }
@@ -2790,22 +2760,23 @@ export class ContratoPage implements OnInit, AfterViewInit {
   //#endregion
 
   saveAndGenerate(section: 'firma' | 'retorno') {
-    let mensaje: string = (section == 'firma') ? '¿Estás seguro de desea guardar el contrato?, ya que no podra ser editable' : '¿Estás seguro de desea guardar las cargos extras al contrato?'
+    if(section === 'firma' && !this.reviewVouchersCapture()) {
+      return;
+    }
+    let mensaje: string = (section == 'firma') ? '¿Estás seguro de desea guardar el contrato?, ya que no podrá ser editable' : '¿Estás seguro de desea guardar las cargos extras al contrato?'
     this.sweetMsgServ.confirmRequest(mensaje).then(async (data) => {
       if (data.value) {
-        await this.saveProcess(section);
-        setTimeout(async () => {
-          await this.sendAndGeneratePDF();
-        }, 500);
-
+        this.saveProcess(section);
       }
     })
   }
 
-  async saveProcess(section: 'datos_generales' | 'datos_cliente' | 'datos_vehiculo' | 'cobranza' | 'check_in_salida' | 'check_form_list' |  'firma' | 'retorno' | 'cobranza_retorno', ignoreMsg?: boolean, payload?) {
+  async saveProcess(section: 'datos_generales' | 'datos_cliente' | 'datos_vehiculo' | 'cobranza' | 'check_in_salida' | 'check_form_list' |  'firma' | 'retorno' | 'cobranza_retorno', ignoreMsg?: boolean, payload?, skipReload?: boolean) {
     //this.sweetMsgServ.printStatus('Acción en desarrollo', 'warning');
-    this.spinner.show();
-    console.log('section', section);
+    if (!skipReload) {
+      this.spinner.show();
+    }
+
     let _payload;
     switch (section) {
       case 'datos_generales':
@@ -2813,7 +2784,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
           this.spinner.hide();
           this.sweetMsgServ.printStatus('Verifica que los datos solicitados esten completos', 'warning');
           this.generalDataForm.markAllAsTouched();
-          console.log(this.generalDataForm);
+          console.log('invalid form --->', this.generalDataForm.controls)
           return;
         }
         _payload = this.generalDataForm.value;
@@ -2847,10 +2818,11 @@ export class ContratoPage implements OnInit, AfterViewInit {
 
           this.clienteDataForm.markAllAsTouched();
           return;
-        } /*else if (this.clientes_docs.length == 0) {
+        } else if (this.docsClientComponent.docData_docs.length === 0) {
+          this.spinner.hide();
           this.sweetMsgServ.printStatus('Es necesesario adjuntar la licencia del cliente', 'warning');
           return;
-        }*/
+        }
 
         _payload = this.clienteDataForm.value;
         break;
@@ -2877,6 +2849,19 @@ export class ContratoPage implements OnInit, AfterViewInit {
         _payload = payload
         break;
       case 'check_form_list':
+        if (this.dragObjs.length === 0) {
+          this.spinner.hide();
+          this.sweetMsgServ.printStatus('Agrega un elemento de verificación', 'warning');
+          return;
+        }
+
+        this.saveCheckListDB(true);
+
+        if (this.checkListForm.invalid) {
+          this.checkListForm.markAllAsTouched();
+          return;
+        }
+
         let canvas = await html2canvas(document.querySelector("#check-list-canvas"), { logging: true, allowTaint: false , useCORS: true });
 
         let check_img = canvas.toDataURL();
@@ -2886,7 +2871,6 @@ export class ContratoPage implements OnInit, AfterViewInit {
         _payload = this.checkListForm.value
         _payload.contrato_id = this.contract_id
         _payload.check_list_img  = this.check_list_img;
-        console.log(_payload)
         break;
       case 'firma':
 
@@ -2895,14 +2879,12 @@ export class ContratoPage implements OnInit, AfterViewInit {
           this.sweetMsgServ.printStatus('Es necesesario la firma para terminar el proceso', 'warning');
           return;
         }
-        console.log(this.signature)
         _payload = this.signature
         break;
       case 'retorno':
         if (this.retornoDataForm.invalid) {
           this.spinner.hide();
           this.sweetMsgServ.printStatus('Verifica que los datos solicitados esten completos', 'warning');
-          console.log(this.retornoDataForm);
           return;
         }
         _payload = this.retornoDataForm.value;
@@ -2928,30 +2910,55 @@ export class ContratoPage implements OnInit, AfterViewInit {
     _payload.seccion = section;
     _payload.num_contrato = this.num_contrato;
 
-    console.log(section + '--->', _payload);
     //return;
+
 
     this.contratosServ.saveProgress(_payload).subscribe(async res => {
       this.spinner.hide();
       if (res.ok) {
 
+        this.contract_id = res.id;
+        this.num_contrato = res.contract_number;
+        this.contratosServ.setContractData(this.num_contrato);
+        this.contractTypePrefix = this.contratosServ.getContractTypePrefix(this.contratosServ.getContractNumber());
+
+        if (section === 'datos_cliente' && res.cliente_id) {
+          if (this.docsClientComponent.docData_docs.length > 0) {
+            this.docsClientComponent.model_id_value = res.cliente_id;
+            const docsClientSaved = await this.docsClientComponent.uploadArrayDatasImg('licencia_conducir', 'clientes', res.cliente_id);
+            console.log('docsClientSaved', docsClientSaved)
+            if (!docsClientSaved) {
+              return;
+            }
+            this.step++;
+          }
+        }
+
         if (section === 'check_in_salida') {
           localStorage.removeItem(this.generalServ.dragObjStorageKey);
           this.selectedDragObj = null;
+
+          if (res.check_list_salida) {
+            this.fetchDragObjsFromApi(res.check_list_salida);
+          }
         }
-        this.sweetMsgServ.printStatus(res.message, 'success');
-        if (section == 'cobranza' || section == 'check_in_salida') {
+        if (!skipReload) {
+          this.sweetMsgServ.printStatus(res.message, 'success');
+        }
+
+        if (section === 'cobranza' || section == 'check_in_salida') {
           this.step = this.step;
         } else {
           this.step++;
         }
-        this.contract_id = res.id;
-        this.num_contrato = res.contract_number;
-        this.contratosServ.setContractData(this.num_contrato);
 
-        if (section == 'firma') {
-          this.contratosServ.flushContractData();
-          this.router.navigateByUrl('vehiculos/list');
+        if (section == 'firma' && res.status === ContratosStatusE.RENTADO) {
+          setTimeout(async () => {
+            await this.sendAndGeneratePDF();
+            this.contratosServ.flushContractData();
+            this.router.navigateByUrl('vehiculos/list');
+          }, 1000);
+          return;
         }
 
         if (section === 'retorno') {
@@ -2961,8 +2968,9 @@ export class ContratoPage implements OnInit, AfterViewInit {
             this.router.navigateByUrl('vehiculos/list');
           }
         }
-
-        await this.reloadAll();
+        if (!skipReload) {
+          await this.reloadAll();
+        }
       }
     }, error => {
       this.spinner.hide();
@@ -2976,6 +2984,7 @@ export class ContratoPage implements OnInit, AfterViewInit {
       this.sendAndGeneratePDFReserva();
       return;
     }
+
     this.spinner.show();
     this.contratosServ.sendAndGeneratePDF(this.contract_id).subscribe(res => {
       const url = URL.createObjectURL(res);
@@ -3026,6 +3035,36 @@ export class ContratoPage implements OnInit, AfterViewInit {
       });
       fr.readAsText(error.error);
     });
+  }
+
+  reviewVouchersCapture(): boolean {
+    let docsVoucherTarejetaSalida = this.docsVoucherCobrosTarjetaSalida.toArray();
+    let docsVoucherAuthSalida = this.docsVoucherCobrosAuth.toArray();
+
+    if (docsVoucherTarejetaSalida && docsVoucherTarejetaSalida.length > 0) {
+      let passVoucherSalida = false
+      console.log('docsVoucherSalida', docsVoucherTarejetaSalida);
+      for (let voucher of docsVoucherTarejetaSalida) {
+        passVoucherSalida = voucher.docData_docs.some((v) => v.success)
+      }
+      if(!passVoucherSalida) {
+        this.sweetMsgServ.printStatus('Recuerda adjuntar el voucher de la transacción del cobró de cada tarjeta', 'error');
+        return passVoucherSalida
+      }
+    }
+    if (docsVoucherAuthSalida && docsVoucherAuthSalida.length > 0) {
+      let passVoucherAuthSalida = false
+      for (let voucher of docsVoucherAuthSalida) {
+        passVoucherAuthSalida = voucher.docData_docs.some((v) => v.success)
+      }
+      console.log('docsVoucherAuthSalida', docsVoucherAuthSalida);
+      if (!passVoucherAuthSalida) {
+        this.sweetMsgServ.printStatus('Recuerda adjuntar el voucher de la transacción del cobró de pre-autorización de cada tarjeta', 'error');
+        return passVoucherAuthSalida
+      }
+    }
+
+    return true
   }
 
   dismiss(reload?) {
@@ -3083,11 +3122,6 @@ export class ContratoPage implements OnInit, AfterViewInit {
        })
       }
     });
-  }
-
-
-  catchEventTest(event) {
-    console.log(event);
   }
 
   ionViewWillLeave() {

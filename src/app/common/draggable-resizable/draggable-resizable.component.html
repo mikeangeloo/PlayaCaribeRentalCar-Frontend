@@ -52,7 +52,7 @@
     </mat-menu>
   </div>-->
 
-  <div class="letter-identifier">
+  <div class="letter-identifier" [ngClass]="{'free-from-damages': !!draggableObj.freeFromDamages}">
     <mat-icon>{{draggableObj.indicatorIcon}}</mat-icon>
   </div>
   <div *ngIf="(draggableObj.lock === false || draggableObj.lock == 0) || !draggableObj.lock" class="resize-action" [class.disable-drag]="draggableObj.enable === false || draggableObj.enable == 0" (mousedown)="setStatus($event, 1)" (touchstart)="setTouchStatus($event, 1)" ></div>

@@ -16,7 +16,7 @@
         <ng-content select="[name=extra-form]"></ng-content>
         <ion-col size="12" [sizeMd]="fullSize && fullSize === true ? 12 : 6" class="ion-text-center">
           <div style="display: flex; justify-content: space-evenly; align-items: center;">
-            <app-camera (captureImg)="processDataImage($event, model)" [justButton]="justButton" [btnSize]="btnSize"></app-camera>
+            <app-camera (captureImg)="processDataImage($event)" [justButton]="justButton" [btnSize]="btnSize"></app-camera>
             <ion-button [disabled]="disableUploadButton(model)" *ngIf="docData_docs && docData_docs.length > 0" color="secondary" size="{{btnSize}}" expand="round" type="button" (click)="uploadArrayDatasImg(docType, model, model_id_value)">
               <ion-icon name="cloud-upload"></ion-icon>&nbsp; SUBIR
             </ion-button>
@@ -73,7 +73,7 @@
       <ng-content select="[name=extra-form]"></ng-content>
       <ion-col size="12" [sizeMd]="fullSize && fullSize === true ? 12 : 6" class="ion-text-center">
         <div style="display: flex; justify-content: space-evenly; align-items: center;">
-          <app-camera (captureImg)="processDataImage($event, model)" [justButton]="justButton" [btnSize]="btnSize"></app-camera>
+          <app-camera (captureImg)="processDataImage($event)" [justButton]="justButton" [btnSize]="btnSize"></app-camera>
           <ion-button [disabled]="disableUploadButton(model)" *ngIf="docData_docs && docData_docs.length > 0" color="secondary" size="{{btnSize}}" expand="round" type="button" (click)="uploadArrayDatasImg(docType, model, model_id_value)">
             <ion-icon name="cloud-upload"></ion-icon>&nbsp; SUBIR
           </ion-button>
