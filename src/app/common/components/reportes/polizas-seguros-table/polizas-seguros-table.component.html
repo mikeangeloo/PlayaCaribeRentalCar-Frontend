@@ -58,7 +58,7 @@
                 <mat-cell *matCellDef="let row">
                   <div class="column">
                     <p>
-                      {{row.poliza.aseguradora}}
+                      {{row.poliza?.aseguradora}}
                     </p>
                   </div>
                 </mat-cell>
@@ -70,7 +70,7 @@
                 <mat-cell *matCellDef="let row">
                   <div class="column">
                     <p>
-                      {{row.poliza.no_poliza}}
+                      {{row.poliza?.no_poliza}}
                     </p>
                   </div>
                 </mat-cell>
@@ -82,7 +82,7 @@
                 <mat-cell *matCellDef="let row">
                   <div class="column">
                     <p>
-                      {{row.poliza.tipo_poliza}}
+                      {{row.poliza?.tipo_poliza}}
                     </p>
                   </div>
                 </mat-cell>
@@ -94,7 +94,7 @@
                 <mat-cell *matCellDef="let row">
                   <div class="column">
                     <p>
-                      {{row.poliza.tel_contacto}}
+                      {{row.poliza?.tel_contacto}}
                     </p>
                   </div>
                 </mat-cell>
@@ -106,7 +106,7 @@
                 <mat-cell *matCellDef="let row">
                   <div class="column">
                     <p>
-                      {{row.poliza.titular}}
+                      {{row.poliza?.titular}}
                     </p>
                   </div>
                 </mat-cell>
@@ -118,7 +118,7 @@
                 <mat-cell *matCellDef="let row">
                   <div class="column">
                     <p>
-                      {{row.poliza.fecha_inicio}}
+                      {{row.poliza?.fecha_inicio}}
                     </p>
                   </div>
                 </mat-cell>
@@ -130,7 +130,7 @@
                 <mat-cell *matCellDef="let row">
                   <div class="column">
                     <p>
-                      {{row.poliza.fecha_fin}}
+                      {{row.poliza?.fecha_fin}}
                     </p>
                   </div>
                 </mat-cell>
@@ -141,9 +141,9 @@
                 <mat-header-cell *matHeaderCellDef mat-sort-header>Estatus</mat-header-cell>
                 <mat-cell *matCellDef="let row">
                   <div class="column">
-                    <ion-chip style="font-weight: bold; color: white;" [ngStyle]="{'background-color':  (calcEstatus(row.poliza.fecha_fin) > 0 ) ? 'green' :  'red' }" >
+                    <ion-chip style="font-weight: bold; color: white;" [ngStyle]="{'background-color':  (calcEstatus(row.poliza?.fecha_fin) > 0 ) ? 'green' :  'red' }" >
                       {{
-                        calcEstatus(row.poliza.fecha_fin)
+                        calcEstatus(row.poliza?.fecha_fin)
 
                       }}
                     </ion-chip>
