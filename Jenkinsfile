@@ -3,20 +3,13 @@ pipeline {
 
     environment {
         DOCKER_REPO = "miusuario/apollo-frontend"  // Cambiar con tu repositorio de Docker
-        BRANCH_NAME = "${env.BRANCH_NAME}"       // Rama actual del PR
+        BRANCH_NAME = sh(script: "echo ${env.GIT_BRANCH} | sed 's|^origin/||'", returnStdout: true).trim()
         BUILD_VERSION = "${env.BUILD_NUMBER}"    // Número único de build de Jenkins
         PACKAGE_VERSION = ''                     // Almacenará la versión del package.json
         IMAGE_TAG = ''                           // Etiqueta para la imagen Docker
     }
 
     stages {
-        stage ('Ver variables de entorno') {
-          steps {
-                script {
-                    sh 'printenv'
-                }
-            }
-        }
         stage('Checkout') {
             steps {
                 checkout scm // Esta es la acción para clonar el repositorio
