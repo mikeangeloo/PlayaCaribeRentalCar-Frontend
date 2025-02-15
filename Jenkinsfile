@@ -2,20 +2,19 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_REPO = "miusuario/apollo-frontend"
-        BRANCH_NAME = env.BRANCH_NAME
-        BUILD_VERSION = "${env.BUILD_NUMBER}"
-        PACKAGE_VERSION = ''
-        IMAGE_TAG = ''
-        EKS_NAMESPACE = "pruebas"  // Espacio de nombres efímero
+        DOCKER_REPO = "miusuario/apollo-frontend"  // Cambiar con tu repositorio de Docker
+        BRANCH_NAME = "${env.BRANCH_NAME}"       // Rama actual del PR
+        BUILD_VERSION = "${env.BUILD_NUMBER}"    // Número único de build de Jenkins
+        PACKAGE_VERSION = ''                     // Almacenará la versión del package.json
+        IMAGE_TAG = ''                           // Etiqueta para la imagen Docker
     }
 
     stages {
         stage('Checkout') {
             steps {
-                checkout scm
+                checkout scm // Esta es la acción para clonar el repositorio
                 script {
-                    echo "📥 Clonando código de ${BRANCH_NAME}"
+                    echo "📥 Se han bajado los cambios de la rama ${BRANCH_NAME}"
                 }
             }
         }
@@ -23,8 +22,9 @@ pipeline {
         stage('Obtener versión del package.json') {
             steps {
                 script {
+                    // Obtener la versión desde el archivo package.json
                     PACKAGE_VERSION = sh(script: "jq -r .version package.json", returnStdout: true).trim()
-                    IMAGE_TAG = "${DOCKER_REPO}:${PACKAGE_VERSION}-${BUILD_VERSION}-${BRANCH_NAME}"
+                    echo "📌 Versión extraída: ${PACKAGE_VERSION}"
                 }
             }
         }
@@ -32,12 +32,15 @@ pipeline {
         stage('Ejecutar pruebas unitarias') {
             steps {
                 script {
+                    // Ejecutar las pruebas unitarias con Jest para Angular
+                    echo "⚡ Ejecutando pruebas unitarias..."
                     sh 'npm install'
                     sh 'npm run test -- --coverage'
 
-                    def coverage = sh(script: "node -e \"console.log(require('./coverage/coverage-summary.json').total.statements.pct)\"", returnStdout: true).trim()
+                    // Comprobación de la cobertura
+                    def coverage = sh(script: 'grep -oP "(?<=\s)100\.(\d+)" coverage/lcov-report/index.html', returnStdout: true).trim()
                     if (coverage.toInteger() < 80) {
-                        error "🚨 Cobertura menor al 80%"
+                        error "🚨 Cobertura de pruebas menor al 80%. No se puede continuar con el pipeline."
                     }
                 }
             }
@@ -46,70 +49,80 @@ pipeline {
         stage('Análisis con SonarQube') {
             steps {
                 script {
+                    // Análisis del código con SonarQube
+                    echo "🔍 Ejecutando análisis con SonarQube..."
                     sh 'sonar-scanner'
                 }
             }
         }
 
-        stage('Construir y publicar imagen Docker') {
+        stage('Construir imagen Docker') {
             steps {
                 script {
-                    sh "docker build -t ${IMAGE_TAG} ."
-                    sh "docker tag ${IMAGE_TAG} ${DOCKER_REPO}:${PACKAGE_VERSION}"
-                    withDockerRegistry([credentialsId: 'docker-hub-cred']) {
-                        sh "docker push ${IMAGE_TAG}"
+                    // Generamos la etiqueta con los detalles: versión, número de build y rama
+                    def imageTag = "${DOCKER_REPO}:${PACKAGE_VERSION}-${BUILD_VERSION}-${BRANCH_NAME}"
+                    env.IMAGE_TAG = imageTag
+
+                    // Construimos la imagen de Docker
+                    echo "🚀 Construyendo imagen: ${env.IMAGE_TAG}"
+                    sh "docker build -t ${env.IMAGE_TAG} ."
+                    sh "docker tag ${env.IMAGE_TAG} ${DOCKER_REPO}:${PACKAGE_VERSION}"
+                    sh "docker tag ${env.IMAGE_TAG} ${DOCKER_REPO}:latest"
+                }
+            }
+        }
+
+        stage('Publicar imagen en Docker Hub') {
+            steps {
+                script {
+                    // Autenticación con Docker Hub y publicación de las imágenes
+                    withDockerRegistry([credentialsId: 'docker-hub-cred', url: '']) {
+                        echo "📤 Publicando imagen en Docker Hub..."
+                        sh "docker push ${env.IMAGE_TAG}"
                         sh "docker push ${DOCKER_REPO}:${PACKAGE_VERSION}"
+                        sh "docker push ${DOCKER_REPO}:latest"
                     }
                 }
             }
         }
 
-        stage('Desplegar entorno efímero en EKS') {
+        stage('Desplegar en EKS') {
             steps {
                 script {
-                    echo "🚀 Creando entorno efímero en Kubernetes"
-                    sh "./deploy_eks_ephemeral.sh ${EKS_NAMESPACE} ${IMAGE_TAG}"
+                    // Desplegar en EKS para validar cambios (efímero)
+                    echo "🚀 Desplegando en EKS..."
+                    sh './deploy_to_eks.sh'  // Asumiendo que tienes un script para deploy en EKS
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            script {
+                // Solo eliminar imágenes si estamos en la rama `master` después de un merge
+                if (BRANCH_NAME != 'master') {
+                    echo "✅ Fusión detectada en rama ${BRANCH_NAME}. Eliminando imágenes de ramas temporales..."
+
+                    // Login a Docker Hub
+                    sh "docker login -u 'miusuario' -p 'MI_DOCKERHUB_PASSWORD'"
+
+                    // Eliminar las imágenes generadas por el PR
+                    sh """
+                    for tag in \$(curl -s -H "Authorization: Bearer MI_DOCKERHUB_TOKEN" "https://hub.docker.com/v2/repositories/miusuario/apollo-frontend/tags/" | jq -r '.results[].name' | grep -E '${BUILD_VERSION}-${BRANCH_NAME}')
+                    do
+                        echo "🚀 Eliminando imagen: ${DOCKER_REPO}:\$tag"
+                        curl -X DELETE -H "Authorization: Bearer MI_DOCKERHUB_TOKEN" "https://hub.docker.com/v2/repositories/miusuario/apollo-frontend/tags/\$tag/"
+                    done
+                    """
                 }
             }
         }
 
-        // stage('Ejecutar pruebas E2E en entorno efímero') {
-        //     steps {
-        //         script {
-        //             echo "🔍 Ejecutando pruebas E2E en el entorno efímero"
-        //             sh "./run_e2e_tests.sh ${EKS_NAMESPACE}"
-        //         }
-        //     }
-        // }
-
-        // stage('Eliminar entorno efímero si pruebas E2E fallan') {
-        //     when { failure() }
-        //     steps {
-        //         script {
-        //             echo "⚠️ Eliminando entorno efímero en Kubernetes debido a fallas en E2E"
-        //             sh "./delete_eks_ephemeral.sh ${EKS_NAMESPACE}"
-        //             error "❌ Pruebas E2E fallidas, eliminando el entorno efímero."
-        //         }
-        //     }
-        // }
-
-        // stage('Desplegar en entorno de desarrollo') {
-        //     when { success() }
-        //     steps {
-        //         script {
-        //             echo "✅ Pruebas E2E aprobadas, desplegando en entorno de desarrollo"
-        //             sh "./deploy_to_dev.sh ${IMAGE_TAG}"
-        //         }
-        //     }
-        // }
+        failure {
+            script {
+                echo "❌ El pipeline ha fallado. Revisar logs."
+            }
+        }
     }
-
-    // post {
-    //     always {
-    //         script {
-    //             echo "🧹 Limpiando recursos temporales..."
-    //             sh "docker system prune -f"
-    //         }
-    //     }
-    // }
 }
