@@ -30,7 +30,7 @@ pipeline {
         }
 
         stage('Contruir imagen Docker') {
-          steps: {
+          steps {
             script {
               // Construir la imagen Docker
               echo "🚀 Construyendo imagen Docker..."
