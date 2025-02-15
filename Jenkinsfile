@@ -10,6 +10,13 @@ pipeline {
     }
 
     stages {
+        stage ('Ver variables de entorno') {
+          steps {
+                script {
+                    echo "🌍 Variables de entorno: ${env}"
+                }
+            }
+        }
         stage('Checkout') {
             steps {
                 checkout scm // Esta es la acción para clonar el repositorio
