@@ -13,7 +13,7 @@ pipeline {
         stage ('Ver variables de entorno') {
           steps {
                 script {
-                    sh 'printenv'  // Comando para imprimir todas las variables de entorno del sistema
+                    sh 'printenv'
                 }
             }
         }
