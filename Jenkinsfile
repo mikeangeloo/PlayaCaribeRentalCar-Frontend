@@ -48,7 +48,7 @@ pipeline {
                         sh 'npm run test -- --coverage'  // Ejecutar pruebas unitarias
 
                         // Evaluar la cobertura de las pruebas
-                        def coverage = sh(script: 'grep -oP "(?<=\s)100\.(\d+)" coverage/lcov-report/index.html', returnStdout: true).trim()
+                        def coverage = sh(script: 'grep -oP "(?<=\\s)100\\.(\\d+)" coverage/lcov-report/index.html', returnStdout: true).trim()
                         if (coverage.toInteger() < 80) {
                             error "🚨 Cobertura de pruebas menor al 80%. No se puede continuar con el pipeline."
                         }
