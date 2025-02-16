@@ -18,7 +18,7 @@ pipeline {
 
         stage('Start') {
           steps {
-            script: {
+            script {
               // Actualizamos el estado inicial a github
               updateGitHubCommitStatus(
                 context: 'ci/jenkins',
