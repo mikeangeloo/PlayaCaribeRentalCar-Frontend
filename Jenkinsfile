@@ -7,6 +7,11 @@ pipeline {
         BUILD_VERSION = "${env.BUILD_NUMBER}"    // Número único de build de Jenkins
         PACKAGE_VERSION = ''                     // Almacenará la versión del package.json
         IMAGE_TAG = ''                           // Etiqueta para la imagen Docker
+        DOCKER_IMAGE = ''                        // Definiendo para guardar la referencia de la imagen de docker
+
+        GITHUB_API_URL = "https://api.github.com"
+        GITHUB_TOKEN = credentials('GITHUB_TOKEN')  // Aquí usas el token configurado como credencial
+        COMMIT_SHA = sh(script: "git rev-parse HEAD", returnStdout: true).trim()  // SHA del commit actual
     }
 
     stages {
@@ -34,7 +39,7 @@ pipeline {
             script {
               // Construir la imagen Docker
               echo "🚀 Construyendo imagen Docker..."
-              def image = docker.build("${DOCKER_REPO}:${PACKAGE_VERSION}-${BUILD_VERSION}-${BRANCH_NAME}")
+              DOCKER_IMAGE = docker.build("${DOCKER_REPO}:${PACKAGE_VERSION}-${BUILD_VERSION}-${BRANCH_NAME}")
             }
           }
         }
@@ -42,10 +47,10 @@ pipeline {
         stage('Ejecutar pruebas unitarias') {
             steps {
                 script {
-                  if (image) {
+                  if (DOCKER_IMAGE) {
                     // Ejecutar las pruebas unitarias con Jest para Angular
                     echo "⚡ Ejecutando pruebas unitarias..."
-                    image.inside {
+                    DOCKER_IMAGE.inside {
                         sh 'npm run test:ci'  // Ejecutar pruebas unitarias
 
                         // Obtener la cobertura global desde el JSON de cobertura
@@ -117,32 +122,33 @@ pipeline {
         // }
     }
 
-    // post {
-    //     success {
-    //         script {
-    //             // Solo eliminar imágenes si estamos en la rama `master` después de un merge
-    //             if (BRANCH_NAME != 'master') {
-    //                 echo "✅ Fusión detectada en rama ${BRANCH_NAME}. Eliminando imágenes de ramas temporales..."
+    post {
+        success {
+            script {
+                echo "✅ El pipeline ha tenido éxito. Actualizando estado en GitHub..."
+                updateGitHubCommitStatus("success", "Build successful")
+            }
+        }
 
-    //                 // Login a Docker Hub
-    //                 sh "docker login -u 'miusuario' -p 'MI_DOCKERHUB_PASSWORD'"
+        failure {
+            script {
+                echo "❌ El pipeline ha fallado. Actualizando estado en GitHub..."
+                updateGitHubCommitStatus("failure", "Build failed")
+            }
+        }
+    }
+}
 
-    //                 // Eliminar las imágenes generadas por el PR
-    //                 sh """
-    //                 for tag in \$(curl -s -H "Authorization: Bearer MI_DOCKERHUB_TOKEN" "https://hub.docker.com/v2/repositories/miusuario/apollo-frontend/tags/" | jq -r '.results[].name' | grep -E '${BUILD_VERSION}-${BRANCH_NAME}')
-    //                 do
-    //                     echo "🚀 Eliminando imagen: ${DOCKER_REPO}:\$tag"
-    //                     curl -X DELETE -H "Authorization: Bearer MI_DOCKERHUB_TOKEN" "https://hub.docker.com/v2/repositories/miusuario/apollo-frontend/tags/\$tag/"
-    //                 done
-    //                 """
-    //             }
-    //         }
-    //     }
-
-    //     failure {
-    //         script {
-    //             echo "❌ El pipeline ha fallado. Revisar logs."
-    //         }
-    //     }
-    // }
+def updateGitHubCommitStatus(String state, String description) {
+    def body = """
+    {
+      "state": "${state}",
+      "target_url": "${env.BUILD_URL}",
+      "description": "${description}",
+      "context": "CI"
+    }
+    """
+    sh """
+    curl -X POST -H "Authorization: token ${GITHUB_TOKEN}" -d '${body}' ${GITHUB_API_URL}/repos/your-username/your-repository/statuses/${COMMIT_SHA}
+    """
 }
