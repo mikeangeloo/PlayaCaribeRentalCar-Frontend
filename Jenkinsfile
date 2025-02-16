@@ -15,6 +15,22 @@ pipeline {
     }
 
     stages {
+
+        stage('Start') {
+          steps: {
+            script: {
+              // Actualizamos el estado inicial a github
+              updateGitHubCommitStatus(
+                context: 'ci/jenkins',
+                state: 'pending',
+                description: 'Pipeline in progress ...'
+              )
+
+              echo "Pipeline iniciado para el commit ${COMMIT_SHA}"
+            }
+          }
+        }
+
         stage('Checkout') {
             steps {
                 checkout scm // Esta es la acción para clonar el repositorio
@@ -51,6 +67,9 @@ pipeline {
                     // Ejecutar las pruebas unitarias con Jest para Angular
                     echo "⚡ Ejecutando pruebas unitarias..."
                     DOCKER_IMAGE.inside {
+                        // Posicionarse en el directorio correcto (aunque /app es el directorio de trabajo)
+                        sh 'pwd'
+                        sh 'ls -la'
                         sh 'npm run test:ci'  // Ejecutar pruebas unitarias
 
                         // Obtener la cobertura global desde el JSON de cobertura
@@ -139,16 +158,36 @@ pipeline {
     }
 }
 
-def updateGitHubCommitStatus(String state, String description) {
-    def body = """
-    {
-      "state": "${state}",
-      "target_url": "${env.BUILD_URL}",
-      "description": "${description}",
-      "context": "CI"
+// Función personalizada para actualizar el estado del commit en GitHub
+def updateGitHubCommitStatus(Map params) {
+    def context = params.context ?: 'ci/jenkins'   // El nombre del contexto (por ejemplo, 'ci/jenkins')
+    def state = params.state ?: 'pending'          // El estado: 'pending', 'success', 'failure'
+    def description = params.description ?: 'Pipeline in progress ...' // Descripción del estado
+
+    // Asegúrate de tener configuradas las credenciales de GitHub en Jenkins
+    def credentialsId = 'GITHUB_TOKEN'  // El ID de las credenciales de GitHub en Jenkins
+
+    withCredentials([usernamePassword(credentialsId: credentialsId, usernameVariable: 'GH_USER', passwordVariable: 'GH_TOKEN')]) {
+        // Construimos la URL de la API de GitHub para actualizar el estado del commit
+         def apiUrl = "https://api.github.com/repos/CodiMex360/apollo-frontend/statuses/${env.GIT_COMMIT}"
+
+        // Realizamos la petición HTTP POST para actualizar el estado del commit
+        def response = httpRequest(
+            acceptType: 'APPLICATION_JSON',
+            contentType: 'APPLICATION_JSON',
+            httpMode: 'POST',
+            url: apiUrl,
+            authentication: credentialsId,
+            requestBody: """
+                {
+                    "state": "${state}",
+                    "context": "${context}",
+                    "description": "${description}",
+                    "target_url": "${env.BUILD_URL}"
+                }
+            """
+        )
+
+        echo "🚀 Estado del commit actualizado: ${state}"
     }
-    """
-    sh """
-    curl -X POST -H "Authorization: token ${GITHUB_TOKEN}" -d '${body}' ${GITHUB_API_URL}/repos/your-username/your-repository/statuses/${COMMIT_SHA}
-    """
 }
