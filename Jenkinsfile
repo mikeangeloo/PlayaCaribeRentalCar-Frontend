@@ -165,7 +165,7 @@ pipeline {
 def updateGitHubCommitStatus(String status) {
     // Función para actualizar el estado del PR en GitHub
     echo "Actualizando el estado del PR en GitHub a: ${status}"
-    withCredentials([string(credentialsId: 'github-token', variable: 'GITHUB_TOKEN')]) {
+    withCredentials([string(credentialsId: 'GITHUB_TOKEN', variable: 'GITHUB_TOKEN')]) {
         sh """
             curl -X POST -H "Authorization: token ${GITHUB_TOKEN}" \
             -d '{"state": "${status}", "target_url": "https://jenkins.yourcompany.com/job/${JOB_NAME}/${BUILD_NUMBER}", "description": "Build ${status}", "context": "CI/CD Pipeline"}' \
