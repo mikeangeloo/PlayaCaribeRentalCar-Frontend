@@ -2,8 +2,8 @@ pipeline {
     agent any
 
     options {
-        // Desactivar la ejecución concurrente de builds
         disableConcurrentBuilds()
+        timeout(time: 30, unit: 'MINUTES') // Cancela si tarda más de 30 min
     }
 
     environment {
