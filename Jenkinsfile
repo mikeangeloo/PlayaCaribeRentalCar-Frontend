@@ -16,20 +16,20 @@ pipeline {
 
     stages {
 
-        stage('Start') {
-          steps {
-            script {
-              // Actualizamos el estado inicial a github
-              updateGitHubCommitStatus(
-                context: 'ci/jenkins',
-                state: 'pending',
-                description: 'Pipeline in progress ...'
-              )
+        // stage('Start') {
+        //   steps {
+        //     script {
+        //       // Actualizamos el estado inicial a github
+        //       updateGitHubCommitStatus(
+        //         context: 'ci/jenkins',
+        //         state: 'pending',
+        //         description: 'Pipeline in progress ...'
+        //       )
 
-              echo "Pipeline iniciado para el commit ${COMMIT_SHA}"
-            }
-          }
-        }
+        //       echo "Pipeline iniciado para el commit ${COMMIT_SHA}"
+        //     }
+        //   }
+        // }
 
         stage('Checkout') {
             steps {
@@ -141,21 +141,21 @@ pipeline {
         // }
     }
 
-    post {
-        success {
-            script {
-                echo "✅ El pipeline ha tenido éxito. Actualizando estado en GitHub..."
-                updateGitHubCommitStatus("success", "Build successful")
-            }
-        }
+    // post {
+    //     success {
+    //         script {
+    //             echo "✅ El pipeline ha tenido éxito. Actualizando estado en GitHub..."
+    //             updateGitHubCommitStatus("success", "Build successful")
+    //         }
+    //     }
 
-        failure {
-            script {
-                echo "❌ El pipeline ha fallado. Actualizando estado en GitHub..."
-                updateGitHubCommitStatus("failure", "Build failed")
-            }
-        }
-    }
+    //     failure {
+    //         script {
+    //             echo "❌ El pipeline ha fallado. Actualizando estado en GitHub..."
+    //             updateGitHubCommitStatus("failure", "Build failed")
+    //         }
+    //     }
+    // }
 }
 
 // Función personalizada para actualizar el estado del commit en GitHub
