@@ -9,27 +9,23 @@ pipeline {
         IMAGE_TAG = ''                           // Etiqueta para la imagen Docker
         DOCKER_IMAGE = ''                        // Definiendo para guardar la referencia de la imagen de docker
 
-        GITHUB_API_URL = "https://api.github.com"
+        GITHUB_REPO = 'CodiMex360/apollo-frontend' // Reemplaza con tu repositorio
         GITHUB_TOKEN = credentials('GITHUB_TOKEN')  // Aquí usas el token configurado como credencial
         COMMIT_SHA = sh(script: "git rev-parse HEAD", returnStdout: true).trim()  // SHA del commit actual
     }
 
     stages {
 
-        // stage('Start') {
-        //   steps {
-        //     script {
-        //       // Actualizamos el estado inicial a github
-        //       updateGitHubCommitStatus(
-        //         context: 'ci/jenkins',
-        //         state: 'pending',
-        //         description: 'Pipeline in progress ...'
-        //       )
+        stage('Start') {
+          steps {
+            script {
+              // Actualizamos el estado inicial a github
+              updateGitHubCommitStatus('pending')
 
-        //       echo "Pipeline iniciado para el commit ${COMMIT_SHA}"
-        //     }
-        //   }
-        // }
+              echo "Pipeline iniciado para el commit ${COMMIT_SHA}"
+            }
+          }
+        }
 
         stage('Checkout') {
             steps {
@@ -141,53 +137,39 @@ pipeline {
         // }
     }
 
-    // post {
-    //     success {
-    //         script {
-    //             echo "✅ El pipeline ha tenido éxito. Actualizando estado en GitHub..."
-    //             updateGitHubCommitStatus("success", "Build successful")
-    //         }
-    //     }
-
-    //     failure {
-    //         script {
-    //             echo "❌ El pipeline ha fallado. Actualizando estado en GitHub..."
-    //             updateGitHubCommitStatus("failure", "Build failed")
-    //         }
-    //     }
-    // }
+   post {
+        success {
+            script {
+                // Actualizamos el estado del PR a 'success'
+                echo 'Pipeline exitoso. Actualizando estado en GitHub.'
+                updateGitHubCommitStatus('success')
+            }
+        }
+        failure {
+            script {
+                // Actualizamos el estado del PR a 'failure'
+                echo 'Pipeline fallido. Actualizando estado en GitHub.'
+                updateGitHubCommitStatus('failure')
+            }
+        }
+        always {
+            script {
+                // Este paso siempre se ejecutará al final, independientemente del resultado
+                echo 'Finalizando el pipeline.'
+            }
+        }
+   }
 }
 
 // Función personalizada para actualizar el estado del commit en GitHub
-def updateGitHubCommitStatus(Map params) {
-    def context = params.context ?: 'ci/jenkins'   // El nombre del contexto (por ejemplo, 'ci/jenkins')
-    def state = params.state ?: 'pending'          // El estado: 'pending', 'success', 'failure'
-    def description = params.description ?: 'Pipeline in progress ...' // Descripción del estado
-
-    // Asegúrate de tener configuradas las credenciales de GitHub en Jenkins
-    def credentialsId = 'GITHUB_TOKEN'  // El ID de las credenciales de GitHub en Jenkins
-
-    withCredentials([usernamePassword(credentialsId: credentialsId, usernameVariable: 'GH_USER', passwordVariable: 'GH_TOKEN')]) {
-        // Construimos la URL de la API de GitHub para actualizar el estado del commit
-         def apiUrl = "https://api.github.com/repos/CodiMex360/apollo-frontend/statuses/${env.GIT_COMMIT}"
-
-        // Realizamos la petición HTTP POST para actualizar el estado del commit
-        def response = httpRequest(
-            acceptType: 'APPLICATION_JSON',
-            contentType: 'APPLICATION_JSON',
-            httpMode: 'POST',
-            url: apiUrl,
-            authentication: credentialsId,
-            requestBody: """
-                {
-                    "state": "${state}",
-                    "context": "${context}",
-                    "description": "${description}",
-                    "target_url": "${env.BUILD_URL}"
-                }
-            """
-        )
-
-        echo "🚀 Estado del commit actualizado: ${state}"
+def updateGitHubCommitStatus(String status) {
+    // Función para actualizar el estado del PR en GitHub
+    echo "Actualizando el estado del PR en GitHub a: ${status}"
+    withCredentials([string(credentialsId: 'github-token', variable: 'GITHUB_TOKEN')]) {
+        sh """
+            curl -X POST -H "Authorization: token ${GITHUB_TOKEN}" \
+            -d '{"state": "${status}", "target_url": "https://jenkins.yourcompany.com/job/${JOB_NAME}/${BUILD_NUMBER}", "description": "Build ${status}", "context": "CI/CD Pipeline"}' \
+            https://api.github.com/repos/${GITHUB_REPO}/statuses/${GIT_COMMIT}
+        """
     }
 }
