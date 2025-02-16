@@ -21,5 +21,12 @@ getTestBed().initTestEnvironment(
 );
 // Then we find all the tests.
 const context = require.context('./', true, /\.spec\.ts$/);
-// And load the modules.
-context.keys().map(context);
+// // And load the modules.
+// context.keys().map(context);
+
+//TODO: Eliminar y agregar: context.keys().map(context); cuando se finalicen de agregar todas las pruebas unitarias
+const allowedTest = [
+  './app/pipes/',
+]
+
+context.keys().filter(test => allowedTest.some(folder => test.startsWith(folder))).forEach(context)

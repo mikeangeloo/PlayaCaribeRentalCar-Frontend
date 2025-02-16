@@ -18,7 +18,6 @@ import { NgxSpinnerService } from "ngx-spinner";
 import { Router } from '@angular/router';
 import { ReservaI } from 'src/app/interfaces/reservas/reserva.interface';
 import { ReservasFormComponent } from '../../../../modules/contratos/contrato/reservas/reservas-form/reservas-form.component';
-import { threadId } from 'worker_threads';
 import {ContratosStatus, ContratosStatusE} from '../../../../enums/contratos-status.enum';
 import {CobranzaTipoE} from '../../../../enums/cobranza-tipo.enum';
 import { DateConv } from 'src/app/helpers/date-conv';

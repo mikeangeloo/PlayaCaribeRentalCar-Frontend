@@ -42,17 +42,25 @@ pipeline {
         stage('Ejecutar pruebas unitarias') {
             steps {
                 script {
+                  if (image) {
                     // Ejecutar las pruebas unitarias con Jest para Angular
                     echo "⚡ Ejecutando pruebas unitarias..."
                     image.inside {
-                        sh 'npm run test -- --coverage'  // Ejecutar pruebas unitarias
+                        sh 'npm run test:ci'  // Ejecutar pruebas unitarias
 
-                        // Evaluar la cobertura de las pruebas
-                        def coverage = sh(script: 'grep -oP "(?<=\\s)100\\.(\\d+)" coverage/lcov-report/index.html', returnStdout: true).trim()
-                        if (coverage.toInteger() < 80) {
+                        // Obtener la cobertura global desde el JSON de cobertura
+                        def coverageJson = readJSON(file: 'coverage/coverage-summary.json')
+                        def coverage = coverageJson.total.statements.pct  // Extrae el porcentaje de cobertura total
+
+                        echo "📊 Cobertura de código: ${coverage}%"
+
+                        if (coverage.toFloat() < 80) {
                             error "🚨 Cobertura de pruebas menor al 80%. No se puede continuar con el pipeline."
                         }
                     }
+                  } else {
+                    error "❌ La imagen Docker no se construyó correctamente. El pipeline se detiene."
+                  }
                 }
             }
         }

@@ -8,7 +8,7 @@ import { ContratoI } from 'src/app/interfaces/contratos/contrato.interface';
 import { ContratosStatus } from 'src/app/enums/contratos-status.enum';
 import {VehiculosI} from '../../../../interfaces/catalogo-vehiculos/vehiculos.interface';
 import {SearchPayLoadI} from '../../../search-controls/search-controls.component';
-var Fraction = require('fractions');
+import Fraction from 'fractions'
 
 interface ReporteExcedenteKMGasI {
   fecha: Date,
