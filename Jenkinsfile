@@ -1,6 +1,11 @@
 pipeline {
     agent any
 
+    options {
+        // Desactivar la ejecución concurrente de builds
+        disableConcurrentBuilds()
+    }
+
     environment {
         DOCKER_REPO = "mikeangeloo/apollo-frontend"  // Cambiar con tu repositorio de Docker
         BRANCH_NAME = sh(script: "echo ${env.GIT_BRANCH} | sed 's|^origin/||'", returnStdout: true).trim()
