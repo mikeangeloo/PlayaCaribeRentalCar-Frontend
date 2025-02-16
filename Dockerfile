@@ -19,6 +19,9 @@ RUN npm run build -- --prod
 # Especificamos la imagen de nginx a utilizar
 FROM nginx:latest AS runtime
 
+# Copiar node_modules desde la etapa de construcción
+COPY --from=build /app/node_modules /usr/share/nginx/html/node_modules
+
 # Copiamos los ficheros del build anterior a la carpeta publica html de nginx
 COPY --from=build /app/www /usr/share/nginx/html
 
