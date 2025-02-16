@@ -178,7 +178,7 @@ def updateGitHubCommitStatus(String status) {
     withCredentials([string(credentialsId: 'GITHUB_TOKEN', variable: 'GITHUB_TOKEN')]) {
         sh """
             curl -X POST -H "Authorization: token ${GITHUB_TOKEN}" \
-            -d '{"state": "${status}", "target_url": "${JENKINS_URL}/job/view/change-requests/job/${JOB_NAME}/${BUILD_NUMBER}", "description": "Build ${status}", "context": "CI/CD Pipeline"}' \
+            -d '{"state": "${status}", "target_url": "${JENKINS_URL}/job/${JOB_NAME}/view/change-requests/job/${BUILD_NUMBER}", "description": "Build ${status}", "context": "CI/CD Pipeline"}' \
             https://api.github.com/repos/${GITHUB_REPO}/statuses/${GIT_COMMIT}
         """
     }
