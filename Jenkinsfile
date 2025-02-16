@@ -61,7 +61,7 @@ pipeline {
                 script {
                   if (DOCKER_IMAGE) {
                     // Ejecutar las pruebas unitarias con Jest para Angular
-                    echo "⚡ Ejecutando pruebas unitarias..."
+                    echo "⚡ Ejecutando pruebas unitarias ..."
                     DOCKER_IMAGE.inside {
                         // Posicionarse en el directorio correcto (aunque /app es el directorio de trabajo)
                         sh 'pwd'
