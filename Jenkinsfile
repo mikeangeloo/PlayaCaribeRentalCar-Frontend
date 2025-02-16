@@ -17,7 +17,7 @@ pipeline {
     stages {
 
         stage('Start') {
-          steps: {
+          steps {
             script: {
               // Actualizamos el estado inicial a github
               updateGitHubCommitStatus(
