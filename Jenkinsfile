@@ -52,6 +52,7 @@ pipeline {
         }
 
         stage('Contruir imagen Docker') {
+          agent { label 'docker-agent' }
           steps {
             script {
               // Construir la imagen Docker
@@ -62,6 +63,7 @@ pipeline {
         }
 
         stage('Ejecutar pruebas unitarias') {
+            agent { label 'docker-agent' }
             steps {
                 script {
                   if (DOCKER_IMAGE) {
