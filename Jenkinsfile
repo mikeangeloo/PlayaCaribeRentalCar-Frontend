@@ -121,7 +121,7 @@ pipeline {
                 script {
                     // Autenticación con Docker Hub y publicación de las imágenes
                     echo "📤 Publicando imagen en Docker Hub..."
-                    withDockerRegistry([credentialsId: 'docker-hub-cred', url: '']) {
+                    withDockerRegistry([credentialsId: 'DOCKER_HUB_CRED', url: '']) {
                         echo "📤 Publicando imagen en Docker Hub..."
                         sh "docker push ${env.IMAGE_TAG}"
                         sh "docker push ${DOCKER_REPO}:${PACKAGE_VERSION}"
