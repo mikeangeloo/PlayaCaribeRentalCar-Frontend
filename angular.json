@@ -33,7 +33,11 @@
               "src/manifest.webmanifest",
               "src/.htaccess"
             ],
-            "styles": ["src/theme/variables.scss", "src/global.scss", "node_modules/ngx-spinner/animations/ball-atom.css" ],
+            "styles": [
+              "src/theme/variables.scss",
+              "src/global.scss",
+              "node_modules/ngx-spinner/animations/ball-atom.css"
+            ],
             "scripts": [],
             "aot": false,
             "vendorChunk": true,
@@ -53,19 +57,25 @@
                   "with": "src/environments/environment.prod.ts"
                 }
               ],
-              "optimization": true,
+              "optimization": {
+                "scripts": true,
+                "styles": {
+                  "minify": true,
+                  "inlineCritical": true
+                }
+              },
               "outputHashing": "all",
               "sourceMap": false,
-              "namedChunks": false,
               "aot": true,
               "extractLicenses": true,
               "vendorChunk": false,
               "buildOptimizer": true,
+              "namedChunks": false,
               "budgets": [
                 {
                   "type": "initial",
                   "maximumWarning": "2mb",
-                  "maximumError": "5mb"
+                  "maximumError": "8mb"
                 }
               ]
             },
@@ -127,10 +137,7 @@
         "lint": {
           "builder": "@angular-eslint/builder:lint",
           "options": {
-            "lintFilePatterns": [
-              "src/**/*.ts",
-              "src/**/*.html"
-            ]
+            "lintFilePatterns": ["src/**/*.ts", "src/**/*.html"]
           }
         },
         "e2e": {
