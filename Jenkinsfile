@@ -46,7 +46,7 @@ pipeline {
                 script {
                     // Instalar jq en el contenedor de Jenkins (si está basado en Alpine)
                     echo "🛠 Instalando jq..."
-                    sh 'apk add --no-cache jq'
+                    sh 'apt-get update && apt-get install -y jq'
                 }
             }
         }
