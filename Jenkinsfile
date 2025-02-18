@@ -123,13 +123,15 @@ pipeline {
             agent { label 'docker-agent' }
             steps {
                 script {
-                    // Autenticación con Docker Hub y publicación de las imágenes
-                    echo "📤 Publicando imagen en Docker Hub..."
-                    withDockerRegistry([credentialsId: 'DOCKER_HUB_CRED', url: '']) {
+                    if (DOCKER_IMAGE) {
+                       // Autenticación con Docker Hub y publicación de las imágenes
                         echo "📤 Publicando imagen en Docker Hub..."
-                        sh "docker push ${env.IMAGE_TAG}"
-                        sh "docker push ${DOCKER_REPO}:${PACKAGE_VERSION}"
-                        sh "docker push ${DOCKER_REPO}:latest"
+                        withDockerRegistry([credentialsId: 'DOCKER_HUB_CRED']) {
+                            echo "📤 Publicando imagen en Docker Hub..."
+                             DOCKER_IMAGE.push()
+                        }
+                    } else {
+                       error "❌ La imagen Docker no se construyó correctamente. El pipeline se detiene."
                     }
                 }
             }
