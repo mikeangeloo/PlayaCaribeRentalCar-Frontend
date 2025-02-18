@@ -62,35 +62,36 @@ pipeline {
           }
         }
 
-        stage('Ejecutar pruebas unitarias') {
-            agent { label 'docker-agent' }
-            steps {
-                script {
-                  if (DOCKER_IMAGE) {
-                    // Ejecutar las pruebas unitarias con Jest para Angular
-                    echo "⚡ Ejecutando pruebas unitarias ..."
-                    DOCKER_IMAGE.inside {
-                        // Posicionarse en el directorio correcto (aunque /app es el directorio de trabajo)
-                        sh 'pwd'
-                        sh 'ls -la'
-                        sh 'npm run test:ci'  // Ejecutar pruebas unitarias
+        //Descomentar en AWS
+        // stage('Ejecutar pruebas unitarias') {
+        //     agent { label 'docker-agent' }
+        //     steps {
+        //         script {
+        //           if (DOCKER_IMAGE) {
+        //             // Ejecutar las pruebas unitarias con Jest para Angular
+        //             echo "⚡ Ejecutando pruebas unitarias ..."
+        //             DOCKER_IMAGE.inside {
+        //                 // Posicionarse en el directorio correcto (aunque /app es el directorio de trabajo)
+        //                 sh 'pwd'
+        //                 sh 'ls -la'
+        //                 sh 'npm run test:ci'  // Ejecutar pruebas unitarias
 
-                        // Obtener la cobertura global desde el JSON de cobertura
-                        def coverageJson = readJSON(file: 'coverage/coverage-summary.json')
-                        def coverage = coverageJson.total.statements.pct  // Extrae el porcentaje de cobertura total
+        //                 // Obtener la cobertura global desde el JSON de cobertura
+        //                 def coverageJson = readJSON(file: 'coverage/coverage-summary.json')
+        //                 def coverage = coverageJson.total.statements.pct  // Extrae el porcentaje de cobertura total
 
-                        echo "📊 Cobertura de código: ${coverage}%"
+        //                 echo "📊 Cobertura de código: ${coverage}%"
 
-                        if (coverage.toFloat() < 80) {
-                            error "🚨 Cobertura de pruebas menor al 80%. No se puede continuar con el pipeline."
-                        }
-                    }
-                  } else {
-                    error "❌ La imagen Docker no se construyó correctamente. El pipeline se detiene."
-                  }
-                }
-            }
-        }
+        //                 if (coverage.toFloat() < 80) {
+        //                     error "🚨 Cobertura de pruebas menor al 80%. No se puede continuar con el pipeline."
+        //                 }
+        //             }
+        //           } else {
+        //             error "❌ La imagen Docker no se construyó correctamente. El pipeline se detiene."
+        //           }
+        //         }
+        //     }
+        // }
 
         // stage('Análisis con SonarQube') {
         //     steps {
@@ -161,7 +162,7 @@ pipeline {
         }
          aborted {
             script {
-                updateGitHubCommitStatus('cancelled')  // Actualiza el estado como cancelado
+                updateGitHubCommitStatus('error')  // Actualiza el estado como cancelado
             }
         }
         always {
@@ -180,7 +181,7 @@ def updateGitHubCommitStatus(String status) {
     withCredentials([string(credentialsId: 'GITHUB_TOKEN', variable: 'GITHUB_TOKEN')]) {
         sh """
             curl -X POST -H "Authorization: token ${GITHUB_TOKEN}" \
-            -d '{"state": "${status}", "target_url": "${JENKINS_URL}/job/${JOB_NAME}/view/change-requests/job/${BUILD_NUMBER}", "description": "Build ${status}", "context": "CI/CD Pipeline"}' \
+            -d '{"state": "${status}", "target_url": "${JENKINS_URL}job/${JOB_NAME}/${BUILD_NUMBER}", "description": "Build ${status}", "context": "CI/CD Pipeline"}' \
             https://api.github.com/repos/${GITHUB_REPO}/statuses/${GIT_COMMIT}
         """
     }
