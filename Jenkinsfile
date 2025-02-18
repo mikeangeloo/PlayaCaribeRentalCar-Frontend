@@ -41,16 +41,6 @@ pipeline {
             }
         }
 
-        stage('Instalar jq') {
-            steps {
-                script {
-                    // Instalar jq en el contenedor de Jenkins (si está basado en Alpine)
-                    echo "🛠 Instalando jq..."
-                    sh 'apt-get update && apt-get install -y jq'
-                }
-            }
-        }
-
         stage('Obtener versión del package.json') {
             steps {
                 script {
