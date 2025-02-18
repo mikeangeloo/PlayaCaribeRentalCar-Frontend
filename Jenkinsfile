@@ -120,6 +120,7 @@ pipeline {
         // }
 
         stage('Publicar imagen en Docker Hub') {
+            agent { label 'docker-agent' }
             steps {
                 script {
                     // Autenticación con Docker Hub y publicación de las imágenes
