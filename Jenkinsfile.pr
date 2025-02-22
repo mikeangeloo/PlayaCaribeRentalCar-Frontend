@@ -27,16 +27,21 @@ pipeline {
         stage('Validar si es un PR') {
           steps {
             script {
-              PR_NUMBER = "${env.CHANGE_ID}" ?: ''
+              // Asignación segura del número de PR
+              def PR_NUMBER = env.CHANGE_ID ?: ''
+
               echo "CHANGE_ID: ${env.CHANGE_ID} // GIT_BRANCH: ${env.GIT_BRANCH}"
-              echo "Variables de entorno en Jenkins:"
-                env.getEnvironment().each { key, value ->
-                    echo "${key} = ${value}"
-                }
-              if(!PR_NUMBER) {
-                error "🚨 Este pipeline solo se ejecuta en Pull Requests. Deteniendo ejecución."
+
+              echo "🔎 Variables de entorno en Jenkins:"
+              env.each { key, value ->
+                  echo "${key} = ${value}"
+              }
+
+              // Validación: si no es un PR, detener ejecución
+              if (!PR_NUMBER.trim()) {
+                  error "🚨 Este pipeline solo se ejecuta en Pull Requests. Deteniendo ejecución."
               } else {
-                echo "✅ Ejecutando pipeline para PR #${PR_NUMBER}"
+                  echo "✅ Ejecutando pipeline para PR #${PR_NUMBER}"
               }
             }
           }
