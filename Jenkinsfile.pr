@@ -32,10 +32,8 @@ pipeline {
 
               echo "CHANGE_ID: ${env.CHANGE_ID} // GIT_BRANCH: ${env.GIT_BRANCH}"
 
-              echo "🔎 Variables de entorno en Jenkins:"
-              env.each { key, value ->
-                  echo "${key} = ${value}"
-              }
+              echo "🔍 Listando variables de entorno con printenv:"
+              sh 'printenv'
 
               // Validación: si no es un PR, detener ejecución
               if (!PR_NUMBER.trim()) {
@@ -187,7 +185,17 @@ pipeline {
             }
         }
         cleanup {
-          sh "./scripts/delete.sh pr-${BUILD_VERSION} ${IMAGE_TAG} true"
+          when {
+            expression {
+              // Verificar si el PR ha sido cerrado o fusionado
+              return env.CHANGE_ID != null && (env.PULLREQUEST_STATE == 'merged' || env.PULLREQUEST_STATE == 'closed')
+            }
+          }
+          steps {
+            script {
+                sh "./scripts/delete.sh pr-${BUILD_VERSION} ${IMAGE_TAG} true"
+            }
+          }
         }
    }
 }
