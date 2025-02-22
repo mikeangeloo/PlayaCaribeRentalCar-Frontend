@@ -28,7 +28,7 @@ pipeline {
           steps {
             script {
               PR_NUMBER = "${env.CHANGE_ID}" ?: ''
-              echo "PR_NUMBER: ${PR_NUMBER} // BRANCH_NAME: ${env.BRANCH_NAME}"
+              echo "CHANGE_ID: ${env.CHANGE_ID} // GIT_BRANCH: ${env.GIT_BRANCH}"
               if(!PR_NUMBER) {
                 error "🚨 Este pipeline solo se ejecuta en Pull Requests. Deteniendo ejecución."
               } else {
