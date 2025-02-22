@@ -19,7 +19,7 @@ pipeline {
         IMAGE_TAG = ''                           // Etiqueta para la imagen Docker
         DOCKER_IMAGE = ''                        // Definiendo para guardar la referencia de la imagen de docker
 
-        PR_NUMBER = env.CHANGE_ID ?: ''  // Obtiene el número del PR
+        PR_NUMBER = "${env.CHANGE_ID}" ?: ''  // Obtiene el número del PR
     }
 
     stages {
