@@ -23,34 +23,19 @@ pipeline {
     stages {
 
 
-      stage('Detectar PR con API') {
-          steps {
-              script {
-                  def prNumber = getPRNumber()
-                  if (prNumber) {
-                      env.CHANGE_ID = prNumber
-                      echo "✅ Detectado PR: #${prNumber}"
-                  } else {
-                      echo "⚠️ No se detectó PR asociado."
-                  }
-              }
-          }
-      }
-
-        stage('Validar si es un PR') {
-          steps {
-            script {
-              def jobName = env.JOB_NAME ?: ''
-
-              echo "🔍 JOB_NAME: ${jobName}"
-
-              if (jobName.endsWith("-pr")) {
-                  echo "✅ Detectado como Pull Request. Continuando con el pipeline..."
-              } else {
-                  error "🚨 No es un Pull Request. Deteniendo ejecución."
-              }
+        stage('Detectar PR con API') {
+            steps {
+                script {
+                    def prData = getPRData()
+                    if (prData) {
+                        env.CHANGE_ID = prData.number
+                        env.TARGET_BRANCH = prData.targetBranch
+                        echo "✅ Detectado PR: #${prData.number} con la rama de destino: ${prData.targetBranch}"
+                    } else {
+                        error "🚨 No se detectó PR asociado."
+                    }
+                }
             }
-          }
         }
 
         stage('Start') {
@@ -164,6 +149,30 @@ pipeline {
                 }
             }
         }
+
+        stage('Eliminar Entorno Efímero') {
+            when {
+                expression {
+                    // Si estamos en la rama destino, el PR fue fusionado
+                    return env.GIT_BRANCH == "origin/${env.TARGET_BRANCH}"
+                }
+            }
+            steps {
+                script {
+                    def namespace = "pr-${env.BUILD_VERSION}"
+                    def imageTag = "${env.BUILD_VERSION}"
+                    def deleteImage = "True"
+
+                    echo "🔴 Eliminando entorno: ${namespace} con imagen ${imageTag}"
+
+                    sh """
+                        chmod +x ./scripts/delete.sh
+                        ./scripts/delete.sh ${namespace} ${imageTag} ${deleteImage}
+                    """
+                }
+            }
+        }
+
     }
 
    post {
@@ -221,11 +230,20 @@ def updateGitHubCommitStatus(String status) {
     }
 }
 
-def getPRNumber() {
+def getPRData() {
     def response = sh(script: """
         curl -s -H "Authorization: token ${env.GITHUB_TOKEN}" \\
-        "https://api.github.com/repos/${env.GITHUB_REPO}/pulls?state=open" | jq -r '.[] | select(.head.sha == "${env.GIT_COMMIT}") | .number'
+        "https://api.github.com/repos/${env.GITHUB_REPO}/pulls?state=open" | jq -r '.[] | select(.head.sha == "${env.GIT_COMMIT}") | {number, base}'
     """, returnStdout: true).trim()
 
-    return response ?: null
+    // Parseamos el JSON y extraemos el número y la rama de destino (base.ref)
+    def prData = readJSON text: response
+    if (prData) {
+        return [
+            number: prData.number,
+            targetBranch: prData.base.ref
+        ]
+    } else {
+        return null
+    }
 }
