@@ -22,13 +22,20 @@ pipeline {
 
     stages {
 
-      stage('Debugging Variables') {
-            steps {
-                script {
-                    sh 'env | sort'
-                }
-            }
-        }
+
+      stage('Detectar PR con API') {
+          steps {
+              script {
+                  def prNumber = getPRNumber()
+                  if (prNumber) {
+                      env.CHANGE_ID = prNumber
+                      echo "✅ Detectado PR: #${prNumber}"
+                  } else {
+                      echo "⚠️ No se detectó PR asociado."
+                  }
+              }
+          }
+      }
 
         stage('Validar si es un PR') {
           steps {
@@ -212,4 +219,13 @@ def updateGitHubCommitStatus(String status) {
             https://api.github.com/repos/${GITHUB_REPO}/statuses/${GIT_COMMIT}
         """
     }
+}
+
+def getPRNumber() {
+    def response = sh(script: """
+        curl -s -H "Authorization: token ${env.GITHUB_TOKEN}" \\
+        "https://api.github.com/repos/${env.GITHUB_REPO}/pulls?state=open" | jq -r '.[] | select(.head.sha == "${env.GIT_COMMIT}") | .number'
+    """, returnStdout: true).trim()
+
+    return response ?: null
 }
