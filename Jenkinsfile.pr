@@ -29,7 +29,10 @@ pipeline {
             script {
               PR_NUMBER = "${env.CHANGE_ID}" ?: ''
               echo "CHANGE_ID: ${env.CHANGE_ID} // GIT_BRANCH: ${env.GIT_BRANCH}"
-              echo "ENV: ${env}"
+              echo "Variables de entorno en Jenkins:"
+                env.getEnvironment().each { key, value ->
+                    echo "${key} = ${value}"
+                }
               if(!PR_NUMBER) {
                 error "🚨 Este pipeline solo se ejecuta en Pull Requests. Deteniendo ejecución."
               } else {
