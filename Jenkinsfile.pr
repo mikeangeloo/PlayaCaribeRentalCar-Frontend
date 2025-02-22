@@ -217,6 +217,7 @@ def updateGitHubCommitStatus(String status) {
     }
 }
 
+
 def getPRData() {
     def response = sh(script: """
         curl -s -H "Authorization: token ${env.GITHUB_TOKEN}" \\
@@ -225,7 +226,7 @@ def getPRData() {
 
     // Procesamos la respuesta JSON para obtener los valores específicos
     def prNumber = sh(script: "echo '${response}' | jq -r '.number'", returnStdout: true).trim()
-    def targetBranch = sh(script: "echo '${response}' | jq -r '.base.ref'", returnStdout: true).trim()
+    def targetBranch = sh(script: "echo '${response}' | jq -r '.base'", returnStdout: true).trim() // Corregido aquí
 
     if (prNumber && targetBranch) {
         return [
