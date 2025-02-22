@@ -18,9 +18,24 @@ pipeline {
         PACKAGE_VERSION = ''                     // Almacenará la versión del package.json
         IMAGE_TAG = ''                           // Etiqueta para la imagen Docker
         DOCKER_IMAGE = ''                        // Definiendo para guardar la referencia de la imagen de docker
+
+        PR_NUMBER = env.CHANGE_ID ?: ''  // Obtiene el número del PR
     }
 
     stages {
+
+        stage('Validar si es un PR') {
+          steps {
+            script {
+              echo "PR_NUMBER: ${PR_NUMBER} // BRANCH_NAME: ${env.BRANCH_NAME}"
+              if(!PR_NUMBER) {
+                error "🚨 Este pipeline solo se ejecuta en Pull Requests. Deteniendo ejecución."
+              } else {
+                echo "✅ Ejecutando pipeline para PR #${PR_NUMBER}"
+              }
+            }
+          }
+        }
 
         stage('Start') {
           steps {
