@@ -8,7 +8,7 @@ pipeline {
 
     environment {
         DOCKER_REPO = "mikeangeloo/apollo-frontend"  // Cambiar con tu repositorio de Docker
-        BRANCH_NAME = sh(script: "echo ${env.GIT_BRANCH} | sed 's|^origin/||'", returnStdout: true).trim()
+        BRANCH_NAME_2 = sh(script: "echo ${env.GIT_BRANCH} | sed 's|^origin/||'", returnStdout: true).trim()
         BUILD_VERSION = "${env.BUILD_NUMBER}"    // Número único de build de Jenkins
 
         GITHUB_REPO = 'CodiMex360/apollo-frontend' // Reemplaza con tu repositorio
@@ -62,7 +62,7 @@ pipeline {
             steps {
                 checkout scm // Esta es la acción para clonar el repositorio
                 script {
-                    echo "📥 Se han bajado los cambios de la rama ${BRANCH_NAME}"
+                    echo "📥 Se han bajado los cambios de la rama ${BRANCH_NAME_2}"
                 }
             }
         }
@@ -74,7 +74,7 @@ pipeline {
                     PACKAGE_VERSION = sh(script: "jq -r .version package.json", returnStdout: true).trim()
                     echo "📌 Versión extraída: ${PACKAGE_VERSION}"
 
-                    IMAGE_TAG = "${DOCKER_REPO}:${PACKAGE_VERSION}-${BUILD_VERSION}-${BRANCH_NAME}"
+                    IMAGE_TAG = "${DOCKER_REPO}:${PACKAGE_VERSION}-${BUILD_VERSION}-${BRANCH_NAME_2}"
                 }
             }
         }
