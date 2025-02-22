@@ -220,15 +220,17 @@ def updateGitHubCommitStatus(String status) {
 def getPRData() {
     def response = sh(script: """
         curl -s -H "Authorization: token ${env.GITHUB_TOKEN}" \\
-        "https://api.github.com/repos/${env.GITHUB_REPO}/pulls?state=open" | jq -r '.[] | select(.head.sha == "${env.GIT_COMMIT}") | {number, base}'
+        "https://api.github.com/repos/${env.GITHUB_REPO}/pulls?state=open" | jq -r '.[] | select(.head.sha == "${env.GIT_COMMIT}") | {number, base: .base.ref}'
     """, returnStdout: true).trim()
 
-    // Parseamos el JSON y extraemos el número y la rama de destino (base.ref)
-    def prData = readJSON text: response
-    if (prData) {
+    // Procesamos la respuesta JSON con jq para obtener los datos necesarios
+    def prNumber = sh(script: "echo ${response} | jq -r '.number'", returnStdout: true).trim()
+    def targetBranch = sh(script: "echo ${response} | jq -r '.base.ref'", returnStdout: true).trim()
+
+    if (prNumber && targetBranch) {
         return [
-            number: prData.number,
-            targetBranch: prData.base.ref
+            number: prNumber,
+            targetBranch: targetBranch
         ]
     } else {
         return null
