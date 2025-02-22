@@ -8,7 +8,7 @@ pipeline {
 
     environment {
         DOCKER_REPO = "mikeangeloo/apollo-frontend"  // Cambiar con tu repositorio de Docker
-        BRANCH_NAME_2 = sh(script: "echo ${env.GIT_BRANCH} | sed 's|^origin/||'", returnStdout: true).trim()
+        BRANCH_NAME = sh(script: "echo ${env.GIT_BRANCH} | sed 's|^origin/||'", returnStdout: true).trim()
         BUILD_VERSION = "${env.BUILD_NUMBER}"    // Número único de build de Jenkins
 
         GITHUB_REPO = 'CodiMex360/apollo-frontend' // Reemplaza con tu repositorio
@@ -18,30 +18,29 @@ pipeline {
         PACKAGE_VERSION = ''                     // Almacenará la versión del package.json
         IMAGE_TAG = ''                           // Etiqueta para la imagen Docker
         DOCKER_IMAGE = ''                        // Definiendo para guardar la referencia de la imagen de docker
-
-        PR_NUMBER = ''                           // Obtiene el número del PR
     }
 
     stages {
 
+      stage('Debugging Variables') {
+            steps {
+                script {
+                    sh 'env | sort'
+                }
+            }
+        }
+
         stage('Validar si es un PR') {
           steps {
             script {
-              // Asignación segura del número de PR
-              def PR_NUMBER = env.CHANGE_ID ?: ''
+              def jobName = env.JOB_NAME ?: ''
 
-              echo "CHANGE_ID: ${env.CHANGE_ID} // GIT_BRANCH: ${env.GIT_BRANCH} // BRANCH_NAME: ${env.BRANCH_NAME} // CHANGE_BRANCH: ${env.CHANGE_BRANCH}"
+              echo "🔍 JOB_NAME: ${jobName}"
 
-              echo "🔍 Listando variables de entorno con printenv:"
-              sh 'printenv'
-
-              echo "GITHUB_PR_URL: ${GITHUB_PR_URL}"
-
-              // Validación: si no es un PR, detener ejecución
-              if (!PR_NUMBER.trim()) {
-                  error "🚨 Este pipeline solo se ejecuta en Pull Requests. Deteniendo ejecución."
+              if (jobName.endsWith("-pr")) {
+                  echo "✅ Detectado como Pull Request. Continuando con el pipeline..."
               } else {
-                  echo "✅ Ejecutando pipeline para PR #${PR_NUMBER}"
+                  error "🚨 No es un Pull Request. Deteniendo ejecución."
               }
             }
           }
@@ -62,7 +61,7 @@ pipeline {
             steps {
                 checkout scm // Esta es la acción para clonar el repositorio
                 script {
-                    echo "📥 Se han bajado los cambios de la rama ${BRANCH_NAME_2}"
+                    echo "📥 Se han bajado los cambios de la rama ${BRANCH_NAME}"
                 }
             }
         }
@@ -74,7 +73,7 @@ pipeline {
                     PACKAGE_VERSION = sh(script: "jq -r .version package.json", returnStdout: true).trim()
                     echo "📌 Versión extraída: ${PACKAGE_VERSION}"
 
-                    IMAGE_TAG = "${DOCKER_REPO}:${PACKAGE_VERSION}-${BUILD_VERSION}-${BRANCH_NAME_2}"
+                    IMAGE_TAG = "${DOCKER_REPO}:${PACKAGE_VERSION}-${BUILD_VERSION}-${BRANCH_NAME}"
                 }
             }
         }
