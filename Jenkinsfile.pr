@@ -29,8 +29,7 @@ pipeline {
             script {
               PR_NUMBER = "${env.CHANGE_ID}" ?: ''
               echo "CHANGE_ID: ${env.CHANGE_ID} // GIT_BRANCH: ${env.GIT_BRANCH}"
-              def branchName = sh(script: 'git rev-parse --abbrev-ref HEAD', returnStdout: true).trim()
-              echo "GIT_BRANCH: ${branchName}"
+              echo "ENV: ${env}"
               if(!PR_NUMBER) {
                 error "🚨 Este pipeline solo se ejecuta en Pull Requests. Deteniendo ejecución."
               } else {
@@ -191,7 +190,7 @@ def updateGitHubCommitStatus(String status) {
     echo "Actualizando el estado del PR en GitHub a: ${status}"
     withCredentials([string(credentialsId: 'GITHUB_TOKEN', variable: 'GITHUB_TOKEN')]) {
         sh """
-            curl -X POST -H "Authorization: token $GITHUB_TOKEN" \
+            curl -X POST -H "Authorization: token ${GITHUB_TOKEN}" \
             -d '{"state": "${status}", "target_url": "${JENKINS_URL}job/${JOB_NAME}/${BUILD_NUMBER}", "description": "Build ${status}", "context": "CI/CD Pipeline"}' \
             https://api.github.com/repos/${GITHUB_REPO}/statuses/${GIT_COMMIT}
         """
