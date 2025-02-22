@@ -9,7 +9,7 @@ pipeline {
     environment {
         DOCKER_REPO = "mikeangeloo/apollo-frontend"  // Cambiar con tu repositorio de Docker
         BRANCH_NAME = sh(script: "echo ${env.GIT_BRANCH} | sed 's|^origin/||'", returnStdout: true).trim()
-        BUILD_VERSION = "${env.BUILD_NUMBER}"    // Número único de build de Jenkins
+        // BUILD_VERSION = "${env.BUILD_NUMBER}"    // Número único de build de Jenkins
 
         GITHUB_REPO = 'CodiMex360/apollo-frontend' // Reemplaza con tu repositorio
         GITHUB_TOKEN = credentials('GITHUB_TOKEN')  // Aquí usas el token configurado como credencial
@@ -65,7 +65,7 @@ pipeline {
                     PACKAGE_VERSION = sh(script: "jq -r .version package.json", returnStdout: true).trim()
                     echo "📌 Versión extraída: ${PACKAGE_VERSION}"
 
-                    IMAGE_TAG = "${DOCKER_REPO}:${PACKAGE_VERSION}-${BUILD_VERSION}-${BRANCH_NAME}"
+                    IMAGE_TAG = "${DOCKER_REPO}:${PACKAGE_VERSION}-${BRANCH_NAME}"
                 }
             }
         }
@@ -145,7 +145,14 @@ pipeline {
                 script {
                     // Desplegar en EKS para validar cambios (efímero)
                     echo "🚀 Desplegando en EKS..."
-                    sh "./scripts/deploy.sh pr-${BUILD_VERSION} ${IMAGE_TAG} host.docker.internal:8080"
+                    def namespace = "pr-${env.BRANCH_NAME}"
+                    def imageTag = "${IMAGE_TAG}"
+                    def backendURL = "host.docker.internal:8080"
+                    sh """
+                        chmod +x ./k8s/scripts/deploy.sh
+                        "./k8s/scripts/deploy.sh ${namespace} ${imageTag} ${backendURL}"
+                    """
+                    // sh "./k8s/scripts/deploy.sh pr-${BUILD_VERSION} ${IMAGE_TAG} host.docker.internal:8080"
                 }
             }
         }
@@ -159,15 +166,15 @@ pipeline {
             }
             steps {
                 script {
-                    def namespace = "pr-${env.BUILD_VERSION}"
-                    def imageTag = "${env.BUILD_VERSION}"
+                    def namespace = "pr-${env.BRANCH_NAME}"
+                    def imageTag = "${IMAGE_TAG}"
                     def deleteImage = "True"
 
                     echo "🔴 Eliminando entorno: ${namespace} con imagen ${imageTag}"
 
                     sh """
-                        chmod +x ./scripts/delete.sh
-                        ./scripts/delete.sh ${namespace} ${imageTag} ${deleteImage}
+                        chmod +x ./k8s/scripts/delete.sh
+                        ./k8s/scripts/delete.sh ${namespace} ${imageTag} ${deleteImage}
                     """
                 }
             }
