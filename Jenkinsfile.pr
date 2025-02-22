@@ -35,6 +35,8 @@ pipeline {
               echo "🔍 Listando variables de entorno con printenv:"
               sh 'printenv'
 
+              echo "GITHUB_PR_URL: ${GITHUB_PR_URL}"
+
               // Validación: si no es un PR, detener ejecución
               if (!PR_NUMBER.trim()) {
                   error "🚨 Este pipeline solo se ejecuta en Pull Requests. Deteniendo ejecución."
