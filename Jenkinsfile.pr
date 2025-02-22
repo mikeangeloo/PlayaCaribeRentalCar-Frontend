@@ -27,7 +27,7 @@ pipeline {
         stage('Validar si es un PR') {
           steps {
             script {
-              PR_NUMBER = "${env.CHANGE_ID}" ?? ''
+              PR_NUMBER = "${env.CHANGE_ID}" ?: ''
               echo "PR_NUMBER: ${PR_NUMBER} // BRANCH_NAME: ${env.BRANCH_NAME}"
               if(!PR_NUMBER) {
                 error "🚨 Este pipeline solo se ejecuta en Pull Requests. Deteniendo ejecución."
