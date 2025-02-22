@@ -201,19 +201,6 @@ pipeline {
                 echo 'Finalizando el pipeline.'
             }
         }
-        cleanup {
-          when {
-            expression {
-              // Verificar si el PR ha sido cerrado o fusionado
-              return env.CHANGE_ID != null && (env.PULLREQUEST_STATE == 'merged' || env.PULLREQUEST_STATE == 'closed')
-            }
-          }
-          steps {
-            script {
-                sh "./scripts/delete.sh pr-${BUILD_VERSION} ${IMAGE_TAG} true"
-            }
-          }
-        }
    }
 }
 
