@@ -30,7 +30,7 @@ pipeline {
               // Asignación segura del número de PR
               def PR_NUMBER = env.CHANGE_ID ?: ''
 
-              echo "CHANGE_ID: ${env.CHANGE_ID} // GIT_BRANCH: ${env.GIT_BRANCH}"
+              echo "CHANGE_ID: ${env.CHANGE_ID} // GIT_BRANCH: ${env.GIT_BRANCH} // BRANCH_NAME: ${env.BRANCH_NAME} // CHANGE_BRANCH: ${env.CHANGE_BRANCH}"
 
               echo "🔍 Listando variables de entorno con printenv:"
               sh 'printenv'
