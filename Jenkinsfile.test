@@ -3,222 +3,208 @@ pipeline {
 
     options {
         disableConcurrentBuilds()
-        timeout(time: 30, unit: 'MINUTES') // Cancela si tarda más de 30 min
+        timeout(time: 30, unit: 'MINUTES')
     }
 
     environment {
-        DOCKER_REPO = "mikeangeloo/apollo-frontend"  // Cambiar con tu repositorio de Docker
+        DOCKER_REPO = "mikeangeloo/apollo-frontend"  // Repositorio de Docker
+        // Extraemos la rama sin el prefijo "origin/"
         BRANCH_NAME = sh(script: "echo ${env.GIT_BRANCH} | sed 's|^origin/||'", returnStdout: true).trim()
-        // BUILD_VERSION = "${env.BUILD_NUMBER}"    // Número único de build de Jenkins
+        GITHUB_REPO = 'CodiMex360/apollo-frontend'
+        GITHUB_TOKEN = credentials('GITHUB_TOKEN')
+        COMMIT_SHA = sh(script: "git rev-parse HEAD", returnStdout: true).trim()
 
-        GITHUB_REPO = 'CodiMex360/apollo-frontend' // Reemplaza con tu repositorio
-        GITHUB_TOKEN = credentials('GITHUB_TOKEN')  // Aquí usas el token configurado como credencial
-        COMMIT_SHA = sh(script: "git rev-parse HEAD", returnStdout: true).trim()  // SHA del commit actual
+        PACKAGE_VERSION = ''   // Versión extraída de package.json
+        IMAGE_TAG = ''         // Etiqueta que se usará para la imagen Docker
+        DOCKER_IMAGE = ''      // Referencia de la imagen Docker construida
 
-        PACKAGE_VERSION = ''                     // Almacenará la versión del package.json
-        IMAGE_TAG = ''                           // Etiqueta para la imagen Docker
-        DOCKER_IMAGE = ''                        // Definiendo para guardar la referencia de la imagen de docker
+        // Bandera para distinguir PR vs Merge; se inicializa en false (merge)
+        IS_PR = "false"
     }
 
     stages {
-
-
         stage('Detectar PR con API') {
             steps {
                 script {
                     def prData = getPRData()
                     if (prData) {
-                        env.CHANGE_ID = prData.number
+                        env.PR_ID = prData.number
                         env.TARGET_BRANCH = prData.targetBranch
-                        echo "✅ Detectado PR: #${prData.number} con la rama de destino: ${prData.targetBranch}"
+                        env.IS_PR = "true"
+                        echo "✅ Detectado PR: #${prData.number} con target branch ${prData.targetBranch}"
                     } else {
-                        error "🚨 No se detectó PR asociado."
+                        echo "No se detectó PR, asumiendo merge a la target branch."
+                        env.IS_PR = "false"
+                    }
+                }
+            }
+        }
+
+         stage('Detectar Merge') {
+            steps {
+                script {
+                    def commitMessage = sh(script: "git log -1 --pretty=%B", returnStdout: true).trim()
+                    echo "Mensaje del último commit: ${commitMessage}"
+
+                    if (commitMessage.contains("Merge pull request")) {
+                        def prNumber = commitMessage.find(/#(\d+)/) { match, num -> return num }
+                        echo "🚀 Se detectó un merge del PR #${prNumber}"
+                        env.PR_ID = prNumber
+                    } else {
+                        echo "⚠️ No se detectó merge directo."
+                    }
+                }
+            }
+        }
+
+        stage('Confirmar PR fusionado con GitHub API') {
+            steps {
+                script {
+                    def mergedPR = sh(script: """
+                        curl -s -H "Authorization: token ${env.GITHUB_TOKEN}" \\
+                        "https://api.github.com/repos/${env.GITHUB_REPO}/pulls?state=closed" | jq -r '.[] | select(.merge_commit_sha == "${env.GIT_COMMIT}") | .number'
+                    """, returnStdout: true).trim()
+
+                    if (mergedPR) {
+                        echo "✅ Confirmado: PR #${mergedPR} fue fusionado"
+                        env.PR_ID = mergedPR
+                    } else {
+                        echo "⚠️ No se encontró el PR fusionado en la API."
                     }
                 }
             }
         }
 
         stage('Start') {
-          steps {
-            script {
-              // Actualizamos el estado inicial a github
-              updateGitHubCommitStatus('pending')
-
-              echo "Pipeline iniciado para el commit ${COMMIT_SHA}"
+            steps {
+                script {
+                    updateGitHubCommitStatus('pending')
+                    echo "Pipeline iniciado para el commit ${COMMIT_SHA}"
+                }
             }
-          }
         }
 
         stage('Checkout') {
             steps {
-                checkout scm // Esta es la acción para clonar el repositorio
+                checkout scm
                 script {
                     echo "📥 Se han bajado los cambios de la rama ${BRANCH_NAME}"
                 }
             }
         }
 
-        stage('Obtener versión del package.json y formar IMAGE_TAG') {
+        stage('Obtener versión y formar IMAGE_TAG') {
             steps {
                 script {
-                    // Obtener la versión desde el archivo package.json
                     PACKAGE_VERSION = sh(script: "jq -r .version package.json", returnStdout: true).trim()
                     echo "📌 Versión extraída: ${PACKAGE_VERSION}"
-
-                    IMAGE_TAG = "${DOCKER_REPO}:${PACKAGE_VERSION}-${BRANCH_NAME}"
+                    IMAGE_TAG = "${DOCKER_REPO}:${PACKAGE_VERSION}-${PR_ID}"
                 }
             }
         }
 
-        // stage('Contruir imagen Docker') {
-        //   agent { label 'docker-agent' }
-        //   steps {
-        //     script {
-        //       // Construir la imagen Docker
-        //       echo "🚀 Construyendo imagen Docker..."
-        //       DOCKER_IMAGE = docker.build("${IMAGE_TAG}")
-        //     }
-        //   }
-        // }
+        stage('Construir imagen Docker') {
+            agent { label 'docker-agent' }
+            when {
+                expression { return env.IS_PR == "true" }
+            }
+            steps {
+                script {
+                    echo "🚀 Construyendo imagen Docker..."
+                    DOCKER_IMAGE = docker.build("${IMAGE_TAG}")
+                }
+            }
+        }
 
-        //Descomentar en AWS
-        // stage('Ejecutar pruebas unitarias') {
-        //     agent { label 'docker-agent' }
-        //     steps {
-        //         script {
-        //           if (DOCKER_IMAGE) {
-        //             // Ejecutar las pruebas unitarias con Jest para Angular
-        //             echo "⚡ Ejecutando pruebas unitarias ..."
-        //             DOCKER_IMAGE.inside {
-        //                 // Posicionarse en el directorio correcto (aunque /app es el directorio de trabajo)
-        //                 sh 'pwd'
-        //                 sh 'ls -la'
-        //                 sh 'npm run test:ci'  // Ejecutar pruebas unitarias
-
-        //                 // Obtener la cobertura global desde el JSON de cobertura
-        //                 def coverageJson = readJSON(file: 'coverage/coverage-summary.json')
-        //                 def coverage = coverageJson.total.statements.pct  // Extrae el porcentaje de cobertura total
-
-        //                 echo "📊 Cobertura de código: ${coverage}%"
-
-        //                 if (coverage.toFloat() < 80) {
-        //                     error "🚨 Cobertura de pruebas menor al 80%. No se puede continuar con el pipeline."
-        //                 }
-        //             }
-        //           } else {
-        //             error "❌ La imagen Docker no se construyó correctamente. El pipeline se detiene."
-        //           }
-        //         }
-        //     }
-        // }
-
-        // stage('Análisis con SonarQube') {
-        //     steps {
-        //         script {
-        //             // Análisis del código con SonarQube
-        //             echo "🔍 Ejecutando análisis con SonarQube..."
-        //             sh 'sonar-scanner'
-        //         }
-        //     }
-        // }
-
-        // stage('Publicar imagen en Docker Hub') {
-        //     agent { label 'docker-agent' }
-        //     steps {
-        //         script {
-        //             if (DOCKER_IMAGE) {
-        //                // Autenticación con Docker Hub y publicación de las imágenes
-        //                 echo "📤 Publicando imagen en Docker Hub..."
-        //                 withDockerRegistry([credentialsId: 'DOCKER_HUB_CRED']) {
-        //                     echo "📤 Publicando imagen en Docker Hub..."
-        //                      DOCKER_IMAGE.push()
-        //                 }
-        //             } else {
-        //                error "❌ La imagen Docker no se construyó correctamente. El pipeline se detiene."
-        //             }
-        //         }
-        //     }
-        // }
+        stage('Publicar imagen en Docker Hub') {
+            agent { label 'docker-agent' }
+            when {
+                expression { return env.IS_PR == "true" }
+            }
+            steps {
+                script {
+                    if (DOCKER_IMAGE) {
+                        echo "📤 Publicando imagen en Docker Hub..."
+                        withDockerRegistry([credentialsId: 'DOCKER_HUB_CRED']) {
+                            DOCKER_IMAGE.push()
+                        }
+                    } else {
+                        error "❌ La imagen Docker no se construyó correctamente."
+                    }
+                }
+            }
+        }
 
         stage('Desplegar en EKS') {
             agent { label 'k8s-agent' }
+            when {
+                expression { return env.IS_PR == "true" }
+            }
             steps {
                 script {
-                    // Desplegar en EKS para validar cambios (efímero)
-                    echo "🚀 Desplegando en EKS..."
-                    def namespace = "pr-${env.BRANCH_NAME}"
-                    def imageTag = "${IMAGE_TAG}"
+                    echo "🚀 Desplegando entorno efímero en EKS para PR..."
+                    def namespace = "pr-${PR_ID}"
+                    def imageTag = IMAGE_TAG
                     def backendURL = "host.docker.internal:8081"
-                    sh 'ls -la'
-                    sh "head -n1 ./k8s/scripts/deploy.sh | cat -A"
-                    sh """
-                        chmod +x ./k8s/scripts/deploy.sh
-                        kubectl get nodes
-                        ./k8s/scripts/deploy.sh ${namespace} ${imageTag} ${backendURL}
-                    """
-                    // sh "./k8s/scripts/deploy.sh pr-${BUILD_VERSION} ${IMAGE_TAG} host.docker.internal:8080"
+                    // Se asume que el directorio clonado incluye la carpeta k8s en la raíz
+                    dir('apollo-frontend/k8s') {
+                        sh 'ls -la'
+                        sh "chmod +x scripts/deploy.sh"
+                        // Ejecutar el script sin comillas extra para que se interprete correctamente
+                        sh "scripts/deploy.sh ${namespace} ${imageTag} ${backendURL}"
+                    }
                 }
             }
         }
 
         stage('Eliminar Entorno Efímero') {
             when {
-                expression {
-                    // Si estamos en la rama destino, el PR fue fusionado
-                    return env.GIT_BRANCH == "origin/${env.TARGET_BRANCH}"
-                }
+                expression { return env.IS_PR == "false" }
             }
             steps {
                 script {
-                    def namespace = "pr-${env.BRANCH_NAME}"
-                    def imageTag = "${IMAGE_TAG}"
+                    echo "🔴 Eliminando entorno efímero y borrando imagen (merge a target branch)..."
+                    def namespace = "pr-${PR_ID}"
+                    def imageTag = IMAGE_TAG
                     def deleteImage = "True"
-
-                    echo "🔴 Eliminando entorno: ${namespace} con imagen ${imageTag}"
-
-                    sh """
-                        chmod +x ./k8s/scripts/delete.sh
-                        ./k8s/scripts/delete.sh ${namespace} ${imageTag} ${deleteImage}
-                    """
+                    dir('apollo-frontend/k8s') {
+                        sh "chmod +x scripts/delete.sh"
+                        sh "scripts/delete.sh ${namespace} ${imageTag} ${deleteImage}"
+                    }
                 }
             }
         }
-
     }
 
-   post {
+    post {
         success {
             script {
-                // Actualizamos el estado del PR a 'success'
-                echo 'Pipeline exitoso. Actualizando estado en GitHub.'
+                echo "Pipeline exitoso. Actualizando estado en GitHub a success."
                 updateGitHubCommitStatus('success')
             }
         }
         failure {
             script {
-                // Actualizamos el estado del PR a 'failure'
-                echo 'Pipeline fallido. Actualizando estado en GitHub.'
+                echo "Pipeline fallido. Actualizando estado en GitHub a failure."
                 updateGitHubCommitStatus('failure')
             }
         }
-         aborted {
+        aborted {
             script {
-                updateGitHubCommitStatus('error')  // Actualiza el estado como cancelado
+                updateGitHubCommitStatus('error')
             }
         }
         always {
             script {
-                // Este paso siempre se ejecutará al final, independientemente del resultado
-                echo 'Finalizando el pipeline.'
+                echo "Finalizando el pipeline."
             }
         }
-   }
+    }
 }
 
-// Función personalizada para actualizar el estado del commit en GitHub
+// Función para actualizar el estado del commit/PR en GitHub
 def updateGitHubCommitStatus(String status) {
-    // Función para actualizar el estado del PR en GitHub
-    echo "Actualizando el estado del PR en GitHub a: ${status}"
+    echo "Actualizando el estado del commit en GitHub a: ${status}"
     withCredentials([string(credentialsId: 'GITHUB_TOKEN', variable: 'GITHUB_TOKEN')]) {
         sh """
             curl -X POST -H "Authorization: token ${GITHUB_TOKEN}" \
@@ -228,22 +214,16 @@ def updateGitHubCommitStatus(String status) {
     }
 }
 
-
+// Función para obtener datos del PR mediante la API de GitHub
 def getPRData() {
     def response = sh(script: """
         curl -s -H "Authorization: token ${env.GITHUB_TOKEN}" \\
         "https://api.github.com/repos/${env.GITHUB_REPO}/pulls?state=open" | jq -r '.[] | select(.head.sha == "${env.GIT_COMMIT}") | {number, base: .base.ref}'
     """, returnStdout: true).trim()
-
-    // Procesamos la respuesta JSON para obtener los valores específicos
     def prNumber = sh(script: "echo '${response}' | jq -r '.number'", returnStdout: true).trim()
-    def targetBranch = sh(script: "echo '${response}' | jq -r '.base'", returnStdout: true).trim() // Corregido aquí
-
+    def targetBranch = sh(script: "echo '${response}' | jq -r '.base'", returnStdout: true).trim()
     if (prNumber && targetBranch) {
-        return [
-            number: prNumber,
-            targetBranch: targetBranch
-        ]
+        return [ number: prNumber, targetBranch: targetBranch ]
     } else {
         return null
     }
