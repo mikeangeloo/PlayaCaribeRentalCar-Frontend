@@ -266,7 +266,9 @@ def getPRData() {
         "https://api.github.com/repos/${env.GITHUB_REPO}/pulls?state=open" | jq -r '.[] | select(.head.sha == "${env.GIT_COMMIT}") | {number, base: .base.ref}'
     """, returnStdout: true).trim()
     def prNumber = sh(script: "echo '${response}' | jq -r '.number'", returnStdout: true).trim()
+    sh(script: "echo prNumber: '${prNumber}'")
     def targetBranch = sh(script: "echo '${response}' | jq -r '.base'", returnStdout: true).trim()
+    sh(script: "echo targetBranch: '${targetBranch}'")
     if (prNumber && targetBranch) {
         return [ number: prNumber, targetBranch: targetBranch ]
     } else {
