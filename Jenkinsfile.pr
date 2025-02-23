@@ -264,20 +264,25 @@ def updateGitHubCommitStatus(String status) {
 
 // Función para obtener datos del PR mediante la API de GitHub
 def getPRData() {
+    // Obtener la lista de PR abiertos
     def response = sh(script: """
-        curl -s -H "Authorization: token ${env.GITHUB_TOKEN}" \\
-        "https://api.github.com/repos/${env.GITHUB_REPO}/pulls?state=open" | jq -r '.[] | select(.head.sha == "${env.GIT_COMMIT}") | {number, base: .base.ref}'
+        curl -s -H "Authorization: token ${env.GITHUB_TOKEN}" "https://api.github.com/repos/${env.GITHUB_REPO}/pulls?state=open"
     """, returnStdout: true).trim()
-    def prNumber = sh(script: "echo '${response}' | jq -r '.number'", returnStdout: true).trim()
-    sh(script: "echo prNumber: '${prNumber}'")
-    def targetBranch = sh(script: "echo '${response}' | jq -r '.base'", returnStdout: true).trim()
-    sh(script: "echo targetBranch: '${targetBranch}'")
-    if (prNumber && targetBranch) {
+    echo "API Response: ${response}"
+
+    // Filtrar PR usando el nombre de la rama (BRANCH_NAME)
+    def prDataJson = sh(script: "echo '${response}' | jq -c '.[] | select(.head.ref == \"${BRANCH_NAME}\")'", returnStdout: true).trim()
+    echo "Filtered PR Data: ${prDataJson}"
+
+    if (prDataJson) {
+        def prNumber = sh(script: "echo '${prDataJson}' | jq -r '.number'", returnStdout: true).trim()
+        def targetBranch = sh(script: "echo '${prDataJson}' | jq -r '.base.ref'", returnStdout: true).trim()
         return [ number: prNumber, targetBranch: targetBranch ]
     } else {
         return null
     }
 }
+
 
 def getLoadBalancerURL(namespace) {
     return sh(script: """
