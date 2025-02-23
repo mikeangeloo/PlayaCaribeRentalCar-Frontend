@@ -20,6 +20,7 @@ pipeline {
 
         // Bandera para distinguir PR vs Merge; se inicializa en false (merge)
         IS_PR = "false"
+        TAG_ID = ''
     }
 
     stages {
@@ -28,7 +29,7 @@ pipeline {
                 script {
                     def prData = getPRData()
                     if (prData) {
-                        env.PR_ID = prData.number
+                        TAG_ID = prData.number
                         env.TARGET_BRANCH = prData.targetBranch
                         env.IS_PR = "true"
                         echo "✅ Detectado PR: #${prData.number} con target branch ${prData.targetBranch}"
@@ -49,7 +50,7 @@ pipeline {
                     if (commitMessage.contains("Merge pull request")) {
                         def prNumber = commitMessage.find(/#(\d+)/) { match, num -> return num }
                         echo "🚀 Se detectó un merge del PR #${prNumber}"
-                        env.PR_ID = prNumber
+                        TAG_ID = prNumber
                     } else {
                         echo "⚠️ No se detectó merge directo."
                     }
@@ -67,7 +68,7 @@ pipeline {
 
                     if (mergedPR) {
                         echo "✅ Confirmado: PR #${mergedPR} fue fusionado"
-                        env.PR_ID = mergedPR
+                        TAG_ID = mergedPR
                     } else {
                         echo "⚠️ No se encontró el PR fusionado en la API."
                     }
@@ -81,6 +82,16 @@ pipeline {
                     updateGitHubCommitStatus('pending')
                     echo "Pipeline iniciado para el commit ${COMMIT_SHA}"
                 }
+            }
+        }
+
+        stage('Validate TAG_ID') {
+            steps {
+              if (!TAG_ID) {
+                 echo "🚫 Saltando ejecución del pipeline, no se encontro un TAG_ID."
+                 currentBuild.result = 'ABORTED'
+                 return // Esto detiene la ejecución
+              }
             }
         }
 
