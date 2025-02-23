@@ -154,7 +154,7 @@ pipeline {
                     sh """
                         chmod +x ./k8s/scripts/deploy.sh
                         kubectl get nodes
-                        "./k8s/scripts/deploy.sh ${namespace} ${imageTag} ${backendURL}"
+                        ./k8s/scripts/deploy.sh ${namespace} ${imageTag} ${backendURL}
                     """
                     // sh "./k8s/scripts/deploy.sh pr-${BUILD_VERSION} ${IMAGE_TAG} host.docker.internal:8080"
                 }
