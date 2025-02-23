@@ -208,14 +208,17 @@ pipeline {
             }
             steps {
                 script {
-                    echo "🔴 Eliminando entorno efímero y borrando imagen (merge a target branch)..."
                     def namespace = "pr-${env.TAG_ID}"
                     def imageTag = IMAGE_TAG
                     def deleteImage = "true"
-                    sh """
-                        chmod +x ./k8s/scripts/delete.sh
-                        ./k8s/scripts/delete.sh ${namespace} ${imageTag} ${deleteImage}
-                    """
+                    // Usamos withCredentials para inyectar DOCKER_HUB_USER y DOCKER_HUB_PASS
+                    withCredentials([usernamePassword(credentialsId: 'DOCKER_HUB_CRED', usernameVariable: 'DOCKER_HUB_USER', passwordVariable: 'DOCKER_HUB_PASS')]) {
+                        // Ejecutamos el script que usa las credenciales inyectadas
+                        sh """
+                            chmod +x ./k8s/scripts/delete.sh
+                            ./k8s/scripts/delete.sh ${namespace} ${imageTag} ${deleteImage}
+                        """
+                    }
                 }
             }
         }
