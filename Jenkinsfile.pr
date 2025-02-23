@@ -187,14 +187,14 @@ pipeline {
                     def externalURL = getLoadBalancerURL(namespace)
 
                     if (externalURL) {
-                        def prComment = "🚀 Tu entorno efímero está listo: [https://${externalURL}](https://${externalURL})"
+                        def prComment = "🚀 Entorno efímero listo: [http://${externalURL}](http://${externalURL})"
 
                         sh """
                             curl -s -X POST -H "Authorization: token ${env.GITHUB_TOKEN}" \\
                             -d '{"body": "${prComment}"}' \\
                             "https://api.github.com/repos/${env.GITHUB_REPO}/issues/${env.TAG_ID}/comments"
                         """
-                        echo "✅ Comentario agregado al PR con la URL: https://${externalURL}"
+                        echo "✅ Comentario agregado al PR con la URL: http://${externalURL}"
                     } else {
                         echo "❌ No se pudo obtener la URL del LoadBalancer."
                     }
