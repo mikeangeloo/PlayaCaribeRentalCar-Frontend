@@ -149,8 +149,8 @@ pipeline {
                     def namespace = "pr-${env.BRANCH_NAME}"
                     def imageTag = "${IMAGE_TAG}"
                     def backendURL = "host.docker.internal:8081"
-                    sh 'ls -la scripts'
-                    sh "head -n1 scripts/deploy.sh | cat -A"
+                    sh 'ls -la'
+                    sh "head -n1 ./k8/scripts/deploy.sh | cat -A"
                     sh """
                         chmod +x ./k8s/scripts/deploy.sh
                         "./k8s/scripts/deploy.sh ${namespace} ${imageTag} ${backendURL}"
