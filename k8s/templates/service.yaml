@@ -4,12 +4,12 @@ metadata:
   name: angular-service
   namespace: ${NAMESPACE}  # 🔹 Namespace dinámico
 spec:
-  type: NodePort
+  type: LoadBalancer
   selector:
     app: angular-app
   ports:
     - protocol: TCP
       port: 80
       targetPort: 80
-      nodePort: 0
+      # nodePort: 0
 
