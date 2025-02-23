@@ -102,6 +102,7 @@ pipeline {
                 script {
                     echo "📥 Se han bajado los cambios de la rama ${BRANCH_NAME}"
                     echo "ES un PR: ${env.IS_PR}"
+
                 }
             }
         }
