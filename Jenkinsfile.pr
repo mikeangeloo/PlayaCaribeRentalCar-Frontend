@@ -121,7 +121,6 @@ pipeline {
         }
 
         stage('Construir imagen Docker') {
-            agent { label 'docker-agent' }
             when {
                 expression { return env.IS_PR == "true" }
             }
@@ -134,7 +133,6 @@ pipeline {
         }
 
         stage('Publicar imagen en Docker Hub') {
-            agent { label 'docker-agent' }
             when {
                 expression { return env.IS_PR == "true" }
             }
@@ -153,7 +151,6 @@ pipeline {
         }
 
         stage('Desplegar en EKS') {
-            agent { label 'k8s-agent' }
             when {
                 expression { return env.IS_PR == "true" }
             }
@@ -162,7 +159,7 @@ pipeline {
                     echo "🚀 Desplegando entorno efímero en EKS para PR..."
                     def namespace = "pr-${env.TAG_ID}"
                     def imageTag = IMAGE_TAG
-                    def backendURL = "host.docker.internal:8081"
+                    def backendURL = "${EPHEMERAL_BACKEND}"
                     sh 'ls -la'
                     sh "head -n1 ./k8s/scripts/deploy.sh | cat -A"
                     sh """
@@ -174,7 +171,6 @@ pipeline {
         }
 
         stage('Eliminar Entorno Efímero') {
-            agent { label 'k8s-agent' }
             when {
                 expression { return env.IS_PR == "false" && !!env.TAG_ID }
             }

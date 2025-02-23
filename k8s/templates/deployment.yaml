@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: angular-app
-  namespace: ${NAMESPACE}  # 🔹 Namespace dinámico
+  namespace: ${NAMESPACE}  # Namespace dinámico
 spec:
   replicas: 2
   selector:
@@ -15,9 +15,9 @@ spec:
     spec:
       containers:
         - name: angular-app
-          image: ${IMAGE}  # 🔹 Imagen dinámica
+          image: ${IMAGE}  # Imagen dinámica
           ports:
             - containerPort: 80
           env:
             - name: BACKEND_URL
-              value: "${BACKEND_URL}"  # 🔹 Variable de entorno
+              value: "${BACKEND_URL}"  # Variable de entorno

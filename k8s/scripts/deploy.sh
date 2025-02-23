@@ -12,4 +12,3 @@ envsubst < k8s/templates/namespace.yaml | kubectl apply -f -
 # Aplicar los manifiestos con las variables inyectadas
 envsubst < k8s/templates/deployment.yaml | kubectl apply -f -
 envsubst < k8s/templates/service.yaml | kubectl apply -f -
-#envsubst < k8s/templates/ingress.yaml | kubectl apply -f -
