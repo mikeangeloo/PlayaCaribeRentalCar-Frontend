@@ -38,6 +38,9 @@ pipeline {
         }
 
          stage('Detectar Merge') {
+           when {
+                expression { return env.IS_PR == "false" }
+            }
             steps {
                 script {
                     def commitMessage = sh(script: "git log -1 --pretty=%B", returnStdout: true).trim()
@@ -55,6 +58,9 @@ pipeline {
         }
 
         stage('Confirmar PR fusionado con GitHub API') {
+            when {
+                expression { return env.IS_PR == "false" }
+            }
             steps {
                 script {
                     def mergedPR = sh(script: """
@@ -170,6 +176,32 @@ pipeline {
             }
         }
 
+
+        stage('Publicar URL en PR') {
+            when {
+                expression { return env.IS_PR == "true" }
+            }
+            steps {
+                script {
+                    def namespace = "pr-${env.TAG_ID}"
+                    def externalURL = getLoadBalancerURL(namespace)
+
+                    if (externalURL) {
+                        def prComment = "🚀 Entorno efímero listo: [http://${externalURL}](http://${externalURL})"
+
+                        sh """
+                            curl -s -X POST -H "Authorization: token ${env.GITHUB_TOKEN}" \\
+                            -d '{"body": "${prComment}"}' \\
+                            "https://api.github.com/repos/${env.GITHUB_REPO}/issues/${env.TAG_ID}/comments"
+                        """
+                        echo "✅ Comentario agregado al PR con la URL: http://${externalURL}"
+                    } else {
+                        echo "❌ No se pudo obtener la URL del LoadBalancer."
+                    }
+                }
+            }
+        }
+
         stage('Eliminar Entorno Efímero') {
             when {
                 expression { return env.IS_PR == "false" && !!env.TAG_ID }
@@ -234,10 +266,18 @@ def getPRData() {
         "https://api.github.com/repos/${env.GITHUB_REPO}/pulls?state=open" | jq -r '.[] | select(.head.sha == "${env.GIT_COMMIT}") | {number, base: .base.ref}'
     """, returnStdout: true).trim()
     def prNumber = sh(script: "echo '${response}' | jq -r '.number'", returnStdout: true).trim()
+    sh(script: "echo prNumber: '${prNumber}'")
     def targetBranch = sh(script: "echo '${response}' | jq -r '.base'", returnStdout: true).trim()
+    sh(script: "echo targetBranch: '${targetBranch}'")
     if (prNumber && targetBranch) {
         return [ number: prNumber, targetBranch: targetBranch ]
     } else {
         return null
     }
+}
+
+def getLoadBalancerURL(namespace) {
+    return sh(script: """
+        kubectl get svc -n ${namespace} -o jsonpath='{.items[0].status.loadBalancer.ingress[0].hostname}'
+    """, returnStdout: true).trim()
 }
