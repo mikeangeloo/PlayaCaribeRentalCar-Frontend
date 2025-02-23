@@ -111,7 +111,7 @@ pipeline {
                 script {
                     PACKAGE_VERSION = sh(script: "jq -r .version package.json", returnStdout: true).trim()
                     echo "📌 Versión extraída: ${PACKAGE_VERSION}"
-                    IMAGE_TAG = "${DOCKER_REPO}:${PACKAGE_VERSION}-${PR_ID}"
+                    IMAGE_TAG = "${DOCKER_REPO}:${PACKAGE_VERSION}-${TAG_ID}"
                 }
             }
         }
@@ -156,7 +156,7 @@ pipeline {
             steps {
                 script {
                     echo "🚀 Desplegando entorno efímero en EKS para PR..."
-                    def namespace = "pr-${PR_ID}"
+                    def namespace = "pr-${TAG_ID}"
                     def imageTag = IMAGE_TAG
                     def backendURL = "host.docker.internal:8081"
                     // Se asume que el directorio clonado incluye la carpeta k8s en la raíz
@@ -177,7 +177,7 @@ pipeline {
             steps {
                 script {
                     echo "🔴 Eliminando entorno efímero y borrando imagen (merge a target branch)..."
-                    def namespace = "pr-${PR_ID}"
+                    def namespace = "pr-${TAG_ID}"
                     def imageTag = IMAGE_TAG
                     def deleteImage = "True"
                     dir('apollo-frontend/k8s') {
