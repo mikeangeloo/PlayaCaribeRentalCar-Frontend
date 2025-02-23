@@ -1,4 +1,4 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: ${NAMESPACE}  # 🔹 Se inyectará dinámicamente
+  name: ${NAMESPACE}  # Se inyectará dinámicamente
