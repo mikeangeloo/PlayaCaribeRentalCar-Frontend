@@ -97,6 +97,9 @@ pipeline {
         }
 
         stage('Checkout') {
+            when {
+                expression { return !!env.TAG_ID }
+            }
             steps {
                 checkout scm
                 script {
@@ -106,6 +109,9 @@ pipeline {
         }
 
         stage('Obtener versión y formar IMAGE_TAG') {
+           when {
+                expression { return !!env.TAG_ID }
+            }
             steps {
                 script {
                     PACKAGE_VERSION = sh(script: "jq -r .version package.json", returnStdout: true).trim()
@@ -171,7 +177,7 @@ pipeline {
 
         stage('Eliminar Entorno Efímero') {
             when {
-                expression { return env.IS_PR == "false" }
+                expression { return env.IS_PR == "false" && !!env.TAG_ID }
             }
             steps {
                 script {
