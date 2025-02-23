@@ -170,6 +170,32 @@ pipeline {
             }
         }
 
+
+        stage('Publicar URL en PR') {
+            when {
+                expression { return env.IS_PR == "true" }
+            }
+            steps {
+                script {
+                    def namespace = "pr-${env.TAG_ID}"
+                    def externalURL = getLoadBalancerURL(namespace)
+
+                    if (externalURL) {
+                        def prComment = "🚀 Tu entorno efímero está listo: [https://${externalURL}](https://${externalURL})"
+
+                        sh """
+                            curl -s -X POST -H "Authorization: token ${env.GITHUB_TOKEN}" \\
+                            -d '{"body": "${prComment}"}' \\
+                            "https://api.github.com/repos/${env.GITHUB_REPO}/issues/${env.TAG_ID}/comments"
+                        """
+                        echo "✅ Comentario agregado al PR con la URL: https://${externalURL}"
+                    } else {
+                        echo "❌ No se pudo obtener la URL del LoadBalancer."
+                    }
+                }
+            }
+        }
+
         stage('Eliminar Entorno Efímero') {
             when {
                 expression { return env.IS_PR == "false" && !!env.TAG_ID }
@@ -240,4 +266,10 @@ def getPRData() {
     } else {
         return null
     }
+}
+
+def getLoadBalancerURL(namespace) {
+    return sh(script: """
+        kubectl get svc angular-service -n ${namespace} -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'
+    """, returnStdout: true).trim()
 }
