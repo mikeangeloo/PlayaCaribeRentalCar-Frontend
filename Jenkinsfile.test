@@ -17,9 +17,6 @@ pipeline {
         PACKAGE_VERSION = ''   // Versión extraída de package.json
         IMAGE_TAG = ''         // Etiqueta que se usará para la imagen Docker
         DOCKER_IMAGE = ''      // Referencia de la imagen Docker construida
-
-        // Bandera para distinguir PR vs Merge; se inicializa en false (merge)
-        IS_PR = "false"
     }
 
     stages {
@@ -104,6 +101,7 @@ pipeline {
                 checkout scm
                 script {
                     echo "📥 Se han bajado los cambios de la rama ${BRANCH_NAME}"
+                    echo "ES un PR: ${env.IS_PR}"
                 }
             }
         }
