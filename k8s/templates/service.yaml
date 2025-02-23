@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: angular-service
+  namespace: ${NAMESPACE}  # 🔹 Namespace dinámico
+spec:
+  type: LoadBalancer
+  selector:
+    app: angular-app
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+      # nodePort: 0
+
