@@ -20,7 +20,6 @@ pipeline {
 
         // Bandera para distinguir PR vs Merge; se inicializa en false (merge)
         IS_PR = "false"
-        TAG_ID = ''
     }
 
     stages {
@@ -29,7 +28,7 @@ pipeline {
                 script {
                     def prData = getPRData()
                     if (prData) {
-                        TAG_ID = prData.number
+                        env.TAG_ID = prData.number
                         env.TARGET_BRANCH = prData.targetBranch
                         env.IS_PR = "true"
                         echo "✅ Detectado PR: #${prData.number} con target branch ${prData.targetBranch}"
@@ -50,7 +49,7 @@ pipeline {
                     if (commitMessage.contains("Merge pull request")) {
                         def prNumber = commitMessage.find(/#(\d+)/) { match, num -> return num }
                         echo "🚀 Se detectó un merge del PR #${prNumber}"
-                        TAG_ID = prNumber
+                        env.TAG_ID = prNumber
                     } else {
                         echo "⚠️ No se detectó merge directo."
                     }
@@ -68,7 +67,7 @@ pipeline {
 
                     if (mergedPR) {
                         echo "✅ Confirmado: PR #${mergedPR} fue fusionado"
-                        TAG_ID = mergedPR
+                        env.TAG_ID = mergedPR
                     } else {
                         echo "⚠️ No se encontró el PR fusionado en la API."
                     }
@@ -85,11 +84,11 @@ pipeline {
             }
         }
 
-        stage('Validate TAG_ID') {
+        stage('Validate env.TAG_ID') {
             steps {
               script {
-                if (!TAG_ID) {
-                  echo "🚫 Saltando ejecución del pipeline, no se encontro un TAG_ID."
+                if (!env.TAG_ID) {
+                  echo "🚫 Saltando ejecución del pipeline, no se encontro un env.TAG_ID."
                   currentBuild.result = 'ABORTED'
                   return // Esto detiene la ejecución
                 }
@@ -111,7 +110,7 @@ pipeline {
                 script {
                     PACKAGE_VERSION = sh(script: "jq -r .version package.json", returnStdout: true).trim()
                     echo "📌 Versión extraída: ${PACKAGE_VERSION}"
-                    IMAGE_TAG = "${DOCKER_REPO}:${PACKAGE_VERSION}-${TAG_ID}"
+                    IMAGE_TAG = "${DOCKER_REPO}:${PACKAGE_VERSION}-${env.TAG_ID}"
                 }
             }
         }
@@ -156,7 +155,7 @@ pipeline {
             steps {
                 script {
                     echo "🚀 Desplegando entorno efímero en EKS para PR..."
-                    def namespace = "pr-${TAG_ID}"
+                    def namespace = "pr-${env.TAG_ID}"
                     def imageTag = IMAGE_TAG
                     def backendURL = "host.docker.internal:8081"
                     // Se asume que el directorio clonado incluye la carpeta k8s en la raíz
@@ -177,7 +176,7 @@ pipeline {
             steps {
                 script {
                     echo "🔴 Eliminando entorno efímero y borrando imagen (merge a target branch)..."
-                    def namespace = "pr-${TAG_ID}"
+                    def namespace = "pr-${env.TAG_ID}"
                     def imageTag = IMAGE_TAG
                     def deleteImage = "True"
                     dir('apollo-frontend/k8s') {
