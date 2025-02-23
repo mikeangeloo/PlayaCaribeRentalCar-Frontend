@@ -163,13 +163,12 @@ pipeline {
                     def namespace = "pr-${env.TAG_ID}"
                     def imageTag = IMAGE_TAG
                     def backendURL = "host.docker.internal:8081"
-                    // Se asume que el directorio clonado incluye la carpeta k8s en la raíz
-                    dir('apollo-frontend/k8s') {
-                        sh 'ls -la'
-                        sh "chmod +x scripts/deploy.sh"
-                        // Ejecutar el script sin comillas extra para que se interprete correctamente
-                        sh "scripts/deploy.sh ${namespace} ${imageTag} ${backendURL}"
-                    }
+                    sh 'ls -la'
+                    sh "head -n1 ./k8s/scripts/deploy.sh | cat -A"
+                    sh """
+                        chmod +x ./k8s/scripts/deploy.sh
+                        ./k8s/scripts/deploy.sh ${namespace} ${imageTag} ${backendURL}
+                    """
                 }
             }
         }
@@ -184,10 +183,10 @@ pipeline {
                     def namespace = "pr-${env.TAG_ID}"
                     def imageTag = IMAGE_TAG
                     def deleteImage = "True"
-                    dir('apollo-frontend/k8s') {
-                        sh "chmod +x scripts/delete.sh"
-                        sh "scripts/delete.sh ${namespace} ${imageTag} ${deleteImage}"
-                    }
+                    sh """
+                        chmod +x ./k8s/scripts/delete.sh
+                        ./k8s/scripts/delete.sh ${namespace} ${imageTag} ${deleteImage}
+                    """
                 }
             }
         }
