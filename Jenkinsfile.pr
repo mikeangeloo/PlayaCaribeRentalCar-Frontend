@@ -38,6 +38,9 @@ pipeline {
         }
 
          stage('Detectar Merge') {
+           when {
+                expression { return env.IS_PR == "false" }
+            }
             steps {
                 script {
                     def commitMessage = sh(script: "git log -1 --pretty=%B", returnStdout: true).trim()
@@ -55,6 +58,9 @@ pipeline {
         }
 
         stage('Confirmar PR fusionado con GitHub API') {
+            when {
+                expression { return env.IS_PR == "false" }
+            }
             steps {
                 script {
                     def mergedPR = sh(script: """
