@@ -87,10 +87,12 @@ pipeline {
 
         stage('Validate TAG_ID') {
             steps {
-              if (!TAG_ID) {
-                 echo "🚫 Saltando ejecución del pipeline, no se encontro un TAG_ID."
-                 currentBuild.result = 'ABORTED'
-                 return // Esto detiene la ejecución
+              script {
+                if (!TAG_ID) {
+                  echo "🚫 Saltando ejecución del pipeline, no se encontro un TAG_ID."
+                  currentBuild.result = 'ABORTED'
+                  return // Esto detiene la ejecución
+                }
               }
             }
         }
