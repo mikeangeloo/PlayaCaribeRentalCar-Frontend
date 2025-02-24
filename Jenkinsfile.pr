@@ -270,7 +270,24 @@ def getPRData() {
 }
 
 def getLoadBalancerURL(namespace) {
-    return sh(script: """
-        kubectl get svc -n ${namespace} -o jsonpath='{.items[0].status.loadBalancer.ingress[0].hostname}'
-    """, returnStdout: true).trim()
+    def retries = 3
+    def waitTime = 10 // segundos entre cada intento
+    def externalURL = ""
+
+    for (int i = 0; i < retries; i++) {
+        externalURL = sh(script: """
+            kubectl get svc -n ${namespace} -o jsonpath='{.items[0].status.loadBalancer.ingress[0].hostname}' || echo ""
+        """, returnStdout: true).trim()
+
+        if (externalURL) {
+            echo "✅ LoadBalancer URL encontrado: ${externalURL}"
+            return externalURL
+        }
+
+        echo "⏳ Esperando a que el LoadBalancer esté listo... Intento ${i + 1} de ${retries}"
+        sleep(waitTime)
+    }
+
+    echo "❌ No se pudo obtener la URL del LoadBalancer después de ${retries} intentos."
+    return ""
 }
