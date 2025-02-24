@@ -105,20 +105,6 @@ pipeline {
             }
         }
 
-        stage('Checkout') {
-            when {
-                expression { return !!env.TAG_ID }
-            }
-            steps {
-                checkout scm
-                script {
-                    echo "📥 Se han bajado los cambios de la rama ${BRANCH_NAME}"
-                    echo "ES un PR: ${env.IS_PR}"
-
-                }
-            }
-        }
-
         stage('Obtener versión y formar IMAGE_TAG') {
            when {
                 expression { return !!env.TAG_ID }
