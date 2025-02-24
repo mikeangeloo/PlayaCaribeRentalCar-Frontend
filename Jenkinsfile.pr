@@ -208,14 +208,18 @@ pipeline {
             }
             steps {
                 script {
-                    echo "🔴 Eliminando entorno efímero y borrando imagen (merge a target branch)..."
                     def namespace = "pr-${env.TAG_ID}"
                     def imageTag = IMAGE_TAG
                     def deleteImage = "true"
-                    sh """
-                        chmod +x ./k8s/scripts/delete.sh
-                        ./k8s/scripts/delete.sh ${namespace} ${imageTag} ${deleteImage}
-                    """
+                    // Usamos withCredentials para inyectar DOCKER_HUB_USER y DOCKER_HUB_PASS
+                    withCredentials([usernamePassword(credentialsId: 'DOCKER_HUB_CRED', usernameVariable: 'DOCKER_HUB_USER', passwordVariable: 'DOCKER_HUB_PASS')]) {
+                        // Ejecutamos el script que usa las credenciales inyectadas
+                        sh """
+                            echo "DOCKER_HUB_USER: ${DOCKER_HUB_USER}"
+                            chmod +x ./k8s/scripts/delete.sh
+                            ./k8s/scripts/delete.sh ${namespace} ${imageTag} ${deleteImage}
+                        """
+                    }
                 }
             }
         }
@@ -261,15 +265,19 @@ def updateGitHubCommitStatus(String status) {
 
 // Función para obtener datos del PR mediante la API de GitHub
 def getPRData() {
+    // Obtener todos los PR abiertos
     def response = sh(script: """
-        curl -s -H "Authorization: token ${env.GITHUB_TOKEN}" \\
-        "https://api.github.com/repos/${env.GITHUB_REPO}/pulls?state=open" | jq -r '.[] | select(.head.sha == "${env.GIT_COMMIT}") | {number, base: .base.ref}'
+        curl -s -H "Authorization: token ${env.GITHUB_TOKEN}" "https://api.github.com/repos/${env.GITHUB_REPO}/pulls?state=open"
     """, returnStdout: true).trim()
-    def prNumber = sh(script: "echo '${response}' | jq -r '.number'", returnStdout: true).trim()
-    sh(script: "echo prNumber: '${prNumber}'")
-    def targetBranch = sh(script: "echo '${response}' | jq -r '.base'", returnStdout: true).trim()
-    sh(script: "echo targetBranch: '${targetBranch}'")
-    if (prNumber && targetBranch) {
+    echo "API Response: ${response}"
+
+    // Filtrar por el nombre de la rama (head.ref) en lugar de por SHA
+    def prDataJson = sh(script: "echo '${response}' | jq -c '.[] | select(.head.ref == \"${BRANCH_NAME}\")'", returnStdout: true).trim()
+    echo "Filtered PR Data: ${prDataJson}"
+
+    if (prDataJson) {
+        def prNumber = sh(script: "echo '${prDataJson}' | jq -r '.number'", returnStdout: true).trim()
+        def targetBranch = sh(script: "echo '${prDataJson}' | jq -r '.base.ref'", returnStdout: true).trim()
         return [ number: prNumber, targetBranch: targetBranch ]
     } else {
         return null
