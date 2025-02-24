@@ -9,7 +9,7 @@ pipeline {
     environment {
         DOCKER_REPO = "mikeangeloo/apollo-frontend"  // Repositorio de Docker
         // Extraemos la rama sin el prefijo "origin/"
-        BRANCH_NAME = sh(script: "echo ${env.GIT_BRANCH} | sed 's|^origin/||'", returnStdout: true).trim()
+        BRANCH_NAME = sh(script: "echo GIT_BRANCH: >>>>  ${env.GIT_BRANCH} | sed 's|^origin/||'", returnStdout: true).trim()
         GITHUB_REPO = 'CodiMex360/apollo-frontend'
         GITHUB_TOKEN = credentials('GITHUB_TOKEN')
         COMMIT_SHA = sh(script: "git rev-parse HEAD", returnStdout: true).trim()
@@ -20,6 +20,15 @@ pipeline {
     }
 
     stages {
+      stage('Checkout') {
+            steps {
+                checkout scm
+                script {
+                    echo "📥 Se han bajado los cambios de la rama ${BRANCH_NAME}"
+                }
+            }
+        }
+
         stage('Detectar PR con API') {
             steps {
                 script {
@@ -96,20 +105,6 @@ pipeline {
                   return // Esto detiene la ejecución
                 }
               }
-            }
-        }
-
-        stage('Checkout') {
-            when {
-                expression { return !!env.TAG_ID }
-            }
-            steps {
-                checkout scm
-                script {
-                    echo "📥 Se han bajado los cambios de la rama ${BRANCH_NAME}"
-                    echo "ES un PR: ${env.IS_PR}"
-
-                }
             }
         }
 
