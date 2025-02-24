@@ -20,11 +20,13 @@ pipeline {
     }
 
     stages {
+
       stage('Checkout') {
             steps {
                 checkout scm
                 script {
                     echo "📥 Se han bajado los cambios de la rama ${BRANCH_NAME}"
+                    echo "GIT_BRANCH ----> ${env.GIT_BRANCH}"
                 }
             }
         }
@@ -47,9 +49,6 @@ pipeline {
         }
 
          stage('Detectar Merge') {
-           when {
-                expression { return env.IS_PR == "false" }
-            }
             steps {
                 script {
                     def commitMessage = sh(script: "git log -1 --pretty=%B", returnStdout: true).trim()
@@ -67,9 +66,6 @@ pipeline {
         }
 
         stage('Confirmar PR fusionado con GitHub API') {
-            when {
-                expression { return env.IS_PR == "false" }
-            }
             steps {
                 script {
                     def mergedPR = sh(script: """
@@ -260,19 +256,13 @@ def updateGitHubCommitStatus(String status) {
 
 // Función para obtener datos del PR mediante la API de GitHub
 def getPRData() {
-    // Obtener todos los PR abiertos
     def response = sh(script: """
-        curl -s -H "Authorization: token ${env.GITHUB_TOKEN}" "https://api.github.com/repos/${env.GITHUB_REPO}/pulls?state=open"
+        curl -s -H "Authorization: token ${env.GITHUB_TOKEN}" \\
+        "https://api.github.com/repos/${env.GITHUB_REPO}/pulls?state=open" | jq -r '.[] | select(.head.sha == "${env.GIT_COMMIT}") | {number, base: .base.ref}'
     """, returnStdout: true).trim()
-    echo "API Response: ${response}"
-
-    // Filtrar por el nombre de la rama (head.ref) en lugar de por SHA
-    def prDataJson = sh(script: "echo '${response}' | jq -c '.[] | select(.head.ref == \"${BRANCH_NAME}\")'", returnStdout: true).trim()
-    echo "Filtered PR Data: ${prDataJson}"
-
-    if (prDataJson) {
-        def prNumber = sh(script: "echo '${prDataJson}' | jq -r '.number'", returnStdout: true).trim()
-        def targetBranch = sh(script: "echo '${prDataJson}' | jq -r '.base.ref'", returnStdout: true).trim()
+    def prNumber = sh(script: "echo '${response}' | jq -r '.number'", returnStdout: true).trim()
+    def targetBranch = sh(script: "echo '${response}' | jq -r '.base'", returnStdout: true).trim()
+    if (prNumber && targetBranch) {
         return [ number: prNumber, targetBranch: targetBranch ]
     } else {
         return null
