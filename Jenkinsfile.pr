@@ -30,7 +30,8 @@ pipeline {
                 sh '''
                     git init
                     git remote add origin https://github.com/CodiMex360/apollo-frontend.git || true
-                    git fetch --all
+                    git remote prune origin
+                    git fetch --all --prune
                 '''
 
                   checkout([
