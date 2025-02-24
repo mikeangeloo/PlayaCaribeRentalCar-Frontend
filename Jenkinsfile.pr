@@ -18,40 +18,26 @@ pipeline {
     }
 
     stages {
-       stage('Checkout') {
+        stage('Checkout') {
             steps {
                 script {
                     deleteDir() // Limpia el workspace antes de clonar
 
-                    // Inicializa el repositorio y obtiene todas las referencias de PRs
+                    checkout scm
+
+                    // Asegurar que HEAD apunta correctamente a la rama
                     sh '''
-                        git init
-                        git remote add origin https://github.com/CodiMex360/apollo-frontend.git || true
-                        git fetch --all --prune
+                        git fetch --all
+                        git checkout $(git rev-parse --abbrev-ref HEAD)
                     '''
 
-                    if (env.CHANGE_ID) {
+                    // Ahora sí se debe capturar correctamente el nombre de la rama
+                    env.BRANCH_NAME = sh(script: "echo ${env.GIT_BRANCH} | sed 's|^origin/||'", returnStdout: true).trim()
 
-                        // Si es un PR, aseguramos hacer checkout del PR correcto
-                        echo "🚀 Checkout del PR #${env.CHANGE_ID} desde ${env.CHANGE_BRANCH} → ${env.CHANGE_TARGET}"
-                        sh """
-                            git fetch origin pull/${env.CHANGE_ID}/head:pr-${env.CHANGE_ID}
-                            git checkout pr-${env.CHANGE_ID}
-                        """
-                    } else {
-                        // Si es un merge en una rama normal, solo hacemos checkout
-                        echo "🔄 Checkout de la rama ${env.BRANCH_NAME ?: 'master'}"
-                        sh "git checkout ${env.BRANCH_NAME ?: 'master'}"
-                    }
-
-                    // Confirmamos que se bajó la rama correcta
-                    env.BRANCH_NAME = sh(script: "git rev-parse --abbrev-ref HEAD", returnStdout: true).trim()
                     echo "📥 Se han bajado los cambios de la rama ---> ${env.BRANCH_NAME}"
                 }
             }
         }
-
-
 
         stage('Detectar PR con API') {
             steps {
