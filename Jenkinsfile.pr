@@ -9,7 +9,7 @@ pipeline {
     environment {
         DOCKER_REPO = "mikeangeloo/apollo-frontend"  // Repositorio de Docker
         // Extraemos la rama sin el prefijo "origin/"
-        BRANCH_NAME = sh(script: "echo GIT_BRANCH: >>>>  ${env.GIT_BRANCH} | sed 's|^origin/||'", returnStdout: true).trim()
+        BRANCH_NAME = sh(script: "echo ${env.GIT_BRANCH} | sed 's|^origin/||'", returnStdout: true).trim()
         GITHUB_REPO = 'CodiMex360/apollo-frontend'
         GITHUB_TOKEN = credentials('GITHUB_TOKEN')
         COMMIT_SHA = sh(script: "git rev-parse HEAD", returnStdout: true).trim()
@@ -20,11 +20,13 @@ pipeline {
     }
 
     stages {
+
       stage('Checkout') {
             steps {
                 checkout scm
                 script {
                     echo "📥 Se han bajado los cambios de la rama ${BRANCH_NAME}"
+                    echo "GIT_BRANCH ----> ${env.GIT_BRANCH}"
                 }
             }
         }
@@ -47,9 +49,6 @@ pipeline {
         }
 
          stage('Detectar Merge') {
-           when {
-                expression { return env.IS_PR == "false" }
-            }
             steps {
                 script {
                     def commitMessage = sh(script: "git log -1 --pretty=%B", returnStdout: true).trim()
@@ -67,9 +66,6 @@ pipeline {
         }
 
         stage('Confirmar PR fusionado con GitHub API') {
-            when {
-                expression { return env.IS_PR == "false" }
-            }
             steps {
                 script {
                     def mergedPR = sh(script: """
@@ -260,19 +256,13 @@ def updateGitHubCommitStatus(String status) {
 
 // Función para obtener datos del PR mediante la API de GitHub
 def getPRData() {
-    // Obtener todos los PR abiertos
     def response = sh(script: """
-        curl -s -H "Authorization: token ${env.GITHUB_TOKEN}" "https://api.github.com/repos/${env.GITHUB_REPO}/pulls?state=open"
+        curl -s -H "Authorization: token ${env.GITHUB_TOKEN}" \\
+        "https://api.github.com/repos/${env.GITHUB_REPO}/pulls?state=open" | jq -r '.[] | select(.head.sha == "${env.GIT_COMMIT}") | {number, base: .base.ref}'
     """, returnStdout: true).trim()
-    echo "API Response: ${response}"
-
-    // Filtrar por el nombre de la rama (head.ref) en lugar de por SHA
-    def prDataJson = sh(script: "echo '${response}' | jq -c '.[] | select(.head.ref == \"${BRANCH_NAME}\")'", returnStdout: true).trim()
-    echo "Filtered PR Data: ${prDataJson}"
-
-    if (prDataJson) {
-        def prNumber = sh(script: "echo '${prDataJson}' | jq -r '.number'", returnStdout: true).trim()
-        def targetBranch = sh(script: "echo '${prDataJson}' | jq -r '.base.ref'", returnStdout: true).trim()
+    def prNumber = sh(script: "echo '${response}' | jq -r '.number'", returnStdout: true).trim()
+    def targetBranch = sh(script: "echo '${response}' | jq -r '.base'", returnStdout: true).trim()
+    if (prNumber && targetBranch) {
         return [ number: prNumber, targetBranch: targetBranch ]
     } else {
         return null
@@ -280,7 +270,24 @@ def getPRData() {
 }
 
 def getLoadBalancerURL(namespace) {
-    return sh(script: """
-        kubectl get svc -n ${namespace} -o jsonpath='{.items[0].status.loadBalancer.ingress[0].hostname}'
-    """, returnStdout: true).trim()
+    def retries = 3
+    def waitTime = 10 // segundos entre cada intento
+    def externalURL = ""
+
+    for (int i = 0; i < retries; i++) {
+        externalURL = sh(script: """
+            kubectl get svc -n ${namespace} -o jsonpath='{.items[0].status.loadBalancer.ingress[0].hostname}' || echo ""
+        """, returnStdout: true).trim()
+
+        if (externalURL) {
+            echo "✅ LoadBalancer URL encontrado: ${externalURL}"
+            return externalURL
+        }
+
+        echo "⏳ Esperando a que el LoadBalancer esté listo... Intento ${i + 1} de ${retries}"
+        sleep(waitTime)
+    }
+
+    echo "❌ No se pudo obtener la URL del LoadBalancer después de ${retries} intentos."
+    return ""
 }
