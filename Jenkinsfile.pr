@@ -31,6 +31,7 @@ pipeline {
                     '''
 
                     if (env.CHANGE_ID) {
+
                         // Si es un PR, aseguramos hacer checkout del PR correcto
                         echo "🚀 Checkout del PR #${env.CHANGE_ID} desde ${env.CHANGE_BRANCH} → ${env.CHANGE_TARGET}"
                         sh """
