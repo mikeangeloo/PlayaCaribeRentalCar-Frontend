@@ -38,7 +38,7 @@ pipeline {
                   ])
 
                   env.BRANCH_NAME = sh(script: "git rev-parse --abbrev-ref HEAD", returnStdout: true).trim()
-                  echo "📥 Se han bajado los cambios de la rama ${env.BRANCH_NAME}"
+                  echo "📥 Se han bajado los cambios de la rama ---> ${env.BRANCH_NAME}"
               }
           }
       }
