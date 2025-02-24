@@ -26,7 +26,7 @@ pipeline {
                 checkout scm
                 script {
                     echo "📥 Se han bajado los cambios de la rama ${BRANCH_NAME}"
-                    echo "GIT_BRANCH ----> ${env.GIT_BRANCH}"
+                    echo "GIT_BRANCH 123 ----> ${env.GIT_BRANCH}"
                 }
             }
         }
