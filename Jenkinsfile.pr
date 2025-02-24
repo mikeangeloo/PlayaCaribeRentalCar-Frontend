@@ -8,8 +8,6 @@ pipeline {
 
     environment {
         DOCKER_REPO = "mikeangeloo/apollo-frontend"  // Repositorio de Docker
-        // Extraemos la rama sin el prefijo "origin/"
-        BRANCH_NAME = sh(script: "echo ${env.GIT_BRANCH} | sed 's|^origin/||'", returnStdout: true).trim()
         GITHUB_REPO = 'CodiMex360/apollo-frontend'
         GITHUB_TOKEN = credentials('GITHUB_TOKEN')
         COMMIT_SHA = sh(script: "git rev-parse HEAD", returnStdout: true).trim()
@@ -20,36 +18,20 @@ pipeline {
     }
 
     stages {
+        stage('Checkout') {
+            steps {
+                script {
+                    deleteDir() // Limpia el workspace antes de clonar
 
-      stage('Checkout') {
-          steps {
-              script {
-                  deleteDir() // Limpia el workspace antes de clonar
+                    checkout scm
 
-                // Asegurarse de tener la última versión del repo antes del checkout
-                sh '''
-                    git init
-                    git remote add origin https://github.com/CodiMex360/apollo-frontend.git || true
-                    git remote prune origin
-                    git fetch --all --prune
-                '''
+                    // Definir la variable correctamente después del checkout
+                    env.BRANCH_NAME = sh(script: "git rev-parse --abbrev-ref HEAD", returnStdout: true).trim()
 
-                  checkout([
-                      $class: 'GitSCM',
-                      branches: [[name: "*/${env.CHANGE_BRANCH ?: env.BRANCH_NAME}"]],
-                      doGenerateSubmoduleConfigurations: false,
-                      extensions: [[$class: 'CleanCheckout']],
-                      userRemoteConfigs: [[
-                          credentialsId: 'GITHUB_CREDENTIALS',
-                          url: 'https://github.com/CodiMex360/apollo-frontend.git'
-                      ]]
-                  ])
-
-                  env.BRANCH_NAME = sh(script: "git rev-parse --abbrev-ref HEAD", returnStdout: true).trim()
-                  echo "📥 Se han bajado los cambios de la rama ---> ${env.BRANCH_NAME}"
-              }
-          }
-      }
+                    echo "📥 Se han bajado los cambios de la rama ---> ${env.BRANCH_NAME}"
+                }
+            }
+        }
 
         stage('Detectar PR con API') {
             steps {
