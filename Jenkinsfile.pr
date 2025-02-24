@@ -25,7 +25,13 @@ pipeline {
 
                     checkout scm
 
-                    // Definir la variable correctamente después del checkout
+                    // Asegurar que HEAD apunta correctamente a la rama
+                    sh '''
+                        git fetch --all
+                        git checkout $(git rev-parse --abbrev-ref HEAD)
+                    '''
+
+                    // Ahora sí se debe capturar correctamente el nombre de la rama
                     env.BRANCH_NAME = sh(script: "git rev-parse --abbrev-ref HEAD", returnStdout: true).trim()
 
                     echo "📥 Se han bajado los cambios de la rama ---> ${env.BRANCH_NAME}"
