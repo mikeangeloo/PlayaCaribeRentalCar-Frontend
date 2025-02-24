@@ -21,6 +21,14 @@ pipeline {
 
     stages {
 
+    stage('Mostrar Variables de Entorno') {
+        steps {
+            script {
+                sh 'printenv'
+            }
+        }
+    }
+
       stage('Checkout') {
           steps {
               script {
@@ -44,6 +52,8 @@ pipeline {
                           url: 'https://github.com/CodiMex360/apollo-frontend.git'
                       ]]
                   ])
+
+                  print
 
                   env.BRANCH_NAME = sh(script: "git rev-parse --abbrev-ref HEAD", returnStdout: true).trim()
                   echo "📥 Se han bajado los cambios de la rama ---> ${env.BRANCH_NAME}"
