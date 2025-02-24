@@ -26,6 +26,13 @@ pipeline {
               script {
                   deleteDir() // Limpia el workspace antes de clonar
 
+                // Asegurarse de tener la última versión del repo antes del checkout
+                sh '''
+                    git init
+                    git remote add origin https://github.com/CodiMex360/apollo-frontend.git || true
+                    git fetch --all
+                '''
+
                   checkout([
                       $class: 'GitSCM',
                       branches: [[name: "*/${env.CHANGE_BRANCH ?: env.BRANCH_NAME}"]],
