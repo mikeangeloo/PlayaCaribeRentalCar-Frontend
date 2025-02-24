@@ -22,26 +22,26 @@ pipeline {
     stages {
 
       stage('Checkout') {
-            steps {
-                script {
-                    deleteDir() // Limpia el workspace antes de clonar
-        
-                    checkout([
-                        $class: 'GitSCM',
-                        branches: [[name: "*/${env.CHANGE_BRANCH ?: env.BRANCH_NAME}"]],
-                        doGenerateSubmoduleConfigurations: false,
-                        extensions: [[$class: 'CleanCheckout']], 
-                        userRemoteConfigs: [[
-                            credentialsId: 'GITHUB_CREDENTIALS',
-                            url: 'https://github.com/CodiMex360/apollo-frontend.git'
-                        ]]
-                    ])
-        
-                    env.BRANCH_NAME = sh(script: "git rev-parse --abbrev-ref HEAD", returnStdout: true).trim()
-                    echo "📥 Se han bajado los cambios de la rama ${env.BRANCH_NAME}"
-                }
-            }
-        }
+          steps {
+              script {
+                  deleteDir() // Limpia el workspace antes de clonar
+
+                  checkout([
+                      $class: 'GitSCM',
+                      branches: [[name: "*/${env.CHANGE_BRANCH ?: env.BRANCH_NAME}"]],
+                      doGenerateSubmoduleConfigurations: false,
+                      extensions: [[$class: 'CleanCheckout']],
+                      userRemoteConfigs: [[
+                          credentialsId: 'GITHUB_CREDENTIALS',
+                          url: 'https://github.com/CodiMex360/apollo-frontend.git'
+                      ]]
+                  ])
+
+                  env.BRANCH_NAME = sh(script: "git rev-parse --abbrev-ref HEAD", returnStdout: true).trim()
+                  echo "📥 Se han bajado los cambios de la rama ${env.BRANCH_NAME}"
+              }
+          }
+      }
 
         stage('Detectar PR con API') {
             steps {
