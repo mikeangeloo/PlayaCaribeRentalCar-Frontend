@@ -23,21 +23,39 @@ pipeline {
                 script {
                     deleteDir() // Limpia el workspace antes de clonar
 
-                    checkout scm
-
-                    // Asegurar que HEAD apunta correctamente a la rama
+                    // Elimina ramas que ya no existen en GitHub y baja las nuevas referencias
                     sh '''
-                        git fetch --all
-                        git checkout $(git rev-parse --abbrev-ref HEAD)
+                        git init
+                        git remote add origin https://github.com/CodiMex360/apollo-frontend.git || true
+                        git remote prune origin  # Elimina referencias de ramas eliminadas
+                        git fetch --all --prune   # Asegura que tenemos las referencias correctas
                     '''
 
-                    // Ahora sí se debe capturar correctamente el nombre de la rama
-                    env.BRANCH_NAME = sh(script: "git rev-parse --abbrev-ref HEAD", returnStdout: true).trim()
+                    // Detecta si es un PR o una rama normal
+                    if (env.CHANGE_BRANCH) {
+                        echo "🚀 Checkout del PR #${env.CHANGE_ID} desde ${env.CHANGE_BRANCH} → ${env.CHANGE_TARGET}"
+                        sh "git checkout -b pr-${env.CHANGE_ID} origin/${env.CHANGE_BRANCH} || git checkout ${env.CHANGE_BRANCH}"
+                    } else {
+                        echo "🔄 Checkout de la rama ${env.BRANCH_NAME ?: 'master'}"
+                        checkout([
+                            $class: 'GitSCM',
+                            branches: [[name: "*/${env.BRANCH_NAME ?: 'master'}"]],
+                            doGenerateSubmoduleConfigurations: false,
+                            extensions: [[$class: 'CleanCheckout']],
+                            userRemoteConfigs: [[
+                                credentialsId: 'GITHUB_CREDENTIALS',
+                                url: 'https://github.com/CodiMex360/apollo-frontend.git'
+                            ]]
+                        ])
+                    }
 
+                    // Obtiene la rama final después del checkout
+                    env.BRANCH_NAME = sh(script: "git rev-parse --abbrev-ref HEAD", returnStdout: true).trim()
                     echo "📥 Se han bajado los cambios de la rama ---> ${env.BRANCH_NAME}"
                 }
             }
         }
+
 
         stage('Detectar PR con API') {
             steps {
