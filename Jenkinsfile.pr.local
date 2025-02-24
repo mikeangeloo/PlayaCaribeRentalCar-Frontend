@@ -20,6 +20,18 @@ pipeline {
     }
 
     stages {
+
+      stage('Checkout') {
+            steps {
+                checkout scm
+                script {
+                    echo "📥 Se han bajado los cambios de la rama ${BRANCH_NAME}"
+                    echo "GIT_BRANCH ----> ${env.GIT_BRANCH}"
+
+                }
+            }
+        }
+
         stage('Detectar PR con API') {
             steps {
                 script {
