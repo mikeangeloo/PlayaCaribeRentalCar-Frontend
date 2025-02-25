@@ -1,0 +1,219 @@
+pipeline {
+    agent any
+
+    options {
+        disableConcurrentBuilds()
+        timeout(time: 30, unit: 'MINUTES')
+    }
+
+    environment {
+        DOCKER_REPO = "mikeangeloo/apollo-frontend"  // Repositorio de Docker
+        GITHUB_REPO = 'CodiMex360/apollo-frontend'
+        GITHUB_TOKEN = credentials('GITHUB_TOKEN')
+        COMMIT_SHA = sh(script: "git rev-parse HEAD", returnStdout: true).trim()
+
+        PACKAGE_VERSION = ''   // Versión extraída de package.json
+        IMAGE_TAG = ''         // Etiqueta que se usará para la imagen Docker
+        DOCKER_IMAGE = ''      // Referencia de la imagen Docker construida
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                script {
+                    deleteDir() // Limpia el workspace antes de clonar
+
+                    echo "🔄 Checkout de la rama ${env.BRANCH_NAME ?: 'master'}"
+                    checkout scm
+
+                    // Validar la rama final después del checkout
+                    env.BRANCH_NAME = sh(script: "git rev-parse --abbrev-ref HEAD", returnStdout: true).trim()
+                    echo "📥 Se han bajado los cambios de la rama ---> ${env.BRANCH_NAME}"
+                }
+            }
+        }
+
+        stage('Detectar PR con API') {
+            steps {
+                script {
+                    def prData = getPRData()
+                    if (prData) {
+                        env.TAG_ID = prData.number
+                        env.TARGET_BRANCH = prData.targetBranch
+                        env.IS_PR = "true"
+                        echo "✅ Detectado PR: #${prData.number} con target branch ${prData.targetBranch}"
+                    } else {
+                        echo "No se detectó PR, asumiendo merge a la target branch."
+                        env.IS_PR = "false"
+                    }
+                }
+            }
+        }
+
+         stage('Detectar Merge') {
+            steps {
+                script {
+                    def commitMessage = sh(script: "git log -1 --pretty=%B", returnStdout: true).trim()
+                    echo "Mensaje del último commit: ${commitMessage}"
+
+                    if (commitMessage.contains("Merge pull request")) {
+                        def prNumber = commitMessage.find(/#(\d+)/) { match, num -> return num }
+                        echo "🚀 Se detectó un merge del PR #${prNumber}"
+                        env.TAG_ID = prNumber
+                    } else {
+                        echo "⚠️ No se detectó merge directo."
+                    }
+                }
+            }
+        }
+
+        stage('Confirmar PR fusionado con GitHub API') {
+            steps {
+                script {
+                    def mergedPR = sh(script: """
+                        curl -s -H "Authorization: token ${env.GITHUB_TOKEN}" \\
+                        "https://api.github.com/repos/${env.GITHUB_REPO}/pulls?state=closed" | jq -r '.[] | select(.merge_commit_sha == "${env.GIT_COMMIT}") | .number'
+                    """, returnStdout: true).trim()
+
+                    if (mergedPR) {
+                        echo "✅ Confirmado: PR #${mergedPR} fue fusionado"
+                        env.TAG_ID = mergedPR
+                    } else {
+                        echo "⚠️ No se encontró el PR fusionado en la API."
+                    }
+                }
+            }
+        }
+
+        stage('Start') {
+            steps {
+                script {
+                    updateGitHubCommitStatus('pending')
+                    echo "Pipeline iniciado para el commit ${COMMIT_SHA}"
+                }
+            }
+        }
+
+        stage('Validate env.TAG_ID') {
+            steps {
+              script {
+                if (!env.TAG_ID) {
+                  echo "🚫 Saltando ejecución del pipeline, no se encontro un env.TAG_ID."
+                  currentBuild.result = 'ABORTED'
+                  return // Esto detiene la ejecución
+                }
+              }
+            }
+        }
+
+        stage('Obtener versión y formar IMAGE_TAG') {
+           when {
+                expression { return !!env.TAG_ID }
+            }
+            steps {
+                script {
+                    PACKAGE_VERSION = sh(script: "jq -r .version package.json", returnStdout: true).trim()
+                    echo "📌 Versión extraída: ${PACKAGE_VERSION}"
+                    IMAGE_TAG = "${DOCKER_REPO}:${PACKAGE_VERSION}-${env.TAG_ID}"
+                }
+            }
+        }
+
+        stage('Eliminar Entorno Efímero') {
+            when {
+                expression { return env.IS_PR == "false" && !!env.TAG_ID }
+            }
+            steps {
+                script {
+                    def namespace = "pr-${env.TAG_ID}"
+                    def imageTag = IMAGE_TAG
+                    def deleteImage = "true"
+                    // Usamos withCredentials para inyectar DOCKER_HUB_USER y DOCKER_HUB_PASS
+                    withCredentials([usernamePassword(credentialsId: 'DOCKER_HUB_CRED', usernameVariable: 'DOCKER_HUB_USER', passwordVariable: 'DOCKER_HUB_PASS')]) {
+                        // Ejecutamos el script que usa las credenciales inyectadas
+                        sh """
+                            echo "DOCKER_HUB_USER: ${DOCKER_HUB_USER}"
+                            chmod +x ./k8s/scripts/delete.sh
+                            ./k8s/scripts/delete.sh ${namespace} ${imageTag} ${deleteImage}
+                        """
+                    }
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            script {
+                echo "Pipeline exitoso. Actualizando estado en GitHub a success."
+                updateGitHubCommitStatus('success')
+            }
+        }
+        failure {
+            script {
+                echo "Pipeline fallido. Actualizando estado en GitHub a failure."
+                updateGitHubCommitStatus('failure')
+            }
+        }
+        aborted {
+            script {
+                updateGitHubCommitStatus('error')
+            }
+        }
+        always {
+            script {
+                echo "Finalizando el pipeline."
+            }
+        }
+    }
+}
+
+// Función para actualizar el estado del commit/PR en GitHub
+def updateGitHubCommitStatus(String status) {
+    echo "Actualizando el estado del commit en GitHub a: ${status}"
+    withCredentials([string(credentialsId: 'GITHUB_TOKEN', variable: 'GITHUB_TOKEN')]) {
+        sh """
+            curl -X POST -H "Authorization: token ${GITHUB_TOKEN}" \
+            -d '{"state": "${status}", "target_url": "${JENKINS_URL}job/${JOB_NAME}/${BUILD_NUMBER}", "description": "Build ${status}", "context": "CI/CD Pipeline"}' \
+            https://api.github.com/repos/${GITHUB_REPO}/statuses/${GIT_COMMIT}
+        """
+    }
+}
+
+// Función para obtener datos del PR mediante la API de GitHub
+def getPRData() {
+    def response = sh(script: """
+        curl -s -H "Authorization: token ${env.GITHUB_TOKEN}" \\
+        "https://api.github.com/repos/${env.GITHUB_REPO}/pulls?state=open" | jq -r '.[] | select(.head.sha == "${env.GIT_COMMIT}") | {number, base: .base.ref}'
+    """, returnStdout: true).trim()
+    def prNumber = sh(script: "echo '${response}' | jq -r '.number'", returnStdout: true).trim()
+    def targetBranch = sh(script: "echo '${response}' | jq -r '.base'", returnStdout: true).trim()
+    if (prNumber && targetBranch) {
+        return [ number: prNumber, targetBranch: targetBranch ]
+    } else {
+        return null
+    }
+}
+
+def getLoadBalancerURL(namespace) {
+    def retries = 3
+    def waitTime = 10 // segundos entre cada intento
+    def externalURL = ""
+
+    for (int i = 0; i < retries; i++) {
+        externalURL = sh(script: """
+            kubectl get svc -n ${namespace} -o jsonpath='{.items[0].status.loadBalancer.ingress[0].hostname}' || echo ""
+        """, returnStdout: true).trim()
+
+        if (externalURL) {
+            echo "✅ LoadBalancer URL encontrado: ${externalURL}"
+            return externalURL
+        }
+
+        echo "⏳ Esperando a que el LoadBalancer esté listo... Intento ${i + 1} de ${retries}"
+        sleep(waitTime)
+    }
+
+    echo "❌ No se pudo obtener la URL del LoadBalancer después de ${retries} intentos."
+    return ""
+}
