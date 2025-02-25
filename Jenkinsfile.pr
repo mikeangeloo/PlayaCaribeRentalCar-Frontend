@@ -28,7 +28,6 @@ pipeline {
                     // Asegurar que HEAD apunta correctamente a la rama
                     sh '''
                         git fetch --all
-                        git checkout $(git rev-parse --abbrev-ref HEAD)
                     '''
 
                     // Ahora sí se debe capturar correctamente el nombre de la rama
