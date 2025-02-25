@@ -50,16 +50,17 @@ pipeline {
             }
         }
 
-         stage('Detectar Merge') {
+        stage('Detectar Merge') {
             steps {
                 script {
                     def commitMessage = sh(script: "git log -1 --pretty=%B", returnStdout: true).trim()
                     echo "Mensaje del último commit: ${commitMessage}"
 
-                    if (commitMessage.contains("Merge pull request")) {
-                        def prNumber = commitMessage.find(/#(\d+)/) { match, num -> return num }
-                        echo "🚀 Se detectó un merge del PR #${prNumber}"
-                        env.TAG_ID = prNumber
+                    // Expresión regular mejorada para capturar el número del PR
+                    def matcher = (commitMessage =~ /Merge pull request #(\d+) from/)
+                    if (matcher.find()) {
+                        env.TAG_ID = matcher.group(1)
+                        echo "🚀 Se detectó un merge del PR #${env.TAG_ID}"
                     } else {
                         echo "⚠️ No se detectó merge directo."
                     }
