@@ -18,21 +18,47 @@ pipeline {
     }
 
     stages {
+        stage('Abortar si es master') {
+            when {
+                expression { return env.BRANCH_NAME == 'master' }
+            }
+            steps {
+                script {
+                    echo "🚫 Pipeline abortado porque está ejecutándose en master."
+                    currentBuild.result = 'ABORTED'
+                    return
+                }
+            }
+        }
+
         stage('Checkout') {
             steps {
                 script {
                     deleteDir() // Limpia el workspace antes de clonar
 
-                    checkout scm
+                    if (env.CHANGE_ID) {
+                        // Si Jenkins detecta que es un PR
+                        echo "🚀 Checkout del PR #${env.CHANGE_ID} desde ${env.CHANGE_BRANCH} → ${env.CHANGE_TARGET}"
 
-                    // Asegurar que HEAD apunta correctamente a la rama
-                    sh '''
-                        git fetch --all
-                    '''
+                        // Si el directorio .git no existe, inicializamos el repositorio
+                        def isGitRepo = sh(script: "[ -d .git ] && echo 'true' || echo 'false'", returnStdout: true).trim()
+                        if (isGitRepo == "false") {
+                            sh "git init"
+                            sh "git remote add origin https://github.com/CodiMex360/apollo-frontend.git"
+                        }
 
-                    // Ahora sí se debe capturar correctamente el nombre de la rama
-                    env.BRANCH_NAME = sh(script: "echo ${env.GIT_BRANCH} | sed 's|^origin/||'", returnStdout: true).trim()
+                        sh """
+                            git fetch origin pull/${env.CHANGE_ID}/head:pr-${env.CHANGE_ID}
+                            git checkout pr-${env.CHANGE_ID}
+                        """
+                    } else {
+                        // Si es una ejecución normal en una rama, solo hacemos checkout
+                        echo "🔄 Checkout de la rama ${env.BRANCH_NAME ?: 'master'}"
+                        checkout scm
+                    }
 
+                    // Validar la rama final después del checkout
+                    env.BRANCH_NAME = sh(script: "git rev-parse --abbrev-ref HEAD", returnStdout: true).trim()
                     echo "📥 Se han bajado los cambios de la rama ---> ${env.BRANCH_NAME}"
                 }
             }
