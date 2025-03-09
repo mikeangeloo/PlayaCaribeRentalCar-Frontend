@@ -7,10 +7,10 @@ pipeline {
     }
 
     environment {
-        DOCKER_REPO = "mikeangeloo/apollo-frontend"  // Repositorio de Docker
+        DOCKER_REPO = "mikeangeloo/playacaribe-rental-car-frontend"  // Repositorio de Docker
         // Extraemos la rama sin el prefijo "origin/"
         BRANCH_NAME = sh(script: "echo ${env.GIT_BRANCH} | sed 's|^origin/||'", returnStdout: true).trim()
-        GITHUB_REPO = 'CodiMex360/apollo-frontend'
+        GITHUB_REPO = 'mikeangeloo/PlayaCaribeRentalCar-Frontend'
         GITHUB_TOKEN = credentials('GITHUB_TOKEN')
         COMMIT_SHA = sh(script: "git rev-parse HEAD", returnStdout: true).trim()
 

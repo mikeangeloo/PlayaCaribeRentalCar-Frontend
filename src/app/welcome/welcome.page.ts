@@ -12,7 +12,7 @@ export class WelcomePage implements OnInit {
 
   public currentTime = new BehaviorSubject<string>('');
   public currentDate: Observable<string>;
-  public welcomeMsg = 'Bienvenido, '
+  public welcomeMsg = ''
   public conciergeMsg = '¿Qué te gustaría consultar hoy?'
 
   private stopObservable = new Subject<boolean>()
@@ -32,7 +32,7 @@ export class WelcomePage implements OnInit {
     })
 
     const userName = this.sessionServ.getProfile().nombre;
-    this.welcomeMsg += userName;
+    this.welcomeMsg = `Bienvenido, ${userName}`
   }
 
   ngOnInit() {

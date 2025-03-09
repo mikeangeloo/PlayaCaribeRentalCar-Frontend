@@ -4,9 +4,9 @@
 
 export const environment = {
   production: false,
-  dashUrl: 'http://localhost:8020/api/dash', // url del backend
-  globalUrl: 'http://localhost:8020/api',
-  app_name: 'Apollo App',
+  dashUrl: 'http://localhost:8081/api/dash', // url del backend
+  globalUrl: 'http://localhost:8081/api',
+  app_name: 'Playa Carbie Rental Car App',
 };
 
 /*
